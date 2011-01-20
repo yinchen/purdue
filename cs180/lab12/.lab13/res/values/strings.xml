@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, from My Lab</string>
+    <string name="app_name">My Lab</string>
+</resources>

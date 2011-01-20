@@ -1,0 +1,54 @@
+Matt McCormick
+CS 180 - Lab Section 001
+Nov 2, 2010 - 9:30am
+
+Lab 11 Questions
+
+
+
+Part 1
+
+1) How the program is structured into one class and several methods. For this question, please note what the class is as well as the various methods. What is the purpose of each method?
+
+The class for this program is CheckPrimeConc and it extends Thread. It has a constructor CheckPrimeConc() with one overload CheckPrimeConc(int, long, long, long). The program has several methods including the run() method, which is invoked when the thread is started, the isItPrime(int, long, long, long) method, which checks if a number is divisible by any integer from 2 to divisor, the getNum(Scanner) method, whick prompts the user to enter a number to be checked for primality, the displayOutcome() method, which displays the results of checking a number for primality, and the main(String[]) method, which is where all of this action is initiated.
+
+
+2) How threads are created and started. As well as in general, where specifically in this program are the threads created and started?
+
+Threads are created by creating a new instance of the CheckPrimeConc class. We assign a Thread ID to each of these new instances (or threads) in order to separate the two lines of execution. We then call the start() method, which is extended from Thread, which in turn calls the run() method. In the main(String[]) method of our program, we do just this. We create two instances of the CheckPrimeConc class, each with a unique Thread ID and we start both of these threads.
+
+
+3) How the main() method waits for both threads to stop functioning. What method is used to wait for the program? Are there any potential problems that might pop up?
+
+Inside of a try/catch statement, we call the join() method of each of these threads, which is how we wait for the execution of each thread to terminate. The join() method will only continue once that thread has terminated. There is the potential for some problems to arrise, which is why we call the join() method inside of a try/catch statement. In the event that an exception is thrown, the program can gracefully handle these errors.
+
+
+4) The use of variable names, especially the use of the same name in different contexts (e.g. num). In this program, the variable num is used in many different methods, as well as in the class itself. How is this achieved? For what other variables is a similar process used?
+
+The use of variable names in different contexts is possible because instead of creating two new instances of the CheckPrimeConc class, we are creating two new threads of the CheckPrimeConc class. All of our variables are accessible by each thread, which allows each of these threads to work together, if necessary. The isPrime[] and divisibleBy[] variables are also used in different methods and contexts.
+
+
+
+Part 2
+
+1) Locate the two constructors. Remove the first one, which is empty. Now compile the program. Does the program compile? In case you have forgotten, a constructors form is as follows. Once you have recompiled why do you think you got the results you did?
+
+The program compiles because there are two constructors for this class. It has an overload, which essentially makes passing the parameters of the CheckPrimeConc(int, long, long, long) optional by having the CheckPrimeConc() constructor.
+
+
+2) How many threads does this program create?
+
+This program creates two threads, one with Thread ID 0 and one with Thread ID 2. The program itself is an additional thread.
+ 
+
+3) Is there any difference in the code executed by each thread created? With each thread created, is there different code run, is the code run differently? What changes from thread to thread?
+
+The exact same code is executed by each thread created. The only difference is that each thread has different parameters being passed to it in the constructor, so the results will vary from thread to thread.
+
+
+4) Modify the program so it prints the total elapsed time to check if the given number is a prime. Compile and run the modified program. Then compare the time taken by the multithreaded program against the single threaded program that you have played with in the past. Use the following numbers in your experiment. If you do not remember how to check the time, the original single threaded program already implements a time check. Update the new program and then compare the time the program takes with the single threaded program and the multithreaded program. If you lost your copy to the original lab02 program, speak to your TA and he can get you a copy.
+ 
+
+5) Are the two threads independent? Is there any chance of a deadlock? Dead lock occurs when threads are waiting on the others to finish, since each thread is waiting they have reached a dead lock which they cannot exit.
+
+Each thread is independent to an extent. The threads do access the same resources, so there is a potential for a deadlock. Since our threads are not long-running, if there was a deadlock, it would not be for very long. We are calling the join() method of each process, which waits for each thread to terminate.

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	android:orientation="vertical">
+
+		
+			
+		<SurfaceView android:id="@+id/SurfaceView01"
+		android:layout_width="300dp" android:layout_height="200dp"
+			 />
+			
+
+ 
+<LinearLayout
+	android:layout_width="300dp" android:layout_height="200dp"
+			android:layout_toRightOf="@id/SurfaceView01"
+			>
+		<ImageView android:id="@+id/ImageView01" 
+			android:layout_width="300dp" android:layout_height="200dp"
+			android:src="@drawable/shutter"
+			 />
+	
+	</LinearLayout>
+	
+	<TextView android:id="@+id/TextView01" 
+		android:layout_width="wrap_content" 
+		android:layout_height="30dp" 
+		android:layout_gravity="center_horizontal"
+		android:layout_below="@id/SurfaceView01" 
+		android:text="none"
+		android:gravity="center_horizontal"/>
+		
+	<LinearLayout android:id="@+id/controls" android:layout_below="@id/TextView01" 
+		android:layout_width="fill_parent" android:layout_height="wrap_content"
+		android:orientation="horizontal">
+		<ImageButton android:id="@+id/left"
+			android:src="@android:drawable/ic_media_previous" 
+			android:layout_width="wrap_content" 
+			android:layout_weight="1" android:layout_gravity="center_vertical|center_horizontal" android:layout_height="wrap_content"/>
+		<ImageButton android:id="@+id/take" 
+			android:src="@drawable/shutter" 
+			android:layout_weight="0" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+		<ImageButton android:id="@+id/right"
+			android:src="@android:drawable/ic_media_next" 
+			android:layout_weight="1" android:layout_width="wrap_content" android:layout_gravity="center_vertical|center_horizontal" android:layout_height="wrap_content"/>
+	</LinearLayout>
+		
+	
+</RelativeLayout>

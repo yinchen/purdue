@@ -1,0 +1,8 @@
+Cookie=hbp
+Version=1
+ClassPath=/homes/mbmccorm/CS180/lab2/RobotIntro
+MainClass=RobotIntro
+StackSize=200
+Autorun=false
+BuildBeforeLoad=true
+OpenFile=/u/u93/mbmccorm/CS180/lab2/RobotIntro/RobotIntro.java

@@ -1,0 +1,8 @@
+Cookie=hbp
+Version=1
+ProjectPath=/u/u93/mbmccorm/CS180/lab6
+MainClass=MyBot
+StackSize=200
+Autorun=false
+BuildBeforeLoad=true
+OpenFile=MyBot.java

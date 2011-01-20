@@ -1,0 +1,87 @@
+Spend a few minutes browsing this program and try to answer the following questions prior to compiling it.
+
+
+
+1. List all classes used explicitly methods in this program.
+
+Scanner
+CheckPrimality
+
+
+2. List all methods defined as well as used in this program.
+
+isItPrime()
+main()
+println()
+nextLong()
+nextLine()
+currentTimeMillis()
+
+
+3. For each method, list its return type.
+
+void
+void
+void
+long
+string
+long 
+
+
+4. What is the purpose of the Scanner class?
+
+To retrieve input from the user.
+
+
+5. What does the println() method do?
+
+Prints a string of text to the console.
+
+
+6. Can you locate the constructor for CheckPrimality?
+
+CheckPrimality does not have a constructor.
+
+
+7. List all the primitive types used in this program.
+
+long
+string
+int
+bool
+
+
+8. After having browsed the program, can you explain the method used here to check for primality?
+
+The CheckPrimality program will prompt the user for a positive integer, check for errors, and then 
+call the isItPrime() method. This method will check if it is 1 or 2, printing the necessary results,
+and then begin a loop to divide by 2 to determine if it is a prime number. The program will then
+print the proper output including the time it took to execute this method.
+
+
+9. What differences and similarities do you notice in the naming of classes methods, and variables? 
+
+Variables that were declared inside of the CheckPrimality class are available to all methods in the
+CheckPrimality class. All methods declared in the CheckPrimality class are available to the other 
+methods in the CheckPrimality class.
+
+
+10. Compile and run the program. 
+ 
+When asked for a number input the following strings (one on each request):
+ 
+ 104,395,301
+ 
+ 1234560
+ 
+ 123gg22
+ 
+ -3
+ 
+ 0
+ 
+What happens when you type a non-number?
+
+You receive the "Sorry, input not a number or is to large, try again." error message.
+
+
