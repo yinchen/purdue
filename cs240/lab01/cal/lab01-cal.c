@@ -1,3 +1,19 @@
+/* 
+ * lab01-cal.c
+ * Lab 1
+ *
+ * Your next task for this lab is to write a program that when 
+ * provided with a month (first argument) and an year (second 
+ * argument), outputs the calender for that month as shown in 
+ * the example above. Make sure that you print the correct 
+ * number of days (28, 29, 30 or 31) for each month.
+ * 
+ * @author Matt McCormick
+ * @section R1130
+ * @date 01/20/2010
+ * 
+ */
+
 #include <stdio.h>
 
 main (int argc, char *argv[])
