@@ -8,7 +8,7 @@
  * the example above. Make sure that you print the correct 
  * number of days (28, 29, 30 or 31) for each month.
  * 
- * @author Matt McCormick
+ * @author Matt McCormick (mbmccorm@purdue.edu)
  * @section R1130
  * @date 01/20/2010
  * 
