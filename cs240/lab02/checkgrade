@@ -1,0 +1,68 @@
+#!/bin/bash
+
+echo -ne $"\033[0;1m\033[34m\t-----Test script to check Lab02-----\033[0;39m\n"
+total_test_cases=10
+total_grade=0
+counter=1
+ref_prog=./lab02-convert
+prog=./convert
+result=FAILED
+
+rm -rf difference.out $prog.out $ref_prog.out  grade.txt
+(make clean && make)
+echo
+
+printf "\033[0;1m TEST CASE\tRESULT   \t   GRADE\n \033[0;22m" >> grade.txt
+function check_test_case {
+		
+	echo -ne $"\t\033[0;34m----- running test $counter -----\n\033[0;39m"
+	$prog $1 $2 $3 > $prog.out
+	$ref_prog $1 $2 $3 > $ref_prog.out
+	diff $prog.out $ref_prog.out > difference.out
+	if [ $? -eq 0 ]; then
+		#cat $prog.out
+		echo -ne $"\033[0;32mPASSED\n\033[0;39m"
+		result=PASSED
+	else
+		echo -ne $"\033[0;31mFAILED\033[0;39m\n"
+		result=FAILED
+		echo -ne "    \033[0;1mOutput from your program\033[0;22m\n"
+		cat $prog.out
+		echo -ne "     \033[0;1mExpected output\033[0;22m\n"
+		cat $ref_prog.out
+		echo -ne "     \033[0;1mDifference\033[0;22m\n"
+		echo -ne $"\033[0;31m"
+		cat difference.out
+		echo -ne $"\033[0;39m"
+		echo 
+	fi
+	#echo $result
+	if [ $result == "PASSED" ]; then
+		total_grade=`expr $total_grade + $[100/$total_test_cases]`
+		printf "%8d\t%8s\t%8d\n" $counter $result `expr $[100/$total_test_cases]` >> grade.txt
+	else
+		printf "%8d\t%8s\t%8d\n" $counter $result `expr 0` >> grade.txt
+	fi
+
+	counter=`expr $counter + 1`
+	#echo $total_grade
+}
+
+
+check_test_case 
+check_test_case 2342
+check_test_case 3745fav 17 20
+check_test_case 3248ffj 20 10
+check_test_case 110111 2 7
+check_test_case 12394 36 8
+check_test_case 8734ff 16 2
+check_test_case 82734701827301870827304817023476123987460213401825701827091827305981235 32 29
+check_test_case 76548h 29 28
+check_test_case 234599 10 10
+printf "______________________________________________________\n"
+echo -ne $"\033[0;39m"
+echo
+echo
+printf "\033[0;1m\033[34m\tTotal = %8d/100\n\033[0;39m" $total_grade >> grade.txt 
+cat grade.txt
+rm -rf difference.out $prog.out $ref_prog.out  

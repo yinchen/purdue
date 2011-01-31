@@ -1,0 +1,13 @@
+[0;1m TEST CASE	RESULT   	   GRADE
+ [0;22m       1	  PASSED	      10
+       2	  PASSED	      10
+       3	  PASSED	      10
+       4	  PASSED	      10
+       5	  PASSED	      10
+       6	  PASSED	      10
+       7	  PASSED	      10
+       8	  PASSED	      10
+       9	  PASSED	      10
+      10	  PASSED	      10
+[0;1m[34m	Total =      100/100
+[0;39m

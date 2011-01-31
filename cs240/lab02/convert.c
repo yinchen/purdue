@@ -29,8 +29,7 @@ main (int argc, char *argv[])
         exit(0);
     }
     
-    int num, frombase, tobase;
-    num = atoi(argv[1]);
+    int frombase, tobase;
     frombase = atoi(argv[2]);
     tobase = atoi(argv[3]);
     
@@ -64,18 +63,25 @@ void validateBase(char num[], int frombase, int tobase)
         exit(0);
     }
     
-    if (frombase < 10)
+    if (frombase > 10)
     {
+        char base_digits[36] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
+    
         int i;
         i = 0;
         do
         {
-            if (num[i] == 'a' ||
-                num[i] == 'b' ||
-                num[i] == 'c' ||
-                num[i] == 'd' ||
-                num[i] == 'e' ||
-                num[i] == 'f')
+            int j;
+            int invalid = 1;
+            for (j = 0; j < frombase; j++)
+            {
+                if (toupper(num[i]) == base_digits[j])
+                {
+                    invalid = 0;
+                }
+            }
+            
+            if (invalid == 1)
             {
                 printf("Quitting for %c with base %d\n", num[i], frombase);
                 printf("The entered number is invalid for the given base\n");
@@ -98,7 +104,10 @@ int convertToBase10(char num[], int base)
         int n;
         n = strlen(num) - i - 1;
         
-        retval += ((num[i] - 48) * pow(base, n));
+        if (toupper(num[i]) > 57)
+            retval += ((toupper(num[i]) - 55) * pow(base, n));
+        else
+            retval += ((toupper(num[i]) - 48) * pow(base, n));
     }
     
     return retval;
@@ -107,7 +116,7 @@ int convertToBase10(char num[], int base)
 void convertFromBase10(int num, int base)
 {
     int result[64];
-    char base_digits[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+    char base_digits[36] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
     
     int i, j;
     i = 0;
@@ -121,7 +130,7 @@ void convertFromBase10(int num, int base)
     
     for(j = i - 1; j>=0; j--)
     {
-        printf("%c", base_digits[result[j]]);
+        printf("%c", tolower(base_digits[result[j]]));
     }
     
     printf("\n");
