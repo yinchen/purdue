@@ -1,0 +1,8 @@
+reverse                                                 : 10  of 10 
+reverse CS240                                           : 10  of 10 
+reverse Purdue University                               : 10  of 10 
+reverse Department of Computer Science                  : 20  of 20 
+mygrep                                                  : 10  of 10 
+mygrep CS240 Lab <input.txt                             : 10  of 10 
+mygrep purdue <input.txt                                : 10  of 10 
+mygrep West <input.txt                                  : 20  of 20 
