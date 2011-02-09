@@ -1,18 +1,16 @@
 #include <math.h>
 
-char DIGITS[10] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-
 int bcd_encode(int i, int n, char *s)
 {
 	int index;
 	index = 1;
 	while (i != 0)
 	{
-		s[index] = DIGITS[i % 10];
+		s[index] = (i % 10) + 48;
 		i = i / 10;
 		index++;
 	}
-	s[0] = DIGITS[index - 1];
+	s[0] = (index - 1) + 48;
 
 	return 0;
 }
@@ -73,7 +71,18 @@ int bcd_eq(char *s, char *t)
 	return 1;
 }
 
-int bcd_add(char *s, char *t, int n, char *u) { return -1; }
+int bcd_add(char *s, char *t, int n, char *u)
+{
+	if (s[0] > t[0])
+	{
+		u[0] = s[0];
+	}
+	else
+	{
+		u[0] = t[0];
+	}
+}
+
 int bcd_sub(char *s, char *t, int n, char *u) { return -1; }
 int bcd_mul(char *s, char *t, int n, char *u) { return -1; }
 int bcd_div(char *s, char *t, int n, char *u, int m, char *v) { return -1; }
