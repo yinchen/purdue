@@ -2,6 +2,8 @@
 #include <string.h>
 #include <math.h>
 
+void stealNextDigit(char *sc, int n);
+
 int bcd_encode(int i, int n, char *s)
 {
 	int index;
@@ -76,14 +78,14 @@ int bcd_eq(char *s, char *t)
 int bcd_add(char *s, char *t, int n, char *u)
 {
 	// copy array
-	char sc[strlen(s)], tc[strlen(t)];
+	char sc[n], tc[n];
     int is;
-    for (is = 0; is < strlen(sc); is++)
+    for (is = 0; is < n; is++)
     {
         sc[is] = s[is];
     }
     int it;
-    for (it = 0; it < strlen(tc); it++)
+    for (it = 0; it < n; it++)
     {
         tc[it] = t[it];
     }
@@ -107,21 +109,22 @@ int bcd_add(char *s, char *t, int n, char *u)
     for (i = 1; i <= (maxd - (sc[0] - 48) + 1); i++)
     {
         sc[(sc[0] - 48) + i] = '0';
-    }
-    
+    }    
     int j;
     for (j = 1; j <= (maxd - (tc[0] - 48) + 1); j++)
     {
         tc[(tc[0] - 48) + j] = '0';
     }
     
-    // perform addition
+    // zero array
     int k;
     for (k = 0; k <= maxd + 1; k++)
     {
         u[k] = '0';
     }
+    u[0] = '1';
     
+    // perform addition
     int l;
     for (l = 1; l <= maxd + 1; l++)
     {
@@ -136,7 +139,7 @@ int bcd_add(char *s, char *t, int n, char *u)
         }
     }
 	
-	if (u[maxd + 1] == '0')
+	if ((u[maxd + 1] - 48) == 0)
 	{
 	    u[0] = maxd + 48;
 	}
@@ -150,14 +153,99 @@ int bcd_add(char *s, char *t, int n, char *u)
 
 int bcd_sub(char *s, char *t, int n, char *u)
 {
+    // copy array
+	char sc[n], tc[n];
+    int is;
+    for (is = 0; is < n; is++)
+    {
+        sc[is] = s[is];
+    }
+    int it;
+    for (it = 0; it < n; it++)
+    {
+        tc[it] = t[it];
+    }
+	
+	// pad zeros
+	int maxd;
+	if (sc[0] > tc[0])
+	{
+	    maxd = sc[0] - 48;
+	}
+	else if (tc[0] > sc[0])
+	{
+		maxd = tc[0] - 48;
+	}
+	else
+	{
+	    maxd = sc[0] - 48;
+	}	
+	int i;
+    for (i = 1; i <= (maxd - (sc[0] - 48)); i++)
+    {
+        sc[(sc[0] - 48) + i] = '0';
+    }    
+    int j;
+    for (j = 1; j <= (maxd - (tc[0] - 48)); j++)
+    {
+        tc[(tc[0] - 48) + j] = '0';
+    }
     
+    // zero array
+    int k;
+    for (k = 0; k <= maxd; k++)
+    {
+        u[k] = '0';
+    }
+    u[0] = '1';
+    
+    // prepare digits
+    int l;
+    for (l = 1; l < maxd; l++)
+    {
+        if (sc[l] < tc[l])
+        {
+            stealNextDigit(sc, l);
+        }
+    }
+	
+	// perform subtraction
+	int m;
+	for (m = 1; m <= maxd; m++)
+	{
+	    u[m] = (sc[m] - 48) - (tc[m] - 48) + 48;
+	}
+	
+	// correct digit count
+	int z;
+	for (z = maxd; z >= 1; z--)
+	{
+	    if ((u[z] - 48) > 0)
+	    {
+	        break;
+	    }
+	}
+	u[0] = z + 48;
+	
+	return 0;
+}
+
+void stealNextDigit(char *sc, int n)
+{
+    if ((sc[n + 1] - 48) == 0)
+    {
+        stealNextDigit(sc, n + 1);
+    }
+    
+    sc[n + 1] = sc[n + 1] - 1;
+    sc[n] = sc[n] + 10;
+    
+    return;
 }
 
 int bcd_mul(char *s, char *t, int n, char *u)
 {
-    int mult;
-    mult = 0;	
-
+    // zero array
     int i;
 	for (i = 0; i < n; i++)
 	{
@@ -165,20 +253,50 @@ int bcd_mul(char *s, char *t, int n, char *u)
 	}
 	u[0] = '1';
 	
-	int j;
-	for (j = 1; j <= (s[0] - 48); j++)
+	// calculate multiplier
+	int mult;
+    mult = 0;	
+    int j;
+	for (j = 1; j <= (t[0] - 48); j++)
 	{
-		mult += ((s[j] - 48) * pow(10, j - 1));
+		mult += ((t[j] - 48) * pow(10, j - 1));
 	}
 	
+    // perform addition
 	int k;
 	for (k = 0; k < mult; k++)
 	{
-	    bcd_add(u, t, n, u);
+	    bcd_add(u, s, n, u);
 	}
 	
 	return 0;
 }
 
-int bcd_div(char *s, char *t, int n, char *u, int m, char *v) { return -1; }
+int bcd_div(char *s, char *t, int n, char *u, int m, char *v)
+{
+    // initialize array
+    int i;
+	for (i = 0; i < n; i++)
+	{
+		u[i] = s[i];
+	}
+	
+	// perform subtraction
+    int j;
+    j = 0;
+	while (bcd_gt(u, t) == 1 ||
+	       bcd_eq(u, t) == 1)
+	{
+	    bcd_sub(u, t, n, u);	    
+	    j++;
+	}
+	bcd_encode(j, n, u);
+	
+	// calculate remainder
+	char tmp[n];
+	bcd_mul(t, u, n, tmp);
+	bcd_sub(s, tmp, n, v);
+	
+	return 0;
+}
 
