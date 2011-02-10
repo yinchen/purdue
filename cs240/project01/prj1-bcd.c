@@ -153,6 +153,11 @@ int bcd_add(char *s, char *t, int n, char *u)
 
 int bcd_sub(char *s, char *t, int n, char *u)
 {
+    if (bcd_gt(t, s) == 1)
+    {
+        return -1;
+    }
+    
     // copy array
 	char sc[n], tc[n];
     int is;
@@ -285,6 +290,12 @@ int bcd_mul(char *s, char *t, int n, char *u)
 
 int bcd_div(char *s, char *t, int n, char *u, int m, char *v)
 {
+    if ((t[0] - 48) == 1 &&
+        (t[1] - 48) == 0)
+    {
+        return -1;
+    }
+    
     // initialize array
     int i;
 	for (i = 0; i < n; i++)
