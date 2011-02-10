@@ -118,7 +118,7 @@ int bcd_add(char *s, char *t, int n, char *u)
     
     // zero array
     int k;
-    for (k = 0; k <= maxd + 1; k++)
+    for (k = 0; k < n; k++)
     {
         u[k] = '0';
     }
@@ -128,7 +128,7 @@ int bcd_add(char *s, char *t, int n, char *u)
     int l;
     for (l = 1; l <= maxd + 1; l++)
     {
-        if (((sc[l] - 48) + (tc[l] - 48)) > 10)
+        if (((sc[l] - 48) + (tc[l] - 48)) >= 10)
         {
             u[l] = (u[l] - 48) + (sc[l] - 48) + (tc[l] - 48) - 10 + 48;
             u[l + 1] = '1';
@@ -193,7 +193,7 @@ int bcd_sub(char *s, char *t, int n, char *u)
     
     // zero array
     int k;
-    for (k = 0; k <= maxd; k++)
+    for (k = 0; k < n; k++)
     {
         u[k] = '0';
     }
@@ -268,6 +268,17 @@ int bcd_mul(char *s, char *t, int n, char *u)
 	{
 	    bcd_add(u, s, n, u);
 	}
+	
+	// adjust 10s
+	int l;
+	for (l = 1; l <= (u[0] - 48); l++)
+    {
+        if ((u[l] - 48) >= 10)
+        {
+            u[l] = (u[l] - 48) - 10 + 48;
+            u[l + 1] = (u[l + 1] - 48) + 1 + 48;
+        }
+    }
 	
 	return 0;
 }
