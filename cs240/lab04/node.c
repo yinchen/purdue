@@ -71,8 +71,8 @@ struct node* CreateList(int values[], int len) {
 int LinkedListLength(struct node* head) {
 	struct node* current = head;
 
-	int count;
-	count = 0;
+	int count;
+	count = 0;
 	while(current != NULL) {
 		count++;
 		current = current->next;
@@ -90,17 +90,17 @@ int LinkedListLength(struct node* head) {
  * */
 struct node* InsertAtEnd(struct node* head, int value) {
 	struct node* current = head;
-	
-	if (current == NULL)
-	{
-		struct node* newNode = CreateNode();
+
+	if (current == NULL)
+	{
+		struct node* newNode = CreateNode();
 		newNode->data = value;
 		newNode->next = NULL;
 	
 		return newNode;
-	}
-	
-	while(current->next != NULL) {
+	}
+
+	while(current->next != NULL) {
 		current = current->next;
 	}
 	
@@ -124,15 +124,15 @@ struct node* InsertAtEnd(struct node* head, int value) {
  */
 struct node* InsertAtN(struct node* head, int value, int N) {
 	struct node* current = head;
-	
-	if (N == 0)
-	{
-		return InsertInFront(current, value);
-	}
-	
-	int i;
-	i = 0;
-	while(current != NULL) {
+
+	if (N == 0)
+	{
+		return InsertInFront(current, value);
+	}
+	
+	int i;
+	i = 0;
+	while(current != NULL) {
 		if ((i + 1) == N)
 		{
 			struct node* newNode = CreateNode();
@@ -162,17 +162,17 @@ struct node* InsertAtN(struct node* head, int value, int N) {
  */
 struct node* DeleteNode(struct node* head, int pos) {
 	struct node* current = head;
-	
-	if (pos == 1)
-	{
-		return current->next;
-	}
-	
-	struct node* prev = NULL;
-		
-	int i;
-	i = 1;
-	while(current != NULL) {
+
+	if (pos == 1)
+	{
+		return current->next;
+	}
+
+	struct node* prev = NULL;
+
+	int i;
+	i = 1;
+	while(current != NULL) {
 		if (i == pos)
 		{
 			prev->next = current->next;
@@ -187,4 +187,3 @@ struct node* DeleteNode(struct node* head, int pos) {
 	printf("ERROR: Node does not exist\n", pos);
 	return head;
 }
-
