@@ -11,12 +11,47 @@ void printFunction();
 
 int main(int argc, char** argv)
 {
+    if (argc < 4)
+    {
+        printf("Usage: bisection <poly|sin|cos|xsin|imaginary> <left bound> <right bound>\n");
+        exit(1);
+    }
+    
+    char *func = argv[1];
+    double a = (double)atoi(argv[2]);
+    double b = (double)atoi(argv[3]);
+    
+    printFunction(func);
+    
+    double m;
+    
+    int i = 0;   
+    while ((b - a) > TOLERANCE && b > a)
+    {
+        m = (b - a) / 2;
+        
+        printf("At iteration %d, the three points are ( %f, %f), ( %f, %f), ( %f, %f)\n", i, a, f(func, a), m, f(func, m), b, f(func, b));
+        
+        if ((f(func, a) > 0.0 && f(func, b) > 0.0) ||
+            (f(func, a) < 0.0 && f(func, b) < 0.0))
+        {
+            a = m;
+        }
+        else
+        {
+            b = m;
+        }
+        
+        i++;
+    }
+    
+    printf("( %f, %f) is an exact solution\n", m, f(func, m));
 }
 
 /* Prints the function in readable form */
 void printFunction(const char * funname)
 {
-        char * func;
+    char * func;
 
 	if(strcmp(funname, "poly") == 0)
 	  func = "y = x^2 - 4 = 0";
@@ -34,7 +69,7 @@ void printFunction(const char * funname)
 		exit(1);
 	}
 
-        printf("Function: %s\n", func);
+    printf("Function: %s\n", func);
 }
 
 /* Evaluates f(x) */
