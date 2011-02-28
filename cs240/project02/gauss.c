@@ -29,7 +29,6 @@ int main()
             }
         }
     }
-    printf("\n");
     
     // print matrix
     printf("initial matrix\n");
