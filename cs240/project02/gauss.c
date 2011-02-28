@@ -85,7 +85,7 @@ int main()
     }
     
     // print solution
-    printf("SOLUTION\n");
+    printf("SOLUTION:\n");
     
     printf("%f", matrix[0][n]);
     for (i = 1; i < n; i++) // for each row
