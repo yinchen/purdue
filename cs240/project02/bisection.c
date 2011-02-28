@@ -76,7 +76,7 @@ int main(int argc, char** argv)
     }
     else
     {
-        printf("Solution is in the range ( %f, %f)\n", m, b);
+        printf("Solution is in the range ( %f, %f)\n", a, b);
         exit(0);
     }
 }
