@@ -87,10 +87,10 @@ int main()
     // print solution
     printf("SOLUTION:\n");
     
-    printf("%f", matrix[0][n]);
+    // printf("%f", matrix[0][n]);
     for (i = 1; i < n; i++) // for each row
     {
-        printf(" %f", matrix[i][n]);
+        printf("%f ", matrix[i][n]); // printf(" %f", matrix[i][n]);
     }
     printf("\n");
 }
