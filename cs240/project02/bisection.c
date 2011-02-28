@@ -23,19 +23,43 @@ int main(int argc, char** argv)
     
     printFunction(func);
     
+    if (b <= a)
+    {
+        printf("Boundary ( %f, %f), ( %f, %f) is invalid\n", a, f(func, a), b, f(func, b));
+        exit(0);
+    }
+    
+    if ((f(func, a) > 0.0 && f(func, b) > 0.0) ||
+        (f(func, a) < 0.0 && f(func, b) < 0.0))
+    {
+        printf("Boundary ( %f, %f), ( %f, %f) is invalid\n", a, f(func, a), b, f(func, b));
+        exit(0);
+    }
+    
+    if (f(func, a) == 0.0 ||
+        f(func, b) == 0.0)
+    {
+        printf("One of the boundary points ( %f, %f), ( %f, %f) is already a solution\n", a, f(func, a), b, f(func, b));
+        exit(0);
+    }
+    
     double m;
     
     int i = 0;   
-    while ((b - a) > TOLERANCE && b > a)
+    while ((b - a) > TOLERANCE)
     {
-        m = (b - a) / 2;
+        m = ((b - a) / 2) + a;
         
         printf("At iteration %d, the three points are ( %f, %f), ( %f, %f), ( %f, %f)\n", i, a, f(func, a), m, f(func, m), b, f(func, b));
         
-        if ((f(func, a) > 0.0 && f(func, b) > 0.0) ||
-            (f(func, a) < 0.0 && f(func, b) < 0.0))
+        if ((f(func, a) > 0.0 && f(func, m) > 0.0) ||
+            (f(func, a) < 0.0 && f(func, m) < 0.0))
         {
             a = m;
+        }
+        else if (f(func, m) == 0.0)
+        {
+            break;
         }
         else
         {
@@ -45,7 +69,16 @@ int main(int argc, char** argv)
         i++;
     }
     
-    printf("( %f, %f) is an exact solution\n", m, f(func, m));
+    if (f(func, m) == 0.0)
+    {
+        printf("( %f, %f) is an exact solution\n", m, f(func, m));
+        exit(0);
+    }
+    else
+    {
+        printf("Solution is in the range ( %f, %f)\n", m, b);
+        exit(0);
+    }
 }
 
 /* Prints the function in readable form */
