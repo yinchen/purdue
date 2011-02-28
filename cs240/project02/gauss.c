@@ -44,7 +44,7 @@ int main()
         // check for TOLERANCE threshold
         if (matrix[k][k] < TOLERANCE && matrix[k][k] > (TOLERANCE * -1))
         {
-            printf("Error: Current pivot (%d, %d) is practically zero\n", k, k);
+            printf("Error: Current pivot is practically zero\n");
             exit(1);
         }
         

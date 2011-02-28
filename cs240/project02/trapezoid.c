@@ -6,7 +6,11 @@
 int main()
 {
 	int n;
-	scanf("%d", &n);
+	if (scanf("%d", &n) == EOF)
+	{
+	    printf("Expected N (number of pairs)\n");
+        exit(1);
+	}
 	
 	float* x;
 	x = (float*) malloc(n * sizeof(int));
