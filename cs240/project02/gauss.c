@@ -32,7 +32,7 @@ int main()
     printf("\n");
     
     // print matrix
-    printf("Initial Matrix\n");
+    printf("initial matrix\n");
     printMatrix(n, n + 1, matrix);
     
     int k;
