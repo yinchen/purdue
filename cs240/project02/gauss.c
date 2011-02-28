@@ -13,7 +13,11 @@ int main()
 	
 	// read size of matrix
 	int n;
-	scanf("%d", &n);
+	if (scanf("%d", &n) == EOF)
+	{
+	    printf("Expected N (number of equations)\n");
+        exit(1);
+	}
 	
 	// read matrix values
     int i;
@@ -87,10 +91,9 @@ int main()
     // print solution
     printf("SOLUTION:\n");
     
-    // printf("%f", matrix[0][n]);
-    for (i = 0; i < n; i++) // for each row // for (i = 1; i < n; i++) // for each row
+    for (i = 0; i < n; i++) // for each row
     {
-        printf("%f ", matrix[i][n]); // printf(" %f", matrix[i][n]);
+        printf("%f ", matrix[i][n]);
     }
     printf("\n");
 }
