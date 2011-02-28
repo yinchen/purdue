@@ -8,15 +8,19 @@ int main()
 	int n;
 	scanf("%d", &n);
 	
-	int* x;
-	x = (int*) malloc(n * sizeof(int));
-	int* y;
-    y = (int*) malloc(n * sizeof(int));
+	float* x;
+	x = (float*) malloc(n * sizeof(int));
+	float* y;
+    y = (float*) malloc(n * sizeof(int));
     
 	int i;
     for (i = 0; i < n; i++)
     {
-        scanf("%d %d", &x[i], &y[i]);
+        if (scanf("%f %f", &x[i], &y[i]) != 2)
+        {
+            printf("Pair x,y[%d] missing\n", i);
+            exit(1);
+        }
     }
     
     float sum;

@@ -1,22 +1,22 @@
-gauss                               : 0   of 6  
-gauss   < gauss0.txt                : 0   of 6  
-gauss   < gauss1.txt                : 0   of 9  
-gauss   < gauss2.txt                : 0   of 9  
-gauss   < gauss3.txt                : 0   of 9  
-gauss   < gauss4.txt                : 0   of 9  
-gauss   < gauss5.txt                : 0   of 9  
-gauss   < gauss6.txt                : 0   of 9  
-trapezoid                           : 0   of 5  
-trapezoid   < trapezoid1.txt        : 0   of 5  
-trapezoid   < trapezoid2.txt        : 0   of 8  
-trapezoid   < trapezoid3.txt        : 0   of 8  
-trapezoid   < trapezoid4.txt        : 0   of 8  
-bisection                           : 0   of 2  
-bisection pol 1 2                   : 0   of 2  
-bisection poly 1 2                  : 0   of 2  
-bisection poly 4 0                  : 0   of 2  
-bisection imaginary 3 5             : 0   of 2  
-bisection poly 0 8                  : 0   of 3  
-bisection cos 0 1                   : 0   of 4  
-bisection sin 0 1                   : 0   of 4  
-bisection xsin 10 20                : 0   of 4  
+gauss                               : 6   of 6  
+gauss   < gauss0.txt                : 6   of 6  
+gauss   < gauss1.txt                : 9   of 9  
+gauss   < gauss2.txt                : 9   of 9  
+gauss   < gauss3.txt                : 9   of 9  
+gauss   < gauss4.txt                : 9   of 9  
+gauss   < gauss5.txt                : 9   of 9  
+gauss   < gauss6.txt                : 9   of 9  
+trapezoid                           : 5   of 5  
+trapezoid   < trapezoid1.txt        : 5   of 5  
+trapezoid   < trapezoid2.txt        : 8   of 8  
+trapezoid   < trapezoid3.txt        : 8   of 8  
+trapezoid   < trapezoid4.txt        : 8   of 8  
+bisection                           : 2   of 2  
+bisection pol 1 2                   : 2   of 2  
+bisection poly 1 2                  : 2   of 2  
+bisection poly 4 0                  : 2   of 2  
+bisection imaginary 3 5             : 2   of 2  
+bisection poly 0 8                  : 3   of 3  
+bisection cos 0 1                   : 4   of 4  
+bisection sin 0 1                   : 4   of 4  
+bisection xsin 10 20                : 4   of 4  
