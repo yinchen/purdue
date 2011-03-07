@@ -38,13 +38,3 @@ void* new_int(int num)
 	
 	return ret;
 }
-
-void al_dump(struct al *l)
-{
-	int i;
-
-	for (i = 0; i<(l->count); i++)
-	{
-		printf("%d ", *((int*)al_get(l, i)));
-	}
-}
