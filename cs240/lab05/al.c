@@ -125,8 +125,7 @@ void *al_get(struct al *l, int i)
 	    i < 0)
 		return NULL;
 	
-	//return l->data[i];
-	return *((l->data)+i);
+	return l->data[i];
 }
 
 void al_dump(struct al *l)
@@ -135,7 +134,9 @@ void al_dump(struct al *l)
 
 	for (i = 0; i < l->count; i++)
 	{
-		printf("%d ", (int)al_get(l, i));
+	    printf("%d ", al_get(l, i));
 	}
+	
+	printf("\n");
 }
 
