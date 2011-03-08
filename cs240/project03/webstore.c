@@ -49,7 +49,7 @@ int buyProduct(int product_id, struct Categories **clist) {
     if (c > 0) {
         return 1;
     } else {
-        printf("ERROR: Product %d not found\n", product_id);
+        printf("ERROR: Product <%d> not found\n", product_id);
         return 0;
     }
 }
@@ -119,7 +119,7 @@ int addProduct(struct Categories **clist, int id, char *name, double price, char
 void search(char *categoryName, double max_price, struct Categories *clist) {
     struct Categories *currC = searchCategory(categoryName, &clist);
     if (currC == NULL) {
-        printf("ERROR: Category %s not found\n", categoryName);
+        printf("ERROR: Category <%s> not found\n", categoryName);
         return;
     }
     
