@@ -85,7 +85,7 @@ int addProduct(struct Categories **clist, int id, char *name, double price, char
 		strcpy(p->vendor, vendor);
 		p->numCategory = numCategory;
 		
-		node->product = product;
+		node->product = p;
 		node->next = currC->products;
 		
 		i++;
