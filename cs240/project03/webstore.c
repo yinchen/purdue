@@ -20,8 +20,34 @@ struct Categories* searchCategory(char *name, struct Categories **head);
  * -   ERROR: Product <product_id> not found
  **/
 int buyProduct(int product_id, struct Categories **clist) {
-	/* TODO: Implement this */
-	return 1;
+	struct Categories *currC = *clist;
+        int c = 0;
+	while(currC->next != NULL) {
+		struct ProductList *currP = currC->products;
+                struct ProductList *prevP = NULL;
+		while(currP->next != NULL) {
+			if (currP->product->id == product_id)
+			{
+				prevP->next = currP->next;
+				c++;
+			}
+
+			prevP = currP;
+			currP = currP->next;
+		}
+
+		currC = currC->next;
+	}
+
+	if (c > 0)
+	{
+		return 1;
+	}	
+	else
+	{
+		printf("ERROR: Product %d not found\n", product_id);
+		exit(1);
+	}
 }
 
 
@@ -174,4 +200,3 @@ struct Categories* searchCategory(char *name, struct Categories **head) {
 	}
 	return NULL;
 }
-
