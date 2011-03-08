@@ -1,0 +1,62 @@
+#!/bin/bash
+
+echo -ne $"\033[0;1m\033[34m\t-----Test script to check Project 3-----\033[0;39m\n"
+total_test_cases=4
+total_grade=0
+counter=1
+ref_prog=./webstore.ref
+prog=./webstore
+result=FAILED
+
+rm -rf difference.out $prog.out $ref_prog.out  grade.txt
+(gmake clean && gmake)
+echo
+
+printf "\033[0;1m TEST CASE\tRESULT   \t   GRADE\n \033[0;22m" >> grade.txt
+function check_test_case {
+		
+	echo -ne $"\t\033[0;34m----- running test $counter -----\n\033[0;39m"
+	$prog $1 > $prog.out
+	$ref_prog $1 > $ref_prog.out
+	diff $prog.out $ref_prog.out > difference.out
+	if [ $? -eq 0 ]; then
+		#cat $prog.out
+		echo -ne $"\033[0;32mPASSED\n\033[0;39m"
+		result=PASSED
+	else
+		echo -ne $"\033[0;31mFAILED\033[0;39m\n"
+		result=FAILED
+		echo -ne "    \033[0;1mOutput from your program\033[0;22m\n"
+		cat $prog.out
+		echo -ne "     \033[0;1mExpected output\033[0;22m\n"
+		cat $ref_prog.out
+		echo -ne "     \033[0;1mDifference\033[0;22m\n"
+		echo -ne $"\033[0;31m"
+		cat difference.out
+		echo -ne $"\033[0;39m"
+		echo 
+	fi
+	#echo $result
+	if [ $result == "PASSED" ]; then
+		total_grade=`expr $total_grade + $[100/$total_test_cases]`
+		printf "%8d\t%8s\t%8d\n" $counter $result `expr $[100/$total_test_cases]` >> grade.txt
+	else
+		printf "%8d\t%8s\t%8d\n" $counter $result `expr 0` >> grade.txt
+	fi
+
+	counter=`expr $counter + 1`
+	#echo $total_grade
+}
+
+
+check_test_case 1
+check_test_case 2
+check_test_case 3
+check_test_case 4
+printf "______________________________________________________\n"
+echo -ne $"\031[0;39m"
+echo
+echo
+printf "\033[0;1m\033[34m\tTotal = %8d/100\n\033[0;39m" $total_grade >> grade.txt 
+cat grade.txt
+rm -rf difference.out $prog.out $ref_prog.out  
