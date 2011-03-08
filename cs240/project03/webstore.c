@@ -79,7 +79,7 @@ int addProduct(struct Categories **clist, int id, char *name, double price, char
  * -  ERROR: No product found 
  * */
 void search(char *categoryName, double max_price, struct Categories *clist) {
-	struct Categories *currC = searchCategory(name, clist);
+	struct Categories *currC = searchCategory(categoryName, clist);
 	if (currC == NULL) {
 		printf("ERROR: Category %s not found\n", categoryName);
 		exit(1);
