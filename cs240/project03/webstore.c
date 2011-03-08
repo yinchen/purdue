@@ -26,8 +26,7 @@ int buyProduct(int product_id, struct Categories **clist) {
 		struct ProductList *currP = currC->products;
                 struct ProductList *prevP = NULL;
 		while(currP->next != NULL) {
-			if (currP->product->id == product_id)
-			{
+			if (currP->product->id == product_id) {
 				prevP->next = currP->next;
 				c++;
 			}
@@ -39,12 +38,9 @@ int buyProduct(int product_id, struct Categories **clist) {
 		currC = currC->next;
 	}
 
-	if (c > 0)
-	{
+	if (c > 0) {
 		return 1;
-	}	
-	else
-	{
+	} else {
 		printf("ERROR: Product %d not found\n", product_id);
 		exit(1);
 	}
@@ -83,7 +79,27 @@ int addProduct(struct Categories **clist, int id, char *name, double price, char
  * -  ERROR: No product found 
  * */
 void search(char *categoryName, double max_price, struct Categories *clist) {
-	/* TODO: Implement this */
+	struct Categories *currC = searchCategory(name, clist);
+	if (currC == NULL) {
+		printf("ERROR: Category %s not found\n", categoryName);
+		exit(1);
+	}
+
+	struct ProductList *currP = currC->products;
+	int c = 0;
+	while(currP->next != NULL) {
+		if (currP->product->price < max_price) {
+			printProductInfo(currP->product);
+			c++;
+		}
+
+		currP = currP->next;
+	}
+
+	if (c < 1) {
+		printf("ERROR: No product found\n");
+		exit(1);
+	}
 }
 
 /* Print information about a product
