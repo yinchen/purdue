@@ -64,7 +64,7 @@ int buyProduct(int product_id, struct Categories **clist) {
 int addProduct(struct Categories **clist, int id, char *name, double price, char *vendor, 
 		int numCategory, char **nameCategories) {
 	int i = 0;
-	while (nameCategories[i] != NULL) {
+	while (i < numCategory) {
 		struct Categories *currC = searchCategory(nameCategories[i], clist);
 		if (currC == NULL) {
 			addCategory(nameCategories[i], clist);
