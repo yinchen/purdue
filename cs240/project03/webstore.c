@@ -42,7 +42,7 @@ int buyProduct(int product_id, struct Categories **clist) {
 		return 1;
 	} else {
 		printf("ERROR: Product %d not found\n", product_id);
-		exit(1);
+		return 0;
 	}
 }
 
@@ -63,7 +63,34 @@ int buyProduct(int product_id, struct Categories **clist) {
  * */
 int addProduct(struct Categories **clist, int id, char *name, double price, char *vendor, 
 		int numCategory, char **nameCategories) {
-	/* TODO: Implement this */
+	int i = 0;
+	while (nameCategories[i] != NULL) {
+		struct Categories *currC = searchCategory(nameCategories[i], clist);
+		if (currC == NULL) {
+			addCategory(nameCategories[i], clist);
+		}
+
+		struct ProductList *node;
+		node = (struct ProductList*)malloc(sizeof(struct ProductList));
+		if (node == NULL) {
+			printf("ERROR: malloc failed\n");
+			return 0;
+		}
+		
+		struct Product *p;
+		p = (struct Product*)malloc(sizeof(struct Product));
+		p->id = id;
+		strcpy(p->name, name);
+		p->price = price;
+		strcpy(p->vendor, vendor);
+		p->numCategory = numCategory;
+		
+		node->product = product;
+		node->next = currC->products;
+		
+		i++;
+	}	
+
 	return 1;
 }
 
