@@ -20,30 +20,38 @@ struct Categories* searchCategory(char *name, struct Categories **head);
  * -   ERROR: Product <product_id> not found
  **/
 int buyProduct(int product_id, struct Categories **clist) {
-	struct Categories *currC = *clist;
-        int c = 0;
-	while(currC->next != NULL) {
-		struct ProductList *currP = currC->products;
-                struct ProductList *prevP = NULL;
-		while(currP->next != NULL) {
-			if (currP->product->id == product_id) {
-				prevP->next = currP->next;
-				c++;
-			}
-
-			prevP = currP;
-			currP = currP->next;
-		}
-
-		currC = currC->next;
-	}
-
-	if (c > 0) {
-		return 1;
-	} else {
-		printf("ERROR: Product %d not found\n", product_id);
-		return 0;
-	}
+    struct Categories *currC = *clist;
+    int c = 0;
+    while(currC != NULL) {
+        struct ProductList *currP = currC->products;
+        struct ProductList *prevP = NULL;
+        int d = 0;
+        while(currP != NULL) {
+            if (currP->product->id == product_id) {
+                if (d == 0) {
+                    currC->products = currP->next;
+                    c++;
+                    break;
+                } else {
+                    prevP->next = currP->next;
+                    c++;
+                }
+            }
+            
+            prevP = currP;
+            currP = currP->next;
+            d++;
+        }
+        
+        currC = currC->next;
+    }
+    
+    if (c > 0) {
+        return 1;
+    } else {
+        printf("ERROR: Product %d not found\n", product_id);
+        return 0;
+    }
 }
 
 
@@ -62,36 +70,39 @@ int buyProduct(int product_id, struct Categories **clist) {
  * -   ERROR: malloc failed
  * */
 int addProduct(struct Categories **clist, int id, char *name, double price, char *vendor, 
-		int numCategory, char **nameCategories) {
-	int i = 0;
-	while (i < numCategory) {
-		struct Categories *currC = searchCategory(nameCategories[i], clist);
-		if (currC == NULL) {
-			addCategory(nameCategories[i], clist);
-		}
-
-		struct ProductList *node;
-		node = (struct ProductList*)malloc(sizeof(struct ProductList));
-		if (node == NULL) {
-			printf("ERROR: malloc failed\n");
-			return 0;
-		}
-		
-		struct Product *p;
-		p = (struct Product*)malloc(sizeof(struct Product));
-		p->id = id;
-		strcpy(p->name, name);
-		p->price = price;
-		strcpy(p->vendor, vendor);
-		p->numCategory = numCategory;
-		
-		node->product = p;
-		node->next = currC->products;
-		
-		i++;
-	}	
-
-	return 1;
+    int numCategory, char **nameCategories) {
+    int i = 0;
+    while (i < numCategory) {
+        struct Categories *currC = searchCategory(nameCategories[i], clist);
+        if (currC == NULL) {
+            addCategory(nameCategories[i], clist);
+            currC = searchCategory(nameCategories[i], clist);
+        }
+        
+        struct ProductList *node;
+        node = (struct ProductList*)malloc(sizeof(struct ProductList));
+        if (node == NULL) {
+            printf("ERROR: malloc failed\n");
+            return 0;
+        }
+        		
+        struct Product* p;
+        p = (struct Product*)malloc(sizeof(struct Product));
+        p->id = id;
+        strcpy(p->name, name);
+        p->price = price;
+        strcpy(p->vendor, vendor);
+        p->numCategory = numCategory;
+        
+        node->product = p;
+        node->next = currC->products;
+        
+        currC->products = node;
+        
+        i++;
+    }	
+    
+    return 1;
 }
 
 /* Search for products in a category with max price and print the result
@@ -106,27 +117,27 @@ int addProduct(struct Categories **clist, int id, char *name, double price, char
  * -  ERROR: No product found 
  * */
 void search(char *categoryName, double max_price, struct Categories *clist) {
-	struct Categories *currC = searchCategory(categoryName, &clist);
-	if (currC == NULL) {
-		printf("ERROR: Category %s not found\n", categoryName);
-		exit(1);
-	}
-
-	struct ProductList *currP = currC->products;
-	int c = 0;
-	while(currP->next != NULL) {
-		if (currP->product->price < max_price) {
-			printProductInfo(currP->product);
-			c++;
-		}
-
-		currP = currP->next;
-	}
-
-	if (c < 1) {
-		printf("ERROR: No product found\n");
-		exit(1);
-	}
+    struct Categories *currC = searchCategory(categoryName, &clist);
+    if (currC == NULL) {
+        printf("ERROR: Category %s not found\n", categoryName);
+        return;
+    }
+    
+    struct ProductList *currP = currC->products;
+    int c = 0;
+    while(currP != NULL) {
+        if (currP->product->price <= max_price) {
+            printProductInfo(currP->product);
+            c++;
+        }
+        
+        currP = currP->next;
+    }
+    
+    if (c < 1) {
+        printf("ERROR: No product found\n");
+        return;
+    }
 }
 
 /* Print information about a product
