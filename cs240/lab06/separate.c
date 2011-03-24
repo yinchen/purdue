@@ -12,7 +12,7 @@ void separate(void **array, const int size, int(*separator)(const void *))
 	int i;
 	for (i = 0; i < size; i++)
 	{
-		if (separator(array[i]) == 1)
+		if (separator(array[i]) == 0)
 		{
 			tmp1[c1] = array[i];
 			c1++;
