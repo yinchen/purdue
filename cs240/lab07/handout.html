@@ -1,0 +1,103 @@
+<html> 
+	<head> 
+		<title> CS240 Spring 2011: LAB07 </title> </head> <body> <h1> CS240 Spring 2011:LAB07 </h1>
+		<hr>
+		<h2> File I/O</h2>
+  <h2> Goal </h2>
+	  <p>
+	  To parse an input file containing text and output the counts for the occurences of words in the file by assigning a unique id to each unique word. Also encode the input file using the unique ids for the words.
+	  </p>
+	  <p>
+	  The files for the lab can be downloaded from <href=''>here</href>. The files can be extracted by running : 
+	  	<div align='center'><code>tar -xvf lab07.tar</code></div>
+			  The reference program <b>translate.org</b> can be executed to see how your program is expected to behace for various test cases. You need to add your code to the file <b>translate.c</b>, and compile it by running "make" (The Makefile is already provided to you).
+
+	  </p>
+	  <h2> Input</h2>
+	  <p> 
+	  The input file contains words separated by spaces <b>and/or</b> newlines. The words will <b> only</b> consist of alphanumeric characters. You can assume that there are not more than <b>1000 unique words </b>in the input file. <b>The input file name is passed as the first command line argument</b>. Please execute the reference implementation (translate.org) to see what you need to do when the file name is not given or the file name given cannot be opened.
+			  </p>
+			  <h2>Assigning Ids to words</h2>
+			  <p> For each word in the input file, a unique id is assigned in a monotonically increasing order, with the first word in the input file getting a id of "1". <br />
+			  Note : Repeating occurences of the same word do not get a new id, a new id is assigned to a word only on its first occurence (Look at the example below to better  understand the assignment of ids)
+			  </p>
+			  <h2>Output</h2>
+			  <p>
+			  The program needs to output two things : 
+			  <ol>
+				  <li> Create a file "output.txt". For each word in the input file write to "output.txt" the id for that word enclosed in angular brackets ("&ltid&gt"). Once completely written "output.txt" will contain just the uids for the words in the input file enclosed in angular brackets.</li>
+				  <li>Print to the screen the words seen in the input file in the following format : 
+				  <br> <h3 align='center'>&ltid&gt word word_count</h3>
+				  where word_count is the number of times word has occurred in the input file. Print one word per line. 
+				  </li>
+			  </ol>
+			  Please look at the example below to understand better.
+			  </p>
+			  <h2>Example</h2>
+			  <p>Consider an input file "input.txt" which contains the following text. (Note : The input file contains only alphanumeric characters and the words are separated by spaces or newlines)<br />
+			  <div align=center><code >
+				  CS240 is interesting CS240 is the C programming<br /> 
+				  course C programming is interesting<br />
+		  </code></div>
+			  The program can be run with this file as the input as follows :<br />
+			  <code>$ ./translate input.txt<br />
+				  <1> CS240 2<br />
+				  <2> is 3<br />
+				  <3> interesting 2<br />
+				  <4> the 1<br />
+				  <5> C 2<br />
+				  <6> programming 2<br />
+				  <7> course 1</code><br />
+			  Here CS240 is the first word in the input file and hence gets an id of "1" and the consequent words get increasing ids. Observe that the second occurence of CS240 just increments the number of the occurences of the word and does affect the id already assigned to CS240.<br /><br /> 
+			  The program would also create a file "output.txt" which will contain the following :
+			  <div align=center><code>
+				<1><2><3><1><2><4><5><6><7><5><6><2><3>
+		</code></div>
+		<b> Please make sure that the file "output.txt" does not contain any stray characters apart from the ids of the words enclosed in angular brackets</b>
+
+
+
+<p>
+
+<h2>Submit</h2>
+<p>
+Before you submit make sure to test your implementation on <em>LORE</em> using the <code>Makefile</code> provided.
+<br>
+Your code must compile using the provided <code>Makefile</code> and run on <em>LORE</em> for you to earn points for this lab.
+
+
+<p>
+Type <tt>cd ..</tt> in <tt>lab07</tt> and change working directory to the parent directory of <tt>lab07</tt>.
+
+<p>
+In the parent directory of <tt>lab07</tt>, type <tt>turnin -v -c cs240=XXX -p lab07 lab07</tt> to turnin your work.
+Replace XXX with your section number.
+
+
+
+<p>
+<table border=1 cellpadding=5>
+<tr><td>9:30 am  - 11:20 am F</td><td>F930</td></tr>
+<tr><td>11:30 am - 1:20 pm  F</td><td>F1130</td></tr>
+<tr><td>1:30 pm  - 3:20 pm  F</td><td>F130</td></tr>
+<tr><td>3:30 pm  - 5:20 pm  F</td><td>F330</td></tr>
+<tr><td>9:30 am  - 11:20 am R</td><td>R930</td></tr>
+
+<tr><td>11:30 am - 1:20 pm  R</td><td>R1130</td></tr>
+<tr><td>3:30 pm  - 5:20 pm  R</td><td>R330</td></tr>
+<tr><td>11:30 am - 1:20 pm  T</td><td>T1130</td></tr>
+</table>
+
+<p>
+Now, you may use the command, <tt>turnin -c cs240=XXX -p lab07 -v</tt> to verify your submission.
+
+
+
+<p>
+
+This lab is due on <b>Monday, April 11 by 11:59 pm
+
+</body>
+</html>
+
+
