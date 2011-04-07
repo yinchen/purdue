@@ -1,13 +1,14 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
-#define MAX_WORDS 5000
+#define MAX_WORDS 1000
 #define MAX_CHARS 50
 
-char words[MAX_WORDS][MAX_CHARS];
+char words[MAX_WORDS * 5][MAX_CHARS];
 
 char uniqueWords[MAX_WORDS][MAX_CHARS];
-int wordCount[MAX_WORDS];
+int uniqueWordsCount[MAX_WORDS] = { 0 };
 
 int isDelimeter(char c)
 {
@@ -17,6 +18,37 @@ int isDelimeter(char c)
 		return 0;
 	else
 		return 1;
+}
+
+int indexInArray(int length, char* search)
+{
+    int i = 0;
+    for (i = 0; i < length; i++)
+    {
+        int match = 0;
+        
+        int j;
+        j = 0;
+        while (uniqueWords[i][j] != 0)
+        {
+            if (uniqueWords[i][j] == search[j])
+            {
+                match = 1;
+            }
+            else
+            {
+                match = 0;
+                break;
+            }
+            
+            j++;
+        }
+        
+        if (match == 1)
+            return i;
+    }
+    
+    return -1;
 }
 
 int main(int argc, char* argv[])
@@ -54,7 +86,7 @@ int main(int argc, char* argv[])
 				word[charCount] = 0;
 				charCount++;
 			
-				words[wordCount] = word;
+				strcpy(words[wordCount], word);
 				wordCount++;
 			}
 			
@@ -71,14 +103,50 @@ int main(int argc, char* argv[])
 	}
 	
 	fclose(fp);
-	
-	printf("%d\n", wordCount);
-	
-	int i;
-	for (i = 0; i < wordCount; i++)
-	{
-		printf("%s\n", words[i]);
-	}
-	
-	exit(0);
+
+    int uniqueWordsCountCount;
+    uniqueWordsCountCount = 0;
+    
+    int i;
+    for (i = 0; i < wordCount; i++)
+    {
+        int x;
+        x = indexInArray(wordCount, words[i]);
+        
+        if (x >= 0)
+        {
+            uniqueWordsCount[x]++;
+        }
+        else
+        {
+            strcpy(uniqueWords[uniqueWordsCountCount], words[i]);
+            uniqueWordsCount[uniqueWordsCountCount]++;
+            
+            uniqueWordsCountCount++;
+        }
+    }
+    
+    for (i = 0; i < uniqueWordsCountCount; i++)
+    {
+        printf("<%d> %s %d\n", i + 1, uniqueWords[i], uniqueWordsCount[i]);
+    }
+    
+    fp = fopen("output.txt", "w");
+    
+    char buffer[MAX_WORDS * MAX_CHARS];
+    
+    for (i = 0; i < uniqueWordsCountCount; i++)
+    {
+        char code[MAX_CHARS];
+        
+        strcat(code, "<");
+        strcat(code, i + 1);
+        strcat(code, ">");
+        
+        strcat(buffer, code);
+    }
+    
+    fwrite(buffer, sizeof(char), strlen(buffer), fp);
+    
+    fclose(fp);
 }
