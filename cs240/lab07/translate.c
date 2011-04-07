@@ -135,18 +135,10 @@ int main(int argc, char* argv[])
     
     char buffer[MAX_WORDS * MAX_CHARS];
     
-    for (i = 0; i < uniqueWordsCountCount; i++)
+    for (i = 0; i < wordCount; i++)
     {
-        char code[MAX_CHARS];
-        
-        strcat(code, "<");
-        strcat(code, i + 1);
-        strcat(code, ">");
-        
-        strcat(buffer, code);
+        fprintf(fp, "<%d>", indexInArray(wordCount, words[i]) + 1);
     }
-    
-    fwrite(buffer, sizeof(char), strlen(buffer), fp);
-    
+        
     fclose(fp);
 }
