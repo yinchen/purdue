@@ -64,6 +64,7 @@ int main(int argc, char* argv[])
 	if (fp == NULL)
 	{
 		printf("Error opening file: No such file or directory\n");
+                exit(1);
 	}
 	
 	int wordCount;
