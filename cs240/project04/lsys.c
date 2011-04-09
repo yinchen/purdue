@@ -4,26 +4,34 @@
 
 #define MAX_RULES 50
 #define MAX_CHARS 300
+#define MAX_STACK 50
 
+// global image file variables
 bmpfile_t *bmp;
 rgb_pixel_t pixelW = {255, 255, 255, 0};
 rgb_pixel_t pixelB = {0, 0, 0, 0};
 
+// global drawing variables
 int currX = 0;
 int currY = 0;
 double currH = 0.0;
-int length = 1;
+int length = 25;
 
+// global fractal variables
 int numRules;
 char codes[MAX_RULES];
 char rules[MAX_RULES][MAX_CHARS];
 
+// global stack variables
 typedef struct 
 {
     int x;
     int y;
     double heading;
 } state;
+
+int stackIndex = -1;
+state* stack[MAX_STACK];
 
 //
 // FUNCTION DECLARATIONS >>>
@@ -35,8 +43,10 @@ void move();
 void drawAxiom(char* axiom, double angle);
 char* getRule(char c);
 state* initState(int x, int y, double heading);
+void loadState(state *s);
 void push(state *s);
-state pop();
+state* pop();
+void drawFractal(char* axiom, double angle, int depth);
 //
 // <<< FUNCTION DECLARATIONS
 //
@@ -68,13 +78,13 @@ void drawLine()
     {
         int i;
         for (i = y1; i <= y2; i++)
-            bmp_set_pixel(bmp, x1, i, pixelW);
+            bmp_set_pixel(bmp, x1, i, pixelB);
     }
     else if (y1 == y2)
     {
         int i;
         for (i = x1; i <= x2; i++)
-            bmp_set_pixel(bmp, i, y1, pixelW);
+            bmp_set_pixel(bmp, i, y1, pixelB);
     }
     else if (abs(x2 - x1) > abs(y2 - y1))
     {
@@ -107,6 +117,9 @@ void drawAxiom(char* axiom, double angle)
     int size;
     size = strlen(axiom);
     
+    // DEBUG
+    printf("drawAxiom(%s, %f) called\n", axiom, angle);
+    
     int i;
     for (i = 0; i < size; i++)
     {
@@ -121,9 +134,18 @@ void drawAxiom(char* axiom, double angle)
         else if (axiom[i] == '[')
             push(initState(currX, currY, currH)); // push
         else if (axiom[i] == ']')
-            pop(); // pop
-        else
+            loadState(pop()); // pop
+        else if ('A' <= axiom[i] && axiom[i] <= 'Z' ||
+                 'a' <= axiom[i] && axiom[i] <= 'z')
             drawAxiom(getRule(axiom[i]), angle);
+        else if (axiom[i] == 0)
+            return;
+        else
+        {
+            //printf("ERROR: Encountered invalid axiom command %c\n", axiom[i]);
+            //exit(1);
+            return;
+        }
     }
 }
 //
@@ -146,6 +168,15 @@ char* getRule(char c)
     
     return NULL;
 }
+
+void drawFractal(char* axiom, double angle, int depth)
+{
+    // int i;
+    // for (i = 0; i < depth; i++)
+    // {
+        drawAxiom(axiom, angle);
+    // }
+}
 //
 // <<< FRACTAL OPERATIONS
 //
@@ -162,14 +193,33 @@ state* initState(int x, int y, double heading)
     return s;
 }
 
-void push(state *s)
+void loadState(state *s)
 {
-    // do stuff
+    // DEBUG
+    printf("loadState() called\n");
+    
+    currX = (int)&s->x;
+    currY = (int)&s->y;
+    // currH = (double)s->heading;
 }
 
-state pop()
+void push(state *s)
 {
-    // do stuff
+    // DEBUG
+    printf("push() called\n");
+    
+    stack[stackIndex + 1] = s;
+}
+
+state* pop()
+{
+    state *tmp;
+    tmp = stack[stackIndex];
+    
+    stack[stackIndex] == NULL;
+    stackIndex--;
+    
+    return tmp;
 }
 //
 // <<< STACK OPERATIONS
@@ -183,6 +233,8 @@ int main()
     int depth;
     double angle, heading;
     char axiom[MAX_CHARS];
+    
+    bmp = bmp_create(300 * numFractals, 300, 32);
     
     int i;
     for (i = 0; i < numFractals; i++)
@@ -200,13 +252,13 @@ int main()
         int j;
         for (j = 0; j < numRules; j++)
         {
-            scanf("%c -> %s\n", codes[j], rules[j]);
+            char tmp[2];
+            scanf("%s -> %s\n", tmp, rules[j]);
+            codes[j] = tmp[0];
         }
+        
+        drawFractal(axiom, angle, depth);
     }
-    
-    bmp = bmp_create(300 * numFractals, 300, 32);
-
-    
     
     bmp_save(bmp, "output.bmp");
 	bmp_destroy(bmp);
