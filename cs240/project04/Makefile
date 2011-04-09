@@ -1,7 +1,5 @@
+lsys:
+	gcc lsys.c -g -O0 libbmp.a -lm -o lsys
 
-CC=gcc
-CFLAGS=-g -O0
-LDFLAGS=-lm
-
-demo: demo.c libbmp.a
-
+clean:
+	rm -f lsys *.bmp
