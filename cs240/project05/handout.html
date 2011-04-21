@@ -1,0 +1,140 @@
+<html> 
+	<head> 
+		<title> CS240 Spring 2011: PROJECT 5 </title> </head> <body> <h1> CS240 Spring 2011:PROJECT 5</h1>
+		<hr>
+		<h2> BITMAP MANIPULATION</h>
+  <h2> Goal </h2>
+  <p>
+  To create, and manipulate bitmap files with 24 bits per pixel.
+	  </p>
+	  <p>
+	  The files for the lab can be downloaded from <href='project05.tar'>here</href>. The files can be extracted by running : 
+	  	<div align='center'><code>tar -xvf project05.tar</code></div>
+		The archive contains main.c, utils.c, bmp_header.c. You need to add your code to main.c , utils.c contains some functions which will be useful to you. bmp_header.h contains the structure definitions for bitmap headers. You have also been provided a Makefile which you can use for compiling the code. Your code should be compiled to create a program <b>bitmap_tool</b>. The reference program bitmap_tool.org may be used whereever necessary to observe how your program is expected to behave.
+		</p>
+		<h2>Bitmap Images</h2>
+		Bitmap is a format for storing image data. Bitmap files can be of various types, with variations resulting from the number of bytes used for pixel, the compression etc. For this project, we will consider simple bitmap files which use 24 bits (or 3 bytes) per pixel and have no compression. Hence each pixel consists of three bytes :
+		<div align='center'><code>blue, green, red</code></div>
+		each varying from 0 to 255. Bitmap images which use 24 bits per pixel and have no compression are stored in .bmp files which have the following format:
+		<ul>
+			<li>header -- a header which is 14 bytes long</li>
+			<li>information header -- a header which is 40 bytes long</li>
+			<li>image data -- which contains the pixel data and occupies the remaining file</li>
+		</ul>
+		<h2>Header</h2>
+		<p>
+		The header looks like the following when represented as a C structure : 
+		<div align='left'><code>
+
+				struct header {<br>
+			         	unsigned short int type;<br>
+				        unsigned int size;<br>
+					unsigned short int reserved1, reserved2;<br>
+					unsigned int offset;<br>
+				};<br>
+</code></div>
+The type is a magic number which holds the value equivalent to 'BM' and is hence equal to 'M'*256+'B', which is 19778. The size field holds the size of the bitmap file in bytes. reserved1 and reserved2 fields are not used and should be always set to 0. The offset field specifies the offset from the beginning of the bitmap file where the image data (pixels) start. This value is always 54 (40+14) for bitmap images which use 24 bits per pixel.
+<br><b>Note:</b> On some machines this structure may get padded with two bytes to make it aligned, this should be avoided by either making the structure packed or by reading/writing the fields of the structure one by one from/to the bitmap file.
+</p>
+<h2>Information Header</h2>
+<p>
+The information header looks like the following when represented as a C structure :
+<div align = 'left'><code>
+
+		struct information{<br>
+		unsigned int size;<br>
+		int width,height;<br>
+		unsigned short int planes;<br>
+		unsigned short int bits;<br>
+		unsigned int compression;<br>
+		unsigned int imagesize;<br>
+		int xresolution, yresolution;<br>
+		unsigned int ncolors;<br>
+		unsigned int importantcolors;<br>
+		};<br>
+</code>
+The size field holds the size of the information header and should be 40. The width and height fields hold the width and height of the bitmap image which this header describes. The field planes should always be set to 1. The field bits stores the number of bits used per pixel, which is 24. Since no compression is used, the compression field is 0. The imagesize field is the same as the size field in header. The fields xresolution and yresolution store the number of pixels per meter along the x and y axis repectively.</p>
+<p>
+Since in bitmap images using 24 bits per pixel the colors are represented by the b, g, r components of the pixel itself, no extra colors are required, hence the field ncolors is 0 for all 24 bpp(bits per pixel) images. The field importantcolors should also be 0 signifying that all colors are important.
+</p>
+<h2>
+	Image Data (Pixels)
+</h2>
+The image data is stored in the file as pixels, each 3 bytes long. The first byte represents the value of the blue component, the second byte the green component and the third byte the red component. So the color <i>red</i> for example would be denoted by the value 0,0,255. The pixels in a bitmap are stored starting from the bottom left corner moving bottom to top and left to right (in comparison to the normal convention where you start from the top left corner and move left to right and top to bottom).
+
+<h2>bitmap_tool</h2>
+Creating bitmaps is concerned with declaring the above headers, filling them in with appropriate values (which in our case are for 24 bpp images) and writing them to a .bmp file. Manipulating bitmap images consists of reading the headers and image data from a .bmp file, making changes to the headers and or the image data and writing them back to a .bmp file.
+For this project you will build a tool called bitmap_tool which performs various actions based on the commands you give it.
+
+The bitmap_tool expects the <i> command</i> as the first argument and the arguments to perform the operation specified by the command as the remaining arguments. The commands the corresponding arguments required are described below : 
+<ul>
+	<li> "-create"<br>
+	Creates a new bitmap image, expects the height, width and the ouput file name as the arguments following the command. Example : <br>
+	<code>bitmap_tool -create 800 1000 new_image.bmp</code><br>
+			will create a new bitmap image new_image.bmp of dimensions 1000x800.
+			</li>
+			<li>"-invertcolor"<br>
+			Inverts the color of a given bitmap image, expects the input image file name and the output file name as arguments following the command. Inverting the color is equivalent to subtracting each component of each pixel from 255. Example:<br>
+			<code>bitmap_tool -invertcolor my_image.bmp output.bmp</code><br>	       will create a new bitmap image output.bmp which contains the same image as my_image.bmp but with the colors inverted.
+			</li>
+			<li>"-stackvertically"<br>
+		        Combines two bitmap images height wise to generate a new bitmap image. Expects the two input image file names and the ouput file name as arguments following the command. The first image specified should be on top and the second image of the bottom, you should also make sure that the images are of the same dimensions. Example:<br>
+			<code> bitmap_tool -stackvertically image1.bmp image2.bmp output.bmp</code><br>
+			If image1.bmp and image2.bmp are both images of height A and width B, then output.bmp is of height 2*A and width B, where image1.bmp occupies the top half and image2.bmp the bottom half
+			</li>
+			<li>"-stackhorizontally"<br>
+			same as -stackvertically , the images are now added side by side to create a new image which is twice in width. The first image specified occupies the left half of the output image and the second image the right half. Again you need to check if the images are of the same dimensions.
+			</li>
+			<li>"-drawborder"<br>
+			Draw a border of given thickness and color for the given bitmap image. Expects the input file name, the thickness of the border in pixels, the blue component of the border color, the green component of the border color, the red component of the border color, ouput file name as arguments following the command. Example : <br>
+			<code>bitmap_tool -drawborder image.bmp 4 255 0 0 output.bmp</code><br>
+			will draw a border of thickness 4 pixels of color blue for the image image.bmp and save the resulting image in output.bmp<br>
+			</li>
+		</ul>
+		<br>
+		You need to check for faulty arguments that may be given to the program. But you can assume that all the bitmap images provided as input are 24 bpp bitmap images and do not have any errors in their headers.<br>
+		<b>Note :</b> The bitmap format requires that data be stored in the little endian pattern, but LORE (which runs on a Sparc architecture) uses big endian representation of data, hence whenever you read from a bitmap file, you first need to convert the values to a big endian representation before manipulating them. This can be done by passing the pointer to the variable to convert to the functions lendianReadInt() and lendianReadShort() for converting integer and short integer variables respectively (you will not require anything beyond these for the project). The functions are provided in utils.c and return the corresponding big endian form of the variable. Also whenever you need to write a variable or value that you changed to a bitmap file, you need to convert it to the little endian form, you can do this by using the counterpart functions lendianWriteInt() and lendianWriteShort(). When you are just reading the pixels/headers from one bitmap file and writing them to another bitmap file without changing them, then you can skip the endianness coversion. Pixel components (b, g, r) need not be converted since they are only a byte long.<br>
+		You have been provided two sample images eg1.bmp and eg2.bmp to test your programs on. 
+
+<h2>Submit</h2>
+<p>
+Before you submit make sure to test your implementation on <em>LORE</em> using the <code>Makefile</code> provided.
+<br>
+Your code must compile using the provided <code>Makefile</code> and run on <em>LORE</em> for you to earn points for this lab.
+
+
+<p>
+Type <tt>cd ..</tt> in <tt>project05</tt> and change working directory to the parent directory of <tt>project05</tt>.
+
+<p>
+In the parent directory of <tt>project05</tt>, type <tt>turnin -v -c cs240=XXX -p prj5 project05/</tt> to turnin your work.
+Replace XXX with your section number.
+
+
+
+<p>
+<table border=1 cellpadding=5>
+<tr><td>9:30 am  - 11:20 am F</td><td>F930</td></tr>
+<tr><td>11:30 am - 1:20 pm  F</td><td>F1130</td></tr>
+<tr><td>1:30 pm  - 3:20 pm  F</td><td>F130</td></tr>
+<tr><td>3:30 pm  - 5:20 pm  F</td><td>F330</td></tr>
+<tr><td>9:30 am  - 11:20 am R</td><td>R930</td></tr>
+
+<tr><td>11:30 am - 1:20 pm  R</td><td>R1130</td></tr>
+<tr><td>3:30 pm  - 5:20 pm  R</td><td>R330</td></tr>
+<tr><td>11:30 am - 1:20 pm  T</td><td>T1130</td></tr>
+</table>
+
+<p>
+Now, you may use the command, <tt>turnin -c cs240=XXX -p prj5 -v</tt> to verify your submission.
+
+
+
+<p>
+
+This lab is due on <b>Monday, April 11 by 11:59 pm
+
+</body>
+</html>
+
+
