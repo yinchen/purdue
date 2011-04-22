@@ -15,6 +15,7 @@ void createBitmap(int width, int height, char *fileName);
 void invertBitmap(char *srcFileName, char *dstFileName);
 void stackBitmapVertically(char *srcFileName1, char *srcFileName2, char *dstFileName);
 void stackBitmapHorizontally(char *srcFileName1, char *srcFileName2, char *dstFileName);
+void drawBitmapBorder(char *srcFileName, int width, int r, int g, int b, char *dstFileName);
 pixel** readFile(struct header *h, struct information *i, pixel **pixelData, char *fileName);
 void writeFile(struct header *h, struct information *i, pixel **pixelData, char *fileName);
 int calculateBitmapSize(int width, int height);
@@ -44,7 +45,7 @@ int main(int argc, char **argv)
     }
     else if (strcmp(argv[1], "-drawborder") == 0)
     {
-	    // draw border
+	    drawBitmapBorder(argv[2], atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), atoi(argv[6]), argv[7]);
     }
     else
     {
@@ -391,6 +392,57 @@ void stackBitmapHorizontally(char *srcFileName1, char *srcFileName2, char *dstFi
     
     #ifdef DEBUG
         printf("DEBUG: Pixel data stacked horizontally.\n");
+    #endif
+    
+    // write out new file
+    writeFile(h, i, pixelData, dstFileName);
+}
+
+void drawBitmapBorder(char *srcFileName, int width, int r, int g, int b, char *dstFileName)
+{
+    #ifdef DEBUG
+        printf("DEBUG: drawBitmapBorder()\n");
+    #endif
+    
+    // create header
+    struct header *h;
+    h = (struct header *)malloc(sizeof(struct header));
+    
+    // create information header
+    struct information *i;
+    i = (struct information *)malloc(sizeof(struct information));
+    
+    // create pixel data
+    pixel **pixelData;
+    
+    // read in file
+    pixelData = readFile(h, i, pixelData, srcFileName);
+    
+    #ifdef DEBUG
+        printf("DEBUG: Source file read.\n");
+    #endif
+    
+    // invert each pixel
+    int y;
+    for (y = 0; y < i->height; y++)
+    {
+        int x;
+        for (x = 0; x < i->width; x++)
+        {
+            if (y < width ||
+                (i->width - width) <= x ||
+                (i->height - width) <= y ||
+                (x < width))
+            {
+                pixelData[y][x].r = r;
+                pixelData[y][x].g = g;
+                pixelData[y][x].b = b;
+            }
+        }
+    }
+    
+    #ifdef DEBUG
+        printf("DEBUG: Image border drawn.\n");
     #endif
     
     // write out new file
