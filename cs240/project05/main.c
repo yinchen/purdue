@@ -14,6 +14,7 @@ typedef struct {
 void createBitmap(int width, int height, char *fileName);
 void invertBitmap(char *srcFileName, char *dstFileName);
 void stackBitmapVertically(char *srcFileName1, char *srcFileName2, char *dstFileName);
+void stackBitmapHorizontally(char *srcFileName1, char *srcFileName2, char *dstFileName);
 pixel** readFile(struct header *h, struct information *i, pixel **pixelData, char *fileName);
 void writeFile(struct header *h, struct information *i, pixel **pixelData, char *fileName);
 int calculateBitmapSize(int width, int height);
@@ -39,7 +40,7 @@ int main(int argc, char **argv)
     }
     else if (strcmp(argv[1], "-stackhorizontally") == 0)
     {
-	    // stack bitmaps horizontally
+	    stackBitmapHorizontally(argv[2], argv[3], argv[4]);
     }
     else if (strcmp(argv[1], "-drawborder") == 0)
     {
@@ -281,6 +282,115 @@ void stackBitmapVertically(char *srcFileName1, char *srcFileName2, char *dstFile
     
     #ifdef DEBUG
         printf("DEBUG: Pixel data stacked vertically.\n");
+    #endif
+    
+    // write out new file
+    writeFile(h, i, pixelData, dstFileName);
+}
+
+void stackBitmapHorizontally(char *srcFileName1, char *srcFileName2, char *dstFileName)
+{
+    #ifdef DEBUG
+        printf("DEBUG: stackBitmapHorizontally()\n");
+    #endif
+    
+    // create headers
+    struct header *h1;
+    h1 = (struct header *)malloc(sizeof(struct header));
+    
+    struct header *h2;
+    h2 = (struct header *)malloc(sizeof(struct header));
+    
+    // create information headers
+    struct information *i1;
+    i1 = (struct information *)malloc(sizeof(struct information));
+    
+    struct information *i2;
+    i2 = (struct information *)malloc(sizeof(struct information));
+    
+    // create pixel datas
+    pixel **pixelData1;
+    pixel **pixelData2;
+    
+    // read in files
+    pixelData1 = readFile(h1, i1, pixelData1, srcFileName1);
+    
+    #ifdef DEBUG
+        printf("DEBUG: Source file 1 read.\n");
+    #endif
+    
+    pixelData2 = readFile(h2, i2, pixelData2, srcFileName2);
+    
+    #ifdef DEBUG
+        printf("DEBUG: Source file 2 read.\n");
+    #endif
+    
+    // create header
+    struct header *h;
+    h = (struct header *)malloc(sizeof(struct header));
+    
+    h->type = 19778; // 'BM'
+    h->size = calculateBitmapSize((i1->width + i2->width), i1->height);
+    h->reserved1 = 0;
+    h->reserved2 = 0;
+    h->offset = 54;
+    
+    #ifdef DEBUG
+        printf("DEBUG: Header created.\n");
+    #endif
+    
+    // create information header
+    struct information *i;
+    i = (struct information *)malloc(sizeof(struct information));
+    
+    i->size = 40;
+    i->width = (i1->width + i2->width);
+    i->height = i1->height;
+    i->planes = 1;
+    i->bits = 24;
+    i->compression = 0;
+    i->imagesize = h->size;
+    i->xresolution = 100;
+    i->yresolution = 100;
+    i->ncolors = 0;
+    i->importantcolors = 0;
+    
+    #ifdef DEBUG
+        printf("DEBUG: Information header created.\n");
+    #endif
+    
+    // stack images vertically
+    pixel **pixelData;
+    pixelData = (pixel**)malloc(sizeof(pixel*) * i1->height);
+    
+    int z;
+    for (z = 0; z < i1->height; z++)
+        pixelData[z] = (pixel*)malloc(sizeof(pixel) * (i1->width + i2->width));
+    
+    int y;
+    for (y = 0; y < i1->height; y++)
+    {
+        int x;
+        for (x = 0; x < i1->width; x++)
+        {
+            pixelData[y][x].r = pixelData1[y][x - 0].r;
+            pixelData[y][x].g = pixelData1[y][x - 0].g;
+            pixelData[y][x].b = pixelData1[y][x - 0].b;
+        }
+    }
+    for (y = 0; y < i1->height; y++)
+    {
+        int x;
+        for (x = i1->width; x < (i1->width + i2->width); x++)
+        {
+            pixelData[y][x].r = pixelData2[y][x - i1->width].r;
+            pixelData[y][x].g = pixelData2[y][x - i1->width].g;
+            pixelData[y][x].b = pixelData2[y][x - i1->width].b;
+        }
+    }
+    
+    #ifdef DEBUG
+        printf("DEBUG: Pixel data stacked horizontally.\n");
     #endif
     
     // write out new file
