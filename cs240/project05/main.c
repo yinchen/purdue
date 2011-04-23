@@ -19,6 +19,7 @@ void stackBitmapHorizontally(char *srcFileName1, char *srcFileName2, char *dstFi
 void drawBitmapBorder(char *srcFileName, int width, int r, int g, int b, char *dstFileName);
 pixel** readFile(struct header *h, struct information *i, pixel **pixelData, char *fileName);
 void writeFile(struct header *h, struct information *i, pixel **pixelData, char *fileName);
+void checkFile(char *fileName, struct header *h, struct information *i);
 int calculateBitmapSize(int width, int height);
 char* itoa(int value);
 
@@ -542,6 +543,8 @@ pixel** readFile(struct header *h, struct information *i, pixel **pixelData, cha
     
     fclose(fp);
     
+    checkFile(fileName, h, i);
+    
     return pixelData;
 }
 
@@ -550,6 +553,8 @@ void writeFile(struct header *h, struct information *i, pixel **pixelData, char 
     #ifdef DEBUG
         printf("DEBUG: writeFile()\n");
     #endif
+    
+    checkFile(fileName, h, i);
     
     FILE *fp;
     if ((fp = fopen(fileName, "wb")) == NULL)
@@ -585,6 +590,102 @@ void writeFile(struct header *h, struct information *i, pixel **pixelData, char 
     #endif
     
     fclose(fp);
+}
+
+void checkFile(char *fileName, struct header *h, struct information *i)
+{
+    if (h->type != 19778)
+    {
+        printf("Invalid file type in header for %s\n", fileName);
+        exit(1);
+    }
+    
+    if(h->size == 0)
+    {
+        printf("Invalid size in header for %s\n", fileName);
+        exit(1);
+    }
+    
+    if(h->reserved1 != 0 ||
+       h->reserved2 != 0)
+    {
+        printf("Invalid reserved field in header for %s\n", fileName);
+        exit(1);
+    }
+    
+    if(h->offset != 54)
+    {
+        printf("Invalid offset in header for %s\n", fileName);
+        exit(1);
+    }
+    
+    if(i->size != 40)
+    {
+        printf("Invalid size in header for %s\n", fileName);
+        exit(1);
+    }
+    
+    if(i->width == 0)
+    {
+        printf("Invalid width in header for %s\n", fileName);
+        exit(1);
+    }
+    
+    if(i->height == 0)
+    {
+        printf("Invalid height in header for %s\n", fileName);
+        exit(1);
+    }
+    
+    if(i->planes != 1)
+    {
+        printf("Invalid planes in header for %s\n", fileName);
+        exit(1);
+    }
+    
+    if(i->bits != 24)
+    {
+        printf("Invalid bits in header for %s\n", fileName);
+        exit(1);
+    }
+    
+    if(i->compression != 0)
+    {
+        printf("Invalid compression in header for %s\n", fileName);
+        exit(1);
+    }
+    
+    if(i->ncolors != 0)
+    {
+        printf("Invalid colors in header for %s\n", fileName);
+        exit(1);
+    }
+    
+    if(i->importantcolors != 0)
+    {
+        printf("Invalid importantcolors in header for %s\n", fileName);
+        exit(1);
+    }
+    
+    
+}
+
+int isNumeric(char* value)
+{
+    int i;
+    for (i = 0; i < strlen(value) - 1; i++)
+    {
+        if (value[i] >= '0' && value[i] <= '9')
+        {
+            // do nothing
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    
+    return 1;
 }
 
 int calculateBitmapSize(int width, int height)
