@@ -3,8 +3,8 @@
 #include<stdlib.h>
 #include "bmp_header.h"
 
-#define DEBUG 1
-#define LORE 1
+// #define DEBUG 1
+// #define LORE 1
 
 typedef struct {
     unsigned char r;
@@ -22,31 +22,65 @@ void writeFile(struct header *h, struct information *i, pixel **pixelData, char 
 int calculateBitmapSize(int width, int height);
 char* itoa(int value);
 
+char command[32];
+
 int main(int argc, char **argv)
 {
     #ifdef DEBUG
         printf("DEBUG: main()\n");
     #endif
     
+    strcpy(command, argv[1]);
+    
     if (strcmp(argv[1], "-create") == 0)
     {
+        if (argc != 5)
+        {
+            printf("Usage : bitmap_tool -create [height] [width] [output file name]\n");
+            exit(1);
+        }
+        
         createBitmap(atoi(argv[2]), atoi(argv[3]), argv[4]);
     }
     else if (strcmp(argv[1], "-invertcolor") == 0)
     {
+        if (argc != 4)
+        {
+            printf("Usage : bitmap_tool -invertcolor [input file] [output file name]\n");
+            exit(1);
+        }
+        
         invertBitmap(argv[2], argv[3]);
     }
     else if (strcmp(argv[1], "-stackvertically") == 0)
     {
-	    stackBitmapVertically(argv[2], argv[3], argv[4]);
+	    if (argc != 5)
+        {
+            printf("Usage : bitmap_tool -stackvertically [input file 1] [input file 2] [output file name]\n");
+            exit(1);
+        }
+        
+        stackBitmapVertically(argv[2], argv[3], argv[4]);
     }
     else if (strcmp(argv[1], "-stackhorizontally") == 0)
     {
-	    stackBitmapHorizontally(argv[2], argv[3], argv[4]);
+	    if (argc != 5)
+        {
+            printf("Usage : bitmap_tool -stackhorizontally [input file 1] [input file 2] [output file name]\n");
+            exit(1);
+        }
+        
+        stackBitmapHorizontally(argv[2], argv[3], argv[4]);
     }
     else if (strcmp(argv[1], "-drawborder") == 0)
     {
-	    drawBitmapBorder(argv[2], atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), atoi(argv[6]), argv[7]);
+	    if (argc != 8)
+        {
+            printf("Usage : bitmap_tool -drawborder [input file] [thickness] [b] [g] [r] [output file]\n");
+            exit(1);
+        }
+        
+        drawBitmapBorder(argv[2], atoi(argv[3]), atoi(argv[6]), atoi(argv[5]), atoi(argv[4]), argv[7]);
     }
     else
     {
@@ -218,6 +252,13 @@ void stackBitmapVertically(char *srcFileName1, char *srcFileName2, char *dstFile
         printf("DEBUG: Source file 2 read.\n");
     #endif
     
+    if (i1->width != i2->width ||
+        i1->height != i2->height)
+    {
+        printf("Files %s %s do not have same dimensions, cannot continue\n", srcFileName1, srcFileName2);
+        exit(1);
+    }
+    
     // create header
     struct header *h;
     h = (struct header *)malloc(sizeof(struct header));
@@ -326,6 +367,13 @@ void stackBitmapHorizontally(char *srcFileName1, char *srcFileName2, char *dstFi
     #ifdef DEBUG
         printf("DEBUG: Source file 2 read.\n");
     #endif
+    
+    if (i1->width != i2->width ||
+        i1->height != i2->height)
+    {
+        printf("Files %s %s do not have same dimensions, cannot continue\n", srcFileName1, srcFileName2);
+        exit(1);
+    }
     
     // create header
     struct header *h;
@@ -457,7 +505,11 @@ pixel** readFile(struct header *h, struct information *i, pixel **pixelData, cha
     #endif
     
     FILE *fp;
-    fp = fopen(fileName, "rb");
+    if ((fp = fopen(fileName, "rb")) == NULL)
+    {
+        printf("Unable to open BMP file %s\n", command);
+        exit(1);
+    }
     
     fread(h, sizeof(struct header), 1, fp);
     
@@ -500,7 +552,11 @@ void writeFile(struct header *h, struct information *i, pixel **pixelData, char 
     #endif
     
     FILE *fp;
-    fp = fopen(fileName, "wb");
+    if ((fp = fopen(fileName, "wb")) == NULL)
+    {
+        printf("Unable to open BMP file %s\n", command);
+        exit(1);
+    }
     
     int width, height;
     width = i->width;
