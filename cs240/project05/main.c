@@ -4,6 +4,7 @@
 #include "bmp_header.h"
 
 #define DEBUG 1
+#define LORE 1
 
 typedef struct {
     unsigned char r;
