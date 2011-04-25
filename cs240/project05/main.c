@@ -19,12 +19,17 @@ void stackBitmapHorizontally(char *srcFileName1, char *srcFileName2, char *dstFi
 void drawBitmapBorder(char *srcFileName, int width, int r, int g, int b, char *dstFileName);
 pixel** readFile(struct header *h, struct information *i, pixel **pixelData, char *fileName);
 void writeFile(struct header *h, struct information *i, pixel **pixelData, char *fileName);
+void readLittleEndian(struct header *h, struct information *i);
+void writeLittleEndian(struct header *h, struct information *i);
 void checkFile(char *fileName, struct header *h, struct information *i);
 int isNumeric(char* value);
 int calculateBitmapSize(int width, int height);
 char* itoa(int value);
 
 char command[32];
+
+int tmpInt;
+short int tmpShortInt;
 
 int main(int argc, char **argv)
 {
@@ -527,6 +532,10 @@ pixel** readFile(struct header *h, struct information *i, pixel **pixelData, cha
     
     pixelData = (pixel**)malloc(sizeof(pixel*) * i->height);
     
+    #ifdef LORE
+        readLittleEndian(h, i);
+    #endif
+    
     int z;
     for (z = 0; z < i->height; z++)
         pixelData[z] = (pixel*)malloc(sizeof(pixel) * i->width);
@@ -568,6 +577,10 @@ void writeFile(struct header *h, struct information *i, pixel **pixelData, char 
     width = i->width;
     height = i->height;
     
+    #ifdef LORE
+        writeLittleEndian(h, i);
+    #endif
+    
     fwrite(h, sizeof(struct header), 1, fp);
     
     #ifdef DEBUG
@@ -599,23 +612,39 @@ void readLittleEndian(struct header *h, struct information *i)
         printf("DEBUG: readLittleEndian()\n");
     #endif
     
-    // h->type = lendianReadShort(h->type);
-    // h->size = lendianReadInt(h->size);
-    // h->reserved1 = lendianReadShort(h->reserved1);
-    // h->reserved2 = lendianReadShort(h->reserved2);
-    // h->offset = lendianReadInt(h->offset);
+    tmpShortInt = h->type;
+    h->type = lendianReadShort((char *)&tmpShortInt);
+    tmpInt = h->size;
+    h->size = lendianReadInt((char *)&tmpInt);
+    tmpShortInt = h->reserved1;
+    h->reserved1 = lendianReadShort((char *)&tmpShortInt);
+    tmpShortInt = h->reserved2;
+    h->reserved2 = lendianReadShort((char *)&tmpShortInt);
+    tmpInt = h->offset;
+    h->offset = lendianReadInt((char *)&tmpInt);
     
-    // i->size = lendianReadInt(i->size);
-    // i->width = lendianReadInt(i->width);
-    // i->height = lendianReadInt(i->height);
-    // i->planes = lendianReadShort(i->planes);
-    // i->bits = lendianReadShort(i->bits);
-    // i->compression = lendianReadInt(i->compression);
-    // i->imagesize = lendianReadInt(i->imagesize);
-    // i->xresolution = lendianReadInt(i->xresolution);
-    // i->yresolution = lendianReadInt(i->yresolution);
-    // i->ncolors = lendianReadInt(i->ncolors);
-    // i->importantcolors = lendianReadInt(i->importantcolors);
+    tmpInt = i->size;
+    i->size = lendianReadInt((char *)&tmpInt);
+    tmpInt = i->width;
+    i->width = lendianReadInt((char *)&tmpInt);
+    tmpInt = i->height;
+    i->height = lendianReadInt((char *)&tmpInt);
+    tmpShortInt = i->planes;
+    i->planes = lendianReadShort((char *)&tmpShortInt);
+    tmpShortInt = i->bits;
+    i->bits = lendianReadShort((char *)&tmpShortInt);
+    tmpInt = i->compression;
+    i->compression = lendianReadInt((char *)&tmpInt);
+    tmpInt = i->imagesize;
+    i->imagesize = lendianReadInt((char *)&tmpInt);
+    tmpInt = i->xresolution;
+    i->xresolution = lendianReadInt((char *)&tmpInt);
+    tmpInt = i->yresolution;
+    i->yresolution = lendianReadInt((char *)&tmpInt);
+    tmpInt = i->ncolors;
+    i->ncolors = lendianReadInt((char *)&tmpInt);
+    tmpInt = i->importantcolors;
+    i->importantcolors = lendianReadInt((char *)&tmpInt);
 }
 
 void writeLittleEndian(struct header *h, struct information *i)
@@ -624,23 +653,39 @@ void writeLittleEndian(struct header *h, struct information *i)
         printf("DEBUG: writeLittleEndian()\n");
     #endif
     
-    // h->type = lendianWriteShort(h->type);
-    // h->size = lendianWriteInt(h->size);
-    // h->reserved1 = lendianWriteShort(h->reserved1);
-    // h->reserved2 = lendianWriteShort(h->reserved2);
-    // h->offset = lendianWriteInt(h->offset);
+    tmpShortInt = h->type;
+    h->type = lendianWriteShort((char *)&tmpShortInt);
+    tmpInt = h->size;
+    h->size = lendianWriteInt((char *)&tmpInt);
+    tmpShortInt = h->reserved1;
+    h->reserved1 = lendianWriteShort((char *)&tmpShortInt);
+    tmpShortInt = h->reserved2;
+    h->reserved2 = lendianWriteShort((char *)&tmpShortInt);
+    tmpInt = h->offset;
+    h->offset = lendianWriteInt((char *)&tmpInt);
     
-    // i->size = lendianWriteInt(i->size);
-    // i->width = lendianWriteInt(i->width);
-    // i->height = lendianWriteInt(i->height);
-    // i->planes = lendianWriteShort(i->planes);
-    // i->bits = lendianWriteShort(i->bits);
-    // i->compression = lendianWriteInt(i->compression);
-    // i->imagesize = lendianWriteInt(i->imagesize);
-    // i->xresolution = lendianWriteInt(i->xresolution);
-    // i->yresolution = lendianWriteInt(i->yresolution);
-    // i->ncolors = lendianWriteInt(i->ncolors);
-    // i->importantcolors = lendianWriteInt(i->importantcolors);
+    tmpInt = i->size;
+    i->size = lendianWriteInt((char *)&tmpInt);
+    tmpInt = i->width;
+    i->width = lendianWriteInt((char *)&tmpInt);
+    tmpInt = i->height;
+    i->height = lendianWriteInt((char *)&tmpInt);
+    tmpShortInt = i->planes;
+    i->planes = lendianWriteShort((char *)&tmpShortInt);
+    tmpShortInt = i->bits;
+    i->bits = lendianWriteShort((char *)&tmpShortInt);
+    tmpInt = i->compression;
+    i->compression = lendianWriteInt((char *)&tmpInt);
+    tmpInt = i->imagesize;
+    i->imagesize = lendianWriteInt((char *)&tmpInt);
+    tmpInt = i->xresolution;
+    i->xresolution = lendianWriteInt((char *)&tmpInt);
+    tmpInt = i->yresolution;
+    i->yresolution = lendianWriteInt((char *)&tmpInt);
+    tmpInt = i->ncolors;
+    i->ncolors = lendianWriteInt((char *)&tmpInt);
+    tmpInt = i->importantcolors;
+    i->importantcolors = lendianWriteInt((char *)&tmpInt);
 }
 
 void checkFile(char *fileName, struct header *h, struct information *i)
