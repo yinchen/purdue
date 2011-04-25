@@ -3,13 +3,13 @@
 #include<stdlib.h>
 #include "bmp_header.h"
 
-// #define DEBUG 1
-// #define LORE 1
+#define DEBUG 1
+#define LORE 1
 
 typedef struct {
-    unsigned char r;
-    unsigned char g;
     unsigned char b;
+    unsigned char g;
+    unsigned char r;
 } pixel;
 
 void createBitmap(int width, int height, char *fileName);
@@ -20,6 +20,7 @@ void drawBitmapBorder(char *srcFileName, int width, int r, int g, int b, char *d
 pixel** readFile(struct header *h, struct information *i, pixel **pixelData, char *fileName);
 void writeFile(struct header *h, struct information *i, pixel **pixelData, char *fileName);
 void checkFile(char *fileName, struct header *h, struct information *i);
+int isNumeric(char* value);
 int calculateBitmapSize(int width, int height);
 char* itoa(int value);
 
@@ -81,7 +82,7 @@ int main(int argc, char **argv)
             exit(1);
         }
         
-        drawBitmapBorder(argv[2], atoi(argv[3]), atoi(argv[6]), atoi(argv[5]), atoi(argv[4]), argv[7]);
+        drawBitmapBorder(argv[2], atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), atoi(argv[6]), argv[7]);
     }
     else
     {
@@ -146,9 +147,9 @@ void createBitmap(int width, int height, char *fileName)
         int x;
         for (x = 0; x < width; x++)
         {
-            pixelData[y][x].r = 255;
-            pixelData[y][x].g = 255;
             pixelData[y][x].b = 255;
+            pixelData[y][x].g = 255;
+            pixelData[y][x].r = 255;
         }
     }
     
@@ -191,20 +192,20 @@ void invertBitmap(char *srcFileName, char *dstFileName)
         int x;
         for (x = 0; x < i->width; x++)
         {
-            if (pixelData[y][x].r - 255 < 0)
-                pixelData[y][x].r = -1 * (pixelData[y][x].r - 255);
+            if (pixelData[y][x].b - 255 < 0)
+                pixelData[y][x].b = -1 * (pixelData[y][x].b - 255);
             else
-                pixelData[y][x].r = pixelData[y][x].r - 255;
+                pixelData[y][x].b = pixelData[y][x].b - 255;
             
             if (pixelData[y][x].g - 255 < 0)
                 pixelData[y][x].g = -1 * (pixelData[y][x].g - 255);
             else
                 pixelData[y][x].g = pixelData[y][x].g - 255;
                 
-            if (pixelData[y][x].b - 255 < 0)
-                pixelData[y][x].b = -1 * (pixelData[y][x].b - 255);
+            if (pixelData[y][x].r - 255 < 0)
+                pixelData[y][x].r = -1 * (pixelData[y][x].r - 255);
             else
-                pixelData[y][x].b = pixelData[y][x].b - 255;
+                pixelData[y][x].r = pixelData[y][x].r - 255;
         }
     }
     
@@ -308,9 +309,9 @@ void stackBitmapVertically(char *srcFileName1, char *srcFileName2, char *dstFile
         int x;
         for (x = 0; x < i1->width; x++)
         {
-            pixelData[y][x].r = pixelData2[y - 0][x].r;
-            pixelData[y][x].g = pixelData2[y - 0][x].g;
             pixelData[y][x].b = pixelData2[y - 0][x].b;
+            pixelData[y][x].g = pixelData2[y - 0][x].g;
+            pixelData[y][x].r = pixelData2[y - 0][x].r;
         }
     }
     for (y = i1->height; y < (i1->height + i2->height); y++)
@@ -318,9 +319,9 @@ void stackBitmapVertically(char *srcFileName1, char *srcFileName2, char *dstFile
         int x;
         for (x = 0; x < i1->width; x++)
         {
-            pixelData[y][x].r = pixelData1[y - i1->height][x].r;
-            pixelData[y][x].g = pixelData1[y - i1->height][x].g;
             pixelData[y][x].b = pixelData1[y - i1->height][x].b;
+            pixelData[y][x].g = pixelData1[y - i1->height][x].g;
+            pixelData[y][x].r = pixelData1[y - i1->height][x].r;
         }
     }
     
@@ -424,9 +425,9 @@ void stackBitmapHorizontally(char *srcFileName1, char *srcFileName2, char *dstFi
         int x;
         for (x = 0; x < i1->width; x++)
         {
-            pixelData[y][x].r = pixelData1[y][x - 0].r;
-            pixelData[y][x].g = pixelData1[y][x - 0].g;
             pixelData[y][x].b = pixelData1[y][x - 0].b;
+            pixelData[y][x].g = pixelData1[y][x - 0].g;
+            pixelData[y][x].r = pixelData1[y][x - 0].r;
         }
     }
     for (y = 0; y < i1->height; y++)
@@ -434,9 +435,9 @@ void stackBitmapHorizontally(char *srcFileName1, char *srcFileName2, char *dstFi
         int x;
         for (x = i1->width; x < (i1->width + i2->width); x++)
         {
-            pixelData[y][x].r = pixelData2[y][x - i1->width].r;
-            pixelData[y][x].g = pixelData2[y][x - i1->width].g;
             pixelData[y][x].b = pixelData2[y][x - i1->width].b;
+            pixelData[y][x].g = pixelData2[y][x - i1->width].g;
+            pixelData[y][x].r = pixelData2[y][x - i1->width].r;
         }
     }
     
@@ -448,7 +449,7 @@ void stackBitmapHorizontally(char *srcFileName1, char *srcFileName2, char *dstFi
     writeFile(h, i, pixelData, dstFileName);
 }
 
-void drawBitmapBorder(char *srcFileName, int width, int r, int g, int b, char *dstFileName)
+void drawBitmapBorder(char *srcFileName, int width, int b, int g, int r, char *dstFileName)
 {
     #ifdef DEBUG
         printf("DEBUG: drawBitmapBorder()\n");
@@ -484,9 +485,9 @@ void drawBitmapBorder(char *srcFileName, int width, int r, int g, int b, char *d
                 (i->height - width) <= y ||
                 (x < width))
             {
-                pixelData[y][x].r = r;
-                pixelData[y][x].g = g;
                 pixelData[y][x].b = b;
+                pixelData[y][x].g = g;
+                pixelData[y][x].r = r;
             }
         }
     }
@@ -592,8 +593,62 @@ void writeFile(struct header *h, struct information *i, pixel **pixelData, char 
     fclose(fp);
 }
 
+void readLittleEndian(struct header *h, struct information *i)
+{
+    #ifdef DEBUG
+        printf("DEBUG: readLittleEndian()\n");
+    #endif
+    
+    // h->type = lendianReadShort(h->type);
+    // h->size = lendianReadInt(h->size);
+    // h->reserved1 = lendianReadShort(h->reserved1);
+    // h->reserved2 = lendianReadShort(h->reserved2);
+    // h->offset = lendianReadInt(h->offset);
+    
+    // i->size = lendianReadInt(i->size);
+    // i->width = lendianReadInt(i->width);
+    // i->height = lendianReadInt(i->height);
+    // i->planes = lendianReadShort(i->planes);
+    // i->bits = lendianReadShort(i->bits);
+    // i->compression = lendianReadInt(i->compression);
+    // i->imagesize = lendianReadInt(i->imagesize);
+    // i->xresolution = lendianReadInt(i->xresolution);
+    // i->yresolution = lendianReadInt(i->yresolution);
+    // i->ncolors = lendianReadInt(i->ncolors);
+    // i->importantcolors = lendianReadInt(i->importantcolors);
+}
+
+void writeLittleEndian(struct header *h, struct information *i)
+{
+    #ifdef DEBUG
+        printf("DEBUG: writeLittleEndian()\n");
+    #endif
+    
+    // h->type = lendianWriteShort(h->type);
+    // h->size = lendianWriteInt(h->size);
+    // h->reserved1 = lendianWriteShort(h->reserved1);
+    // h->reserved2 = lendianWriteShort(h->reserved2);
+    // h->offset = lendianWriteInt(h->offset);
+    
+    // i->size = lendianWriteInt(i->size);
+    // i->width = lendianWriteInt(i->width);
+    // i->height = lendianWriteInt(i->height);
+    // i->planes = lendianWriteShort(i->planes);
+    // i->bits = lendianWriteShort(i->bits);
+    // i->compression = lendianWriteInt(i->compression);
+    // i->imagesize = lendianWriteInt(i->imagesize);
+    // i->xresolution = lendianWriteInt(i->xresolution);
+    // i->yresolution = lendianWriteInt(i->yresolution);
+    // i->ncolors = lendianWriteInt(i->ncolors);
+    // i->importantcolors = lendianWriteInt(i->importantcolors);
+}
+
 void checkFile(char *fileName, struct header *h, struct information *i)
 {
+    #ifdef DEBUG
+        printf("DEBUG: checkFile()\n");
+    #endif
+    
     if (h->type != 19778)
     {
         printf("Invalid file type in header for %s\n", fileName);
@@ -666,8 +721,6 @@ void checkFile(char *fileName, struct header *h, struct information *i)
         printf("Invalid importantcolors in header for %s\n", fileName);
         exit(1);
     }
-    
-    
 }
 
 int isNumeric(char* value)
