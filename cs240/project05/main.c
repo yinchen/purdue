@@ -37,6 +37,12 @@ int main(int argc, char **argv)
         printf("DEBUG: main()\n");
     #endif
     
+    if (argc < 2)
+    {
+        printf("Usage : bitmap_tool <command> [argument 1] [argument 2] ...\n");
+        exit(1);
+    }
+    
     strcpy(command, argv[1]);
     
     if (strcmp(argv[1], "-create") == 0)
