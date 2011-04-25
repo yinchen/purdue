@@ -3,7 +3,7 @@
 #include<stdlib.h>
 #include "bmp_header.h"
 
-#define DEBUG 1
+// #define DEBUG 1
 #define LORE 1
 
 typedef struct {
@@ -484,7 +484,14 @@ void drawBitmapBorder(char *srcFileName, int width, int b, int g, int r, char *d
         printf("DEBUG: Source file read.\n");
     #endif
     
-    // invert each pixel
+    if (width > i->width ||
+        width > i->height)
+    {
+        printf("Specified thickness greater than the dimensions of the image, cannot continue\n");
+        exit(1);
+    }
+    
+    // draw border
     int y;
     for (y = 0; y < i->height; y++)
     {
