@@ -536,8 +536,6 @@ pixel** readFile(struct header *h, struct information *i, pixel **pixelData, cha
         printf("DEBUG: Information header read from file.\n");
     #endif
     
-    pixelData = (pixel**)malloc(sizeof(pixel*) * i->height);
-    
     #ifdef LORE
         readLittleEndian(h, i);
     #endif
@@ -545,6 +543,8 @@ pixel** readFile(struct header *h, struct information *i, pixel **pixelData, cha
     #ifdef DEBUG
         printf("DEBUG: Image dimensions are %dx%d.\n", i->width, i->height);
     #endif
+    
+    pixelData = (pixel**)malloc(sizeof(pixel*) * i->height);
     
     int z;
     for (z = 0; z < i->height; z++)
