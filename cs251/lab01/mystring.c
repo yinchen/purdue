@@ -1,4 +1,5 @@
 #include <sys/types.h>
+#include <stdlib.h>
 
 /*
  * Implement the following string procedures.
@@ -53,7 +54,12 @@ char *mystrcat(char * s1, const char * s2)
 	int len2 = mystrlen(s2) + 1;
 	
 	s1 = realloc(s1, len2);
-	s1[len1] = mystrdup(s2);
+	
+	int i;
+	for (i = len1; i < (len1 + len2); i++)
+	{
+		s1[i] = s2[len2 - i];
+	}
 	
 	return s1;
 }
