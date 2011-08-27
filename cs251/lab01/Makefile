@@ -33,15 +33,13 @@ CCFLAGS= -g
 
 all: test_mystring test_list test_mysort test
 
-# Compile mystring.o if necessary
+# Build test_mystring
 mystring.o : mystring.c
 	$(CC) -c $(CCFLAGS) mystring.c
 
-# Compile test_mystring.o if necessary
 test_mystring.o : test_mystring.c
 	$(CC) -c $(CCFLAGS) test_mystring.c
 
-# Build test_mystring if necessary
 test_mystring: mystring.o test_mystring.o
 	$(CC) -o test_mystring mystring.o test_mystring.o
 
@@ -56,10 +54,15 @@ test_list: test_list.o List.o
 	$(CXX) -o test_list test_list.o List.o
 
 # Build test_mysort
+mysort.o: mysort.cc
+	$(CXX) -c $(CCFLAGS) mysort.cc
 
-#
-# Add the rules to build test_mysort here
-#
+test_mysort.o: test_mysort.cc
+	$(CXX) -c $(CCFLAGS) test_mysort.cc
+
+test_mysort: test_mysort.o mysort.o
+	$(CXX) -o test_mysort test_mysort.o mysort.o
+
 
 test:
 	rm -f test_results

@@ -1,6 +1,5 @@
 #include <sys/types.h>
 #include <stdlib.h>
-#include <stdio.h>
 
 /*
  * Implement the following string procedures.
