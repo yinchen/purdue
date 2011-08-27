@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 /*
  * Implement the following string procedures.
@@ -50,15 +51,13 @@ char *mystrdup(const char *s1)
 
 char *mystrcat(char * s1, const char * s2)
 {
-    int len1 = mystrlen(s1) + 1;
-    int len2 = mystrlen(s2) + 1;
-    
-    s1 = realloc(s1, len2);
+    int len1 = mystrlen(s1);
+    int len2 = mystrlen(s2);
     
     int i;
-    for (i = len1; i < (len1 + len2); i++)
+    for (i = 0; i < (len2 + 1); i++)
     {
-        s1[i] = s2[len2 - i];
+        s1[len1 + i] = s2[i];
     }
     
     return s1;
@@ -69,8 +68,8 @@ char *mystrstr(char * s1, const char * s2)
     int len1 = mystrlen(s1);
     int len2 = mystrlen(s2);
     
-    int match;
-    match = 1;
+    if (len2 == 0)
+        return s1;
     
     int i;
     for (i = 0; i < len1; i++) // loop through s1
@@ -78,28 +77,32 @@ char *mystrstr(char * s1, const char * s2)
         if (s1[i] == s2[0])
         {
             int j;
-            for (j = i; j < len2; j++) // loop through s2 
+            for (j = 0; j < len2; j++) // loop through s2 
             {
-                if (s1[j] != s2[j])
+                if (s1[i + j] != s2[j])
                 {
-                    match = 0;
+                    break;
                 }
             }
+            
+            return &s1[i];
         }
     }
     
-    if (match)
-    {
-        return s1+i;
-    }
-    else
-    {
-        return NULL;
-    }
+    return 0;
 }
 
 int mystrcmp(const char *s1, const char *s2)
 {
+    int i;
+    i = 0;
     
+    while ((s1[i] != '\0' && s2[i] != '\0') &&
+           (s1[i] == s2[i]))
+    {
+        i++;
+    }
+    
+    return (s1[i] - s2[i]);
 }
 

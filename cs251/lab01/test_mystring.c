@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 char *mystrcpy(char * s1, const char * s2);
 size_t mystrlen(const char *s);
