@@ -21,8 +21,13 @@ void mysort(int n,                      // Number of elements
             int ascending,              // 0 -> descending; 1 -> ascending
             CompareFunction compFunc)   // Comparison function.
 {
-    void *tmp;
-    tmp = alloca(elementSize);
+    char *c_array;
+    c_array = (char*)array;
+    
+    int *i_array;
+    i_array = (int*)array;
+    
+    int tmp;
     
     int changed;
     changed = 1;
@@ -32,26 +37,26 @@ void mysort(int n,                      // Number of elements
         changed = 0;
         
         int i;
-        for (i = 0; i < n; i++)
+        for (i = 0; i < n - 1; i++)
         {
             if (ascending)
             {
-                if (compFunc(array[i], array[i + 1]) <= 0)
+                if (compFunc(&i_array[i], &i_array[i + 1]) <= 0)
                 {
-                    tmp = array[i];
-                    array[i] = array[i + 1];
-                    array[i + 1] = tmp;
+                    tmp = i_array[i];
+                    i_array[i] = i_array[i + 1];
+                    i_array[i + 1] = tmp;
                     
                     changed = 1;
                 }
             }
             else
             {
-                if (compFunc(array[i], array[i + 1]) >= 0)
+                if (compFunc(&i_array[i], &i_array[i + 1]) >= 0)
                 {
-                    tmp = array[i];
-                    array[i] = array[i + 1];
-                    array[i + 1] = tmp;
+                    tmp = i_array[i];
+                    i_array[i] = i_array[i + 1];
+                    i_array[i + 1] = tmp;
                     
                     changed = 1;
                 }

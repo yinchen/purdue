@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include "List.h"
+#include <cstdlib>
 
 //
 // Inserts a new element with value "val" in
@@ -22,7 +23,19 @@ List::insertSorted( int val )
 void
 List::append( int val )
 {
-  // Complete procedure 
+    ListNode *curr;
+    curr = _head;
+    
+    while (curr->_next != NULL)
+    {
+        curr = curr->_next;
+    }
+    
+    ListNode n;
+    n._value = val;
+    n._next = NULL;
+    
+    curr->_next = &n;
 }
 
 //
@@ -32,23 +45,32 @@ List::append( int val )
 void
 List::prepend( int val )
 {
-  // Complete procedure 
+    ListNode n;
+    n._value = val;
+    n._next = _head;
+    
+    _head = &n;
 }
 
 // Removes an element with value "val" from List
 // Returns 0 if succeeds or -1 if it fails
 int 
-List:: remove( int val )
+List::remove( int val )
 {
-  // Complete procedure
-  return 0;
+    return 0;
 }
 
 // Prints The elements in the list. 
 void
 List::print()
 {
-  // Complete procedure 
+    ListNode *curr;
+    curr = _head;
+    
+    while (curr != NULL)
+    {
+        printf("%d\n", curr->_value);
+    }
 }
 
 //
@@ -57,8 +79,20 @@ List::print()
 int
 List::lookup(int val)
 {
-  // Complete procedure 
-  return 0;
+    ListNode *curr;
+    curr = _head;
+    
+    while (curr != NULL)
+    {
+        if (curr->_value == val)
+        {
+            return 0;
+        }
+        
+        curr = curr->_next;
+    }
+    
+    return -1;
 }
 
 //
@@ -66,7 +100,10 @@ List::lookup(int val)
 //
 List::List()
 {
-  // Complete procedure 
+    ListNode curr;
+    curr = (ListNode*)std::malloc(sizeof(ListNode));
+    
+    _head = curr;
 }
 
 //
@@ -74,6 +111,19 @@ List::List()
 //
 List::~List()
 {
-  // Complete procedure 
+    ListNode* curr;
+    curr = _head;
+    
+    while (curr != NULL)
+    {
+        ListNode* next;
+        next = curr->_next;
+        
+        std::free(curr);
+        
+        curr = next;
+    }
+    
+    _head = NULL;
 }
 
