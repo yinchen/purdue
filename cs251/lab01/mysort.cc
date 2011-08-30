@@ -1,5 +1,5 @@
 #include "mysort.h"
-#include <alloca.h>
+#include <stdlib.h>
 #include <assert.h>
 #include <string.h>
 
@@ -21,13 +21,7 @@ void mysort(int n,                      // Number of elements
             int ascending,              // 0 -> descending; 1 -> ascending
             CompareFunction compFunc)   // Comparison function.
 {
-    char *c_array;
-    c_array = (char*)array;
-    
-    int *i_array;
-    i_array = (int*)array;
-    
-    int tmp;
+    void *tmp = malloc(elementSize);
     
     int changed;
     changed = 1;
@@ -39,29 +33,34 @@ void mysort(int n,                      // Number of elements
         int i;
         for (i = 0; i < n - 1; i++)
         {
+            void *p1 = (void*)((char*)array+i*elementSize);
+            void *p2 = (void*)((char*)array+(i+1)*elementSize);
+        
             if (ascending)
             {
-                if (compFunc(&i_array[i], &i_array[i + 1]) <= 0)
+                if (compFunc(p1, p2) > 0)
                 {
-                    tmp = i_array[i];
-                    i_array[i] = i_array[i + 1];
-                    i_array[i + 1] = tmp;
+                    memcpy(tmp, p1, elementSize);
+                    memcpy(p1, p2, elementSize);
+                    memcpy(p2, tmp, elementSize);
                     
                     changed = 1;
                 }
             }
             else
             {
-                if (compFunc(&i_array[i], &i_array[i + 1]) >= 0)
+                if (compFunc(p1, p2) < 0)
                 {
-                    tmp = i_array[i];
-                    i_array[i] = i_array[i + 1];
-                    i_array[i + 1] = tmp;
+                    memcpy(tmp, p1, elementSize);
+                    memcpy(p1, p2, elementSize);
+                    memcpy(p2, tmp, elementSize);
                     
                     changed = 1;
                 }
             }
         }
     }
+    
+    free(tmp);
 }
 
