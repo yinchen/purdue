@@ -1,0 +1,25 @@
+./TestMyString test1         : 0 of 3
+./TestMyString test2         : 0 of 3
+./TestMyString test3         : 0 of 3
+./TestMyString test4         : 0 of 3
+./TestMyString test5         : 0 of 3
+./TestMyString test6         : 0 of 3
+./TestMyString test7         : 0 of 3
+./TestMyString test8         : 0 of 3
+./TestMyString test9         : 0 of 3
+./TestMyString test10        : 0 of 3
+./TestMyString test11        : 0 of 3
+./HashTableVoidTest test1    : 0 of 4
+./HashTableVoidTest test2    : 0 of 4
+./HashTableVoidTest test3    : 0 of 4
+./HashTableVoidTest test4    : 0 of 5
+./HashTableVoidTest test5    : 0 of 5
+./HashTableVoidTest test6    : 0 of 5
+./HashTableTemplateTest test1: 0 of 5
+./HashTableTemplateTest test2: 0 of 5
+./HashTableTemplateTest test3: 0 of 5
+./HashTableTemplateTest test4: 0 of 5
+./HashTableTemplateTest test5: 0 of 5
+./HashTableTemplateTest test6: 0 of 5
+./testWcVoid                 : 0 of 5
+./testWcTemplate             : 0 of 5
