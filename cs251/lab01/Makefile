@@ -31,7 +31,7 @@ CCFLAGS= -g
 # The dependencies of "all" are the files that we want to build.
 #
 
-all: test_mystring test_list test_mysort # test
+all: test_mystring test_list test_mysort test
 
 # Build test_mystring
 mystring.o : mystring.c
