@@ -14,18 +14,33 @@
 int
 MyString::slength(const char *s) const
 {
-  // Add implementation here
-  return 0;
+    int count;
+    count = 0;
+    
+    while (*s++)
+    {
+    	count++;
+    }
+    
+    return count;
 }
 
 // Initialize _s. Allocate memory for _s and copy s into _s
 void
 MyString::initialize(const char * s)
 {
-  // Add implementation here
-  // Allocate memory for _s.
-
-  // Copy s into _s
+    int size;
+    size = slength(s) + 1;
+    
+    _s = new char[size];
+    
+    int i;
+    for (i = 0; i < size; i++)
+    {
+    	_s[i] = s[i];
+    }
+    
+    _s[size] = '\0';
 }
 
 // Create a MyString from a C string

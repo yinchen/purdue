@@ -31,7 +31,7 @@ CCFLAGS= -g
 # The dependencies of "all" are the files that we want to build.
 #
 
-all: TestMyString HashTableTemplateTest HashTableVoidTest wcTemplate wcVoid test
+all: TestMyString HashTableTemplateTest HashTableVoidTest wcTemplate wcVoid # test
 
 # Build TestMyString
 TestMyString: TestMyString.cc MyString.cc
