@@ -1,4 +1,3 @@
-
 // CS251 Data Structures
 // String Implementation
 // IMPORTANT: Do not use any of the functions in the string C runtime library
@@ -19,7 +18,7 @@ MyString::slength(const char *s) const
     
     while (*s++)
     {
-    	count++;
+        count++;
     }
     
     return count;
@@ -37,7 +36,7 @@ MyString::initialize(const char * s)
     int i;
     for (i = 0; i < size; i++)
     {
-    	_s[i] = s[i];
+        _s[i] = s[i];
     }
     
     _s[size] = '\0';
@@ -85,17 +84,26 @@ MyString::operator = (const MyString & other) {
 MyString
 MyString::substring(int i, int n)
 {
-  // Add implementation here
+    if (i > length())
+    {
+        return MyString();
+    }
+    
+    char *_sub;
+    _sub = new char[n + 1];
+    
+    int j;
+    for (j = 0; j < n; j++)
+    {
+        _sub[j] = _s[i+j];
+    }
+    
+    _sub[n] = '\0';
 
-  // Make sure that i is not beyond the end of string
-
-  // Allocate memory for substring
-
-  // Copy characters of substring
-  MyString sub;
-
-  // Return substring
-  return sub;
+    MyString sub;
+    sub = MyString(_sub);
+    
+    return sub;
 }
 
 // Remove at most n chars starting at location i
