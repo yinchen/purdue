@@ -34,7 +34,7 @@ do
 		echo "--" >> tmp_msg
 		echo "backupd.sh" >> tmp_msg
 		echo "UNIX Backup Daemon" >> tmp_msg
-		/usr/bin/mailx -s "New Backup on $HOST for $USER" $USER < tmp-message
+		/usr/bin/mailx -s "New Backup on $HOST for $USER" $USER < tmp_msg
     fi
     
     if [ $COUNT -gt $4 ]
