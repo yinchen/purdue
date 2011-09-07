@@ -33,7 +33,7 @@ do
         echo "\n" >> tmp_msg
         echo "--\n" >> tmp_msg
         echo "backupd.sh\n" >> tmp_msg
-        /usr/bin/mailx -s "New Backup for $USER" $USER < tmp-message
+        /usr/bin/mailx -s "New Backup for $USER" $USER < tmp_msg
     fi
     
     if [ $COUNT -gt $4 ]
