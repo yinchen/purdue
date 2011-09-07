@@ -28,12 +28,13 @@ do
         COUNT=$(expr $COUNT + 1)
         
         mv ls-lR.new ls-lR.last
-        
-        echo "This message is to inform you that a backup has taken place on $HOST for $USER. The directory $1 was backed up to $2 on $(date).\n" > tmp_msg
-        echo "\n" >> tmp_msg
-        echo "--\n" >> tmp_msg
-        echo "backupd.sh\n" >> tmp_msg
-        /usr/bin/mailx -s "New Backup for $USER" $USER < tmp_msg
+    	
+		echo "This message is to inform you that a backup has taken place on $HOST for $USER. The directory '$1' was backed up to '$2' on $(date)." > tmp_msg
+		echo "" >> tmp_msg
+		echo "--" >> tmp_msg
+		echo "backupd.sh" >> tmp_msg
+		echo "UNIX Backup Daemon" >> tmp_msg
+		/usr/bin/mailx -s "New Backup on $HOST for $USER" $USER < tmp-message
     fi
     
     if [ $COUNT -gt $4 ]
