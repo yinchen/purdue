@@ -1,0 +1,18 @@
+Matt McCormick
+mbmccorm
+
+Features in handout that work:
+ - Backup is done correctly
+ - Backup is done at regular intervals
+ - Backup is done when there is a difference
+ - Number of backups is limited to max-backups
+ - Mail notification works
+ - Script is well documented
+ - Robustness, runs without crashing
+
+Features in handout that do not work:
+
+
+Extra features:
+ - Mail notification includes additional information
+
