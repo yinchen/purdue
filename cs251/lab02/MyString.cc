@@ -1,12 +1,11 @@
 // CS251 Data Structures
 // String Implementation
-// IMPORTANT: Do not use any of the functions in the string C runtime library
-// Example. Do not use strcpy, strcmp, etc. Implement your own
 
 // IMPORTANT: See the MyString.h file for a description of
 // what each method needs to do.
 
 #include <stdio.h>
+#include <string.h>
 #include "MyString.h"
 
 // My own implementation of strlen
@@ -33,32 +32,26 @@ MyString::initialize(const char * s)
     
     _s = new char[size];
     
-    int i;
-    for (i = 0; i < size; i++)
-    {
-        _s[i] = s[i];
-    }
-    
-    _s[size] = '\0';
+    strcpy(_s, s);
 }
 
 // Create a MyString from a C string
 MyString::MyString(const char * s)
 {
-  initialize(s);
+    initialize(s);
 }
 
 // Create a MyString from a copy of another string
 MyString::MyString(const MyString &s)
 {
-  initialize(s._s);
+    initialize(s._s);
 }
 
 // Create a MyString with an empty string
 MyString::MyString()
 {
-  _s = new char[1];
-  *_s = 0;
+    _s = new char[1];
+    *_s = 0;
 }
 
 // Assignment operator. Without this operator the assignment is
@@ -66,17 +59,14 @@ MyString::MyString()
 // goes away then the assigned _s will be a dangling reference.
 MyString &
 MyString::operator = (const MyString & other) {
-  if (this != &other) // protect against invalid self-assignment
-  {
-    // deallocate old memory
-    delete [] _s;
+    if (this != &other) // protect against invalid self-assignment
+    {
+        delete [] _s;
 
-    // Initialize _s with the "other" object.
-    initialize(other._s);
+        initialize(other._s);
 
-    // by convention, always return *this
-    return *this;
-  }
+        return *this;
+    }
 }
 
 // Obtain a substring of at most n chars starting at location i
@@ -110,21 +100,45 @@ MyString::substring(int i, int n)
 void
 MyString::remove(int i, int n)
 {
-  // Add implementation here
+    if (i > length())
+    {
+        return;
+    }
+    
+    if (i + n > length())
+    {
+        return;
+    }
+    
+    int c;
+    for (c = 0; c < n; c++)
+    {
+    	int j;
+    	for (j = i; j < length() - 1; j++)
+    	{
+    	    _s[j] = _s[j + 1];
+    	}
+    }
+    
+    _s[length() - n] = '\0';
 
-  // If i is beyond the end of string return
-
-  // If i+n is beyond the end trunc string
-
-  // Remove characters
+    return;
 }
 
 // Return true if strings "this" and s are equal
 bool
 MyString::operator == (const MyString & s)
 {
-  // Add implementation here
-  return false;
+    int i;
+    i = 0;
+    
+    while ((_s[i] != '\0' && s._s[i] != '\0') &&
+           (_s[i] == s._s[i]))
+    {
+        i++;
+    }
+    
+    return ((_s[i] - s._s[i]) == 0);
 }
 
 
@@ -132,69 +146,99 @@ MyString::operator == (const MyString & s)
 bool
 MyString::operator != (const MyString &s)
 {
-  // Add implementation here
-  return false;
+    int i;
+    i = 0;
+    
+    while ((_s[i] != '\0' && s._s[i] != '\0') &&
+           (_s[i] == s._s[i]))
+    {
+        i++;
+    }
+    
+    return ((_s[i] - s._s[i]) != 0);
 }
 
 // Return true if string "this" and s is less or equal
 bool
 MyString::operator <= (const MyString &s)
 {
-  // Add implementation here
-  return false;
+    int i;
+    i = 0;
+    
+    while ((_s[i] != '\0' && s._s[i] != '\0') &&
+           (_s[i] == s._s[i]))
+    {
+        i++;
+    }
+    
+    return ((_s[i] - s._s[i]) <= 0);
 }
 
 // Return true if string "this" is greater than s
 bool
 MyString::operator > (const MyString &s)
 {
-  // Add implementation here
-  return false;
+    int i;
+    i = 0;
+    
+    while ((_s[i] != '\0' && s._s[i] != '\0') &&
+           (_s[i] == s._s[i]))
+    {
+        i++;
+    }
+    
+    return ((_s[i] - s._s[i]) > 0);
 }
 
 // Return character at position i.  Return '\0' if out of bounds.
 char
 MyString::operator [] (int i)
 {
-  // Add implementation here
-  return ' ';
+    if (i > length())
+    {
+    	return '\0';
+    }
+    
+    char *ret = new char();
+    ret = _s+i;
+    
+    return *ret;
 }
 
 // Return C representation of string
 const char *
 MyString::cStr()
 {
-  // Add implementation here
-  return _s;
+    return _s;
 }
 
 // Get string length of this string.
 int
 MyString::length() const
 {
-  // Add implementation here
-  return slength(_s);
+    return slength(_s);
 }
 
 // Destructor. Deallocate the space used by _s
 MyString::~MyString()
 {
-  // Add implementation here
-  delete [] _s;
+    delete [] _s;
 }
 
 // Concatanate two strings (non member method)
 MyString operator + (const MyString &s1, const MyString &s2)
 {
-  // Add implementation here
-
-  // Allocate memory for the concatenated string
-
-  // Add s1
-
-  // Add s2
-
-  MyString s;
-  return s;
+    MyString s;
+    delete s._s;
+    
+    int size;
+    size = s1.length() + s2.length() + 1;
+    
+    s._s = new char[size];
+    
+    strcpy(s._s, s1._s);
+    strcpy(s._s + s1.length(), s2._s);
+    
+    return s;
 }
 
