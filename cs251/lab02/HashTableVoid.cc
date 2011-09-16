@@ -28,8 +28,6 @@ int HashTableVoid::hash(const char * key)
 // Constructor for hash table. Initializes hash table
 HashTableVoid::HashTableVoid()
 {
-    // _buckets = (HashTableVoidEntry**)malloc(sizeof(HashTableVoidEntry*) * 2039);
-    
     _buckets = new HashTableVoidEntry*[2039];
     
     int i;
