@@ -88,7 +88,7 @@ io_modifier:
 		Command::_currentCommand._errFile = $2;
 	}
 	| LESS WORD {
-	    printf("   Yacc: insert output \"%s\"\n", $2);
+	    printf("   Yacc: insert input \"%s\"\n", $2);
 		Command::_currentCommand._inputFile = $2;
 	}
 	;
