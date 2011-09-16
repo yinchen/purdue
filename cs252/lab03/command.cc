@@ -134,7 +134,8 @@ void
 Command::execute()
 {
 	// Don't do anything if there are no simple commands
-	if ( _numberOfSimpleCommands == 0 ) {
+	if (_numberOfSimpleCommands == 0)
+	{
 		prompt();
 		return;
 	}
@@ -143,7 +144,30 @@ Command::execute()
 	print();
 
 	// Add execution here
-	// For every simple command fork a new process
+	int pid;
+	
+    int i;
+    for (i = 0; i < _numberOfSimpleCommands; i++)
+    {
+	    pid = fork();
+	    if (pid == -1)
+	    {
+		    exit(2);
+	    }
+
+	    if (pid == 0)
+	    {
+		    execvp(_simpleCommands[i]->_arguments[0], _simpleCommands[i]->_arguments);
+		    exit(2);
+	    }
+	
+	    waitpid(pid, 0, 0);
+
+	    exit(2);
+    }
+
+	
+	
 	// Setup i/o redirection
 	// and call exec
 
