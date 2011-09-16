@@ -16,28 +16,32 @@
 
 %%
 
-\n 	{
-		return NEWLINE;
-	}
+\n  { return NEWLINE; }
 
-[ \t] 	{
-		/* Discard spaces and tabs */
-     	}	
+[ \t]  { /* Discard spaces and tabs */ }	
 
-">" 	{
-		return GREAT;
-	}
+"&"  { return AMPERSAND; }
+
+">"  { return GREAT; }
+
+">&"  { return GREATAMPERSAND; }
+
+">>"  { return GREATGREAT; }
+
+">>&"  { return GREATGREATAMPERSAND; }
+
+"<"  { return LESS; }
+
+"|"  { return PIPE; }
 
 [^ \t\n][^ \t\n]*  {
-		/* Assume that file names have only alpha chars */
-		yylval.string_val = strdup(yytext);
-		return WORD;
-	}
+    yylval.string_val = strdup(yytext);
+	return WORD;
+}
 
-.	{
-		/* Invalid character in input */
-		return NOTOKEN;
-	}
+. {
+	return NOTOKEN;
+}
 
 %%
 	

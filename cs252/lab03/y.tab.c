@@ -1,18 +1,24 @@
 
-# line 18 "shell.y"
+# line 4 "shell.y"
 typedef union
 #ifdef __cplusplus
 	YYSTYPE
 #endif
-	{
-		char   *string_val;
-	} YYSTYPE;
+  {
+    char *string_val;
+} YYSTYPE;
 # define WORD 257
 # define NOTOKEN 258
-# define GREAT 259
-# define NEWLINE 260
+# define AMPERSAND 259
+# define GREAT 260
+# define GREATAMPERSAND 261
+# define GREATGREAT 262
+# define GREATGREATAMPERSAND 263
+# define LESS 264
+# define PIPE 265
+# define NEWLINE 266
 
-# line 23 "shell.y"
+# line 9 "shell.y"
 extern "C" int yylex();
 #define yylex yylex
 #include <stdio.h>
@@ -72,7 +78,7 @@ YYSTYPE *yyv;
 static int yymaxdepth = YYMAXDEPTH;
 # define YYERRCODE 256
 
-# line 89 "shell.y"
+# line 109 "shell.y"
 
 
 void
@@ -95,35 +101,46 @@ static YYCONST yytabelem yyexca[] ={
 	0, 1,
 	-2, 0,
 	};
-# define YYNPROD 15
-# define YYLAST 18
+# define YYNPROD 25
+# define YYLAST 34
 static YYCONST yytabelem yyact[]={
 
-     7,     9,    15,    13,     6,    12,    18,    16,     3,    17,
-    14,    10,     8,    11,     5,     4,     2,     1 };
+    14,    16,    15,    17,    18,    13,     7,    10,    31,    19,
+    22,    30,    28,    27,    26,    25,     6,    24,    10,     8,
+     3,    -1,    29,    11,    20,     9,    21,    12,     5,     4,
+     2,     1,     0,    23 };
 static YYCONST yytabelem yypact[]={
 
-  -256,-10000000,  -256,-10000000,-10000000,  -254,-10000000,  -257,-10000000,-10000000,
--10000000,  -258,  -250,-10000000,  -251,-10000000,-10000000,-10000000,-10000000 };
+  -250,-10000000,  -250,-10000000,-10000000,  -260,-10000000,  -257,-10000000,-10000000,
+-10000000,-10000000,  -249,  -239,  -240,  -242,  -243,  -244,  -245,-10000000,
+  -246,  -258,-10000000,-10000000,-10000000,-10000000,-10000000,-10000000,-10000000,-10000000,
+-10000000,-10000000 };
 static YYCONST yytabelem yypgo[]={
 
-     0,    17,    16,     8,    15,    14,    13,    12,    10,     9 };
+     0,    31,    30,    20,    29,    28,    27,    26,    19,    25,
+    24,    22,    21 };
 static YYCONST yytabelem yyr1[]={
 
-     0,     1,     2,     2,     3,     4,     4,     4,     5,     8,
-     8,     9,     7,     6,     6 };
+     0,     1,     2,     2,     3,     4,     4,     4,     8,    10,
+    10,    11,     9,     5,     5,     6,     6,     6,     6,     6,
+     6,    12,    12,     7,     7 };
 static YYCONST yytabelem yyr2[]={
 
-     0,     2,     2,     4,     2,     7,     2,     5,     5,     4,
-     0,     3,     3,     5,     0 };
+     0,     2,     2,     4,     2,     9,     2,     5,     5,     4,
+     0,     3,     3,     6,     2,     5,     5,     5,     5,     5,
+     0,     4,     2,     3,     0 };
 static YYCONST yytabelem yychk[]={
 
--10000000,    -1,    -2,    -3,    -4,    -5,   260,   256,    -7,   257,
-    -3,    -6,   259,   260,    -8,   260,   257,    -9,   257 };
+-10000000,    -1,    -2,    -3,    -4,    -5,   266,   256,    -8,    -9,
+   257,    -3,    -6,   265,   260,   262,   261,   263,   264,   266,
+   -10,    -7,   259,    -8,   257,   257,   257,   257,   257,   -11,
+   257,   266 };
 static YYCONST yytabelem yydef[]={
 
-     0,    -2,    -2,     2,     4,    14,     6,     0,    10,    12,
-     3,     0,     0,     7,     8,     5,    13,     9,    11 };
+     0,    -2,    -2,     2,     4,    20,     6,     0,    14,    10,
+    12,     3,    24,     0,     0,     0,     0,     0,     0,     7,
+     8,     0,    23,    13,    15,    16,    17,    18,    19,     9,
+    11,     5 };
 typedef struct
 #ifdef __cplusplus
 	yytoktype
@@ -143,8 +160,14 @@ yytoktype yytoks[] =
 {
 	"WORD",	257,
 	"NOTOKEN",	258,
-	"GREAT",	259,
-	"NEWLINE",	260,
+	"AMPERSAND",	259,
+	"GREAT",	260,
+	"GREATAMPERSAND",	261,
+	"GREATGREAT",	262,
+	"GREATGREATAMPERSAND",	263,
+	"LESS",	264,
+	"PIPE",	265,
+	"NEWLINE",	266,
 	"-unknown-",	-1	/* ends search */
 };
 
@@ -158,7 +181,7 @@ char * yyreds[] =
 	"commands : command",
 	"commands : commands command",
 	"command : simple_command",
-	"simple_command : command_and_args iomodifier_opt NEWLINE",
+	"simple_command : pipe_list io_modifier background_opt NEWLINE",
 	"simple_command : NEWLINE",
 	"simple_command : error NEWLINE",
 	"command_and_args : command_word arg_list",
@@ -166,8 +189,18 @@ char * yyreds[] =
 	"arg_list : /* empty */",
 	"argument : WORD",
 	"command_word : WORD",
-	"iomodifier_opt : GREAT WORD",
-	"iomodifier_opt : /* empty */",
+	"pipe_list : pipe_list PIPE command_and_args",
+	"pipe_list : command_and_args",
+	"io_modifier : GREAT WORD",
+	"io_modifier : GREATGREAT WORD",
+	"io_modifier : GREATAMPERSAND WORD",
+	"io_modifier : GREATGREATAMPERSAND WORD",
+	"io_modifier : LESS WORD",
+	"io_modifier : /* empty */",
+	"io_modifier_list : io_modifier_list io_modifier",
+	"io_modifier_list : io_modifier",
+	"background_opt : AMPERSAND",
+	"background_opt : /* empty */",
 };
 #endif /* YYDEBUG */
 # line	1 "/usr/ccs/bin/yaccpar"
@@ -702,41 +735,70 @@ int yyparse()
 	{
 		
 case 5:
-# line 44 "shell.y"
+# line 31 "shell.y"
 {
 		printf("   Yacc: Execute command\n");
 		Command::_currentCommand.execute();
 	} break;
 case 7:
-# line 49 "shell.y"
+# line 36 "shell.y"
 { yyerrok; } break;
 case 8:
-# line 53 "shell.y"
+# line 40 "shell.y"
 {
 		Command::_currentCommand.
 			insertSimpleCommand( Command::_currentSimpleCommand );
 	} break;
 case 11:
-# line 65 "shell.y"
+# line 52 "shell.y"
 {
-               printf("   Yacc: insert argument \"%s\"\n", yypvt[-0].string_val);
-
-	       Command::_currentSimpleCommand->insertArgument( yypvt[-0].string_val );\
+        printf("   Yacc: insert argument \"%s\"\n", yypvt[-0].string_val);
+        Command::_currentSimpleCommand->insertArgument( yypvt[-0].string_val );
 	} break;
 case 12:
-# line 73 "shell.y"
+# line 59 "shell.y"
 {
-               printf("   Yacc: insert command \"%s\"\n", yypvt[-0].string_val);
-	       
-	       Command::_currentSimpleCommand = new SimpleCommand();
-	       Command::_currentSimpleCommand->insertArgument( yypvt[-0].string_val );
+        printf("   Yacc: insert command \"%s\"\n", yypvt[-0].string_val);
+	    Command::_currentSimpleCommand = new SimpleCommand();
+	    Command::_currentSimpleCommand->insertArgument( yypvt[-0].string_val );
 	} break;
-case 13:
-# line 82 "shell.y"
+case 15:
+# line 72 "shell.y"
 {
 		printf("   Yacc: insert output \"%s\"\n", yypvt[-0].string_val);
 		Command::_currentCommand._outFile = yypvt[-0].string_val;
 	} break;
+case 16:
+# line 76 "shell.y"
+{
+	    printf("   Yacc: insert output \"%s\"\n", yypvt[-0].string_val);
+		Command::_currentCommand._outFile = yypvt[-0].string_val;
+	} break;
+case 17:
+# line 80 "shell.y"
+{
+	    printf("   Yacc: insert output \"%s\"\n", yypvt[-0].string_val);
+		Command::_currentCommand._outFile = yypvt[-0].string_val;
+		Command::_currentCommand._errFile = yypvt[-0].string_val;
+	} break;
+case 18:
+# line 85 "shell.y"
+{
+	    printf("   Yacc: insert output \"%s\"\n", yypvt[-0].string_val);
+		Command::_currentCommand._outFile = yypvt[-0].string_val;
+		Command::_currentCommand._errFile = yypvt[-0].string_val;
+	} break;
+case 19:
+# line 90 "shell.y"
+{
+	    printf("   Yacc: insert output \"%s\"\n", yypvt[-0].string_val);
+		Command::_currentCommand._inputFile = yypvt[-0].string_val;
+	} break;
+case 23:
+# line 103 "shell.y"
+{
+        Command::_currentCommand._background = 1;
+    } break;
 # line	531 "/usr/ccs/bin/yaccpar"
 	}
 	goto yystack;		/* reset registers in driver code */

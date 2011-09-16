@@ -108,40 +108,62 @@ if(yywrap()) return(0); break;
 case 1:
 
 # line 19 "shell.l"
-	{
-		return NEWLINE;
-	}
+ { return NEWLINE; }
 break;
 case 2:
 
-# line 23 "shell.l"
-	{
-		/* Discard spaces and tabs */
-     	}
+# line 21 "shell.l"
+ { /* Discard spaces and tabs */ }
 break;
 case 3:
 
-# line 27 "shell.l"
-	{
-		return GREAT;
-	}
+# line 23 "shell.l"
+ { return AMPERSAND; }
 break;
 case 4:
 
-# line 31 "shell.l"
- {
-		/* Assume that file names have only alpha chars */
-		yylval.string_val = strdup(yytext);
-		return WORD;
-	}
+# line 25 "shell.l"
+ { return GREAT; }
 break;
 case 5:
 
+# line 27 "shell.l"
+ { return GREATAMPERSAND; }
+break;
+case 6:
+
+# line 29 "shell.l"
+ { return GREATGREAT; }
+break;
+case 7:
+
+# line 31 "shell.l"
+ { return GREATGREATAMPERSAND; }
+break;
+case 8:
+
+# line 33 "shell.l"
+ { return LESS; }
+break;
+case 9:
+
+# line 35 "shell.l"
+ { return PIPE; }
+break;
+case 10:
+
 # line 37 "shell.l"
+ {
+    yylval.string_val = strdup(yytext);
+	return WORD;
+}
+break;
+case 11:
+
+# line 42 "shell.l"
 {
-		/* Invalid character in input */
-		return NOTOKEN;
-	}
+	return NOTOKEN;
+}
 break;
 case -1:
 break;
@@ -150,49 +172,91 @@ default:
 } return(0); }
 /* end of yylex */
 
-# line 43 "shell.l"
+# line 47 "shell.l"
 
 int yyvstop[] = {
 0,
 
-4,
-5,
+10,
+11,
 0, 
 
 2,
-5,
+11,
 0, 
 
 1,
 0, 
 
 3,
-4,
-5,
+10,
+11,
+0, 
+
+8,
+10,
+11,
 0, 
 
 4,
+10,
+11,
+0, 
+
+9,
+10,
+11,
+0, 
+
+10,
+0, 
+
+5,
+10,
+0, 
+
+6,
+10,
+0, 
+
+7,
+10,
 0, 
 0};
 # define YYTYPE unsigned char
 struct yywork { YYTYPE verify, advance; } yycrank[] = {
 0,0,	0,0,	1,3,	0,0,	
-3,7,	0,0,	0,0,	0,0,	
+3,10,	0,0,	0,0,	0,0,	
 0,0,	0,0,	1,4,	1,5,	
 3,0,	3,0,	6,0,	6,0,	
-7,0,	7,0,	0,0,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
+8,10,	0,0,	7,0,	7,0,	
+9,0,	9,0,	10,0,	10,0,	
+8,0,	8,0,	11,0,	11,0,	
+0,0,	13,0,	13,0,	0,0,	
 0,0,	0,0,	0,0,	3,0,	
-0,0,	6,0,	0,0,	7,0,	
+0,0,	6,0,	0,0,	1,6,	
+2,6,	7,0,	12,10,	9,0,	
+0,0,	10,0,	0,0,	8,0,	
+0,0,	11,0,	12,0,	12,0,	
+13,0,	8,11,	0,0,	0,0,	
+0,0,	0,0,	0,0,	0,0,	
+0,0,	1,7,	2,7,	1,8,	
+2,8,	0,0,	0,0,	0,0,	
+0,0,	0,0,	0,0,	0,0,	
+0,0,	12,0,	0,0,	0,0,	
+0,0,	8,12,	0,0,	12,13,	
 0,0,	0,0,	0,0,	0,0,	
 0,0,	0,0,	0,0,	0,0,	
 0,0,	0,0,	0,0,	0,0,	
 0,0,	0,0,	0,0,	0,0,	
 0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	0,0,	1,6,	
-2,6,	0,0,	0,0,	0,0,	
+0,0,	0,0,	0,0,	0,0,	
+0,0,	0,0,	0,0,	0,0,	
+0,0,	0,0,	0,0,	0,0,	
+0,0,	0,0,	0,0,	0,0,	
+0,0,	0,0,	0,0,	0,0,	
+0,0,	0,0,	0,0,	0,0,	
+0,0,	1,9,	2,9,	0,0,	
 0,0};
 struct yysvf yysvec[] = {
 0,	0,	0,
@@ -202,9 +266,15 @@ yycrank+-3,	0,		yyvstop+1,
 yycrank+0,	0,		yyvstop+4,
 yycrank+0,	0,		yyvstop+7,
 yycrank+-5,	yysvec+3,	yyvstop+9,
-yycrank+-7,	yysvec+3,	yyvstop+13,
+yycrank+-9,	yysvec+3,	yyvstop+13,
+yycrank+-15,	0,		yyvstop+17,
+yycrank+-11,	yysvec+3,	yyvstop+21,
+yycrank+-13,	yysvec+3,	yyvstop+25,
+yycrank+-17,	yysvec+3,	yyvstop+27,
+yycrank+-41,	0,		yyvstop+30,
+yycrank+-20,	yysvec+3,	yyvstop+33,
 0,	0,	0};
-struct yywork *yytop = yycrank+64;
+struct yywork *yytop = yycrank+126;
 struct yysvf *yybgin = yysvec+1;
 char yymatch[] = {
   0,   1,   1,   1,   1,   1,   1,   1, 
@@ -241,6 +311,7 @@ char yymatch[] = {
   1,   1,   1,   1,   1,   1,   1,   1, 
 0};
 char yyextra[] = {
+0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,
 0};
 /*	Copyright (c) 1989 AT&T	*/

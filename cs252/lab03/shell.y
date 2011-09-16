@@ -1,23 +1,9 @@
+%token  <string_val> WORD
+%token  NOTOKEN, AMPERSAND, GREAT, GREATAMPERSAND, GREATGREAT, GREATGREATAMPERSAND, LESS, PIPE, NEWLINE
 
-/*
- * CS-413 Spring 98
- * shell.y: parser for shell
- *
- * This parser compiles the following grammar:
- *
- *	cmd [arg]* [> filename]
- *
- * you must extend it to understand the complete shell grammar
- *
- */
-
-%token	<string_val> WORD
-
-%token 	NOTOKEN, GREAT, NEWLINE 
-
-%union	{
-		char   *string_val;
-	}
+%union  {
+    char *string_val;
+}
 
 %{
 extern "C" int yylex();
@@ -37,11 +23,12 @@ commands:
 	| commands command 
 	;
 
-command: simple_command
-        ;
+command:
+    simple_command
+    ;
 
 simple_command:	
-	command_and_args iomodifier_opt NEWLINE {
+	pipe_list io_modifier background_opt NEWLINE {
 		printf("   Yacc: Execute command\n");
 		Command::_currentCommand.execute();
 	}
@@ -63,28 +50,61 @@ arg_list:
 
 argument:
 	WORD {
-               printf("   Yacc: insert argument \"%s\"\n", $1);
-
-	       Command::_currentSimpleCommand->insertArgument( $1 );\
+        printf("   Yacc: insert argument \"%s\"\n", $1);
+        Command::_currentSimpleCommand->insertArgument( $1 );
 	}
 	;
 
 command_word:
 	WORD {
-               printf("   Yacc: insert command \"%s\"\n", $1);
-	       
-	       Command::_currentSimpleCommand = new SimpleCommand();
-	       Command::_currentSimpleCommand->insertArgument( $1 );
+        printf("   Yacc: insert command \"%s\"\n", $1);
+	    Command::_currentSimpleCommand = new SimpleCommand();
+	    Command::_currentSimpleCommand->insertArgument( $1 );
 	}
 	;
+	
+pipe_list:
+    pipe_list PIPE command_and_args
+    | command_and_args
+    ;
 
-iomodifier_opt:
+io_modifier:
 	GREAT WORD {
 		printf("   Yacc: insert output \"%s\"\n", $2);
 		Command::_currentCommand._outFile = $2;
 	}
-	| /* can be empty */ 
+	| GREATGREAT WORD {
+	    printf("   Yacc: insert output \"%s\"\n", $2);
+		Command::_currentCommand._outFile = $2;
+	}
+	| GREATAMPERSAND WORD {
+	    printf("   Yacc: insert output \"%s\"\n", $2);
+		Command::_currentCommand._outFile = $2;
+		Command::_currentCommand._errFile = $2;
+	}
+	| GREATGREATAMPERSAND WORD {
+	    printf("   Yacc: insert output \"%s\"\n", $2);
+		Command::_currentCommand._outFile = $2;
+		Command::_currentCommand._errFile = $2;
+	}
+	| LESS WORD {
+	    printf("   Yacc: insert output \"%s\"\n", $2);
+		Command::_currentCommand._inputFile = $2;
+	}
+	| /* empty */
 	;
+	
+io_modifier_list:
+    io_modifier_list io_modifier
+    | io_modifier
+    ;
+
+background_opt:
+    AMPERSAND {
+        Command::_currentCommand._background = 1;
+    }
+    | /* empty */
+    ;
 
 %%
 
