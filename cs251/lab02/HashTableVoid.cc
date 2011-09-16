@@ -17,7 +17,7 @@ int HashTableVoid::hash(const char * key)
     l = strlen(key);
     
     int i;
-    for (i = 0; i < l - 1; i++)
+    for (i = 0; i < l; i++)
     {
         n += (i + 1) * key[i];
     }
@@ -144,14 +144,48 @@ bool HashTableVoid::removeElement(const char * key)
 // Creates an iterator object for this hash table
 HashTableVoidIterator::HashTableVoidIterator(HashTableVoid * hashTable)
 {
-  // Add implementation here
-
+    _hashTable = hashTable;
+    _currentBucket = 0;
+    _currentEntry = NULL;
 }
 
 // Returns true if there is a next element. Stores data value in data.
 bool HashTableVoidIterator::next(const char * & key, void * & data)
 {
-  // Add implementation here
-  return false;
+    if (_currentEntry != NULL) // first run
+    {
+        if (_currentEntry->_next != NULL)
+        {
+            key = _currentEntry->_next->_key;
+            data = _currentEntry->_next->_data;
+            
+            _currentEntry = _currentEntry->_next;
+            
+            return true;
+        }
+    }
+    
+    int i;
+    i = _currentBucket + 1;
+    
+    while (i < 2039 &&
+           _hashTable->_buckets[i] == NULL)
+    {
+        i++;
+    }
+    
+    if (i < 2039 &&
+        _hashTable->_buckets[i] != NULL)
+    {
+        key = _hashTable->_buckets[i]->_key;
+        data = _hashTable->_buckets[i]->_data;
+    
+        _currentBucket = i;
+        _currentEntry = _hashTable->_buckets[i];
+    
+        return true;
+    }
+    
+    return false;
 }
 
