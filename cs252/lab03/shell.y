@@ -28,7 +28,7 @@ command:
     ;
 
 simple_command:	
-	pipe_list io_modifier background_opt NEWLINE {
+	pipe_list io_modifier_list background_opt NEWLINE {
 		printf("   Yacc: Execute command\n");
 		Command::_currentCommand.execute();
 	}
@@ -91,12 +91,12 @@ io_modifier:
 	    printf("   Yacc: insert output \"%s\"\n", $2);
 		Command::_currentCommand._inputFile = $2;
 	}
-	| /* empty */
 	;
 	
 io_modifier_list:
     io_modifier_list io_modifier
     | io_modifier
+    | /* empty */
     ;
 
 background_opt:
