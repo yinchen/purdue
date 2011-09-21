@@ -59,6 +59,8 @@ Command::Command()
 	_inputFile = 0;
 	_errFile = 0;
 	_background = 0;
+	
+	_append = 0;
 }
 
 void
@@ -140,6 +142,12 @@ Command::execute()
 	    prompt();
 		return;
 	}
+	
+	if (strcmp(_simpleCommands[0]->_arguments[0], "exit") == 0)
+	{
+	    printf("Thank you for using Matt's Awesome Shell. Goodbye!\n");
+	    exit(1);
+	}
 
 	print();
 	
@@ -147,39 +155,68 @@ Command::execute()
     int defaultout = dup(1);
     int defaulterr = dup(2);
     
+    int fdin;
+    int fdout;
+    int fderr;
+    
+    if (_inputFile == 0)
+    {
+        fdin = dup(defaultin);
+    }
+    else
+    {
+        fdin = open(_inputFile, O_RDONLY);
+    }
+    
     int pid;
 	
     int i;
     for (i = 0; i < _numberOfSimpleCommands; i++)
     {
-	    if (_inputFile == 0)
-	    {
-	        dup2(defaultin, 0);
-	    }
-	    else
-	    {
-	        dup2(creat(_inputFile, 0666), 0);
-	    }
+	    dup2(fdin, 0);
+	    close(fdin);
 	    
-	    if (_outFile == 0)
+	    if (i == _numberOfSimpleCommands - 1)
 	    {
-	        dup2(defaultout, 1);
+	        if (_outFile == 0)
+            {
+                fdout = dup(defaultout);
+            }
+            else
+            {
+                if (_append)
+                    fdout = open(_outFile, O_WRONLY|O_APPEND|O_TRUNC, 0600);
+                else
+                    fdout = open(_outFile, O_WRONLY|O_CREAT|O_TRUNC, 0600);
+            }
+            
+            if (_errFile == 0)
+            {
+                fderr = dup(defaulterr);
+            }
+            else
+            {
+                if (_append)
+                    fderr = open(_errFile, O_WRONLY|O_APPEND|O_TRUNC, 0600);
+                else
+                    fderr = open(_errFile, O_WRONLY|O_CREAT|O_TRUNC, 0600);
+            }
         }
-	    else
-	    {
-	        dup2(creat(_outFile, 0666), 1);
-	    }
-	    
-	    if (_errFile == 0)
-	    {
-	        dup2(defaulterr, 2);
-	    }
-	    else
-	    {
-	        dup2(creat(_errFile, 0666), 2);
-	    }
-	    
-	    pid = fork();
+        else
+        {
+            int fdpipe[2];
+            pipe(fdpipe);
+            fdout = fdpipe[0];
+            fdin = fdpipe[1];
+        }
+        
+        dup2(fdout, 1);
+        close(fdout);
+        
+        dup2(fderr, 2);
+        close(fderr);
+    
+        pid = fork();
 	    if (pid == -1)
 	    {
 		    perror(_simpleCommands[i]->_arguments[0]);
@@ -197,14 +234,7 @@ Command::execute()
 	        prompt();
 	        return;
 	    }
-	    
-	    if (_background == 0)
-	    {
-    	    waitpid(pid, 0, 0);
-	    }
     }
-    
-    waitpid(pid, 0, 0);
     
     dup2(defaultin, 0);
     dup2(defaultout, 1);
@@ -214,7 +244,12 @@ Command::execute()
 	close(defaultout);
 	close(defaulterr);
     
-	clear();
+	if (_background == 0)
+    {
+	    waitpid(pid, 0, 0);
+    }
+    
+    clear();
 	prompt();
 }
 
@@ -223,7 +258,7 @@ Command::execute()
 void
 Command::prompt()
 {
-	printf("myshell>");
+	printf("mash> ");
 	fflush(stdout);
 }
 
@@ -232,8 +267,17 @@ SimpleCommand * Command::_currentSimpleCommand;
 
 int yyparse(void);
 
+extern "C" void disp(int sig)
+{
+	fprintf(stderr, "\nPlease do not do that.\n");
+	
+    Command::_currentCommand.prompt();
+}
+
 main()
 {
+    sigset(SIGINT, disp);
+    
 	Command::_currentCommand.prompt();
 	yyparse();
 }

@@ -61,6 +61,7 @@ command_word:
 	    Command::_currentSimpleCommand = new SimpleCommand();
 	    Command::_currentSimpleCommand->insertArgument( $1 );
 	}
+	| /* can be empty */
 	;
 	
 pipe_list:
@@ -75,6 +76,7 @@ io_modifier:
 	}
 	| GREATGREAT WORD {
 	    printf("   Yacc: insert output \"%s\"\n", $2);
+		Command::_currentCommand._append = 1;
 		Command::_currentCommand._outFile = $2;
 	}
 	| GREATAMPERSAND WORD {
@@ -84,6 +86,7 @@ io_modifier:
 	}
 	| GREATGREATAMPERSAND WORD {
 	    printf("   Yacc: insert output \"%s\"\n", $2);
+	    Command::_currentCommand._append = 1;
 		Command::_currentCommand._outFile = $2;
 		Command::_currentCommand._errFile = $2;
 	}
