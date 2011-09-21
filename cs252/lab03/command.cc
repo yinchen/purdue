@@ -142,30 +142,42 @@ Command::execute()
 	}
 
 	print();
-    
+	
     int defaultin = dup(0);
     int defaultout = dup(1);
     int defaulterr = dup(2);
     
-	int pid;
+    int pid;
 	
     int i;
     for (i = 0; i < _numberOfSimpleCommands; i++)
     {
 	    if (_inputFile == 0)
+	    {
 	        dup2(defaultin, 0);
+	    }
 	    else
+	    {
 	        dup2(creat(_inputFile, 0666), 0);
+	    }
 	    
 	    if (_outFile == 0)
+	    {
 	        dup2(defaultout, 1);
-        else
+        }
+	    else
+	    {
 	        dup2(creat(_outFile, 0666), 1);
+	    }
 	    
 	    if (_errFile == 0)
+	    {
 	        dup2(defaulterr, 2);
+	    }
 	    else
+	    {
 	        dup2(creat(_errFile, 0666), 2);
+	    }
 	    
 	    pid = fork();
 	    if (pid == -1)
