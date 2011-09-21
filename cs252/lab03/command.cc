@@ -13,6 +13,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <sys/wait.h>
 #include <string.h>
 #include <signal.h>
@@ -133,48 +135,74 @@ Command::print()
 void
 Command::execute()
 {
-	// Don't do anything if there are no simple commands
 	if (_numberOfSimpleCommands == 0)
-	{
-		prompt();
+	{   
+	    prompt();
 		return;
 	}
 
-	// Print contents of Command data structure
 	print();
-
-	// Add execution here
+    
+    int defaultin = dup(0);
+    int defaultout = dup(1);
+    int defaulterr = dup(2);
+    
 	int pid;
 	
     int i;
     for (i = 0; i < _numberOfSimpleCommands; i++)
     {
+	    if (_inputFile == 0)
+	        dup2(defaultin, 0);
+	    else
+	        dup2(creat(_inputFile, 0666), 0);
+	    
+	    if (_outFile == 0)
+	        dup2(defaultout, 1);
+        else
+	        dup2(creat(_outFile, 0666), 1);
+	    
+	    if (_errFile == 0)
+	        dup2(defaulterr, 2);
+	    else
+	        dup2(creat(_errFile, 0666), 2);
+	    
 	    pid = fork();
 	    if (pid == -1)
 	    {
-		    exit(2);
+		    perror(_simpleCommands[i]->_arguments[0]);
+		    
+		    clear();
+	        prompt();
+	        return;
 	    }
-
-	    if (pid == 0)
+        if (pid == 0)
 	    {
-		    execvp(_simpleCommands[i]->_arguments[0], _simpleCommands[i]->_arguments);
-		    exit(2);
+	        execvp(_simpleCommands[i]->_arguments[0], _simpleCommands[i]->_arguments);
+		    perror(_simpleCommands[i]->_arguments[0]);
+		    
+		    clear();
+	        prompt();
+	        return;
 	    }
-	
-	    waitpid(pid, 0, 0);
-
-	    exit(2);
+	    
+	    if (_background == 0)
+	    {
+    	    waitpid(pid, 0, 0);
+	    }
     }
-
-	
-	
-	// Setup i/o redirection
-	// and call exec
-
-	// Clear to prepare for next command
+    
+    waitpid(pid, 0, 0);
+    
+    dup2(defaultin, 0);
+    dup2(defaultout, 1);
+    dup2(defaulterr, 2);
+    
+    close(defaultin);
+	close(defaultout);
+	close(defaulterr);
+    
 	clear();
-	
-	// Print new prompt
 	prompt();
 }
 
