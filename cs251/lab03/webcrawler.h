@@ -1,7 +1,5 @@
-
-// CS251 Definitions for web-crawler
-
 #include "HashTableTemplate.h"
+#include "SimpleHTMLParser.h"
 
 // Stores a URL and the first 100 words
 struct URLRecord {
@@ -16,7 +14,7 @@ struct URLRecordList {
   URLRecordList * _next;   // Pointer to the next URL Record in the list
 };
 
-class WebCrawler {
+class WebCrawler : public SimpleHTMLParser {
   // The url array stores all the URLs that have been scanned
   int _maxUrls;            // Max size of the URL array
   URLRecord * _urlArray;   // Array of URLs 
