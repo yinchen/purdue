@@ -85,7 +85,7 @@ int parseURL( const char * url, char * host, int * port, char * document )
 	
 	// Get document
 	if (*p) {
-		strlcpy( document, p, MaxURLLength );
+		strncpy( document, p, MaxURLLength );
 	}
 	else {
 		strcpy( document, "/" );
