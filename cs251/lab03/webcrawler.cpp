@@ -1,9 +1,39 @@
 #include "webcrawler.h"
 
+char *word;
+char *description;
+
 void
 onContentFound(char c)
 {
-    // TODO: implement this method
+    if (word == NULL)
+    {
+        word = new char[1];
+    }
+    
+    if (description == NULL)
+    {
+        description = new char[500];
+    }
+    
+    if (c != ' ')
+    {
+        char *buffer = new char[strlen(word)];
+        strcpy(buffer, word);
+        
+        word = new char[strlen(word) + 1];
+        
+        strcpy(word, buffer);
+
+        word[strlen(word) - 2] = c;
+        word[strlen(word) - 1] = '\0';
+    }
+    else
+    {
+        // TODO: do something with word
+        
+        word = NULL;
+    }
 }
 
 void
@@ -36,25 +66,28 @@ WebCrawler::WebCrawler(int maxUrls, int nInitialUrls, const char **initialUrls)
 void
 WebCrawler::crawl()
 {
-    //while (_headURL <_tailURL) {
-    //  Fetch the next URL in _headURL
+    while (_headURL < _tailURL)
+    {
+        char *curr = _urlArray[_headUrl]._url;
+        
+        _headUrl = _headUrl + 1;
+        
+        int n;
+        char *buffer = fetchHTML(curr, &n);
+        if (buffer == NULL)
+        {
+            continue;
+        }
+        
+        parse(buffer, n);
 
-    //  Increment _headURL
+        //  Find all the hyperlinks of this document and add them to the
+        //    _urlArray and _urlToUrlRecord if they are not already in the
+        //    _urlToUrlRecord. Only insert up to _maxURL entries.
 
-    //  If the document is not text/html 
-
-    //        continue;
-
-    //  Get the first 500 characters (at most) of the document without tags. Add this 
-    //     description to theURL record for this URL.
-
-    //  Find all the hyperlinks of this document and add them to the
-    //    _urlArray and _urlToUrlRecord if they are not already in the
-    //    _urlToUrlRecord. Only insert up to _maxURL entries.
-
-    //  For each word in the document without tags, add the index of this URL to
-    //    a URLRecordList in the _wordToURLRecordList table if the URL is not already there.
-    //}
+        //  For each word in the document without tags, add the index of this URL to
+        //    a URLRecordList in the _wordToURLRecordList table if the URL is not already there.
+    }
 }
 
 void
