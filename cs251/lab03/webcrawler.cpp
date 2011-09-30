@@ -73,7 +73,7 @@ WebCrawler::crawl()
         _headURL = _headURL + 1;
         
         int n;
-        char *buffer = fetchHTML(curr, &n);
+        char *buffer = WebCrawler.fetchHTML(curr, &n);
         if (buffer == NULL)
         {
             continue;
