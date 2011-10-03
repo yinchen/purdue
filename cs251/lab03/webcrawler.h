@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include "openhttp.h"
 #include "SimpleHTMLParser.h"
 #include "HashTableTemplate.h"
@@ -11,35 +14,39 @@ struct URLRecord {
 // Used to implement a list of URL indexes of the url array.
 // There is one list of URLs for each word 
 struct URLRecordList {
-  int _urlRecordIndex;     // Index into the URL Array
-  URLRecordList * _next;   // Pointer to the next URL Record in the list
+    int _urlRecordIndex;     // Index into the URL Array
+    URLRecordList * _next;   // Pointer to the next URL Record in the list
 };
 
 class WebCrawler : public SimpleHTMLParser {
-  // The url array stores all the URLs that have been scanned
-  int _maxUrls;            // Max size of the URL array
-  URLRecord * _urlArray;   // Array of URLs 
-  int _headURL;            // Points to the next URL to scan by the web crawler
-  int _tailURL;            // Next position unused in the urlArray
+    // The url array stores all the URLs that have been scanned
+    int _maxUrls;            // Max size of the URL array
+    URLRecord * _urlArray;   // Array of URLs 
+    int _headURL;            // Points to the next URL to scan by the web crawler
+    int _tailURL;            // Next position unused in the urlArray
 
-  HashTableTemplate<int> * _urlToUrlRecord;         //  maps a URL to its index in the URLArray 
+    HashTableTemplate<int> * _urlToUrlRecord; // maps a URL to its index in the URLArray 
   
-  HashTableTemplate<URLRecordList *> *_wordToURLRecordList; // maps a word to a list of URLs
+    HashTableTemplate<URLRecordList *> *_wordToURLRecordList; // maps a word to a list of URLs
 
- public:
-  // Create a web crawler object with the initial urls
-  WebCrawler(int maxUrls, int nurlRoots, const char ** urlRoots);
-  
-  // crawl the web
-  void crawl();
+    public:
+        // Create a web crawler object with the initial urls
+        WebCrawler(int maxUrls, int nurlRoots, const char ** urlRoots);
+        
+        void onContentFound(char c);
+    	void onAnchorFound(char *url);
+        
+        // crawl the web
+        void crawl();
 
-  // Write array of URLs and descriptions to file
-  void writeURLFile(const char * urlFileName);
+        // Write array of URLs and descriptions to file
+        void writeURLFile(const char * urlFileName);
 
-  // Write list of words with their urls to file
-  void writeWordFile(const char *wordFileName);
+        // Write list of words with their urls to file
+        void writeWordFile(const char *wordFileName);
 
-  // Add any other objects you may need
+        // Print list of URLs and descriptions to console
+        void print();
 };
 
 

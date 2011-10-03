@@ -1,10 +1,11 @@
 all: gethttp webcrawler 
 
 gethttp: gethttp.cpp openhttp.cpp SimpleHTMLParser.cpp
-	g++ -o gethttp -g gethttp.cpp openhttp.cpp SimpleHTMLParser.cpp -lnsl -lsocket
+	g++ -o gethttp -g gethttp.cpp openhttp.cpp SimpleHTMLParser.cpp # -lnsl -lsocket
 
-webcrawler: webcrawler.cpp SimpleHTMLParser.cpp
-	g++ -o webcrawler -g webcrawler.cpp SimpleHTMLParser.cpp
+webcrawler: webcrawler.cpp openhttp.cpp SimpleHTMLParser.cpp
+	g++ -o webcrawler -g webcrawler.cpp openhttp.cpp SimpleHTMLParser.cpp # -lnsl -lsocket
 
 clean:
 	rm -f *.o gethttp webcrawler core
+
