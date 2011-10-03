@@ -54,6 +54,9 @@ WebCrawler::onContentFound(char c)
         //  For each word in the document without tags, add the index of this URL to
         //    a URLRecordList in the _wordToURLRecordList table if the URL is not already there.
         
+        if (word == NULL || slength(word) <= 0)
+            return;
+        
         URLRecordList *tmp;        
         if (_wordToURLRecordList->find(word, &tmp) == false)
         {
@@ -76,6 +79,7 @@ WebCrawler::onContentFound(char c)
             else
             {
                 URLRecordList *last = tmp;
+                tmp = tmp->_next;
                 
                 while (tmp != NULL)
                 {
