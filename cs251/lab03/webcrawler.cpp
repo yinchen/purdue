@@ -72,7 +72,7 @@ WebCrawler::onContentFound(char c)
         }
         */
         
-        delete word; // word = NULL;
+        word = NULL;
     }
     
     // only store the first 500 characters in description
@@ -201,8 +201,8 @@ WebCrawler::crawl()
         
         _urlArray[_headURL]._description = description;
         
-        delete word; // word = NULL;
-        delete description; // description = NULL;
+        word = NULL;
+        description = NULL;
 
         _headURL = _headURL + 1;
     }
