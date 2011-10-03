@@ -37,7 +37,8 @@ WebCrawler::onContentFound(char c)
     }
     
     // check if this is the end of a word
-    if (c != ' ' && c != '\n')
+    if (('A' <= c && c <= 'Z') ||
+        ('a' <= c && c <= 'z'))
     {
         char *single = new char[2];
         single[0] = c;
@@ -53,9 +54,7 @@ WebCrawler::onContentFound(char c)
         //  For each word in the document without tags, add the index of this URL to
         //    a URLRecordList in the _wordToURLRecordList table if the URL is not already there.
         
-        /*
-        URLRecordList *tmp;
-        
+        URLRecordList *tmp;        
         if (_wordToURLRecordList->find(word, &tmp) == false)
         {
             URLRecordList *data = new URLRecordList();
@@ -64,7 +63,29 @@ WebCrawler::onContentFound(char c)
             
             _wordToURLRecordList->insertItem(word, data);
         }
-        */
+        else
+        {
+            URLRecordList *data = new URLRecordList();
+            data->_urlRecordIndex = _headURL;
+            data->_next = NULL;
+            
+            if (tmp->_next == NULL)
+            {            
+                tmp->_next = data;
+            }
+            else
+            {
+                URLRecordList *last = tmp;
+                
+                while (tmp != NULL)
+                {
+                    last = tmp;
+                    tmp = tmp->_next;
+                }
+                
+                last->_next = data;
+            }
+        }
         
         word = NULL;
     }
@@ -179,20 +200,8 @@ WebCrawler::crawl()
 }
 
 void
-WebCrawler::print()
-{
-    int i;
-    for (i = 0; i < _tailURL; i++)
-    {
-        printf("%s\n", _urlArray[i]._description);
-    }
-}
-
-void
 WebCrawler::writeURLFile(const char *urlFileName)
 {
-    // TODO: implement this method
-    
     FILE *file;
     file = fopen(urlFileName, "w");
     
@@ -213,7 +222,28 @@ WebCrawler::writeURLFile(const char *urlFileName)
 void
 WebCrawler::writeWordFile(const char *wordFileName)
 {
-    // TODO: implement this method
+    FILE *file;
+    file = fopen(wordFileName, "w");
+    
+    int i;
+    for (i = 0; i < 2039; i++)
+    {
+        if (_wordToURLRecordList->_buckets[i] == NULL)
+            continue;
+        
+        fprintf(file, "%s", _wordToURLRecordList->_buckets[i]->_key);
+        
+        URLRecordList *curr = _wordToURLRecordList->_buckets[i]->_data;
+        while (curr != NULL)
+        {
+            fprintf(file, " %d", curr->_urlRecordIndex);
+            curr = curr->_next;
+        }
+        
+        fprintf(file, "\n");
+    }
+    
+    fclose(file);
 }
 
 WebCrawler::WebCrawler(int maxUrls, int nInitialUrls, const char **initialUrls)

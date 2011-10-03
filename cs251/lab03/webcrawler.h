@@ -44,9 +44,6 @@ class WebCrawler : public SimpleHTMLParser {
 
         // Write list of words with their urls to file
         void writeWordFile(const char *wordFileName);
-
-        // Print list of URLs and descriptions to console
-        void print();
 };
 
 
