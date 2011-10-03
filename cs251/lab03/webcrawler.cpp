@@ -39,20 +39,14 @@ WebCrawler::onContentFound(char c)
     // check if this is the end of a word
     if (c != ' ' && c != '\n')
     {
+        char *single = new char[2];
+        single[0] = c;
+        single[1] = '\0';
+        
         char *buffer;
-        buffer = new char[slength(word) + 1];
-        
-        strcpy(buffer, word);
-        
-        int size;
-        size = slength(word) + 1 + 1;
-        
-        word = new char[size];
+        buffer = strcat(word, single);
         
         strcpy(word, buffer);
-        
-        word[size - 2] = c;
-        word[size - 1] = '\0';
     }
     else
     {
@@ -78,20 +72,14 @@ WebCrawler::onContentFound(char c)
     // only store the first 500 characters in description
     if (slength(description) < 500)
     {
+        char *single = new char[2];
+        single[0] = c;
+        single[1] = '\0';
+        
         char *buffer;
-        buffer = new char[slength(description) + 1];
-        
-        strcpy(buffer, description);
-        
-        int size;
-        size = slength(description) + 1 + 1;
-        
-        description = new char[size];
+        buffer = strcat(description, single);
         
         strcpy(description, buffer);
-        
-        description[size - 2] = c;
-        description[size - 1] = '\0';
     }
 }
 
@@ -110,61 +98,43 @@ WebCrawler::onAnchorFound(char *url)
     // append trailing slash to root url
     if (root[slength(root) - 1] != '/')
     {
-        char *buffer;
-        buffer = new char[slength(root) + 1];
-        
-        strcpy(buffer, root);
-        
-        int size;
-        size = slength(root) + 1 + 1;
-        
-        root = new char[size];
-        
-        strcpy(root, buffer);
-        
-        root[size - 2] = '/';
-        root[size - 1] = '\0';
+        root = strcat(root, "/");
     }
     
-    // remove leading slash from current url
+    // check if this is an absolute url
     if (url[0] == '/')
     {
-        char *buffer;
-        buffer = new char[slength(url)];
+        // chop off the directory structure
+        int count;
+        count = 0;
         
-        strcpy(buffer, url);
+        int i;
+        for (i = 0; i < slength(root); i++)
+        {
+            if (root[i] == '/')
+                count = count + 1;
+            else
+                continue;
+            
+            if (count >= 3)
+            {
+                root[i] = '\0';
+                break;
+            }
+        }
         
-        int size;
-        size = slength(url);
-        
-        url = new char[size];
-        
-        strcpy(url, buffer + 1);
-        
-        url[size - 1] = '\0';
+        url = strcat(root, url);
     }
-        
-    // append relative urls
-    char *http = "http://";
-    char *https = "https://";
-    
-    if (strncmp(url, http, 7) != 0 &&
-        strncmp(url, https, 8) != 0)
+    else
     {
-        char *buffer;
-        buffer = new char[slength(url)];
+        char *http = "http://";
+        char *https = "https://";
         
-        strcpy(buffer, url);
-        
-        int size;
-        size = slength(root) + slength(url) + 1;
-        
-        url = new char[size];
-        
-        strcpy(url, root);
-        strcpy(url + slength(root), buffer);
-        
-        url[size - 1] = '\0';
+        if (strncmp(url, http, 7) != 0 &&
+            strncmp(url, https, 8) != 0)
+        {
+            url = strcat(root, url);
+        }
     }
     
     char *absoluteURL = new char[slength(url) + 1];
@@ -262,20 +232,7 @@ WebCrawler::WebCrawler(int maxUrls, int nInitialUrls, const char **initialUrls)
         
         if (tmp[slength(tmp) - 1] != '/')
         {
-            char *buffer;
-            buffer = new char[slength(tmp) + 1];
-            
-            strcpy(buffer, tmp);
-            
-            int size;
-            size = slength(tmp) + 1 + 1;
-            
-            tmp = new char[size];
-            
-            strcpy(tmp, buffer);
-            
-            tmp[size - 2] = '/';
-            tmp[size - 1] = '\0';
+            tmp = strcat(tmp, "/");
         }
         
         _urlArray[i]._url = tmp;
