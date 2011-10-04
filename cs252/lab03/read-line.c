@@ -93,6 +93,9 @@ char * read_line()
             // If at end of line
             if (curs_pos==line_length) continue;
             
+            ch = 4;
+            write(1,&ch,1);
+            
             // reprint chars after cursor + 1
             int i;
             for (i = curs_pos + 1; i < line_length; i++)
