@@ -62,7 +62,7 @@ WebCrawler::onContentFound(char c)
         {
             URLRecordList *data = new URLRecordList();
             data->_urlRecordIndex = _headURL;
-            data->_next = NULL;
+            data->_next = data;
             
             _wordToURLRecordList->insertItem(word, data);
         }
