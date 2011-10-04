@@ -105,7 +105,6 @@ char * read_line()
             }
             
             // reprint chars after cursor + 1
-            int i = 0;
             for (i = cus_pos + 1; i < line_length; i++)
             {
                 ch = line_buffer[i];
