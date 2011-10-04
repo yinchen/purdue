@@ -179,7 +179,8 @@ char * read_line()
                 if (line_length==MAX_BUFFER_LINE-2) continue;
                 
                 // Go forward one character
-                
+                ch = 127;
+                write(1,&ch,1);
             }
         }
     }
