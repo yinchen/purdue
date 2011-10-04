@@ -93,10 +93,25 @@ char * read_line()
             // If at end of line
             if (curs_pos==line_length) continue;
             
-            // delete one character
-            ch = 4;
-            write(1,&ch,1);
-
+            // delete all chars after cursor
+            int i = 0;
+            for (i = cus_pos; i < line_length; i++)
+            {
+                ch = 4;
+                write(1,&ch,1);
+                
+                ch = 32;
+                write(1,&ch,1);
+            }
+            
+            // reprint chars after cursor + 1
+            int i = 0;
+            for (i = cus_pos + 1; i < line_length; i++)
+            {
+                ch = line_buffer[i];
+                write(1,&ch,1);
+            }
+            
             line_length--;
         }
         else if (ch == 1)
