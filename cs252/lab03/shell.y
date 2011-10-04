@@ -33,6 +33,7 @@ simple_command:
 	}
 	| NEWLINE 
 	| error NEWLINE { yyerrok; }
+        |
 	;
 
 command_and_args:
