@@ -105,6 +105,17 @@ char * read_line()
                 write(1,&ch,1);
             }
             
+            // overwrite leftover char
+            ch = 32;
+            write(1,&ch,1);
+            
+            // return cursor to curr pos
+            for (i = curr_pos; i < line_length; i++)
+            {
+                ch = 8;
+                write(1,&ch,1);
+            }
+            
             line_length--;
         }
         else if (ch == 1)
