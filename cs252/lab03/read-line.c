@@ -96,6 +96,10 @@ char * read_line()
             ch = 4;
             write(1,&ch,1);
             
+            line_length--;
+            
+            continue;
+            
             // reprint chars after cursor + 1
             int i;
             for (i = curs_pos + 1; i < line_length; i++)
@@ -280,8 +284,6 @@ char * read_line()
     line_length++;
     line_buffer[line_length]=0;
     
-    curs_pos++;
-
     return line_buffer;
 }
 
