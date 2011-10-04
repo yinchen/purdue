@@ -93,6 +93,10 @@ char * read_line()
             // If at end of line
             if (curs_pos==line_length) continue;
             
+            // Go back one character
+            ch = 8;
+            write(1,&ch,1);
+            
             // Write a space to erase the last character read
             ch = 32;
             write(1,&ch,1);
