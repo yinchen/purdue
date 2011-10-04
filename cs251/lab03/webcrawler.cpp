@@ -57,7 +57,7 @@ WebCrawler::onContentFound(char c)
         if (word == NULL || slength(word) <= 0)
             return;
         
-        URLRecordList *tmp;        
+        URLRecordList *tmp = NULL;        
         if (_wordToURLRecordList->find(word, &tmp) == false)
         {
             URLRecordList *data = new URLRecordList();
