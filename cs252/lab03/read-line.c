@@ -93,10 +93,6 @@ char * read_line()
             // If at end of line
             if (curs_pos==line_length) continue;
             
-            // Go back one character
-            ch = 8;
-            write(1,&ch,1);
-            
             // Write a space to erase the last character read
             ch = 32;
             write(1,&ch,1);
@@ -107,7 +103,7 @@ char * read_line()
             
             // move chars after cursor + 1
             int i;
-            for (i = curs_pos + 1; i < line_length - 1; i++)
+            for (i = curs_pos; i < line_length - 1; i++)
             {
                 line_buffer[i] = line_buffer[i + 1];
             }
