@@ -95,7 +95,7 @@ char * read_line()
             
             // delete all chars after cursor
             int i = 0;
-            for (i = cus_pos; i < line_length; i++)
+            for (i = curs_pos; i < line_length; i++)
             {
                 ch = 4;
                 write(1,&ch,1);
@@ -105,7 +105,7 @@ char * read_line()
             }
             
             // reprint chars after cursor + 1
-            for (i = cus_pos + 1; i < line_length; i++)
+            for (i = curs_pos + 1; i < line_length; i++)
             {
                 ch = line_buffer[i];
                 write(1,&ch,1);
