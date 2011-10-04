@@ -276,7 +276,18 @@ extern "C" void disp(int sig)
 
 main()
 {
-    sigset(SIGINT, disp);
+    struct sigaction signalAction;
+    
+    signalAction.sa_handler = disp;
+    sigemptyset(&signalAction.sa_mask);
+    signalAction.sa_flags = SA_RESTART;
+    
+    int error = sigaction(SIGINT, &signalAction, NULL);
+    if ( error )
+    {
+        perror("sigaction");
+        exit(-1);
+    }
     
 	Command::_currentCommand.prompt();
 	yyparse();
