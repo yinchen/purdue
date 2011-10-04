@@ -35,5 +35,5 @@ regular: regular.cc
 	$(CC) -o regular regular.cc -lgen
 
 clean:
-	rm -f shell ctrl-c regular cat_grep *.o
+	rm -f shell ctrl-c regular cat_grep read-line-example keyboard-example *.o
 
