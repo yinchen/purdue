@@ -29,7 +29,6 @@ command:
 
 simple_command:	
 	pipe_list io_modifier_list background_opt NEWLINE {
-		printf("   Yacc: Execute command\n");
 		Command::_currentCommand.execute();
 	}
 	| NEWLINE 
@@ -38,8 +37,7 @@ simple_command:
 
 command_and_args:
 	command_word arg_list {
-		Command::_currentCommand.
-			insertSimpleCommand( Command::_currentSimpleCommand );
+		Command::_currentCommand.insertSimpleCommand( Command::_currentSimpleCommand );
 	}
 	;
 
@@ -50,15 +48,13 @@ arg_list:
 
 argument:
 	WORD {
-        printf("   Yacc: insert argument \"%s\"\n", $1);
-        Command::_currentSimpleCommand->insertArgument( $1 );
+        	Command::_currentSimpleCommand->insertArgument( $1 );
 	}
 	;
 
 command_word:
 	WORD {
-        printf("   Yacc: insert command \"%s\"\n", $1);
-	    Command::_currentSimpleCommand = new SimpleCommand();
+            Command::_currentSimpleCommand = new SimpleCommand();
 	    Command::_currentSimpleCommand->insertArgument( $1 );
 	}
 	| /* can be empty */
@@ -71,28 +67,23 @@ pipe_list:
 
 io_modifier:
 	GREAT WORD {
-		printf("   Yacc: insert output \"%s\"\n", $2);
-		Command::_currentCommand._outFile = $2;
+	    Command::_currentCommand._outFile = $2;
 	}
 	| GREATGREAT WORD {
-	    printf("   Yacc: insert output \"%s\"\n", $2);
-		Command::_currentCommand._append = 1;
-		Command::_currentCommand._outFile = $2;
+	    Command::_currentCommand._append = 1;
+	    Command::_currentCommand._outFile = $2;
 	}
 	| GREATAMPERSAND WORD {
-	    printf("   Yacc: insert output \"%s\"\n", $2);
-		Command::_currentCommand._outFile = $2;
-		Command::_currentCommand._errFile = $2;
+	    Command::_currentCommand._outFile = $2;
+	    Command::_currentCommand._errFile = $2;
 	}
 	| GREATGREATAMPERSAND WORD {
-	    printf("   Yacc: insert output \"%s\"\n", $2);
 	    Command::_currentCommand._append = 1;
-		Command::_currentCommand._outFile = $2;
-		Command::_currentCommand._errFile = $2;
+	    Command::_currentCommand._outFile = $2;
+	    Command::_currentCommand._errFile = $2;
 	}
 	| LESS WORD {
-	    printf("   Yacc: insert input \"%s\"\n", $2);
-		Command::_currentCommand._inputFile = $2;
+	    Command::_currentCommand._inputFile = $2;
 	}
 	;
 	
