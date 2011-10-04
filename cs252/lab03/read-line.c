@@ -29,7 +29,7 @@ char * read_line()
 {
     tty_raw_mode();
 
-    line_length = 0;
+    line_length = 6;
 
     while (1)
     {
@@ -44,7 +44,7 @@ char * read_line()
             write(1,&ch,1);
 
             // If max number of character reached return.
-            if (line_length==MAX_BUFFER_LINE-2) break; 
+            if (line_length==MAX_BUFFER_LINE-2) continue; 
 
             // add char to buffer.
             line_buffer[line_length]=ch;
@@ -55,7 +55,7 @@ char * read_line()
             // <Enter> was typed. Return line
 
             // If at front of line
-            if (line_length==0) break;
+            if (line_length<=6) continue;
             
             // Print newline
             write(1,&ch,1);
@@ -67,7 +67,7 @@ char * read_line()
             // <backspace> was typed. Remove previous character read.
 
             // If at front of line
-            if (line_length<=6) break;
+            if (line_length<=6) continue;
             
             // Go back one character
             ch = 8;
@@ -130,7 +130,7 @@ char * read_line()
                 // Down arrow. Print prev line in history.
                 
                 // Check if at bottom of history
-                if (history_index <= 0) break;                
+                if (history_index <= 0) continue;                
                 
                 // Erase old line
                 // Print backspaces
@@ -168,7 +168,7 @@ char * read_line()
                 // left arrow
                 
                 // If at front of line
-                if (line_length==0) break;
+                if (line_length==0) continue;
                 
                 // Go back one character
                 ch = 8;
@@ -179,7 +179,7 @@ char * read_line()
                 // right arrow
                 
                 // If max number of character reached return.
-                if (line_length==MAX_BUFFER_LINE-2) break;
+                if (line_length==MAX_BUFFER_LINE-2) continue;
                 
                 // Go forward one character
                 
