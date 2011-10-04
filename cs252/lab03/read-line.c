@@ -95,7 +95,7 @@ char * read_line()
             
             // Go back to front
             int i = 0;
-            for (i =0; i < line_length; i++)
+            for (i =0; i < curs_pos; i++)
             {
                 ch = 8;
                 write(1,&ch,1);
