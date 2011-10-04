@@ -32,7 +32,7 @@ simple_command:
 		printf("   Yacc: Execute command\n");
 		Command::_currentCommand.execute();
 	}
-	| NEWLINE { printf('newline\n'); }
+	| NEWLINE { printf("newline\n"); }
 	| error NEWLINE { yyerrok; }
 	;
 
