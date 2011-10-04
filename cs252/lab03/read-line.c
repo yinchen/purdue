@@ -44,7 +44,7 @@ char * read_line()
             write(1,&ch,1);
 
             // If max number of character reached return.
-            if (line_length==MAX_BUFFER_LINE-2) continue; 
+            if (line_length==MAX_BUFFER_LINE-2) break; 
 
             // add char to buffer.
             line_buffer[line_length]=ch;
