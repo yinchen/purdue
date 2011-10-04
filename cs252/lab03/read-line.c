@@ -25,18 +25,8 @@ char * history [] = {
 };
 int history_length = sizeof(history) / sizeof(char *);
 
-void read_line_print_usage()
+char * read_line()
 {
-    char * usage = "\n"
-        " ctrl-?       Print usage\n"
-        " Backspace    Deletes last character\n"
-        " up arrow     See last command in the history\n";
-
-    write(1, usage, strlen(usage));
-}
-
-char * read_line() {
-
     tty_raw_mode();
 
     line_length = 0;
@@ -59,22 +49,6 @@ char * read_line() {
             // add char to buffer.
             line_buffer[line_length]=ch;
             line_length++;
-        }
-        else if (ch==10)
-        {
-            // <Enter> was typed. Return line
-
-            // Print newline
-            write(1,&ch,1);
-
-            break;
-        }
-        else if (ch == 31)
-        {
-            // ctrl-?
-            read_line_print_usage();
-            line_buffer[0]=0;
-            break;
         }
         else if (ch == 8)
         {
@@ -132,6 +106,44 @@ char * read_line() {
                 strcpy(line_buffer, history[history_index]);
                 line_length = strlen(line_buffer);
                 history_index=(history_index+1)%history_length;
+
+                // echo line
+                write(1, line_buffer, line_length);
+            }
+            else if (ch1==91 && ch2==66)
+            {
+                // Down arrow. Print prev line in history.
+                
+                // Check if at bottom of history
+                if (history_index <= 0) break;                
+                
+                // Erase old line
+                // Print backspaces
+                int i = 0;
+                for (i =0; i < line_length; i++)
+                {
+                    ch = 8;
+                    write(1,&ch,1);
+                }
+
+                // Print spaces on top
+                for (i =0; i < line_length; i++)
+                {
+                    ch = ' ';
+                    write(1,&ch,1);
+                }
+
+                // Print backspaces
+                for (i =0; i < line_length; i++)
+                {
+                    ch = 8;
+                    write(1,&ch,1);
+                }	
+
+                // Copy line from history
+                strcpy(line_buffer, history[history_index]);
+                line_length = strlen(line_buffer);
+                history_index=(history_index-1)%history_length;
 
                 // echo line
                 write(1, line_buffer, line_length);
