@@ -36,7 +36,7 @@ char * read_line()
         char ch;
         read(0, &ch, 1);
 
-        if (ch>=32)
+        if (ch>=32 && ch<=126)
         {
             // It is a printable character. 
 
@@ -62,10 +62,13 @@ char * read_line()
 
             break;
         }
-        else if (ch == 8)
+        else if (ch == 8 || ch == 127)
         {
             // <backspace> was typed. Remove previous character read.
 
+            // If at front of line
+            if (line_length<=6) break;
+            
             // Go back one character
             ch = 8;
             write(1,&ch,1);
