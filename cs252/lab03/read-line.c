@@ -93,8 +93,7 @@ char * read_line()
             // If at end of line
             if (curs_pos==line_length) continue;
             
-            // overwrite next char
-            ch = 32;
+            ch = 4;
             write(1,&ch,1);
             
             // reprint chars after cursor + 1
@@ -105,10 +104,18 @@ char * read_line()
                 write(1,&ch,1);
             }
             
+            // overwrite leftover char
+            ch = 32;
+            write(1,&ch,1);
+            
             // return cursor to curr pos
             for (i = curs_pos; i < line_length; i++)
             {
-                ch = 8;
+                ch = 27;
+                write(1,&ch,1);
+                ch = 91;
+                write(1,&ch,1);
+                ch = 68;
                 write(1,&ch,1);
             }
             
@@ -125,7 +132,11 @@ char * read_line()
             int i = 0;
             for (i =0; i < curs_pos; i++)
             {
-                ch = 8;
+                ch = 27;
+                write(1,&ch,1);
+                ch = 91;
+                write(1,&ch,1);
+                ch = 68;
                 write(1,&ch,1);
             }
 
