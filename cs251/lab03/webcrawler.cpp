@@ -57,7 +57,6 @@ WebCrawler::onContentFound(char c)
         if (word == NULL || slength(word) <= 0)
             return;
         
-        /*
         URLRecordList *tmp;        
         if (_wordToURLRecordList->find(word, &tmp) == false)
         {
@@ -71,26 +70,10 @@ WebCrawler::onContentFound(char c)
         {
             URLRecordList *data = new URLRecordList();
             data->_urlRecordIndex = _headURL;
-            data->_next = NULL;
+            data->_next = tmp;
             
-            if (tmp->_next == NULL)
-            {            
-                tmp->_next = data;
-            }
-            else
-            {
-                URLRecordList *last = tmp;
-                tmp = tmp->_next;
-                
-                while (tmp != NULL)
-                {
-                    last = tmp;
-                    tmp = tmp->_next;
-                }
-                
-                last->_next = data;
-            }
-        */
+            _wordToURLRecordList->insertItem(word, data);
+        }
         
         word = NULL;
     }
