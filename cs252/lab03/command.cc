@@ -135,8 +135,6 @@ Command::print()
 void
 Command::execute()
 {
-    printf("execute()\n");
-    
     if (_numberOfSimpleCommands == 0)
     {   
         prompt();
