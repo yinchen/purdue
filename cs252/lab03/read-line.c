@@ -60,8 +60,7 @@ char * read_line()
             // <Enter> was typed. Return line
             
             // Print newline
-            write(1,&ch,1);
-            
+            write(1,&ch,1);            
             break;
         }
         else if (ch == 8 || ch == 127)
@@ -213,8 +212,6 @@ char * read_line()
     line_buffer[line_length]=0;
     
     curs_pos++;
-    
-    printf("MASH:: %s\n", line_buffer);
 
     return line_buffer;
 }
