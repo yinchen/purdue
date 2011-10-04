@@ -60,7 +60,8 @@ char * read_line()
             // <Enter> was typed. Return line
 
             // Print newline
-            write(1,&ch,1);
+            if (curs_pos>=0)
+                write(1,&ch,1);
             
             break;
         }
