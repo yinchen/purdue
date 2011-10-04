@@ -145,7 +145,7 @@ Command::execute()
 	
 	if (strcmp(_simpleCommands[0]->_arguments[0], "exit") == 0)
 	{
-	    printf("Thank you for using Matt's Awesome Shell. Goodbye!\n");
+	    printf("Thank you for using Matt's Awesome Shell. Goodbye!\n\n");
 	    exit(1);
 	}
 
@@ -269,9 +269,8 @@ int yyparse(void);
 
 extern "C" void disp(int sig)
 {
-	fprintf(stderr, "\nPlease do not do that.\n");
-	
-    Command::_currentCommand.prompt();
+	printf("\n");
+	Command::_currentCommand.prompt();
 }
 
 main()
