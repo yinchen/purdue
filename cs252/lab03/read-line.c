@@ -38,7 +38,7 @@ char * read_line()
     {
         char ch;
         read(0, &ch, 1);
-
+        
         if (ch>=32 && ch<=126)
         {
             // It is a printable character. 
@@ -220,6 +220,8 @@ char * read_line()
                 
                 curs_pos++;
             }
+            
+            printf("curs_pos = %d\n", curs_pos);
         }
     }
 
