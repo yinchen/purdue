@@ -1,4 +1,3 @@
-
 /*
  * CS354: Shell project
  *
@@ -35,8 +34,7 @@ SimpleCommand::insertArgument( char * argument )
 	if ( _numberOfAvailableArguments == _numberOfArguments  + 1 ) {
 		// Double the available space
 		_numberOfAvailableArguments *= 2;
-		_arguments = (char **) realloc( _arguments,
-				  _numberOfAvailableArguments * sizeof( char * ) );
+		_arguments = (char **) realloc( _arguments, _numberOfAvailableArguments * sizeof( char * ) );
 	}
 	
 	_arguments[ _numberOfArguments ] = argument;
@@ -137,19 +135,19 @@ Command::print()
 void
 Command::execute()
 {
-	if (_numberOfSimpleCommands == 0)
-	{   
-	    prompt();
-		return;
-	}
-	
-	if (strcmp(_simpleCommands[0]->_arguments[0], "exit") == 0)
-	{
-	    printf("Thank you for using Matt's Awesome Shell. Goodbye!\n\n");
-	    exit(1);
-	}
+    if (_numberOfSimpleCommands == 0)
+    {   
+        prompt();
+        return;
+    }
+    
+    if (strcmp(_simpleCommands[0]->_arguments[0], "exit") == 0)
+    {
+        printf("Thank you for using Matt's Awesome Shell. Goodbye!\n\n");
+        exit(1);
+    }
 
-	print();
+    // print();
 	
     int defaultin = dup(0);
     int defaultout = dup(1);
@@ -217,23 +215,23 @@ Command::execute()
         close(fderr);
     
         pid = fork();
-	    if (pid == -1)
-	    {
-		    perror(_simpleCommands[i]->_arguments[0]);
-		    
-		    clear();
-	        prompt();
-	        return;
-	    }
+	if (pid == -1)
+	{
+	    perror(_simpleCommands[i]->_arguments[0]);
+	    
+	    clear();
+	    prompt();
+	    return;
+	}
         if (pid == 0)
-	    {
-	        execvp(_simpleCommands[i]->_arguments[0], _simpleCommands[i]->_arguments);
-		    perror(_simpleCommands[i]->_arguments[0]);
-		    
-		    clear();
-	        prompt();
-	        return;
-	    }
+        {
+            execvp(_simpleCommands[i]->_arguments[0], _simpleCommands[i]->_arguments);
+            perror(_simpleCommands[i]->_arguments[0]);
+                
+            clear();
+            prompt();
+            return;
+        }
     }
     
     dup2(defaultin, 0);
@@ -241,16 +239,16 @@ Command::execute()
     dup2(defaulterr, 2);
     
     close(defaultin);
-	close(defaultout);
-	close(defaulterr);
+    close(defaultout);
+    close(defaulterr);
     
-	if (_background == 0)
+    if (_background == 0)
     {
-	    waitpid(pid, 0, 0);
+        waitpid(pid, 0, 0);
     }
     
     clear();
-	prompt();
+    prompt();
 }
 
 // Shell implementation
@@ -258,8 +256,11 @@ Command::execute()
 void
 Command::prompt()
 {
-	printf("mash> ");
-	fflush(stdout);
+    if (isatty(0))
+    {
+    	printf("mash> ");
+    	fflush(stdout);
+    }
 }
 
 Command Command::_currentCommand;
@@ -269,8 +270,8 @@ int yyparse(void);
 
 extern "C" void disp(int sig)
 {
-	printf("\n");
-	Command::_currentCommand.prompt();
+    printf("\n");
+    Command::_currentCommand.prompt();
 }
 
 main()
@@ -288,7 +289,7 @@ main()
         exit(-1);
     }
     
-	Command::_currentCommand.prompt();
-	yyparse();
+    Command::_currentCommand.prompt();
+    yyparse();
 }
 
