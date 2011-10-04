@@ -54,6 +54,9 @@ char * read_line()
         {
             // <Enter> was typed. Return line
 
+            // If at front of line
+            if (line_length==0) break;
+            
             // Print newline
             write(1,&ch,1);
 
@@ -68,7 +71,7 @@ char * read_line()
             write(1,&ch,1);
 
             // Write a space to erase the last character read
-            ch = ' ';
+            ch = 32;
             write(1,&ch,1);
 
             // Go back one character
