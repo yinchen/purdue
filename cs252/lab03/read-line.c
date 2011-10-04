@@ -213,6 +213,8 @@ char * read_line()
     line_buffer[line_length]=0;
     
     curs_pos++;
+    
+    printf("MASH:: %s\n", line_buffer);
 
     return line_buffer;
 }
