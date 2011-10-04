@@ -256,8 +256,11 @@ Command::execute()
 void
 Command::prompt()
 {
-    printf("mash> ");
-    fflush(stdout);
+    if ( isatty(0) )
+    {
+    	printf("mash> ");
+    	fflush(stdout);
+    }
 }
 
 Command Command::_currentCommand;
