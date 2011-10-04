@@ -103,6 +103,27 @@ char * read_line()
 
             curs_pos = 0;
         }
+        else if (ch == 5)
+        {
+            // <end> was typed.
+
+            // If at front of line
+            if (line_length==0 || curs_pos==line_length) continue;
+            
+            // Go to end
+            int i = 0;
+            for (i = curs_pos; i < line_length; i++)
+            {
+                ch = 27;
+                write(1,&ch,1);
+                ch = 91;
+                write(1,&ch,1);
+                ch = 67;
+                write(1,&ch,1);
+            }
+
+            curs_pos = line_length;
+        }
         else if (ch==27)
         {
             char ch1; 
