@@ -29,7 +29,7 @@ char * read_line()
 {
     tty_raw_mode();
 
-    line_length = 6;
+    line_length = 0;
 
     while (1)
     {
@@ -64,7 +64,7 @@ char * read_line()
             // <backspace> was typed. Remove previous character read.
 
             // If at front of line
-            if (line_length<=6) continue;
+            if (line_length<=0) continue;
             
             // Go back one character
             ch = 8;
@@ -165,7 +165,7 @@ char * read_line()
                 // left arrow
                 
                 // If at front of line
-                if (line_length==0) continue;
+                if (line_length<=0) continue;
                 
                 // Go back one character
                 ch = 8;
