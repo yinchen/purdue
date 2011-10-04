@@ -17,15 +17,9 @@ char line_buffer[MAX_BUFFER_LINE];
 int curs_pos;
 
 int history_index = 0;
-char * history [] = {
-    "ls -al | grep x", 
-    "ps -e",
-    "cat read-line-example.c",
-    "vi hello.c",
-    "make",
-    "ls -al | grep xxx | grep yyy"
-};
-int history_length = sizeof(history) / sizeof(char *);
+char **history;
+
+int history_length = 0;
 
 char * read_line()
 {
@@ -90,6 +84,17 @@ char * read_line()
         else if (ch==10)
         {
             // <Enter> was typed. Return line
+            
+            // insert this line to history
+            if (history_length == 0)
+            {
+                history = malloc(sizeof(char*) * 100);
+            }
+            
+            history[history_length] = malloc(sizeof(char) * MAX_BUFFER_LINE);
+            strncpy(history[history_length], line_buffer, line_length);
+            
+            history_length++;
             
             // Print newline
             write(1,&ch,1);            
@@ -249,7 +254,10 @@ char * read_line()
             if (ch1==91 && ch2==65)
             {
                 // Up arrow. Print next line in history.
-
+                
+                // check for history
+                if (history_length == 0) continue; 
+                
                 // Erase old line
                 // Print backspaces
                 int i = 0;
@@ -274,10 +282,12 @@ char * read_line()
                 }	
 
                 // Copy line from history
-                strcpy(line_buffer, history[history_index]);
+                if (history_index < history_length)
+                    history_index++;
+                
+                strcpy(line_buffer, history[history_length - history_index]);
                 line_length = strlen(line_buffer);
-                history_index=(history_index+1)%history_length;
-
+                
                 // echo line
                 write(1, line_buffer, line_length);
                 
@@ -287,9 +297,6 @@ char * read_line()
             {
                 // Down arrow. Print prev line in history.
                 
-                // Check if at bottom of history
-                if (history_index <= 0) continue;                
-                
                 // Erase old line
                 // Print backspaces
                 int i = 0;
@@ -314,9 +321,12 @@ char * read_line()
                 }	
 
                 // Copy line from history
-                strcpy(line_buffer, history[history_index]);
-                line_length = strlen(line_buffer);
-                history_index=(history_index-1)%history_length;
+                if (history_index > 0)
+                {
+                    history_index--;                    
+                    strcpy(line_buffer, history[history_length - history_index]);
+                    line_length = strlen(line_buffer);
+                }
 
                 // echo line
                 write(1, line_buffer, line_length);
