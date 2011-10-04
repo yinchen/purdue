@@ -68,7 +68,7 @@ char * read_line()
             // <backspace> was typed. Remove previous character read.
 
             // If at front of line
-            if (line_length<=0) continue;
+            if (line_length==0 || curs_pos==0) continue;
             
             // Go back one character
             ch = 8;
@@ -85,6 +85,23 @@ char * read_line()
             // Remove one character from buffer
             line_length--;
             curs_pos--;
+        }
+        else if (ch == 1)
+        {
+            // <home> was typed.
+
+            // If at front of line
+            if (line_length==0 || curs_pos==0) continue;
+            
+            // Go back to front
+            int i = 0;
+            for (i =0; i < line_length; i++)
+            {
+                ch = 8;
+                write(1,&ch,1);
+            }
+
+            curs_pos == 0;
         }
         else if (ch==27)
         {
