@@ -39,7 +39,7 @@ WebCrawler::onContentFound(char c)
     // check if this is the end of a word
     if (('A' <= c && c <= 'Z') ||
         ('a' <= c && c <= 'z') ||
-        ('0' <= c && c <= '9')
+        ('0' <= c && c <= '9'))
     {
         char *single = new char[2];
         single[0] = c;
