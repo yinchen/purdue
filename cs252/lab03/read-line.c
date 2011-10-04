@@ -58,7 +58,10 @@ char * read_line()
         else if (ch==10)
         {
             // <Enter> was typed. Return line
-
+            
+            // debug
+            printf("enter\n");
+            
             // Print newline
             if (curs_pos>=0)
                 write(1,&ch,1);
