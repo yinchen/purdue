@@ -101,7 +101,7 @@ char * read_line()
                 write(1,&ch,1);
             }
 
-            curs_pos == 0;
+            curs_pos = 0;
         }
         else if (ch==27)
         {
@@ -220,8 +220,6 @@ char * read_line()
                 
                 curs_pos++;
             }
-            
-            printf("curs_pos = %d\n", curs_pos);
         }
     }
 
