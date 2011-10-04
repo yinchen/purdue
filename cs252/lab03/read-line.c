@@ -11,8 +11,10 @@
 
 #define MAX_BUFFER_LINE 2048
 
-int line_length;;
+int line_length;
 char line_buffer[MAX_BUFFER_LINE];
+
+int curs_pos;
 
 int history_index = 0;
 char * history [] = {
@@ -30,6 +32,7 @@ char * read_line()
     tty_raw_mode();
 
     line_length = 0;
+    curs_pos = 0;
 
     while (1)
     {
@@ -49,6 +52,8 @@ char * read_line()
             // add char to buffer.
             line_buffer[line_length]=ch;
             line_length++;
+            
+            curs_pos++;
         }
         else if (ch==10)
         {
@@ -56,7 +61,7 @@ char * read_line()
 
             // Print newline
             write(1,&ch,1);
-
+            
             break;
         }
         else if (ch == 8 || ch == 127)
@@ -80,6 +85,7 @@ char * read_line()
 
             // Remove one character from buffer
             line_length--;
+            curs_pos--;
         }
         else if (ch==27)
         {
@@ -121,6 +127,8 @@ char * read_line()
 
                 // echo line
                 write(1, line_buffer, line_length);
+                
+                curs_pos = line_length;
             }
             else if (ch1==91 && ch2==66)
             {
@@ -159,24 +167,32 @@ char * read_line()
 
                 // echo line
                 write(1, line_buffer, line_length);
+                
+                curs_post = line_length;
             }
             else if (ch1==91 && ch2==68)
             {
                 // left arrow
                 
                 // If at front of line
-                if (line_length<=0) continue;
+                if (curs_pos==0) continue;
                 
                 // Go back one character
-                ch = 8;
+                ch = 27;
                 write(1,&ch,1);
+                ch = 91;
+                write(1,&ch,1);
+                ch = 68;
+                write(1,&ch,1);
+                
+                curs_pos--;
             }
             else if (ch1==91 && ch2==67)
             {
                 // right arrow
                 
-                // If max number of character reached return.
-                if (line_length==MAX_BUFFER_LINE-2) continue;
+                // If at end of line
+                if (curs_pos==line_length) continue;
                 
                 // Go forward one character
                 ch = 27;
@@ -185,6 +201,8 @@ char * read_line()
                 write(1,&ch,1);
                 ch = 67;
                 write(1,&ch,1);
+                
+                curs_pos++;
             }
         }
     }
@@ -193,6 +211,8 @@ char * read_line()
     line_buffer[line_length]=10;
     line_length++;
     line_buffer[line_length]=0;
+    
+    curs_pos++;
 
     return line_buffer;
 }
