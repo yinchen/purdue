@@ -86,6 +86,19 @@ char * read_line()
             line_length--;
             curs_pos--;
         }
+        else if (ch == 4)
+        {
+            // <delete> was typed. remove next char
+
+            // If at end of line
+            if (curs_pos==line_length) continue;
+            
+            // delete one character
+            ch = 4;
+            write(1,&ch,1);
+
+            line_length--;
+        }
         else if (ch == 1)
         {
             // <home> was typed.
