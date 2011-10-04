@@ -1,0 +1,9 @@
+   Yacc: insert command "ls"
+   Yacc: insert argument "test3*"
+   Yacc: insert output "file-list"
+   Yacc: Execute command
+   Yacc: insert command "ls"
+   Yacc: insert argument "-al"
+   Yacc: insert argument "`cat"
+   Yacc: insert argument "file-list`"
+   Yacc: Execute command

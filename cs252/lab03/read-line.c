@@ -39,7 +39,7 @@ char * read_line()
         char ch;
         read(0, &ch, 1);
         
-        if (ch>=32 && ch<=126)
+        if (ch>=32 && ch<=125)
         {
             // It is a printable character. 
 
@@ -49,11 +49,43 @@ char * read_line()
             // If max number of character reached return.
             if (line_length==MAX_BUFFER_LINE-2) break; 
 
+            // move chars after cursor + 1
+            int i;
+            for (i = line_length + 1; i > curs_pos; i--)
+            {
+                line_buffer[i] = line_buffer[i - 1];
+            }
+
             // add char to buffer.
-            line_buffer[line_length]=ch;
+            line_buffer[curs_pos]=ch;
             line_length++;
             
             curs_pos++;
+            
+            // reprint display
+            for (i = curs_pos; i < line_length; i++)
+            {
+                ch = line_buffer[i];
+                write(1,&ch,1);
+            }
+            
+            // Erase leftover char
+            ch = 32;
+            write(1,&ch,1);
+            
+            ch = 8;
+            write(1,&ch,1);
+            
+            // return character position
+            for (i = curs_pos; i < line_length; i++)
+            {
+                ch = 27;
+                write(1,&ch,1);
+                ch = 91;
+                write(1,&ch,1);
+                ch = 68;
+                write(1,&ch,1);
+            }
         }
         else if (ch==10)
         {
@@ -69,22 +101,53 @@ char * read_line()
 
             // If at front of line
             if (line_length==0 || curs_pos==0) continue;
-            
-            // Go back one character
-            ch = 8;
-            write(1,&ch,1);
 
+            // move chars after cursor + 1
+            int i;
+            for (i = curs_pos; i < line_length; i++)
+            {
+                line_buffer[i - 1] = line_buffer[i];
+            }
+            
+            line_length--;
+            curs_pos--;
+            
             // Write a space to erase the last character read
             ch = 32;
             write(1,&ch,1);
-
+            
             // Go back one character
             ch = 8;
+            write(1,&ch,1);                     
+            
+            // Go back one character
+            ch = 8;
+            write(1,&ch,1); 
+            
+            // reprint display
+            for (i = curs_pos; i < line_length; i++)
+            {
+                ch = line_buffer[i];
+                write(1,&ch,1);
+            }
+            
+            // Erase leftover char
+            ch = 32;
             write(1,&ch,1);
-
-            // Remove one character from buffer
-            line_length--;
-            curs_pos--;
+            
+            ch = 8;
+            write(1,&ch,1);
+            
+            // return character position
+            for (i = curs_pos; i < line_length; i++)
+            {
+                ch = 27;
+                write(1,&ch,1);
+                ch = 91;
+                write(1,&ch,1);
+                ch = 68;
+                write(1,&ch,1);
+            }
         }
         else if (ch == 4)
         {
@@ -108,11 +171,32 @@ char * read_line()
                 line_buffer[i] = line_buffer[i + 1];
             }
             
-            // overwrite leftover char
+            line_length--;
+            
+            // reprint display
+            for (i = curs_pos; i < line_length; i++)
+            {
+                ch = line_buffer[i];
+                write(1,&ch,1);
+            }
+            
+            // Erase leftover char
             ch = 32;
             write(1,&ch,1);
             
-            line_length--;
+            ch = 8;
+            write(1,&ch,1);
+            
+            // return character position
+            for (i = curs_pos; i < line_length; i++)
+            {
+                ch = 27;
+                write(1,&ch,1);
+                ch = 91;
+                write(1,&ch,1);
+                ch = 68;
+                write(1,&ch,1);
+            }
         }
         else if (ch == 1)
         {
@@ -272,6 +356,61 @@ char * read_line()
                 write(1,&ch,1);
                 
                 curs_pos++;
+            }
+            else if (ch1==91 && ch2==51)
+            {
+                char ch3;
+                read(0, &ch3, 1);
+                
+                if (ch3==126)
+                {
+                    // <delete> was typed. remove next char
+
+                    // If at end of line
+                    if (curs_pos==line_length) continue;
+                    
+                    // Write a space to erase the last character read
+                    ch = 32;
+                    write(1,&ch,1);
+
+                    // Go back one character
+                    ch = 8;
+                    write(1,&ch,1);
+                    
+                    // move chars after cursor + 1
+                    int i;
+                    for (i = curs_pos; i < line_length - 1; i++)
+                    {
+                        line_buffer[i] = line_buffer[i + 1];
+                    }
+                    
+                    line_length--;
+                    
+                    // reprint display
+                    for (i = curs_pos; i < line_length; i++)
+                    {
+                        ch = line_buffer[i];
+                        write(1,&ch,1);
+                    }
+                    
+                    // Erase leftover char
+                    ch = 32;
+                    write(1,&ch,1);
+                    
+                    ch = 8;
+                    write(1,&ch,1);
+                    
+                    // return character position
+                    for (i = curs_pos; i < line_length; i++)
+                    {
+                        ch = 27;
+                        write(1,&ch,1);
+                        ch = 91;
+                        write(1,&ch,1);
+                        ch = 68;
+                        write(1,&ch,1);
+                    }
+                }
             }
         }
     }

@@ -33,7 +33,7 @@ simple_command:
 		Command::_currentCommand.execute();
 	}
 	| NEWLINE {
-		Command::_currentCommand.execute();
+		Command::_currentCommand.prompt();
 	}
 	| error NEWLINE { yyerrok; }
 	;
