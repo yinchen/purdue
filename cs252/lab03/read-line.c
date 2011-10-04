@@ -54,9 +54,6 @@ char * read_line()
         {
             // <Enter> was typed. Return line
 
-            // If at front of line
-            if (line_length<=6) continue;
-            
             // Print newline
             write(1,&ch,1);
 
