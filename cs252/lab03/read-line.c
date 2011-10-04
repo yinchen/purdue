@@ -50,6 +50,15 @@ char * read_line()
             line_buffer[line_length]=ch;
             line_length++;
         }
+        else if (ch==10)
+        {
+            // <Enter> was typed. Return line
+
+            // Print newline
+            write(1,&ch,1);
+
+            break;
+        }
         else if (ch == 8)
         {
             // <backspace> was typed. Remove previous character read.
