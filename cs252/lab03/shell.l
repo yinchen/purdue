@@ -68,11 +68,40 @@ int mygetc(FILE * f) {
 }
 
 [^ \t\n][^ \t\n]*  {
-    yylval.string_val = strdup(yytext);
+    char *buff = strdup(yytext);
+    char *word = (char*)malloc(strlen(buff)+2+1);
+    
+    int i = 0;
+    while (buff[i] != NULL)
+    {
+        if (i+3 <= strlen(buff))
+        {
+            if (buff[i] != ' ' &&
+                buff[i+1] == '>' &&
+                buff[i+2] != ' ')
+            {
+                word[i] = buff[i];
+                word[i+1] = ' ';
+                word[i+2] = '>';
+                word[i+3] = ' ';
+            }
+            else
+            {
+                word[i] = buff[i];
+            }
+        }
+        else
+        {
+            word[i] = buff[i];
+        }
+    }
+    
+    yylval.string_val = strdup(word);
+    
     return WORD;
 }
 
-. {
+.  {
     return NOTOKEN;
 }
 
