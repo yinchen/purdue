@@ -279,7 +279,7 @@ char * read_line()
                 {
                     ch = 8;
                     write(1,&ch,1);
-                }	
+                }    
 
                 // Copy line from history
                 if (history_index < history_length)
@@ -318,7 +318,7 @@ char * read_line()
                 {
                     ch = 8;
                     write(1,&ch,1);
-                }	
+                }    
 
                 // Copy line from history
                 if (history_index > 0)

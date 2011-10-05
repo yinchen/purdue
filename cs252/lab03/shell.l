@@ -45,7 +45,7 @@ int mygetc(FILE * f) {
 
 \n  { return NEWLINE; }
 
-[ \t]  { /* Discard spaces and tabs */ }	
+[ \t]  { /* Discard spaces and tabs */ }    
 
 "&"  { return AMPERSAND; }
 
@@ -63,12 +63,12 @@ int mygetc(FILE * f) {
 
 [^ \t\n][^ \t\n]*  {
     yylval.string_val = strdup(yytext);
-	return WORD;
+    return WORD;
 }
 
 . {
-	return NOTOKEN;
+    return NOTOKEN;
 }
 
 %%
-	
+    

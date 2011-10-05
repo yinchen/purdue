@@ -14,3 +14,4 @@ read-line-example: read-line-example.c tty-raw-mode.o read-line.o
 
 clean:
 	rm -f keyboard-example read-line-example *.o
+

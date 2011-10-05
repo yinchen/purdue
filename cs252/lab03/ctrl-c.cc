@@ -11,28 +11,28 @@
 
 extern "C" void disp( int sig )
 {
-	fprintf( stderr, "\n      Ouch!\n");
+    fprintf( stderr, "\n      Ouch!\n");
 }
 
 int
 main()
 {
-	printf( "Type ctrl-c or \"exit\"\n");
-	sigset( SIGINT, disp );
-	for (;;) {
-		
-		char s[ 20 ];
-		printf( "prompt>");
-		fflush( stdout );
-		gets( s );
+    printf( "Type ctrl-c or \"exit\"\n");
+    sigset( SIGINT, disp );
+    for (;;) {
+        
+        char s[ 20 ];
+        printf( "prompt>");
+        fflush( stdout );
+        gets( s );
 
-		if ( !strcmp( s, "exit" ) ) {
-			printf( "Bye!\n");
-			exit( 1 );
-		}
-	}
+        if ( !strcmp( s, "exit" ) ) {
+            printf( "Bye!\n");
+            exit( 1 );
+        }
+    }
 
-	return 0;
+    return 0;
 }
 
 
