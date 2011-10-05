@@ -216,7 +216,7 @@ Command::execute()
         char **p = environ;                
         while(*p != NULL)
         {
-            if (strcmp(*p, "HOME") == 0)
+            if (strncmp(*p, "HOME", 4) == 0)
             {
                 break;
             }
