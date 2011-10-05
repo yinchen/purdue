@@ -223,7 +223,7 @@ Command::execute()
             p++;
         }
         
-        char *home = malloc(strlen(*p) - 5);
+        char *home = (char*)malloc(strlen(*p) - 5);
         strcpy(home, *p+5);
         
         int result;
