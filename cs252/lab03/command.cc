@@ -151,12 +151,9 @@ Command::execute()
     
     if (strcmp(_simpleCommands[0]->_arguments[0], "setenv") == 0)
     {
-        char *value = strcat(_simpleCommands[0]->_arguments[1], "=");
-        value = strcat(value, _simpleCommands[0]->_arguments[2]);
-        
-        int result = putenv(value);
+        int result = setenv(_simpleCommands[i]->_arguments[1], _simpleCommands[i]->_arguments[2], 1);
         if (result != 0)
-            perror("putenv");
+            perror("setenv");
         
         clear();
         prompt();
