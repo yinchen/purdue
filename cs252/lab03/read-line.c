@@ -331,7 +331,7 @@ char * read_line()
                     strcpy(line_buffer, "");
                 }
 
-                line_length = strlen();
+                line_length = strlen(line_buffer);
 
                 // echo line
                 write(1, line_buffer, line_length);
