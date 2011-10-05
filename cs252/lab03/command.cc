@@ -39,6 +39,27 @@ SimpleCommand::insertArgument( char * argument )
         _arguments = (char **) realloc( _arguments, _numberOfAvailableArguments * sizeof( char * ) );
     }
     
+    char *buffer = "^.*${[^}][^}]*}.*$";
+    char *expbuf = compile(buffer, 0, 0);
+    while(advance(argument, expbuf))
+    {
+        char *pos = strstr(argument, expbuf);
+        
+        char *var = pos+2;
+        var[strlen(var - 1)] = '\0';
+         
+        char **p = environ;                
+        while(*p != NULL)
+        {
+            if (strcmp(p, var) == 0)
+            {
+                strcpy(pos, p);
+                break;
+            }
+            p++;
+        }
+    }
+
     _arguments[ _numberOfArguments ] = argument;
 
     // Add NULL argument at the end
