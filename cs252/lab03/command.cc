@@ -187,7 +187,7 @@ Command::execute()
     {
         printf("Thank you for using Matt's Awesome Shell. Goodbye!\n\n");
         exit(1);
-    }
+    } < )
     
     if (strcmp(_simpleCommands[0]->_arguments[0], "setenv") == 0)
     {
@@ -246,9 +246,9 @@ Command::execute()
     int defaultout = dup(1);
     int defaulterr = dup(2);
     
-    int fdin;
-    int fdout;
-    int fderr;
+    int fdin = 0;
+    int fdout = 0;
+    int fderr = 0;
     
     if (_inputFile == 0)
     {
@@ -271,7 +271,18 @@ Command::execute()
         {
             if (_outFile == 0)
             {
-                fdout = dup(defaultout);
+                if (fdout == 0)
+                {
+                    fdout = dup(defaultout);
+                }
+                else
+                {
+                    perror("Ambiguous output redirect.");
+                
+                    clear();
+                    prompt();
+                    return;
+                }  
             }
             else
             {
