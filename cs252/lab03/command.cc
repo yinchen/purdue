@@ -275,19 +275,6 @@ Command::execute()
             }
             else
             {
-                if (fdout == 0)
-                {
-                    fdout = dup(defaultout);
-                }
-                else
-                {
-                    perror("Ambiguous output redirect.");
-                
-                    clear();
-                    prompt();
-                    return;
-                }
-                
                 if (_append)
                     fdout = open(_outFile, O_WRONLY|O_APPEND, 0600);
                 else
