@@ -159,6 +159,17 @@ Command::execute()
         prompt();
         return;
     }
+    
+    if (strcmp(_simpleCommands[0]->_arguments[0], "unsetenv") == 0)
+    {
+        int result = unsetenv(_simpleCommands[0]->_arguments[1]);
+        if (result != 0)
+            perror("unsetenv");
+        
+        clear();
+        prompt();
+        return;
+    }
 
     // print();
     
