@@ -174,17 +174,17 @@ expandWildcardsIfNecessary(char * arg)
     *r='$'; r++; *r=0;// match end of line and add null char
 
     // 2. compile regular expression 
-    char * expbuf = compile( reg, 0, 0 );  
+    char * expbuf = compile(reg, 0, 0);  
     if (expbuf==NULL) { 
-        perror(“compile”); 
+        perror("compile"); 
         return; 
     } 
 
     // 3. List directory and add as arguments the entries  
     // that match the regular expression 
-    DIR * dir = opendir(“.”); 
+    DIR * dir = opendir("."); 
     if (dir == NULL) { 
-        perror(“opendir”); 
+        perror("opendir"); 
         return; 
     } 
 
