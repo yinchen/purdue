@@ -326,8 +326,12 @@ char * read_line()
                     history_index--;                    
                     strcpy(line_buffer, history[history_length - history_index]);
                 }
+                else
+                {
+                    strcpy(line_buffer, "");
+                }
 
-                line_length = strlen(line_buffer);
+                line_length = strlen();
 
                 // echo line
                 write(1, line_buffer, line_length);
