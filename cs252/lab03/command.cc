@@ -244,7 +244,7 @@ Command::execute()
                 
                 while(*p != NULL)
                 {
-                    printf("%s", *p);
+                    printf("%s\n", *p);
                     p++;
                 }
                 
