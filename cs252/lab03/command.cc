@@ -56,6 +56,8 @@ SimpleCommand::insertArgument( char * argument )
         char *var = (char*)malloc(n-1);
         strncpy(var, pos+2, n-2);
         
+        int found = 0;
+        
         char **p = environ;                
         while(*p != NULL)
         {
@@ -65,9 +67,15 @@ SimpleCommand::insertArgument( char * argument )
                 strcpy(val, *p+(n-1));
                 
                 strcpy(pos, val);
+                found = 1;
                 break;
             }
             p++;
+        }
+        
+        if (found == 0)
+        {
+            strcpy(argument, "");
         }
     }
 
