@@ -320,9 +320,6 @@ char * read_line()
                     write(1,&ch,1);
                 }    
                 
-                printf("history_index = %d\n", history_index);
-                printf("history_length = %d\n", history_length);
-                
                 // Copy line from history
                 if (history_index - 1 > 0)
                 {
