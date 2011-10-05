@@ -39,7 +39,7 @@ SimpleCommand::insertArgument( char * argument )
     if ( _numberOfAvailableArguments == _numberOfArguments  + 1 ) {
         // Double the available space
         _numberOfAvailableArguments *= 2;
-        _arguments = (char **) realloc( _arguments, _numberOfAvailableArguments * sizeof( char * ) );
+        _arguments = (char **) realloc( _arguments, _numberOfAvailableArguments * sizeof(char *));
     }
     
     char *buffer = "^.*${[^}][^}]*}.*$";
@@ -65,7 +65,8 @@ SimpleCommand::insertArgument( char * argument )
         }
         else
         {
-            perror("%s: Undefined variable.\n", var);
+            Command::_currentCommand._hasError = 1;
+            fprintf(stderr,"%s", s);
         }            
     }
 
