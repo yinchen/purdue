@@ -94,6 +94,8 @@ int mygetc(FILE * f) {
         {
             word[i] = buff[i];
         }
+        
+        i++;
     }
     
     yylval.string_val = strdup(word);
