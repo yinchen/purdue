@@ -66,7 +66,6 @@ SimpleCommand::insertArgument( char * argument )
         else
         {
             perror("%s: Undefined variable.\n", var);
-            _hasError = 1;
         }            
     }
 
