@@ -9,6 +9,8 @@
 extern "C" int yylex();
 #define yylex yylex
 #include <stdio.h>
+#include <sys/types.h>
+#include <dirent.h>
 #include "command.h"
 %}
 
@@ -122,12 +124,12 @@ background_opt:
 %%
 
 void
-sortArrayStrings(char** &array, int nEntries)
+sortArrayStrings(char** &array, int &nEntries)
 {
     struct dirent * ent; 
     int maxEntries = 20; 
-    int nEntries = 0; 
-    char ** array = (char**) malloc(maxEntries*sizeof(char*)); 
+    nEntries = 0; 
+    array = (char**) malloc(maxEntries*sizeof(char*)); 
     while ( (ent = readdir(dir))!= NULL) { 
         // Check if name matches 
         if (advance(ent->d_name, expbuf) ) { 
@@ -164,7 +166,7 @@ expandWildcardsIfNecessary(char * arg)
     *r = '^'; r++; // match beginning of line 
     while (*a) { 
         if (*a == '*') { *r='.'; r++; *r='*'; r++; } 
-        else if (*a == '?') { *r='.' r++;} 
+        else if (*a == '?') { *r='.'; r++;} 
         else if (*a == '.') { *r='\\'; r++; *r='.'; r++;} 
         else { *a=*r; r++;} 
         a++; 
@@ -191,7 +193,7 @@ expandWildcardsIfNecessary(char * arg)
     sortArrayStrings(array, nEntries); 
     // Add arguments 
     for (int i = 0; i < nEntries; i++) {  
-        Command::_currentSimpleCommand->insertArgument(array[i])); 
+        Command::_currentSimpleCommand->insertArgument(array[i]); 
     } 
     free(array);
 }
