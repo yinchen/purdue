@@ -379,6 +379,8 @@ extern "C" void disp(int sig)
 
 extern "C" void killzombie(int sig)
 {
+    return; // fix this
+    
     int pid = wait3(0, 0, NULL);
     if (pid <= 0)
         while(waitpid(-1, NULL, WNOHANG) > 0);
