@@ -191,6 +191,13 @@ Command::execute()
         exit(1);
     }
     
+    if (_hasError)
+    {
+        clear();
+        prompt();
+        return;
+    }
+    
     if (strcmp(_simpleCommands[0]->_arguments[0], "setenv") == 0)
     {
         int result = setenv(_simpleCommands[0]->_arguments[1], _simpleCommands[0]->_arguments[2], 1);
@@ -355,7 +362,7 @@ Command::execute()
     else
     {
         int y;
-        for (y = 0; y < 100; y++)
+        for (y = 0; y < 1024; y++)
         {
             if (backgroundPIDs[y] == 0)
                 break;
@@ -397,7 +404,7 @@ extern "C" void killzombie(int sig)
     int found = 0;
     
     int y;
-    for (y = 0; y < 100; y++)
+    for (y = 0; y < 1024; y++)
     {
         if (backgroundPIDs[y] == pid)
             found = 1;
@@ -411,7 +418,7 @@ extern "C" void killzombie(int sig)
 
 main()
 {
-    backgroundPIDs = (int*)malloc(sizeof(int) * 100);
+    backgroundPIDs = (int*)malloc(sizeof(int) * 1024);
     
     struct sigaction signalAction1;
     

@@ -25,6 +25,7 @@ struct Command {
     int _background;
     
     int _append;
+    int _hasError;
 
     void prompt();
     void print();

@@ -446,8 +446,8 @@ static const yytype_int8 yyrhs[] =
 static const yytype_uint8 yyrline[] =
 {
        0,    18,    18,    22,    23,    27,    31,    35,    38,    42,
-      49,    50,    54,    61,    66,    70,    71,    75,    79,    84,
-      89,    95,   102,   103,   104,   108,   111
+      49,    50,    54,    61,    66,    70,    71,    75,    81,    88,
+      95,   103,   110,   111,   112,   116,   119
 };
 #endif
 
@@ -1430,6 +1430,8 @@ yyreduce:
 #line 75 "shell.y"
     {
         // printf("   Yacc: insert output \"%s\"\n", $2);
+        if (Command::_currentCommand._outFile)
+            yyerror("Ambiguous output redirect.\n");
         Command::_currentCommand._outFile = (yyvsp[(2) - (2)].string_val);
     }
     break;
@@ -1437,10 +1439,12 @@ yyreduce:
   case 18:
 
 /* Line 1455 of yacc.c  */
-#line 79 "shell.y"
+#line 81 "shell.y"
     {
         // printf("   Yacc: insert output \"%s\"\n", $2);
         Command::_currentCommand._append = 1;
+        if (Command::_currentCommand._outFile)
+            yyerror("Ambiguous output redirect.\n");
         Command::_currentCommand._outFile = (yyvsp[(2) - (2)].string_val);
     }
     break;
@@ -1448,9 +1452,11 @@ yyreduce:
   case 19:
 
 /* Line 1455 of yacc.c  */
-#line 84 "shell.y"
+#line 88 "shell.y"
     {
         // printf("   Yacc: insert output \"%s\"\n", $2);
+        if (Command::_currentCommand._outFile)
+            yyerror("Ambiguous output redirect.\n");
         Command::_currentCommand._outFile = (yyvsp[(2) - (2)].string_val);
         Command::_currentCommand._errFile = (yyvsp[(2) - (2)].string_val);
     }
@@ -1459,10 +1465,12 @@ yyreduce:
   case 20:
 
 /* Line 1455 of yacc.c  */
-#line 89 "shell.y"
+#line 95 "shell.y"
     {
         // printf("   Yacc: insert output \"%s\"\n", $2);
         Command::_currentCommand._append = 1;
+        if (Command::_currentCommand._outFile)
+            yyerror("Ambiguous output redirect.\n");
         Command::_currentCommand._outFile = (yyvsp[(2) - (2)].string_val);
         Command::_currentCommand._errFile = (yyvsp[(2) - (2)].string_val);
     }
@@ -1471,7 +1479,7 @@ yyreduce:
   case 21:
 
 /* Line 1455 of yacc.c  */
-#line 95 "shell.y"
+#line 103 "shell.y"
     {
         // printf("   Yacc: insert input \"%s\"\n", $2);
         Command::_currentCommand._inputFile = (yyvsp[(2) - (2)].string_val);
@@ -1481,7 +1489,7 @@ yyreduce:
   case 25:
 
 /* Line 1455 of yacc.c  */
-#line 108 "shell.y"
+#line 116 "shell.y"
     {
         Command::_currentCommand._background = 1;
     }
@@ -1490,7 +1498,7 @@ yyreduce:
 
 
 /* Line 1455 of yacc.c  */
-#line 1494 "y.tab.c"
+#line 1502 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1702,7 +1710,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 114 "shell.y"
+#line 122 "shell.y"
 
 
 void

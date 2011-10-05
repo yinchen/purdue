@@ -124,6 +124,7 @@ background_opt:
 void
 yyerror(const char * s)
 {
+    Command::_currentCommand._hasError = 1;
     fprintf(stderr,"%s", s);
 }
 
