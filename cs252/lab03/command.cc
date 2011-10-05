@@ -20,6 +20,8 @@
 
 #include "command.h"
 
+extern char **environ;
+
 SimpleCommand::SimpleCommand()
 {
     // Creat available space for 5 arguments
