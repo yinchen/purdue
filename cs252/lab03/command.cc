@@ -44,10 +44,10 @@ SimpleCommand::insertArgument( char * argument )
     char *expbuf = compile(buffer, 0, 0);
     while(advance(argument, expbuf))
     {
-        char *pos = strstr(argument, expbuf);
+        char *pos = strstr(argument, "${");
         
         char *var = pos+2;
-        var[strlen(var - 1)] = '\0';
+        var[strlen(var) - 1] = '\0';
          
         char **p = environ;                
         while(*p != NULL)
