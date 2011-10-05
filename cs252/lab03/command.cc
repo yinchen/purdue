@@ -352,10 +352,6 @@ Command::execute()
     {
         waitpid(pid, 0, 0);
     }
-    else
-    {
-        // store pid in list of background processes
-    }
     
     clear();
     prompt();
