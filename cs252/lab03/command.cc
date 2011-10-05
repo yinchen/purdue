@@ -193,6 +193,8 @@ Command::execute()
     
     if (_hasError)
     {
+        _hasError = 0;
+        
         clear();
         prompt();
         return;
