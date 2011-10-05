@@ -58,27 +58,7 @@ SimpleCommand::insertArgument( char * argument )
         char *var = (char*)malloc(n-1);
         strncpy(var, pos+2, n-2);
         
-        int found = 0;
-        
-        char **p = environ;                
-        while(*p != NULL)
-        {
-            if (strncmp(*p, var, n-2) == 0)
-            {
-                char *val = (char*)malloc((strlen(*p) - n-1));
-                strcpy(val, *p+(n-1));
-                
-                strcpy(pos, val);
-                found = 1;
-                break;
-            }
-            p++;
-        }
-        
-        if (found == 0)
-        {
-            strcpy(argument, "");
-        }
+        strcpy(pos, getenv(var));
     }
 
     _arguments[ _numberOfArguments ] = argument;
