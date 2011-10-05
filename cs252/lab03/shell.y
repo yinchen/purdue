@@ -74,21 +74,29 @@ pipe_list:
 io_modifier:
     GREAT WORD {
         // printf("   Yacc: insert output \"%s\"\n", $2);
+        if (Command::_currentCommand._outFile)
+            yyerror("Ambiguous output redirect.");
         Command::_currentCommand._outFile = $2;
     }
     | GREATGREAT WORD {
         // printf("   Yacc: insert output \"%s\"\n", $2);
         Command::_currentCommand._append = 1;
+        if (Command::_currentCommand._outFile)
+            yyerror("Ambiguous output redirect.");
         Command::_currentCommand._outFile = $2;
     }
     | GREATAMPERSAND WORD {
         // printf("   Yacc: insert output \"%s\"\n", $2);
+        if (Command::_currentCommand._outFile)
+            yyerror("Ambiguous output redirect.");
         Command::_currentCommand._outFile = $2;
         Command::_currentCommand._errFile = $2;
     }
     | GREATGREATAMPERSAND WORD {
         // printf("   Yacc: insert output \"%s\"\n", $2);
         Command::_currentCommand._append = 1;
+        if (Command::_currentCommand._outFile)
+            yyerror("Ambiguous output redirect.");
         Command::_currentCommand._outFile = $2;
         Command::_currentCommand._errFile = $2;
     }
