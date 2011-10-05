@@ -380,16 +380,37 @@ extern "C" void disp(int sig)
     Command::_currentCommand.prompt();
 }
 
+extern "C" void killzombie(int sig)
+{
+    int pid = wait3(0,0,NULL);
+    printf("[%d] exited.\n", pid);
+    
+    Command::_currentCommand.prompt();
+}
+
 main()
 {
-    struct sigaction signalAction;
+    struct sigaction signalAction1;
     
-    signalAction.sa_handler = disp;
-    sigemptyset(&signalAction.sa_mask);
-    signalAction.sa_flags = SA_RESTART;
+    signalAction1.sa_handler = disp;
+    sigemptyset(&signalAction1.sa_mask);
+    signalAction1.sa_flags = SA_RESTART;
     
-    int error = sigaction(SIGINT, &signalAction, NULL);
-    if ( error )
+    int error1 = sigaction(SIGINT, &signalAction1, NULL);
+    if (error1)
+    {
+        perror("sigaction");
+        exit(-1);
+    }
+    
+    struct sigaction signalAction2;
+    
+    signalAction.sa_handler = killzombie;
+    sigemptyset(&signalAction2.sa_mask);
+    signalAction2.sa_flags = SA_RESTART;
+    
+    int error2 = sigaction(SIGCHLD, &signalAction2, NULL );
+    if (error2) 
     {
         perror("sigaction");
         exit(-1);
