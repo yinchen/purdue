@@ -181,8 +181,19 @@ expandWildcardsIfNecessary(char * arg)
                 array = (char**)realloc(array, maxEntries*sizeof(char*)); 
                 assert(array!=NULL); 
             } 
-            array[nEntries]= strdup(ent->d_name); 
-            nEntries++; 
+            if (ent->d_name[0] == '.')
+            {
+                if (arg[0] == '.')
+                {
+                    array[nEntries]= strdup(ent->d_name); 
+                    nEntries++; 
+                }
+            }
+            else
+            {
+                array[nEntries]= strdup(ent->d_name); 
+                nEntries++; 
+            }
         } 
     }
      
