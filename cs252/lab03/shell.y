@@ -125,27 +125,6 @@ background_opt:
 %%
 
 void
-sortArrayStrings(char** &array, int &nEntries)
-{
-    struct dirent * ent; 
-    int maxEntries = 20; 
-    nEntries = 0; 
-    array = (char**) malloc(maxEntries*sizeof(char*)); 
-    while ( (ent = readdir(dir))!= NULL) { 
-        // Check if name matches 
-        if (advance(ent->d_name, expbuf) ) { 
-            if (nEntries == maxEntries) { 
-                maxEntries *=2;  
-                array = (char**)realloc(array, maxEntries*sizeof(char*)); 
-                assert(array!=NULL); 
-            } 
-            array[nEntries]= strdup(ent->d_name); 
-            nEntries++; 
-        } 
-    }
-}
-
-void
 expandWildcardsIfNecessary(char * arg)
 {
     if (strchr(arg, '*') == 0 &&
@@ -191,7 +170,23 @@ expandWildcardsIfNecessary(char * arg)
 
     closedir(dir);
     
-    sortArrayStrings(array, nEntries); 
+    struct dirent * ent; 
+    int maxEntries = 20; 
+    nEntries = 0; 
+    array = (char**) malloc(maxEntries*sizeof(char*)); 
+    while ( (ent = readdir(dir))!= NULL) { 
+        // Check if name matches 
+        if (advance(ent->d_name, expbuf) ) { 
+            if (nEntries == maxEntries) { 
+                maxEntries *=2;  
+                array = (char**)realloc(array, maxEntries*sizeof(char*)); 
+                assert(array!=NULL); 
+            } 
+            array[nEntries]= strdup(ent->d_name); 
+            nEntries++; 
+        } 
+    }
+     
     // Add arguments 
     for (int i = 0; i < nEntries; i++) {  
         Command::_currentSimpleCommand->insertArgument(array[i]); 
