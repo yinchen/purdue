@@ -146,7 +146,7 @@ void
 expandWildcardsIfNecessary(char * arg)
 {
     if (strchr(arg, '*') == 0 &&
-        strchr(arg, '?') == 0)) { 
+        strchr(arg, '?') == 0) { 
         Command::_currentSimpleCommand->insertArgument(arg); 
         return; 
     }
