@@ -14,7 +14,7 @@ y.tab.o: shell.y
 	$(CC) -o y.tab.o -c y.tab.c
 
 command.o: command.cc
-	$(CC) -o command.o -c command.cc
+	$(CC) -o command.o -c command.cc -lgen
 	
 tty-raw-mode.o: tty-raw-mode.c
 	gcc -c tty-raw-mode.c
