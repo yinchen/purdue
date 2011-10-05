@@ -17,6 +17,7 @@
 #include <sys/wait.h>
 #include <string.h>
 #include <signal.h>
+#include <regexpr.h>
 
 #include "command.h"
 
@@ -51,9 +52,9 @@ SimpleCommand::insertArgument( char * argument )
         char **p = environ;                
         while(*p != NULL)
         {
-            if (strcmp(p, var) == 0)
+            if (strcmp(*p, var) == 0)
             {
-                strcpy(pos, p);
+                strcpy(pos, *p);
                 break;
             }
             p++;
