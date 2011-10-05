@@ -412,7 +412,7 @@ extern "C" void killzombie(int sig)
 
 main()
 {
-    backgroundPIDs = malloc(sizeof(int) * 100);
+    backgroundPIDs = (int*)malloc(sizeof(int) * 100);
     
     struct sigaction signalAction1;
     
