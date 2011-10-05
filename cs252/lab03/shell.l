@@ -61,8 +61,15 @@ int mygetc(FILE * f) {
 
 "|"  { return PIPE; }
 
-[^ \t\n][^ \t\n]*  {
+\"[^\n\"]*\"  {
     yylval.string_val = strdup(yytext);
+    yylval.string
+    return WORD;
+}
+
+[^ \t\n][^ \t\n]*  {
+    yylval.string_val = strdup(yytext)+1;
+    yylval.string_val[strlen(yylval.string_val) - 1] = '\0';
     return WORD;
 }
 

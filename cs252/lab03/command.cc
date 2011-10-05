@@ -68,7 +68,7 @@ SimpleCommand::insertArgument( char * argument )
             Command::_currentCommand._hasError = 1;
             fprintf(stderr,"%s: Undefined variable.\n", var);
             return;
-        }            
+        }
     }
 
     _arguments[ _numberOfArguments ] = argument;
