@@ -153,7 +153,10 @@ Command::execute()
     {
         char *value = strcat(_simpleCommands[0]->_arguments[1], "=");
         value = strcat(value, _simpleCommands[0]->_arguments[2]);
-        putenv(value);
+        
+        int result = putenv(value);
+        if (result != 0)
+            perror("putenv");
         
         clear();
         prompt();
