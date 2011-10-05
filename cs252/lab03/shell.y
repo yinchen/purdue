@@ -169,13 +169,11 @@ expandWildcardsIfNecessary(char * arg)
         return; 
     } 
 
-    closedir(dir);
-    
     struct dirent * ent; 
     int maxEntries = 20; 
     int nEntries = 0; 
     char** array = (char**) malloc(maxEntries*sizeof(char*)); 
-    while ( (ent = readdir(dir))!= NULL) { 
+    while ((ent = readdir(dir))!= NULL) { 
         // Check if name matches 
         if (advance(ent->d_name, expbuf) ) { 
             if (nEntries == maxEntries) { 
@@ -188,6 +186,8 @@ expandWildcardsIfNecessary(char * arg)
         } 
     }
      
+    closedir(dir);
+    
     // Add arguments 
     for (int i = 0; i < nEntries; i++) {  
         printf("   Yacc: insert argument \"%s\"\n", array[i]);
