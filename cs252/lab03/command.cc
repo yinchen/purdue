@@ -405,7 +405,7 @@ main()
     
     struct sigaction signalAction2;
     
-    signalAction.sa_handler = killzombie;
+    signalAction2.sa_handler = killzombie;
     sigemptyset(&signalAction2.sa_mask);
     signalAction2.sa_flags = SA_RESTART;
     
