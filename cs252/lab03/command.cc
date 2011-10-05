@@ -210,6 +210,35 @@ Command::execute()
         prompt();
         return;
     }
+    
+    if (strcmp(_simpleCommands[0]->_arguments[0], "cd") == 0)
+    {
+        char **p = environ;                
+        while(*p != NULL)
+        {
+            if (strcmp(*p, "HOME") == 0)
+            {
+                break;
+            }
+            p++;
+        }
+        
+        char *home = malloc(strlen(*p) - 5);
+        strcpy(home, *p+5);
+        
+        int result;
+        if (_simpleCommands[0]->_numberOfArguments > 0)
+            result = chdir(_simpleCommands[0]->_arguments[1]);
+        else
+            result = chdir(home);
+        
+        if (result != 0)
+            perror("chdir");
+        
+        clear();
+        prompt();
+        return;
+    }
 
     // print();
     
