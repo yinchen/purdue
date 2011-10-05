@@ -23,7 +23,7 @@ read-line.o: read-line.c
 	gcc -c read-line.c
 
 shell: y.tab.o lex.yy.o command.o tty-raw-mode.o read-line.o
-	$(CC) -o shell lex.yy.o y.tab.o command.o tty-raw-mode.o read-line.o -ll
+	$(CC) -o shell lex.yy.o y.tab.o command.o tty-raw-mode.o read-line.o -ll -lgen
 
 cat_grep: cat_grep.cc
 	$(CC) -o cat_grep cat_grep.cc
