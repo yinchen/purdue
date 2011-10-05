@@ -58,7 +58,16 @@ SimpleCommand::insertArgument( char * argument )
         char *var = (char*)malloc(n-1);
         strncpy(var, pos+2, n-2);
         
-        strcpy(pos, (char*)getenv(var));
+        char *val = getenv(var);
+        if (val)
+        {
+            strcpy(pos, val);
+        }
+        else
+        {
+            perror("%s: Undefined variable.\n", var);
+            _hasError = 1;
+        }            
     }
 
     _arguments[ _numberOfArguments ] = argument;
