@@ -67,7 +67,7 @@ int mygetc(FILE * f) {
     return WORD;
 }
 
-[^ \t\n][^ \t\n]*  {
+[^ \t\n][^\t\n]*  {
     yylval.string_val = strdup(yytext);
     return WORD;
 }
