@@ -61,7 +61,10 @@ SimpleCommand::insertArgument( char * argument )
         {
             if (strncmp(*p, var, n-2) == 0)
             {
-                strcpy(pos, *p);
+                char *val = (char*)malloc((strlen(*p) - n-1));
+                strcpy(val, *p+(n-1));
+                
+                strcpy(pos, val);
                 break;
             }
             p++;
