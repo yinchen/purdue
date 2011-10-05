@@ -11,6 +11,7 @@ extern "C" int yylex();
 #include <stdio.h>
 #include <sys/types.h>
 #include <dirent.h>
+#include <regexpr.h>
 #include "command.h"
 %}
 
@@ -135,7 +136,7 @@ sortArrayStrings(char** &array, int &nEntries)
         if (advance(ent->d_name, expbuf) ) { 
             if (nEntries == maxEntries) { 
                 maxEntries *=2;  
-                array = realloc(array, maxEntries*sizeof(char*)); 
+                array = (char**)realloc(array, maxEntries*sizeof(char*)); 
                 assert(array!=NULL); 
             } 
             array[nEntries]= strdup(ent->d_name); 
