@@ -23,6 +23,8 @@
 
 extern char **environ;
 
+int *backgroundPIDs;
+
 SimpleCommand::SimpleCommand()
 {
     // Creat available space for 5 arguments
@@ -350,6 +352,16 @@ Command::execute()
     {
         waitpid(pid, 0, 0);
     }
+    else
+    {
+        int y;
+        for (y = 0; y < 100; y++)
+        {
+            if (backgroundPIDs[y] == 0)
+                break;
+        }
+        backgroundPIDs[y] = pid;
+    }
     
     clear();
 }
@@ -379,17 +391,29 @@ extern "C" void disp(int sig)
 
 extern "C" void killzombie(int sig)
 {
-    return; // fix this
-    
     int pid = wait3(0, 0, NULL);
     if (pid <= 0)
         while(waitpid(-1, NULL, WNOHANG) > 0);
     
-    printf("[%d] exited.\n", pid);
+    int found = 0;
+    
+    int y;
+    for (y = 0; y < 100; y++)
+    {
+        if (backgroundPIDs[y] == pid)
+            found = 1;
+    }
+    
+    if (found)
+        printf("[%d] exited.\n", pid);
+    else
+        return;
 }
 
 main()
 {
+    backgroundPIDs = malloc(sizeof(int) * 100)
+    
     struct sigaction signalAction1;
     
     signalAction1.sa_handler = disp;
