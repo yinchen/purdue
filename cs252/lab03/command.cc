@@ -404,8 +404,8 @@ extern "C" void killzombie(int sig)
     
     if (found == 1)
         printf("[%d] exited.\n", pid);
-    else
-        return;
+    
+    Command::_currentCommand.prompt();
 }
 
 main()
