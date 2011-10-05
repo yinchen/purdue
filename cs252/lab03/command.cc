@@ -227,7 +227,7 @@ Command::execute()
         strcpy(home, *p+5);
         
         int result;
-        if (_simpleCommands[0]->_numberOfArguments > 0)
+        if (_simpleCommands[0]->_numberOfArguments > 1)
             result = chdir(_simpleCommands[0]->_arguments[1]);
         else
             result = chdir(home);
