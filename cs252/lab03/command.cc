@@ -53,13 +53,13 @@ SimpleCommand::insertArgument( char * argument )
                 break;
         }
         
-        char *var = (char*)malloc(n-2);
+        char *var = (char*)malloc(n-1);
         strncpy(var, pos+2, n-2);
         
         char **p = environ;                
         while(*p != NULL)
         {
-            if (strcmp(*p, var) == 0)
+            if (strncmp(*p, var, n-2) == 0)
             {
                 strcpy(pos, *p);
                 break;
