@@ -172,8 +172,8 @@ expandWildcardsIfNecessary(char * arg)
     
     struct dirent * ent; 
     int maxEntries = 20; 
-    nEntries = 0; 
-    array = (char**) malloc(maxEntries*sizeof(char*)); 
+    int nEntries = 0; 
+    char** array = (char**) malloc(maxEntries*sizeof(char*)); 
     while ( (ent = readdir(dir))!= NULL) { 
         // Check if name matches 
         if (advance(ent->d_name, expbuf) ) { 
