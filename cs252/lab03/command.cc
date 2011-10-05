@@ -271,6 +271,10 @@ Command::execute()
         {
             if (_outFile == 0)
             {
+                fdout = dup(defaultout);
+            }
+            else
+            {
                 if (fdout == 0)
                 {
                     fdout = dup(defaultout);
@@ -282,10 +286,8 @@ Command::execute()
                     clear();
                     prompt();
                     return;
-                }  
-            }
-            else
-            {
+                }
+                
                 if (_append)
                     fdout = open(_outFile, O_WRONLY|O_APPEND, 0600);
                 else
