@@ -145,10 +145,11 @@ sortArrayStrings(char** &array, int nEntries)
 void
 expandWildcardsIfNecessary(char * arg)
 {
-    if (arg has neither ‘*’ nor ‘?’ (use strchr) ) { 
+    if (strchr(arg, '*') == 0 &&
+        strchr(arg, '?') == 0)) { 
         Command::_currentSimpleCommand->insertArgument(arg); 
         return; 
-    } wildcard
+    }
     
     // 1. Convert wildcard to regular expression 
     // Convert “*” -> “.*”
