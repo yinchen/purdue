@@ -226,16 +226,29 @@ Command::execute()
         close(fderr);
     
         pid = fork();
-    if (pid == -1)
-    {
-        perror(_simpleCommands[i]->_arguments[0]);
-        
-        clear();
-        prompt();
-        return;
-    }
-        if (pid == 0)
+        if (pid == -1)
         {
+            perror(_simpleCommands[i]->_arguments[0]);
+            
+            clear();
+            prompt();
+            return;
+        }
+        if (pid == 0)
+        {   
+            if (strcmp(_simpleCommands[0]->_arguments[0], "printenv") == 0)
+            {
+                char **p = environ;
+                
+                while(*p != NULL)
+                {
+                    printf("%s", *p);
+                    p++;
+                }
+                
+                exit(0);
+            }
+        
             execvp(_simpleCommands[i]->_arguments[0], _simpleCommands[i]->_arguments);
             perror(_simpleCommands[i]->_arguments[0]);
                 
