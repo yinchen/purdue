@@ -151,7 +151,7 @@ Command::execute()
     
     if (strcmp(_simpleCommands[0]->_arguments[0], "setenv") == 0)
     {
-        int result = setenv(_simpleCommands[i]->_arguments[1], _simpleCommands[i]->_arguments[2], 1);
+        int result = setenv(_simpleCommands[0]->_arguments[1], _simpleCommands[0]->_arguments[2], 1);
         if (result != 0)
             perror("setenv");
         
