@@ -334,9 +334,7 @@ Command::execute()
             execvp(_simpleCommands[i]->_arguments[0], _simpleCommands[i]->_arguments);
             perror(_simpleCommands[i]->_arguments[0]);
                 
-            clear();
-            prompt();
-            return;
+            _exit(1);
         }
     }
     
