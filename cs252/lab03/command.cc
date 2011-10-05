@@ -352,6 +352,10 @@ Command::execute()
     {
         waitpid(pid, 0, 0);
     }
+    else
+    {
+        // store pid in list of background processes
+    }
     
     clear();
     prompt();
@@ -382,9 +386,11 @@ extern "C" void disp(int sig)
 
 extern "C" void killzombie(int sig)
 {
-    int pid = wait3(0,0,NULL);
-    printf("[%d] exited.\n", pid);
+    int pid = wait3(0, 0, NULL);
+    if (pid <= 0)
+        while(waitpid(-1, NULL, WNOHANG) > 0);
     
+    printf("[%d] exited.\n", pid);    
     Command::_currentCommand.prompt();
 }
 
