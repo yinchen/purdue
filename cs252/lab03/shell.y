@@ -122,12 +122,33 @@ background_opt:
 %%
 
 void
+sortArrayStrings(char** &array, int nEntries)
+{
+    struct dirent * ent; 
+    int maxEntries = 20; 
+    int nEntries = 0; 
+    char ** array = (char**) malloc(maxEntries*sizeof(char*)); 
+    while ( (ent = readdir(dir))!= NULL) { 
+        // Check if name matches 
+        if (advance(ent->d_name, expbuf) ) { 
+            if (nEntries == maxEntries) { 
+                maxEntries *=2;  
+                array = realloc(array, maxEntries*sizeof(char*)); 
+                assert(array!=NULL); 
+            } 
+            array[nEntries]= strdup(ent->d_name); 
+            nEntries++; 
+        } 
+    }
+}
+
+void
 expandWildcardsIfNecessary(char * arg)
 {
     if (arg has neither ‘*’ nor ‘?’ (use strchr) ) { 
         Command::_currentSimpleCommand->insertArgument(arg); 
         return; 
-    } 
+    } wildcard
     
     // 1. Convert wildcard to regular expression 
     // Convert “*” -> “.*”
@@ -164,16 +185,14 @@ expandWildcardsIfNecessary(char * arg)
         return; 
     } 
 
-    struct dirent * ent;  
-    while ( (ent = readdir(dir))!= NULL) { 
-        // Check if name matches 
-        if (advance(ent->d_name, expbuf) ) { 
-            // Add argument 
-            Command::_currentSimpleCommand-> 
-            insertArgument(strdup(ent->d_name)); 
-        } 
-        closedir(dir); 
-    }
+    closedir(dir);
+    
+    sortArrayStrings(array, nEntries); 
+    // Add arguments 
+    for (int i = 0; i < nEntries; i++) {  
+        Command::_currentSimpleCommand->insertArgument(array[i])); 
+    } 
+    free(array);
 }
 
 void
