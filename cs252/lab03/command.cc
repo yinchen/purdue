@@ -146,6 +146,13 @@ Command::execute()
         printf("Thank you for using Matt's Awesome Shell. Goodbye!\n\n");
         exit(1);
     }
+    
+    if (strcmp(_simpleCommands[0]->_arguments[0], "setenv") == 0)
+    {
+        char *value = strcat(_simpleCommands[0]->_arguments[1], _simpleCommands[0]->_arguments[2]);
+        putenv(value);
+        exit(1);
+    }
 
     // print();
     
