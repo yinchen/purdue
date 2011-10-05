@@ -321,16 +321,16 @@ char * read_line()
                 }    
 
                 // Copy line from history
-                if (history_index - 1 > 0)
+                if (history_index > 0)
                 {
                     history_index--;                    
                     strcpy(line_buffer, history[history_length - history_index]);
                     line_length = strlen(line_buffer);
+                    
+                    // echo line
+                    write(1, line_buffer, line_length);
                 }
 
-                // echo line
-                write(1, line_buffer, line_length);
-                
                 curs_pos = line_length;
             }
             else if (ch1==91 && ch2==68)
