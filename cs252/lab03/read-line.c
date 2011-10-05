@@ -321,7 +321,7 @@ char * read_line()
                 }    
 
                 // Copy line from history
-                if (history_index > 0)
+                if (history_index - 1 > 0)
                 {
                     history_index--;                    
                     strcpy(line_buffer, history[history_length - history_index]);
