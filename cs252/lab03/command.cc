@@ -351,8 +351,8 @@ Command::execute()
         waitpid(pid, 0, 0);
     }
     
-    clear();
-    prompt();
+    // clear();
+    // prompt();
 }
 
 // Shell implementation
