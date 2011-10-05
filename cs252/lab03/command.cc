@@ -249,7 +249,7 @@ Command::execute()
         }
         if (pid == 0)
         {   
-            if (strcmp(_simpleCommands[0]->_arguments[0], "printenv") == 0)
+            if (strcmp(_simpleCommands[i]->_arguments[0], "printenv") == 0)
             {
                 char **p = environ;
                 
