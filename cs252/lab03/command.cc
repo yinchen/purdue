@@ -351,8 +351,7 @@ Command::execute()
         waitpid(pid, 0, 0);
     }
     
-    // clear();
-    // prompt();
+    clear();
 }
 
 // Shell implementation
@@ -384,8 +383,7 @@ extern "C" void killzombie(int sig)
     if (pid <= 0)
         while(waitpid(-1, NULL, WNOHANG) > 0);
     
-    printf("[%d] exited.\n", pid);    
-    Command::_currentCommand.prompt();
+    printf("[%d] exited.\n", pid);
 }
 
 main()
