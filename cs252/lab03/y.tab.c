@@ -1372,7 +1372,7 @@ yyreduce:
 /* Line 1455 of yacc.c  */
 #line 31 "shell.y"
     {
-        printf("   Yacc: Execute command\n");
+        // printf("   Yacc: Execute command\n");
         Command::_currentCommand.execute();
     }
     break;
@@ -1408,7 +1408,7 @@ yyreduce:
 /* Line 1455 of yacc.c  */
 #line 54 "shell.y"
     {
-        printf("   Yacc: insert argument \"%s\"\n", (yyvsp[(1) - (1)].string_val));
+        // printf("   Yacc: insert argument \"%s\"\n", $1);
         Command::_currentSimpleCommand->insertArgument( (yyvsp[(1) - (1)].string_val) );
     }
     break;
@@ -1418,7 +1418,7 @@ yyreduce:
 /* Line 1455 of yacc.c  */
 #line 61 "shell.y"
     {
-        printf("   Yacc: insert command \"%s\"\n", (yyvsp[(1) - (1)].string_val));
+        // printf("   Yacc: insert command \"%s\"\n", $1);
         Command::_currentSimpleCommand = new SimpleCommand();
         Command::_currentSimpleCommand->insertArgument( (yyvsp[(1) - (1)].string_val) );
     }
@@ -1429,7 +1429,7 @@ yyreduce:
 /* Line 1455 of yacc.c  */
 #line 75 "shell.y"
     {
-        printf("   Yacc: insert output \"%s\"\n", (yyvsp[(2) - (2)].string_val));
+        // printf("   Yacc: insert output \"%s\"\n", $2);
         Command::_currentCommand._outFile = (yyvsp[(2) - (2)].string_val);
     }
     break;
@@ -1439,7 +1439,7 @@ yyreduce:
 /* Line 1455 of yacc.c  */
 #line 79 "shell.y"
     {
-        printf("   Yacc: insert output \"%s\"\n", (yyvsp[(2) - (2)].string_val));
+        // printf("   Yacc: insert output \"%s\"\n", $2);
         Command::_currentCommand._append = 1;
         Command::_currentCommand._outFile = (yyvsp[(2) - (2)].string_val);
     }
@@ -1450,7 +1450,7 @@ yyreduce:
 /* Line 1455 of yacc.c  */
 #line 84 "shell.y"
     {
-        printf("   Yacc: insert output \"%s\"\n", (yyvsp[(2) - (2)].string_val));
+        // printf("   Yacc: insert output \"%s\"\n", $2);
         Command::_currentCommand._outFile = (yyvsp[(2) - (2)].string_val);
         Command::_currentCommand._errFile = (yyvsp[(2) - (2)].string_val);
     }
@@ -1461,7 +1461,7 @@ yyreduce:
 /* Line 1455 of yacc.c  */
 #line 89 "shell.y"
     {
-        printf("   Yacc: insert output \"%s\"\n", (yyvsp[(2) - (2)].string_val));
+        // printf("   Yacc: insert output \"%s\"\n", $2);
         Command::_currentCommand._append = 1;
         Command::_currentCommand._outFile = (yyvsp[(2) - (2)].string_val);
         Command::_currentCommand._errFile = (yyvsp[(2) - (2)].string_val);
@@ -1473,7 +1473,7 @@ yyreduce:
 /* Line 1455 of yacc.c  */
 #line 95 "shell.y"
     {
-        printf("   Yacc: insert input \"%s\"\n", (yyvsp[(2) - (2)].string_val));
+        // printf("   Yacc: insert input \"%s\"\n", $2);
         Command::_currentCommand._inputFile = (yyvsp[(2) - (2)].string_val);
     }
     break;

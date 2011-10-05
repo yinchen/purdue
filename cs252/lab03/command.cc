@@ -46,9 +46,16 @@ SimpleCommand::insertArgument( char * argument )
     {
         char *pos = strstr(argument, "${");
         
-        char *var = pos+2;
-        var[strlen(var) - 1] = '\0';
-         
+        int n;
+        for (n = 0; n < strlen(pos); n++)
+        {
+            if (pos[n] == '}')
+                break;
+        }
+        
+        char *var;
+        strncpy(var, pos, n);
+        
         char **p = environ;                
         while(*p != NULL)
         {
