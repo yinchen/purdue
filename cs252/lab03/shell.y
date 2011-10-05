@@ -12,6 +12,7 @@ extern "C" int yylex();
 #include <sys/types.h>
 #include <dirent.h>
 #include <regexpr.h>
+#include <assert.h>
 #include "command.h"
 %}
 
