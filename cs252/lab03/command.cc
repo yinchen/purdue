@@ -60,6 +60,11 @@ SimpleCommand::insertArgument( char * argument )
         char *var = (char*)malloc(n-1);
         strncpy(var, pos+2, n-2);
         
+        if (n == 3)
+        {
+            var[1] = '\0';
+        }
+        
         char *newArgument = (char*)malloc(1024);
                 
         char *val = getenv(var);
