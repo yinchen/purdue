@@ -187,8 +187,12 @@ void expandWildcard(char * prefix, char *suffix) {
 void
 expandWildcardsIfNecessary(char * arg)
 {
-    expandWildcard(NULL, arg);
-    return;
+    if (strchr(arg, '*') != 0 &&
+        strchr(arg, '/') != 0)
+    {
+        expandWildcard(NULL, arg);
+        return;
+    }
     
     if (strchr(arg, '*') == 0 &&
         strchr(arg, '?') == 0) { 
