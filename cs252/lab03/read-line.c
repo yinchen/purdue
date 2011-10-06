@@ -427,6 +427,60 @@ char * read_line()
                     }
                 }
             }
+            else if (ch1==91 && ch2==49)
+            {
+                char ch3;
+                read(0, &ch3, 1);
+                
+                if (ch == 126)
+                {
+                    // <home> was typed.
+        
+                    // If at front of line
+                    if (line_length==0 || curs_pos==0) continue;
+                    
+                    // Go back to front
+                    int i = 0;
+                    for (i =0; i < curs_pos; i++)
+                    {
+                        ch = 27;
+                        write(1,&ch,1);
+                        ch = 91;
+                        write(1,&ch,1);
+                        ch = 68;
+                        write(1,&ch,1);
+                    }
+        
+                    curs_pos = 0;
+                }
+            }
+            else if (ch1==91 && ch2==52)
+            {
+                char ch3;
+                read(0, &ch3, 1);
+                
+                if (ch == 126)
+                {
+                    // <end> was typed.
+        
+                    // If at front of line
+                    if (line_length==0 || curs_pos==line_length) continue;
+                    
+                    // Go to end
+                    int i = 0;
+                    for (i = curs_pos; i < line_length; i++)
+                    {
+                        ch = 27;
+                        write(1,&ch,1);
+                        ch = 91;
+                        write(1,&ch,1);
+                        ch = 67;
+                        write(1,&ch,1);
+                    }
+        
+                    curs_pos = line_length;
+                }
+            }
         }
     }
 
