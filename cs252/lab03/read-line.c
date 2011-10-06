@@ -432,7 +432,7 @@ char * read_line()
                 char ch3;
                 read(0, &ch3, 1);
                 
-                if (ch == 126)
+                if (ch3 == 126)
                 {
                     // <home> was typed.
         
@@ -459,7 +459,7 @@ char * read_line()
                 char ch3;
                 read(0, &ch3, 1);
                 
-                if (ch == 126)
+                if (ch3 == 126)
                 {
                     // <end> was typed.
         
