@@ -124,9 +124,71 @@ background_opt:
 
 %%
 
+void expandWildcard(char * prefix, char *suffix) { 
+    if (suffix[0]== 0) { 
+        // suffix is empty. Put prefix in argument.
+        Command::_currentCommand->insertArgument(strdup(prefix)); 
+        return; 
+    } 
+    // Obtain the next component in the suffix 
+    // Also advance suffix. 
+    char * s = strchr(suffix, '/'); 
+    char component[1024]; 
+    if (s!=NULL){ // Copy up to the first “/”
+        strncpy(component,suffix, s-suffix); 
+        suffix = s + 1; 
+    } 
+    else { // Last part of path. Copy whole thing. 
+        strcpy(component, suffix); 
+        suffix = suffix + strlen(suffix); 
+    }
+    // Now we need to expand the component 
+    char newPrefix[1024]; 
+    if (strchr(arg, '*') == 0 &&
+        strchr(arg, '?') == 0) { 
+        // component does not have wildcards 
+        sprintf(newPrefix,"%s/%s", prefix, component); 
+        expandWildcard(newPrefix, suffix); 
+        return; 
+    } 
+    
+    char * reg = (char*)malloc(2*strlen(arg)+10);  
+    char * a = arg; 
+    char * r = reg; 
+    *r = '^'; r++; // match beginning of line 
+    while (*a) { 
+        if (*a == '*') { *r='.'; r++; *r='*'; r++; } 
+        else if (*a == '?') { *r='.'; r++;} 
+        else if (*a == '.') { *r='\\'; r++; *r='.'; r++;} 
+        else { *a=*r; r++;} 
+        a++; 
+    } 
+    *r='$'; r++; *r=0;
+    
+    char * expbuf = compile(reg, 0, 0);
+    char * dir; 
+    
+    if (prefix == NULL || strlen(prefix) == 0) dir ="."; else dir=prefix; 
+    DIR * d=opendir(dir); 
+    if (d==NULL) return; 
+    
+    while ((ent = readdir(d))!= NULL)
+    { 
+        if (advance(ent->d_name, expbuf))
+        { 
+            sprintf(newPrefix,"%s/%s", prefix, ent->d_name);
+            expandWildcard(newPrefix,suffix); 
+        } 
+    } 
+    close(d); 
+}
+
 void
 expandWildcardsIfNecessary(char * arg)
 {
+    expandWildcard(NULL, arg);
+    return;
+    
     if (strchr(arg, '*') == 0 &&
         strchr(arg, '?') == 0) { 
         // printf("   Yacc: insert argument \"%s\"\n", arg);
