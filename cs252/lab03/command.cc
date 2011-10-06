@@ -395,6 +395,9 @@ Command::execute()
     if (_background == 0)
     {
         waitpid(pid, 0, 0);
+        
+        clear();
+        prompt();
     }
     else
     {
@@ -405,10 +408,9 @@ Command::execute()
                 break;
         }
         backgroundPIDs[y] = pid;
+        
+        clear();
     }
-    
-    clear();
-    prompt();
 }
 
 // Shell implementation
@@ -451,7 +453,7 @@ extern "C" void killzombie(int sig)
     if (found == 1)
         printf("[%d] exited.\n", pid);
     
-    // Command::_currentCommand.prompt();
+    Command::_currentCommand.prompt();
 }
 
 main()
