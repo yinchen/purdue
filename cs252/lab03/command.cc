@@ -70,6 +70,18 @@ SimpleCommand::insertArgument( char * argument )
             return;
         }
     }
+    
+    if (argument[0] == '~')
+    {
+        if (strlen(argument) == 1)
+        {
+            strcpy(argument, getenv("HOME"));
+        }
+        else
+        {
+            strcpy(argument, getpwnam(argument+1).pw_dir);
+        }
+    }
 
     _arguments[ _numberOfArguments ] = argument;
 
