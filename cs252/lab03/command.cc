@@ -67,7 +67,8 @@ SimpleCommand::insertArgument( char * argument )
         {
             // copy up to variable
             int m = 0;
-            while (argument[m] != pos)
+            while (argument[m] != '$' &&
+                   argument[m+1] != '{')
             {
                 newArgument[m] = argument[m];  
                 m++;
@@ -77,7 +78,7 @@ SimpleCommand::insertArgument( char * argument )
             int q;
             for (q = 0; q < strlen(val); q++)
             {
-                newArgument[m + q] = val[q]                
+                newArgument[m + q] = val[q];              
             }
             
             // copy remainder of argument
