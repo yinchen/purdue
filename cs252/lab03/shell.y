@@ -127,7 +127,7 @@ background_opt:
 void expandWildcard(char * prefix, char *suffix) { 
     if (suffix[0]== 0) { 
         // suffix is empty. Put prefix in argument.
-        Command::_currentCommand->insertArgument(strdup(prefix)); 
+        Command::_currentSimpleCommand->insertArgument(strdup(prefix)); 
         return; 
     } 
     // Obtain the next component in the suffix 
@@ -144,15 +144,15 @@ void expandWildcard(char * prefix, char *suffix) {
     }
     // Now we need to expand the component 
     char newPrefix[1024]; 
-    if (strchr(arg, '*') == 0 &&
-        strchr(arg, '?') == 0) { 
+    if (strchr(suffix, '*') == 0 &&
+        strchr(suffix, '?') == 0) { 
         // component does not have wildcards 
         sprintf(newPrefix,"%s/%s", prefix, component); 
         expandWildcard(newPrefix, suffix); 
         return; 
     } 
     
-    char * reg = (char*)malloc(2*strlen(arg)+10);  
+    char * reg = (char*)malloc(2*strlen(suffix)+10);  
     char * a = arg; 
     char * r = reg; 
     *r = '^'; r++; // match beginning of line 
@@ -172,6 +172,7 @@ void expandWildcard(char * prefix, char *suffix) {
     DIR * d=opendir(dir); 
     if (d==NULL) return; 
     
+    struct dirent * ent;
     while ((ent = readdir(d))!= NULL)
     { 
         if (advance(ent->d_name, expbuf))
@@ -180,7 +181,7 @@ void expandWildcard(char * prefix, char *suffix) {
             expandWildcard(newPrefix,suffix); 
         } 
     } 
-    close(d); 
+    closedir(d);
 }
 
 void
