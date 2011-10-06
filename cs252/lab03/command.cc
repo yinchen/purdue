@@ -43,6 +43,7 @@ SimpleCommand::insertArgument( char * argument )
         _arguments = (char **) realloc( _arguments, _numberOfAvailableArguments * sizeof(char *));
     }
     
+    // insert environment variables
     char *buffer = "^.*${[^}][^}]*}.*$";
     char *expbuf = compile(buffer, 0, 0);
     while(advance(argument, expbuf))
@@ -59,10 +60,34 @@ SimpleCommand::insertArgument( char * argument )
         char *var = (char*)malloc(n-1);
         strncpy(var, pos+2, n-2);
         
+        char *newArgument = (char*)malloc(1024);
+                
         char *val = getenv(var);
         if (val)
         {
-            strcpy(pos, val);
+            // copy up to variable
+            int m = 0;
+            while (argument[m] != pos)
+            {
+                newArgument[m] = argument[m];  
+                m++;
+            }
+            
+            // copy variable value
+            int q;
+            for (q = 0; q < strlen(val); q++)
+            {
+                newArgument[m + q] = val[q]                
+            }
+            
+            // copy remainder of argument
+            while (argument[m + q] != '\0')
+            {
+                newArgument[m + q] = argument[m + strlen(pos) + strlen(var) + 1];
+                m++;
+            }
+            
+            strcpy(argument, newArgument);
         }
         else
         {
@@ -72,6 +97,7 @@ SimpleCommand::insertArgument( char * argument )
         }
     }
     
+    // insert home directory
     if (argument[0] == '~')
     {
         if (strlen(argument) == 1)
