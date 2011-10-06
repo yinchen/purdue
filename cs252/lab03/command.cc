@@ -80,7 +80,7 @@ SimpleCommand::insertArgument( char * argument )
         }
         else
         {
-            strcpy(argument, getpwnam(argument+1).pw_dir);
+            strcpy(argument, getpwnam(argument+1)->pw_dir);
         }
     }
 
