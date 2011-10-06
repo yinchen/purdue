@@ -68,7 +68,7 @@ int mygetc(FILE * f) {
 
 [^ \t\n][^ \t\n]*  {
     char *buff = strdup(yytext);
-    char *word = "";
+    char *word = (char*)malloc(strlen(yytext) + 1);
     
     int j;
     j = 0;
