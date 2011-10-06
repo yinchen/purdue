@@ -408,6 +408,7 @@ Command::execute()
     }
     
     clear();
+    prompt();
 }
 
 // Shell implementation
@@ -450,7 +451,7 @@ extern "C" void killzombie(int sig)
     if (found == 1)
         printf("[%d] exited.\n", pid);
     
-    Command::_currentCommand.prompt();
+    // Command::_currentCommand.prompt();
 }
 
 main()
