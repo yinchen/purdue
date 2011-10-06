@@ -89,7 +89,7 @@ SimpleCommand::insertArgument( char * argument )
             // copy remainder of argument
             while (argument[m + q] != '\0')
             {
-                newArgument[m + q] = argument[m + strlen(pos) + strlen(var) + 1];
+                newArgument[m + q] = argument[m + 3 + strlen(var)];
                 m++;
             }
             
