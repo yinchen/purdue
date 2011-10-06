@@ -18,6 +18,7 @@
 #include <string.h>
 #include <signal.h>
 #include <regexpr.h>
+#include <pwd.h>
 
 #include "command.h"
 
