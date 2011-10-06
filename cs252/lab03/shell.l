@@ -77,7 +77,7 @@ int mygetc(FILE * f) {
     j = 0;
     while (j < strlen(buff) + 1)
     {
-        if (buff[j] == '\')
+        if (buff[j] == '\\')
         {
             word[i] = buff[j+1];
             j = j + 2;
