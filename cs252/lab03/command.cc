@@ -76,11 +76,11 @@ SimpleCommand::insertArgument( char * argument )
     {
         if (strlen(argument) == 1)
         {
-            strcpy(argument, getenv("HOME"));
+            argument = strdup(getenv("HOME"));
         }
         else
         {
-            strcpy(argument, getpwnam(argument+1)->pw_dir);
+            argument = strdup(getpwnam(argument+1)->pw_dir);
         }
     }
 
