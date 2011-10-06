@@ -172,8 +172,10 @@ void expandWildcard(char * prefix, char *suffix) {
     DIR * d=opendir(dir); 
     if (d==NULL) return; 
     
-    if (prefix == NULL)
+    if (prefix == NULL){
+        prefix = (char*)malloc(1);
         strcpy(prefix, "");
+    }
     
     struct dirent * ent;
     while ((ent = readdir(d))!= NULL)
