@@ -67,28 +67,23 @@ int mygetc(FILE * f) {
 }
 
 [^ \t\n][^ \t\n]*  {
-    char *buff = (char*)malloc(strlen(yytext));
+    char *buff = "";
     char *word = strdup(yytext);
         
     int i;
     i = 0;
-
-    int j;
-    j = 0;
-    while (j < strlen(buff) + 1)
+    while (i < strlen(buff) + 1)
     {
-        if (buff[j] == '\\')
+        if (buff[i] == '\\')
         {
-            word[i] = buff[j+1];
-            j = j + 2;
+            word = strcat(word, buff[i+1]);
+            i = i + 2;
         }
         else
         {
-            word[i] = buff[j];
-            j++;
+            word = strcat(word, buff[i]);
+            i++;
         }
-
-        i++;
     }
 
     yylval.string_val = strdup(yytext);
