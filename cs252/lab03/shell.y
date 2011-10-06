@@ -153,7 +153,7 @@ void expandWildcard(char * prefix, char *suffix) {
     } 
     
     char * reg = (char*)malloc(2*strlen(suffix)+10);  
-    char * a = arg; 
+    char * a = suffix; 
     char * r = reg; 
     *r = '^'; r++; // match beginning of line 
     while (*a) { 
