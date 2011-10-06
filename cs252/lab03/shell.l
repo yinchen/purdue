@@ -1,4 +1,3 @@
-
 /*
  *
  * CS-413 Spring 98
@@ -68,7 +67,31 @@ int mygetc(FILE * f) {
 }
 
 [^ \t\n][^ \t\n]*  {
-    yylval.string_val = strdup(yytext);    
+    char *buff = (char*)malloc(strlen(yytext));
+    char *word = strdup(yytext);
+        
+    int i;
+    i = 0;
+
+    int j;
+    j = 0;
+    while (j < strlen(buff) + 1)
+    {
+        if (buff[j] == '\')
+        {
+            word[i] = buff[j+1];
+            j = j + 2;
+        }
+        else
+        {
+            word[i] = buff[j];
+            j++;
+        }
+
+        i++;
+    }
+
+    yylval.string_val = strdup(yytext);
     return WORD;
 }
 
