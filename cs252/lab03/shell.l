@@ -67,8 +67,8 @@ int mygetc(FILE * f) {
 }
 
 [^ \t\n][^ \t\n]*  {
-    char *buff = "";
-    char *word = strdup(yytext);
+    char *buff = strdup(yytext);
+    char *word = "";
     
     int j;
     j = 0;
@@ -91,7 +91,7 @@ int mygetc(FILE * f) {
         j++;
     }
 
-    yylval.string_val = strdup(yytext);
+    yylval.string_val = strdup(word);
     return WORD;
 }
 
