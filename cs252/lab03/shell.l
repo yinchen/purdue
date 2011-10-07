@@ -66,6 +66,12 @@ int mygetc(FILE * f) {
     return WORD;
 }
 
+\`[^\n\"]*\`  {
+    yylval.string_val = strdup(yytext+1);
+    yylval.string_val[strlen(yylval.string_val) - 1] = '\0';
+    return WORD;
+}
+
 [^ \t\n|>][^ \t\n|>]*  {
     char *buff = strdup(yytext);
     char *word = (char*)malloc(strlen(yytext) + 1);
