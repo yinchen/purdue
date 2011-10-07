@@ -56,7 +56,7 @@ arg_list:
 
 argument:
     WORD {
-        expandWildcards(NULL, $1); // expandWildcardsIfNecessary($1);
+        expandWildcard(NULL, $1); // expandWildcardsIfNecessary($1);
     }
     ;
 
