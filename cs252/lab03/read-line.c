@@ -24,7 +24,7 @@ int history_length = 0;
 void read_line_print_usage()
 {
   char * usage = "\n"
-    "  cd           Change directory"
+    "  cd           Change directory\n"
     "  setenv       Create environment variable\n"
     "  unsetenv     Delete environment variable\n"
     "  printenv     Print list of environment variables\n"
