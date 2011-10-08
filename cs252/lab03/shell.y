@@ -8,6 +8,14 @@
 %{
 extern "C" int yylex();
 #define yylex yylex
+
+#define INIT    	char* sp = instring;
+#define GETC()  	(*sp++)
+#define PEEKC() 	(*sp)
+#define UNGETC(c)       (--sp)
+#define RETURN(c)       return c;
+#define ERROR(c)        geterror()
+
 #include <stdio.h>
 #include <sys/types.h>
 #include <dirent.h>
