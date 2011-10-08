@@ -44,7 +44,6 @@ SimpleCommand::insertArgument( char * argument )
     }
     
     // insert environment variables
-    char* argument = strdup(_simpleCommands[i]->_arguments[a]);
     char* finalString = (char*)malloc(2048);
     if (strchr(argument, '$'))
     {
@@ -83,7 +82,7 @@ SimpleCommand::insertArgument( char * argument )
             }
             j++;
         }
-        _simpleCommands[i]->_arguments[a] = strdup(finalString);
+        _arguments[_numberOfArguments] = strdup(finalString);
     }
     
     // insert home directory
