@@ -287,6 +287,20 @@ Command::execute()
         fdin = open(_inputFile, O_RDONLY);
     }
     
+    if (_errFile == 0)
+    {
+        fderr = dup(defaulterr);
+    }
+    else
+    {
+        if (_append)
+            fderr = open(_errFile, O_WRONLY|O_CREAT|O_APPEND, 0600);
+        else
+            fderr = open(_errFile, O_WRONLY|O_CREAT|O_TRUNC, 0600);
+    }
+    dup2(fderr, 2);
+    close(fderr)
+    
     int pid;
     
     int i;
@@ -304,9 +318,9 @@ Command::execute()
             else
             {
                 if (_append)
-                    fdout = open(_outFile, O_WRONLY|O_APPEND, 0600);
+                    fdout = open(_outFile, O_WRONLY|O_CREAT|O_APPEND, 0600);
                 else
-                    fdout = open(_outFile, O_WRONLY|O_CREAT, 0600);
+                    fdout = open(_outFile, O_WRONLY|O_CREAT|O_TRUNC, 0600);
             }
             
             if (_errFile == 0)
@@ -316,9 +330,9 @@ Command::execute()
             else
             {
                 if (_append)
-                    fderr = open(_errFile, O_WRONLY|O_APPEND, 0600);
+                    fderr = open(_errFile, O_WRONLY|O_CREAT|O_APPEND, 0600);
                 else
-                    fderr = open(_errFile, O_WRONLY|O_CREAT, 0600);
+                    fderr = open(_errFile, O_WRONLY|O_CREAT|O_TRUNC, 0600);
             }
         }
         else
@@ -331,9 +345,6 @@ Command::execute()
         
         dup2(fdout, 1);
         close(fdout);
-        
-        dup2(fderr, 2);
-        close(fderr);
     
         pid = fork();
         if (pid == -1)
