@@ -450,7 +450,7 @@ extern "C" void killzombie(int sig)
     }
 }
 
-main()
+int main(int argc, char* argv[])
 {
     backgroundPIDs = (int*)malloc(sizeof(int) * 1024);
     
@@ -478,6 +478,11 @@ main()
     {
         perror("sigaction");
         exit(-1);
+    }
+    
+    if (strcmp(argv[1], "--debug") == 0)
+    {
+        printf("Launching mash in debug mode.\n")
     }
     
     Command::_currentCommand.prompt();
