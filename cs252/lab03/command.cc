@@ -44,63 +44,46 @@ SimpleCommand::insertArgument( char * argument )
     }
     
     // insert environment variables
-    char *buffer = "^.*${[^}][^}]*}.*$";
-    char *expbuf = compile(buffer, 0, 0);
-    while(advance(argument, expbuf))
+    char* argument = strdup(_simpleCommands[i]->_arguments[a]);
+    char* finalString = (char*)malloc(2048);
+    if (strchr(argument, '$'))
     {
-        char *pos = strstr(argument, "${");
-        
-        int n;
-        for (n = 0; n < strlen(pos); n++)
+        int j=0;
+        int k=0;
+        while(argument[j] != '\0')
         {
-            if (pos[n] == '}')
-                break;
-        }
-        
-        char *var = (char*)malloc(n-1);
-        strncpy(var, pos+2, n-2);
-        
-        if (n == 3)
-        {
-            var[1] = '\0';
-        }
-        
-        char *newArgument = (char*)malloc(1024);
-                
-        char *val = getenv(var);
-        if (val)
-        {
-            // copy up to variable
-            int m = 0;
-            while (argument[m] != '$' &&
-                   argument[m+1] != '{')
+            if(argument[j] == '$')
             {
-                newArgument[m] = argument[m];  
-                m++;
+                char* var = (char*)malloc(strlen(argument));
+                j+=2;
+                while(argument[j] != '}')
+                {
+                    var[k] = argument[j];
+                    k++;
+                    j++;
+                }
+                var[k] = '\0';
+                strcat(finalString, getenv(var));
+                free(var);
+                k = 0;
             }
-            
-            // copy variable value
-            int q;
-            for (q = 0; q < strlen(val); q++)
+            else
             {
-                newArgument[m + q] = val[q];              
+                char* temp = (char*)malloc(strlen(argument));
+                while(argument[j] != '\0' && argument[j] != '$')
+                {
+                    temp[k] = argument[j];
+                    k++;
+                    j++;
+                }
+                k=0;
+                strcat(finalString, temp);
+                free(temp);
+                j--;
             }
-            
-            // copy remainder of argument
-            while (argument[m + q] != '\0')
-            {
-                newArgument[m + q] = argument[m + 3 + strlen(var)];
-                m++;
-            }
-            
-            strcpy(argument, newArgument);
+            j++;
         }
-        else
-        {
-            Command::_currentCommand._hasError = 1;
-            fprintf(stderr,"%s: Undefined variable.\n", var);
-            return;
-        }
+        _simpleCommands[i]->_arguments[a] = strdup(finalString);
     }
     
     // insert home directory
