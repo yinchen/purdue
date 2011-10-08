@@ -82,7 +82,7 @@ SimpleCommand::insertArgument( char * argument )
             }
             j++;
         }
-        _arguments[_numberOfArguments] = strdup(finalString);
+        argument = strdup(finalString);
     }
     
     // insert home directory
