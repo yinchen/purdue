@@ -1,0 +1,15 @@
+Features that work:
+- IO Redirection
+- Pipes
+- Background and Zombie
+- Environment
+- Words and special chars
+- cd
+- Quotes and escape chars
+- CTRL-C
+- tilde expansion
+
+Features that do not work:
+- Wildcarding
+- Robustness
+- subshell
