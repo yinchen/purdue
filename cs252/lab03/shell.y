@@ -53,7 +53,7 @@ command:
 
 simple_command:    
     pipe_list io_modifier_list background_opt NEWLINE {
-        // printf("   Yacc: Execute command\n");
+        if (Command::_currentCommand._debugMode) printf("   Yacc: Execute command\n");
         Command::_currentCommand.execute();
     }
     | NEWLINE {
@@ -120,7 +120,7 @@ argument:
 
 command_word:
     WORD {
-        // printf("   Yacc: insert command \"%s\"\n", $1);
+        if (Command::_currentCommand._debugMode) printf("   Yacc: insert command \"%s\"\n", $1);
 	char* word = $1;
 	if(!strchr(word, '&'))
 	{
@@ -152,27 +152,27 @@ pipe_list:
 
 io_modifier:
     GREAT WORD {
-        // printf("   Yacc: insert output \"%s\"\n", $2);
+        if (Command::_currentCommand._debugMode) printf("   Yacc: insert output \"%s\"\n", $2);
         if (Command::_currentCommand._outFile)
             yyerror("Ambiguous output redirect.\n");
         Command::_currentCommand._outFile = $2;
     }
     | GREATGREAT WORD {
-        // printf("   Yacc: insert output \"%s\"\n", $2);
+        if (Command::_currentCommand._debugMode) printf("   Yacc: insert output \"%s\"\n", $2);
         Command::_currentCommand._append = 1;
         if (Command::_currentCommand._outFile)
             yyerror("Ambiguous output redirect.\n");
         Command::_currentCommand._outFile = $2;
     }
     | GREATAMPERSAND WORD {
-        // printf("   Yacc: insert output \"%s\"\n", $2);
+        if (Command::_currentCommand._debugMode) printf("   Yacc: insert output \"%s\"\n", $2);
         if (Command::_currentCommand._outFile)
             yyerror("Ambiguous output redirect.\n");
         Command::_currentCommand._outFile = $2;
         Command::_currentCommand._errFile = $2;
     }
     | GREATGREATAMPERSAND WORD {
-        // printf("   Yacc: insert output \"%s\"\n", $2);
+        if (Command::_currentCommand._debugMode) printf("   Yacc: insert output \"%s\"\n", $2);
         Command::_currentCommand._append = 1;
         if (Command::_currentCommand._outFile)
             yyerror("Ambiguous output redirect.\n");
@@ -180,7 +180,7 @@ io_modifier:
         Command::_currentCommand._errFile = $2;
     }
     | LESS WORD {
-        // printf("   Yacc: insert input \"%s\"\n", $2);
+        if (Command::_currentCommand._debugMode) printf("   Yacc: insert input \"%s\"\n", $2);
 	if (Command::_currentCommand._outFile)
             yyerror("Ambiguous input redirect.\n");
         Command::_currentCommand._inputFile = $2;
@@ -389,6 +389,7 @@ void insertArgs()
     int j;
     for(j = 0; j < nEntries; j++)
     {
+	if (Command::_currentCommand._debugMode) printf("   Yacc: insert argument \"%s\"\n", strdup(array[j]));
         Command::_currentSimpleCommand->insertArgument(strdup(array[j]));
         fflush(0);
     }
