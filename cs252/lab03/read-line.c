@@ -21,6 +21,18 @@ char **history;
 
 int history_length = 0;
 
+void read_line_print_usage()
+{
+  char * usage = "\n"
+    "  cd           Change directory"
+    "  setenv       Create environment variable\n"
+    "  unsetenv     Delete environment variable\n"
+    "  printenv     Print list of environment variables\n"
+    "  exit         Exit shell\n";
+
+  write(1, usage, strlen(usage));
+}
+
 char * read_line()
 {
     tty_raw_mode();
@@ -98,6 +110,13 @@ char * read_line()
             
             // Print newline
             write(1,&ch,1);            
+            break;
+        }
+        else if (ch == 31)
+        {
+            // ctrl-?
+            read_line_print_usage();
+            line_buffer[0]=0;
             break;
         }
         else if (ch == 8 || ch == 127)
