@@ -9,6 +9,11 @@
 extern "C" int yylex();
 #define yylex yylex
 
+void geterror();
+void sortArrayStrings();
+void expandWildcard(char*,char*);
+static int MAXFILENAME = 1024;
+
 #define INIT    	char* sp = instring;
 #define GETC()  	(*sp++)
 #define PEEKC() 	(*sp)
@@ -22,11 +27,6 @@ extern "C" int yylex();
 #include <regexp.h>
 #include <assert.h>
 #include "command.h"
-
-void geterror();
-void sortArrayStrings();
-void expandWildcard(char*,char*);
-static int MAXFILENAME = 1024;
 
 char** array;
 int maxEntries = 10;
