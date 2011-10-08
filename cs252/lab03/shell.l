@@ -42,6 +42,11 @@ int mygetc(FILE * f) {
 
 %%
 
+(([\\][^])*([^ \\ & > < | \t \n])*)*  {
+    yylval.string_val = strdup(yytext);
+    return WORD;
+}
+
 \n  { return NEWLINE; }
 
 [ \t]  { /* Discard spaces and tabs */ }    
@@ -60,44 +65,22 @@ int mygetc(FILE * f) {
 
 "|"  { return PIPE; }
 
-\"[^\n\"]*\"  {
+["][^"]*["]  {
     yylval.string_val = strdup(yytext+1);
-    yylval.string_val[strlen(yylval.string_val) - 1] = '\0';
+    if(yylval.string_val[yyleng-2] == '"')
+        yylval.string_val[yyleng-2] = 0;
     return WORD;
 }
 
-\`[^\n\"]*\`  {
+[\`][^\`]*[\`]  {
     yylval.string_val = strdup(yytext+1);
-    yylval.string_val[strlen(yylval.string_val) - 1] = '\0';
-    return WORD;
+    if(yylval.string_val[yyleng-2] == '`')
+        yylval.string_val[yyleng-2] = 0;
+    return SHELLWORD;
 }
 
-[^ \t\n|>][^ \t\n|>]*  {
-    char *buff = strdup(yytext);
-    char *word = (char*)malloc(strlen(yytext) + 1);
-    
-    int j;
-    j = 0;
-
-    int i;
-    i = 0;
-    while (i < strlen(buff) + 1)
-    {
-        if (buff[i] == '\\')
-        {
-            word[j] = buff[i+1];
-            i = i + 2;
-        }
-        else
-        {
-            word[j] = buff[i];
-            i++;
-        }
-
-        j++;
-    }
-
-    yylval.string_val = strdup(word);
+[^ ^\\&<>|\t\n][^ ^\\&<>|\t\n]*  {
+    yylval.string_val = strdup(yytext);
     return WORD;
 }
 
