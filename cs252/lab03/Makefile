@@ -25,14 +25,8 @@ read-line.o: read-line.c
 shell: y.tab.o lex.yy.o command.o tty-raw-mode.o read-line.o
 	$(CC) -o shell lex.yy.o y.tab.o command.o tty-raw-mode.o read-line.o -ll -lgen
 
-cat_grep: cat_grep.cc
-	$(CC) -o cat_grep cat_grep.cc
-
 ctrl-c: ctrl-c.cc
 	$(CC) -o ctrl-c ctrl-c.cc
-
-regular: regular.cc
-	$(CC) -o regular regular.cc -lgen
 
 clean:
 	rm -f shell ctrl-c regular cat_grep read-line-example keyboard-example *.o
