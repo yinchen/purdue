@@ -22,10 +22,8 @@ static int MAXFILENAME = 1024;
 #define ERROR(c)        geterror()
 
 #include <stdio.h>
-#include <sys/types.h>
 #include <dirent.h>
 #include <regexp.h>
-#include <assert.h>
 #include "command.h"
 
 char** array;
@@ -123,8 +121,26 @@ argument:
 command_word:
     WORD {
         // printf("   Yacc: insert command \"%s\"\n", $1);
-        Command::_currentSimpleCommand = new SimpleCommand();
-        Command::_currentSimpleCommand->insertArgument( $1 );
+	char* word = $1;
+	if(!strchr(word, '&'))
+	{
+		Command::_currentSimpleCommand = new SimpleCommand();
+		Command::_currentSimpleCommand->insertArgument( word );
+	}
+	else
+	{
+		char* temp = (char*)malloc(strlen(word));
+		int i=0;
+		while(word[i] != '&')
+		{
+			temp[i] = word[i];
+			i++;
+		}
+		temp[i] = '\0';
+		Command::_currentSimpleCommand = new SimpleCommand();
+		Command::_currentSimpleCommand->insertArgument( temp );
+		Command::_currentCommand._background = 1;
+	}
     }
     | /* can be empty */
     ;
