@@ -15,6 +15,11 @@ extern "C" int yylex();
 #include <assert.h>
 #include "command.h"
 
+void geterror();
+void sortArrayStrings();
+void expandWildcard(char*,char*);
+static int MAXFILENAME = 1024;
+
 char** array;
 int maxEntries = 10;
 int nEntries = 0;
