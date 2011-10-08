@@ -181,6 +181,8 @@ io_modifier:
     }
     | LESS WORD {
         // printf("   Yacc: insert input \"%s\"\n", $2);
+	if (Command::_currentCommand._outFile)
+            yyerror("Ambiguous input redirect.\n");
         Command::_currentCommand._inputFile = $2;
     }
     ;
