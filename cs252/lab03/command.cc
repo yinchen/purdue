@@ -26,6 +26,8 @@ extern char **environ;
 
 int *backgroundPIDs;
 
+int _debugMode = 0;
+
 SimpleCommand::SimpleCommand()
 {
     // Creat available space for 5 arguments
@@ -418,6 +420,12 @@ Command::prompt()
     }
 }
 
+int
+Command::debugMode()
+{
+    return _debugMode;
+}
+
 Command Command::_currentCommand;
 SimpleCommand * Command::_currentSimpleCommand;
 
@@ -482,6 +490,7 @@ int main(int argc, char* argv[])
     
     if (strcmp(argv[1], "--debug") == 0)
     {
+        _debugMode = 1;
         printf("Launching mash in debug mode.\n");
     }
     
