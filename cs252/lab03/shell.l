@@ -72,13 +72,6 @@ int mygetc(FILE * f) {
     return WORD;
 }
 
-[\`][^\`]*[\`]  {
-    yylval.string_val = strdup(yytext+1);
-    if(yylval.string_val[yyleng-2] == '`')
-        yylval.string_val[yyleng-2] = 0;
-    return SHELLWORD;
-}
-
 [^ ^\\&<>|\t\n][^ ^\\&<>|\t\n]*  {
     yylval.string_val = strdup(yytext);
     return WORD;
