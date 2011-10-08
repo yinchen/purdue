@@ -26,8 +26,6 @@ extern char **environ;
 
 int *backgroundPIDs;
 
-int _debugMode = 0;
-
 SimpleCommand::SimpleCommand()
 {
     // Creat available space for 5 arguments
@@ -418,12 +416,6 @@ Command::prompt()
         printf("mash> ");
         fflush(stdout);
     }
-}
-
-int
-Command::debugMode()
-{
-    return _debugMode;
 }
 
 Command Command::_currentCommand;
