@@ -70,7 +70,45 @@ arg_list:
 
 argument:
     WORD {
-        expandWildcardsIfNecessary($1);
+	char* arg = $1;
+	char* temparg;
+	
+	if(strchr(arg, '\\') == NULL)
+	{
+		temparg = strdup(arg);
+	}
+	else
+	{
+		temparg = (char*)malloc(strlen(arg));
+		int j = 0;
+		int k = 0;
+		while(arg[j])
+		{
+			if(arg[j] != '\\')
+			{
+			    temparg[k] = arg[j];
+			    k++;
+			}
+		        else if(arg[j] == '\\' && arg[j+1] == '\\')
+		        {
+			    temparg[k] = '\\';
+			    k++;
+			    j++;
+			}
+			j++;
+		}
+	}
+	
+	expandWildcard(NULL, temparg);
+	
+	if(!found){
+	array[0] = strdup(temparg);
+	nEntries++;
+	}
+	if(wilds)
+	sortArrayStrings();
+	insertArgs();
+	reset();
     }
     ;
 
