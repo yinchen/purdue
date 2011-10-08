@@ -14,6 +14,15 @@ extern "C" int yylex();
 #include <regexpr.h>
 #include <assert.h>
 #include "command.h"
+
+char** array;
+int maxEntries = 10;
+int nEntries = 0;
+void reset();
+
+int wilds = 0;
+int found = 0;
+
 %}
 
 %%
@@ -126,7 +135,7 @@ background_opt:
 
 void expandWildcard(char* prefix, char* suffix)
 {
-    if(array == NULL)
+	if(array == NULL)
 		array = (char**)malloc(maxEntries*sizeof(char*));
 		
 	if(suffix[0] == 0)
