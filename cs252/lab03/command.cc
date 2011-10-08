@@ -482,7 +482,7 @@ int main(int argc, char* argv[])
     
     if (strcmp(argv[1], "--debug") == 0)
     {
-        Command::_debugMode = 1;
+        Command::::_currentCommand._debugMode = 1;
         printf("Launching mash in debug mode.\n");
     }
     
