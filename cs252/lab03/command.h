@@ -1,4 +1,3 @@
-
 #ifndef command_h
 #define command_h
 
@@ -26,6 +25,8 @@ struct Command {
     
     int _append;
     int _hasError;
+    
+    int _debugMode;
 
     void prompt();
     void print();
