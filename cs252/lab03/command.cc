@@ -299,7 +299,7 @@ Command::execute()
             fderr = open(_errFile, O_WRONLY|O_CREAT|O_TRUNC, 0600);
     }
     dup2(fderr, 2);
-    close(fderr)
+    close(fderr);
     
     int pid;
     
