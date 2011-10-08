@@ -8,8 +8,11 @@ Features that work:
 - Quotes and escape chars
 - CTRL-C
 - tilde expansion
-
-Features that do not work:
 - Wildcarding
 - Robustness
+
+Features that do not work:
 - subshell
+
+Extra features implemented:
+- yacc output and command table can be shown with the --debug flag, i.e. "shell --debug"

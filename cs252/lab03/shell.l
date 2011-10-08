@@ -13,18 +13,18 @@
 
 char * read_line();
 
-int mygetc(FILE * f) {
+int mygetc(FILE * f)
+{
   static char *p;
   char ch;
 
-  if (!isatty(0)) {
-    // stdin is not a tty. Call real getc
-    return getc(f);
+  if (!isatty(0))
+  {
+	return getc(f);
   }
 
-  // stdin is a tty. Call our read_line.
-
-  if (p==NULL || *p == 0) {
+  if (p==NULL || *p == 0)
+  {
     char * s = read_line();
     p = s;
   }
@@ -67,7 +67,7 @@ int mygetc(FILE * f) {
 
 ["][^"]*["]  {
     yylval.string_val = strdup(yytext+1);
-    if(yylval.string_val[yyleng-2] == '"')
+    if (yylval.string_val[yyleng-2] == '"')
         yylval.string_val[yyleng-2] = 0;
     return WORD;
 }

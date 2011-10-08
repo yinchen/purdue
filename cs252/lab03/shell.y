@@ -10,13 +10,13 @@ extern "C" int yylex();
 #define yylex yylex
 
 void geterror();
-void sortArrayStrings();
+void sortDirectories();
 void expandWildcard(char*,char*);
 static int MAXFILENAME = 1024;
 
-#define INIT    	char* sp = instring;
-#define GETC()  	(*sp++)
-#define PEEKC() 	(*sp)
+#define INIT            char* sp = instring;
+#define GETC()          (*sp++)
+#define PEEKC()         (*sp)
 #define UNGETC(c)       (--sp)
 #define RETURN(c)       return c;
 #define ERROR(c)        geterror()
@@ -31,7 +31,7 @@ int maxEntries = 10;
 int nEntries = 0;
 void reset();
 
-int wilds = 0;
+int isWildcard = 0;
 int found = 0;
 
 %}
@@ -76,71 +76,75 @@ arg_list:
 
 argument:
     WORD {
-	char* arg = $1;
-	char* temparg;
-	
-	if(strchr(arg, '\\') == NULL)
-	{
-		temparg = strdup(arg);
-	}
-	else
-	{
-		temparg = (char*)malloc(strlen(arg));
-		int j = 0;
-		int k = 0;
-		while(arg[j])
+		char* arg = $1;
+		char* temparg;
+		
+		if(strchr(arg, '\\') == NULL)
 		{
-			if(arg[j] != '\\')
-			{
-			    temparg[k] = arg[j];
-			    k++;
-			}
-		        else if(arg[j] == '\\' && arg[j+1] == '\\')
-		        {
-			    temparg[k] = '\\';
-			    k++;
-			    j++;
-			}
-			j++;
+			temparg = strdup(arg);
 		}
+		else
+		{
+			temparg = (char*)malloc(strlen(arg));
+			int j = 0;
+			int k = 0;
+			while(arg[j])
+			{
+				if(arg[j] != '\\')
+				{
+					temparg[k] = arg[j];
+					k++;
+				}
+					else if(arg[j] == '\\' && arg[j+1] == '\\')
+					{
+					temparg[k] = '\\';
+					k++;
+					j++;
+				}
+				j++;
+			}
+		}
+		
+		expandWildcard(NULL, temparg);
+		
+		if (found == 0)
+		{
+			array[0] = strdup(temparg);
+			nEntries++;
+		}
+		
+		if (isWildcard)
+			sortDirectories();
+		
+		insertArguments();
+		reset();
 	}
-	
-	expandWildcard(NULL, temparg);
-	
-	if(!found){
-	array[0] = strdup(temparg);
-	nEntries++;
-	}
-	if(wilds)
-	sortArrayStrings();
-	insertArgs();
-	reset();
-    }
     ;
 
 command_word:
     WORD {
-        if (Command::_currentCommand._debugMode) printf("   Yacc: insert command \"%s\"\n", $1);
-	char* word = $1;
-	if(!strchr(word, '&'))
-	{
-		Command::_currentSimpleCommand = new SimpleCommand();
-		Command::_currentSimpleCommand->insertArgument( word );
-	}
-	else
-	{
-		char* temp = (char*)malloc(strlen(word));
-		int i=0;
-		while(word[i] != '&')
+		if (Command::_currentCommand._debugMode) printf("   Yacc: insert command \"%s\"\n", $1);
+			char* word = $1;
+		
+		if(!strchr(word, '&'))
 		{
-			temp[i] = word[i];
-			i++;
+			Command::_currentSimpleCommand = new SimpleCommand();
+			Command::_currentSimpleCommand->insertArgument( word );
 		}
-		temp[i] = '\0';
-		Command::_currentSimpleCommand = new SimpleCommand();
-		Command::_currentSimpleCommand->insertArgument( temp );
-		Command::_currentCommand._background = 1;
-	}
+		else
+		{
+			char* temp = (char*)malloc(strlen(word));
+			int i=0;
+			while(word[i] != '&')
+			{
+				temp[i] = word[i];
+				i++;
+			}
+			temp[i] = '\0';
+			Command::_currentSimpleCommand = new SimpleCommand();
+			Command::_currentSimpleCommand->insertArgument( temp );
+			Command::_currentCommand._background = 1;
+		}
     }
     | /* can be empty */
     ;
@@ -181,7 +185,7 @@ io_modifier:
     }
     | LESS WORD {
         if (Command::_currentCommand._debugMode) printf("   Yacc: insert input \"%s\"\n", $2);
-	if (Command::_currentCommand._outFile)
+		if (Command::_currentCommand._outFile)
             yyerror("Ambiguous input redirect.\n");
         Command::_currentCommand._inputFile = $2;
     }
@@ -204,7 +208,7 @@ background_opt:
 
 void geterror()
 {
-        return;
+    return;
 }
 
 void expandWildcard(char* prefix, char* suffix)
@@ -227,7 +231,7 @@ void expandWildcard(char* prefix, char* suffix)
 	}
 		
 	if(strchr(suffix, '*') || strchr(suffix, '?'))
-		wilds = 1;
+		isWildcard = 1;
 
 	char* s = strchr(suffix, '/');
 
@@ -357,12 +361,12 @@ void reset()
     maxEntries = 10;
     array = NULL;
     found = 0;
-    wilds = 0;
+    isWildcard = 0;
 
     return;
 }
 
-void sortArrayStrings()
+void sortDirectories()
 {
     int i;
     for(i = 0; i < nEntries-1; i++)
@@ -384,7 +388,7 @@ void sortArrayStrings()
     return;
 }
 
-void insertArgs()
+void insertArguments()
 {
     int j;
     for(j = 0; j < nEntries; j++)

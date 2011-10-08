@@ -31,30 +31,30 @@ SimpleCommand::SimpleCommand()
     // Creat available space for 5 arguments
     _numberOfAvailableArguments = 5;
     _numberOfArguments = 0;
-    _arguments = (char **) malloc( _numberOfAvailableArguments * sizeof( char * ) );
+    _arguments = (char **) malloc(_numberOfAvailableArguments * sizeof(char *));
 }
 
 void
-SimpleCommand::insertArgument( char * argument )
+SimpleCommand::insertArgument(char * argument)
 {
-    if ( _numberOfAvailableArguments == _numberOfArguments  + 1 ) {
-        // Double the available space
+    if (_numberOfAvailableArguments == _numberOfArguments  + 1)
+	{
         _numberOfAvailableArguments *= 2;
-        _arguments = (char **) realloc( _arguments, _numberOfAvailableArguments * sizeof(char *));
+        _arguments = (char **) realloc(_arguments, _numberOfAvailableArguments * sizeof(char *));
     }
     
     // insert environment variables
     char* finalString = (char*)malloc(2048);
     if (strchr(argument, '$'))
     {
-        int j=0;
-        int k=0;
+        int j = 0;
+        int k = 0;
         while(argument[j] != '\0')
         {
-            if(argument[j] == '$')
+            if (argument[j] == '$')
             {
                 char* var = (char*)malloc(strlen(argument));
-                j+=2;
+                j += 2;
                 while(argument[j] != '}')
                 {
                     var[k] = argument[j];
@@ -75,7 +75,7 @@ SimpleCommand::insertArgument( char * argument )
                     k++;
                     j++;
                 }
-                k=0;
+                k = 0;
                 strcat(finalString, temp);
                 free(temp);
                 j--;
@@ -99,19 +99,15 @@ SimpleCommand::insertArgument( char * argument )
     }
 
     _arguments[ _numberOfArguments ] = argument;
-
-    // Add NULL argument at the end
-    _arguments[ _numberOfArguments + 1] = NULL;
-    
+	_arguments[ _numberOfArguments + 1] = NULL;    
     _numberOfArguments++;
 }
 
 Command::Command()
 {
-    // Create available space for one simple command
     _numberOfAvailableSimpleCommands = 1;
     _simpleCommands = (SimpleCommand **)
-        malloc( _numberOfSimpleCommands * sizeof( SimpleCommand * ) );
+	malloc(_numberOfSimpleCommands * sizeof(SimpleCommand *));
 
     _numberOfSimpleCommands = 0;
     _outFile = 0;
@@ -123,40 +119,47 @@ Command::Command()
 }
 
 void
-Command::insertSimpleCommand( SimpleCommand * simpleCommand )
+Command::insertSimpleCommand(SimpleCommand * simpleCommand)
 {
-    if ( _numberOfAvailableSimpleCommands == _numberOfSimpleCommands ) {
+    if (_numberOfAvailableSimpleCommands == _numberOfSimpleCommands)
+	{
         _numberOfAvailableSimpleCommands *= 2;
-        _simpleCommands = (SimpleCommand **) realloc( _simpleCommands,
-             _numberOfAvailableSimpleCommands * sizeof( SimpleCommand * ) );
+        _simpleCommands = (SimpleCommand **) realloc(_simpleCommands, _numberOfAvailableSimpleCommands * sizeof(SimpleCommand *));
     }
     
-    _simpleCommands[ _numberOfSimpleCommands ] = simpleCommand;
+    _simpleCommands[_numberOfSimpleCommands] = simpleCommand;
     _numberOfSimpleCommands++;
 }
 
 void
-Command:: clear()
+Command::clear()
 {
-    for ( int i = 0; i < _numberOfSimpleCommands; i++ ) {
-        for ( int j = 0; j < _simpleCommands[ i ]->_numberOfArguments; j ++ ) {
-            free ( _simpleCommands[ i ]->_arguments[ j ] );
+	int i;
+    for (i = 0; i < _numberOfSimpleCommands; i++)
+	{
+		int j;
+        for (j = 0; j < _simpleCommands[i]->_numberOfArguments; j ++)
+		{
+            free(_simpleCommands[i]->_arguments[j]);
         }
         
-        free ( _simpleCommands[ i ]->_arguments );
-        free ( _simpleCommands[ i ] );
+        free(_simpleCommands[i]->_arguments);
+        free(_simpleCommands[i]);
     }
 
-    if ( _outFile ) {
-        free( _outFile );
+    if (_outFile)
+	{
+        free(_outFile);
     }
 
-    if ( _inputFile ) {
-        free( _inputFile );
+    if (_inputFile)
+	{
+        free(_inputFile);
     }
 
-    if ( _errFile ) {
-        free( _errFile );
+    if (_errFile)
+	{
+        free(_errFile);
     }
 
     _numberOfSimpleCommands = 0;
@@ -175,22 +178,21 @@ Command::print()
     printf("  #   Simple Commands\n");
     printf("  --- ----------------------------------------------------------\n");
     
-    for ( int i = 0; i < _numberOfSimpleCommands; i++ ) {
-        printf("  %-3d ", i );
-        for ( int j = 0; j < _simpleCommands[i]->_numberOfArguments; j++ ) {
-            printf("\"%s\" \t", _simpleCommands[i]->_arguments[ j ] );
+    for (int i = 0; i < _numberOfSimpleCommands; i++)
+	{
+        printf("  %-3d ", i);
+        for (int j = 0; j < _simpleCommands[i]->_numberOfArguments; j++)
+		{
+            printf("\"%s\" \t", _simpleCommands[i]->_arguments[j]);
         }
         printf("\n");
     }
 
-    printf( "\n\n" );
-    printf( "  Output       Input        Error        Background\n" );
-    printf( "  ------------ ------------ ------------ ------------\n" );
-    printf( "  %-12s %-12s %-12s %-12s\n", _outFile?_outFile:"default",
-        _inputFile?_inputFile:"default", _errFile?_errFile:"default",
-        _background?"YES":"NO");
-    printf( "\n\n" );
-    
+    printf("\n\n");
+    printf("  Output       Input        Error        Background\n");
+    printf("  ------------ ------------ ------------ ------------\n");
+    printf("  %-12s %-12s %-12s %-12s\n", _outFile?_outFile:"default", _inputFile?_inputFile:"default", _errFile?_errFile:"default", _background?"YES":"NO");
+    printf("\n\n");
 }
 
 void
@@ -395,7 +397,7 @@ Command::execute()
     else
     {
         int y;
-        for (y = 0; y < 1024; y++)
+        for (y = 0; y < 2048; y++)
         {
             if (backgroundPIDs[y] == 0)
                 break;
@@ -405,8 +407,6 @@ Command::execute()
         clear();
     }
 }
-
-// Shell implementation
 
 void
 Command::prompt()
@@ -437,7 +437,7 @@ extern "C" void killzombie(int sig)
     int found = 0;
     
     int y;
-    for (y = 0; y < 1024; y++)
+    for (y = 0; y < 2048; y++)
     {
         if (backgroundPIDs[y] == pid)
             found = 1;
@@ -452,7 +452,7 @@ extern "C" void killzombie(int sig)
 
 int main(int argc, char* argv[])
 {
-    backgroundPIDs = (int*)malloc(sizeof(int) * 1024);
+    backgroundPIDs = (int*)malloc(sizeof(int) * 2048);
     
     struct sigaction signalAction1;
     
@@ -473,7 +473,7 @@ int main(int argc, char* argv[])
     sigemptyset(&signalAction2.sa_mask);
     signalAction2.sa_flags = SA_RESTART;
     
-    int error2 = sigaction(SIGCHLD, &signalAction2, NULL );
+    int error2 = sigaction(SIGCHLD, &signalAction2, NULL);
     if (error2) 
     {
         perror("sigaction");
