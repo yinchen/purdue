@@ -184,6 +184,11 @@ background_opt:
 
 %%
 
+void geterror()
+{
+        return;
+}
+
 void expandWildcard(char* prefix, char* suffix)
 {
 	if(array == NULL)
