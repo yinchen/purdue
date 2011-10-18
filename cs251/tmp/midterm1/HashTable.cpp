@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include <HashTable.h>
+#include "HashTable.h"
 
 int
 HashTable:hash(const char *key) {
@@ -16,21 +16,23 @@ HashTable:hash(const char *key) {
 		n += (i + 1) * key[i];
 	}
 	
-	return n % 5000;
+	return n % size;
 }
 
 HashTable::HashTable() {
-	buckets = new HashTableE*[5000];
+	size = 5000;
+	currSize = 0;
+	buckets = new HashTableE*[size];
 	
 	// default lists to null
 	int i;
-	for (i = 0; i < 5000; i++)
+	for (i = 0; i < size; i++)
 	{
 		buckets[i] = NULL;
 	}
 }
 
-HashTable::insert(const char *key, char **data) {
+HashTable::insert(const char *key, void *data) {
 	int h = hash(key);
 	
 	HashTableE *curr;
@@ -49,6 +51,11 @@ HashTable::insert(const char *key, char **data) {
 	
 	curr = buckets[h];
 	
+	// check if the hash table is full
+	if (currSize == size) {
+		rehash();
+	}
+	
 	// scroll to end of list
 	while (curr != NULL) {
 		curr = curr->next;
@@ -59,6 +66,7 @@ HashTable::insert(const char *key, char **data) {
 	e->key = key;
 	e->data = data;
 	e->next = NULL;
+	currSize++;
 	
 	// check if this is first entry
 	if (curr == NULL) {
@@ -88,6 +96,7 @@ HashTable::remove(const char *key) {
 	// check if this is first entry
 	if (strcmpy(curr->key, key) == 0) {
 		buckets[h] = curr->next;
+		currSize--;
 		return true;
 	}
 	
@@ -96,6 +105,7 @@ HashTable::remove(const char *key) {
 	{
 		if (strcmp(curr->key, key) == 0) {
 			last->next = curr->next;
+			currSize--;
 			return true;
 		}
 		
@@ -107,7 +117,7 @@ HashTable::remove(const char *key) {
 }
 
 bool
-HashTable::lookup(const char *key, char **data) {
+HashTable::lookup(const char *key, void *data) {
 	int h = hash(key);
 	
 	HashTableE *curr;
@@ -124,4 +134,39 @@ HashTable::lookup(const char *key, char **data) {
 	}
 	
 	return false;
+}
+
+void HashTable::rehash() {
+	int oldSize;
+	oldSize = size;
+	
+	// reallocate hash table size
+	size = 2 * size;	
+	HashTableE **newBuckets = new HashTableE*[size];
+	
+	// default lists to null
+	int i;
+	for (i = 0; i < oldSize; i++) {
+		buckets[i] = NULL;
+	}
+	
+	// copy old elements into new table
+	int j;
+	for (j = 0; j < size; j++) {
+		HashTableE *e;
+		e = buckets[j];
+		
+		// loop through the current list
+		while (e != NULL) {
+			HashTableE *next = e->next;
+			int h = hash(e->key);
+			e->next = newBuckets[h];
+			newBuckets[h] = e;
+			e = next;
+		}
+	}
+	
+	// replace existing hash table with new hash table
+	free(buckets);
+	buckets = newBuckets;
 }

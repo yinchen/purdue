@@ -1,19 +1,21 @@
 #include <stdio.h>
-#include <Heap.h>
+#include "Heap.h"
 
-Heap::Heap() {
-	max = 5000;
-	heap = new HeapE[max];
+Heap::Heap(int maxSize) {
+	max = maxSize;
+	heap = new int[max];
 	last = 0;
 }
 
 void
-Heap::insert(const char *key, int data) {
+Heap::insert(i) {
+	// make sure there is space
+	if (list >= max) {
+		exit(1);
+	}
+
 	// insert new record at end
-	HeapE e;
-	e.key = key;
-	e.data = data;
-	heap[last] = e;
+	heap[last] = key;
 	last++;
 	
 	// travers "up-heap" to fix heap until we reach root
@@ -21,12 +23,12 @@ Heap::insert(const char *key, int data) {
 	int parent = hparent(child);	
 	while (child > 0) {
 		// check if we need to keep fixing
-		if (heap[child].key > heap[parent].key) {
+		if (heap[child] > heap[parent]) {
 			break;
 		}
 		
 		// swap parent and child
-		HeapE tmp = heap[child];
+		int tmp = heap[child];
 		heap[child] = heap[parent];
 		heap[parent] = tmp;
 		
@@ -43,29 +45,31 @@ Heap:removeMin() {
 		exit(1);
 	}
 	
-	// get minimum key and data
-	const char *key minKey = heap[0].key;
-	int minData = heap[0].data;
+	// get minimum key
+	int minKey = heap[0];
 	
 	// put last element in use at top of heap
 	heap[0] = heap[last - 1];
 	last--;
 	
 	// traverse "down-heap" to fix heap until we reach bottom
+	int parent = 0;
+	int left = hleft(parent);
+	int right = hright(parent);
 	while (left < last) {
 		// find smallest child
 		int minChild = left;		
-		if ((right < last) && (heap[right].key <= heap[left].key)) {
+		if ((right < last) && (heap[right] <= heap[left])) {
 			minChild = right;
 		}
 		
 		// check if we need to keep fixing
-		if (heap[parent].key <= heap[minChild].key) {
+		if (heap[parent] <= heap[minChild]) {
 			break;
 		}
 		
 		// swap parent and smallest child
-		HeapE tmp = heap[minChild];
+		int tmp = heap[minChild];
 		heap[minChild] = heap[parent];
 		heap[parent] = tmp;
 		
@@ -75,5 +79,5 @@ Heap:removeMin() {
 		right = hright(parent);
 	}
 	
-	return minData;
+	return minKey;
 }

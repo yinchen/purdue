@@ -1,18 +1,22 @@
 typedef struct HashTableE {
 	const char *key;
-	char **data;
+	void *data;
 	HashTableE *next;
 } HashTableE;
 
 class HashTable {
 	HashTableE **buckets;
-	int hash(const char *key);
+	int size;
+	int currSize;
+	
+	int hash(const char *key);	
+	void rehash();
 	
 	public:
 		HashTable();
 		~HashTable();
 		
-		bool insert(const char *key, char **data);
+		bool insert(const char *key, void *data);
 		bool remove(const char *key);
-		bool lookup(const char *key, char **data);
+		bool lookup(const char *key, void *data);
 };
