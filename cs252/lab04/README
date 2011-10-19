@@ -1,10 +1,25 @@
 Matt McCormick
 mbmccorm@purdue.edu
+Programming Assignment 4
 
-Lab 4
 
 Part 1
 
 In Step 3, the program continuously creates new threads in a while(1) loop. These threads then print out the characters 'A', 'B', and 'C' continuously in no particular order until the program is killed with SIGINT.
 
 In Step 5, the program never reaches the portion of code where the threads are created. Instead, it prints the 'C' character in a while(1) loop until the program is killed with SIGINT.
+
+
+Part 2
+
+*------------------------------------------*-------------*-----------*-----------*
+| execution                                | system time | user time | real time |
+*------------------------------------------*-------------*-----------*-----------*
+| pthread_mutex (count)                    | 0.00        | 0.42      | 0:00.43   |
+| spin lock (count_spin with thr_yield)    | 0.12        | 0.53      | 0:00.44   |
+| spin_lock (count_spin without thr_yield) | 0.00        | 1.36      | 0:00.81   |
+*------------------------------------------*-------------*-----------*-----------*
+
+The thr_yield() method in count_spin forces the spin lock to execute in system space, instead of in user space. Without calling thr_yield(), the spin lock executes in user space entirely, without looking to system space for help.
+
+Using the mutex lock in count runs entirely in user space and provides each thread with a mutually exclusive lock on the portion of code being executed. When thr_yield() is used, the threads wait in system space instead of user space like mutex.
