@@ -20,17 +20,23 @@ test_and_set(unsigned long * lock)
 void
 my_spin_lock( unsigned long * lock )
 {
+    while (test_and_set(lock)) {
+        thr_yield();
+    }
 }
 
 void
 my_spin_unlock( unsigned long * lock )
 {
+    *lock = 0;
 }
 
 int count;
 
 void increment( int ntimes )
 {
+    my_spin_lock( &lock );
+    
 	for ( int i = 0; i < ntimes; i++ ) {
 		int c;
 
@@ -39,6 +45,8 @@ void increment( int ntimes )
 		count = c;
 
 	}
+	
+	my_spin_unlock( &lock );
 }
 
 int main( int argc, char ** argv )
