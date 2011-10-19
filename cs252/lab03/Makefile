@@ -30,4 +30,3 @@ ctrl-c: ctrl-c.cc
 
 clean:
 	rm -f shell ctrl-c regular cat_grep read-line-example keyboard-example *.o
-
