@@ -1,0 +1,10 @@
+Matt McCormick
+mbmccorm@purdue.edu
+
+Lab 4
+
+Part 1
+
+In Step 3, the program continuously creates new threads in a while(1) loop. These threads then print out the characters 'A', 'B', and 'C' continuously in no particular order until the program is killed with SIGINT.
+
+In Step 5, the program never reaches the portion of code where the threads are created. Instead, it prints the 'C' character in a while(1) loop until the program is killed with SIGINT.
