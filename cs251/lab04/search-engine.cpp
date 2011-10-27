@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/time.h>
 #include "search-engine.h"
 #include "webcrawl.h"
@@ -33,11 +34,7 @@ SearchEngine::SearchEngine( int port, DictionaryType dictionaryType):
 	
 	while (fgets(line, 256, infile))
 	{
-		if (strcmp(line, "\n") == 0)
-		{
-			index++;
-		}
-		else
+		if (strcmp(line, "\n") != 0)
 		{
 			// parse the url
 			char *url = new char[256];
@@ -53,9 +50,65 @@ SearchEngine::SearchEngine( int port, DictionaryType dictionaryType):
 			strcpy(desc, line);
 			
 			// store this entry
-			// records[index] = new URLRecord();
 			records[index]._url = strdup(url);
-			records[index]._description = strdup(desc);		
+			records[index]._description = strdup(desc);	
+
+			index++;			
+		}
+	}
+	
+	delete line;
+	fclose(infile);
+	
+	infile = fopen("word.txt", "r");
+	
+	line = new char[256];
+	
+	while (fgets(line, 256, infile))
+	{
+		if (strcmp(line, "\n") != 0)
+		{
+			// parse the word
+			char *token = new char[256];
+			token = strtok(line, " ");
+			
+			char *word = new char[256];
+			strcpy(word, token);
+			
+			URLRecordList *head;
+			head = NULL;
+			
+			URLRecordList *prev;
+			prev = NULL;
+			
+			strtok(NULL, " ");
+			
+			while (token != NULL)
+			{
+				int position = atoi(token);
+				
+				URLRecordList *entry = new URLRecordList();
+				
+				if (head == NULL)
+					head = entry;
+				
+				entry->_urlRecord = &records[position];
+				entry->_next = NULL;
+				
+				if (prev != NULL)
+					prev->_next = entry;
+					
+				prev = entry;
+				
+				token = strtok(NULL, " ");
+			}
+			
+			_wordToURLList->addRecord(word, (URLRecordList*)head);
+			
+			delete prev;
+			delete head;
+			delete word;
+			delete token;
 		}
 	}
 	

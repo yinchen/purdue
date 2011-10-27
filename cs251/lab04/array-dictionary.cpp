@@ -35,18 +35,18 @@ ArrayDictionary::addRecord( KeyType key, DataType record)
 		int i;
 		for (i = 0; i < currSize; i++)
 		{
-			tmp[i].key = (char*)malloc(sizeof(char)*20);
+			tmp[i].key = (char*)malloc(sizeof(char)*25);
 			strcpy(tmp[i].key, array[i].key);
 			tmp[i].data = new DataType;
 			tmp[i].data = (DataType*)array[i].data;
 		}
 		
-		array = tmp;
-		
 		delete [] array;
+		
+		array = tmp;
 	}
 	
-	array[currentNumber].key = (char*)malloc(sizeof(char)*20);
+	array[currentNumber].key = (char*)malloc(sizeof(char)*25);
 	strcpy(array[currentNumber].key, key);
 	array[currentNumber].data = new DataType;
 	array[currentNumber].data = (DataType*)record;
