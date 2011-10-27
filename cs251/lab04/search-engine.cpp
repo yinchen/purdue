@@ -1,12 +1,66 @@
 #include <string.h>
+#include <stdio.h>
+#include <sys/time.h>
 #include "search-engine.h"
+#include "webcrawl.h"
 
 SearchEngine::SearchEngine( int port, DictionaryType dictionaryType):
   MiniHTTPD(port)
 {
-	// Create dictionary of the indicated type
+	// create dictionary of the indicated type
+	if (dictionaryType == ArrayDictionaryType)
+		_wordToURLList = new ArrayDictionary();
+	else if (dictionaryType == HashDictionaryType)
+		_wordToURLList = new HashDictionary();
+	else if (dictionaryType == AVLDictionaryType)
+		_wordToURLList = new AVLDictionary();
+	else if (dictionaryType == BinarySearchDictionaryType)
+		_wordToURLList = new BinarySearchDictionary();
+	else
+		_wordToURLList = NULL;
 
-	// Populate dictionary and sort it if necessary
+	// populate dictionary and sort it if necessary
+	URLRecord *records = new URLRecord[1024];
+	
+	FILE *infile;
+	infile = fopen("url.txt", "r");
+	
+	char *line;
+	line = new char[256];
+	
+	int index;
+	index = 0;
+	
+	while (fgets(line, 256, infile))
+	{
+		if (strcmp(line, "\n") == 0)
+		{
+			index++;
+		}
+		else
+		{
+			// parse the url
+			char *url = new char[256];
+			strtok(line, " ");
+			
+			strcpy(url, strtok(NULL, " "));
+			url[strlen(url) - 1] = '\0';
+			
+			// parse the description
+			fgets(line, 512, infile);
+			
+			char *desc = new char[512];
+			strcpy(desc, line);
+			
+			// store this entry
+			// records[index] = new URLRecord();
+			records[index]._url = strdup(url);
+			records[index]._description = strdup(desc);		
+		}
+	}
+	
+	delete line;
+	fclose(infile);
 }
 
 void

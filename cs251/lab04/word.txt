@@ -1,0 +1,787 @@
+nancy 15 16 42 44 
+toby 22 
+opening 31 
+filthiest 15 
+many 1 10 26 30 
+xx 20 
+charles 0 
+conceal 44 
+autumn 47 
+artful 43 
+delivered 20 
+taken 12 
+respectable 39 
+london 8 17 40 46 
+life 4 32 40 
+acquaintances 13 
+mighty 27 
+what 16 30 38 
+subject 24 
+possession 4 
+reasons 1 
+loquacious 30 
+cunning 44 
+noah 6 7 45 
+village 33 
+surprised 20 30 
+shown 43 
+church 46 50 
+matters 13 
+of 0 1 2 3 5 6 8 10 11 12 14 15 16 18 20 21 23 24 27 28 29 30 32 33 35 36 38 40 41 42 43 44 45 46 47 48 50 51 52 53 
+custom 17 
+brings 17 
+author 27 
+sikes 20 22 28 42 48 
+xxxix 39 
+being 4 5 6 10 
+she 41 44 
+cover 48 
+nor 32 
+will 1 36 
+much 34 
+limb 32 
+interview 38 40 
+neither 32 
+various 13 
+when 4 9 14 18 19 20 21 35 36 42 43 47 49 
+going 5 
+vessels 50 
+looks 28 
+part 15 50 
+every 52 
+board 2 
+figures 46 
+where 1 50 
+flight 48 
+chimed 46 
+man 17 26 31 45 
+doctor 30 
+xvii 17 
+reached 7 8 
+iii 3 
+fatal 47 
+impatiently 45 
+introductory 29 34 
+left 5 
+way 31 
+a 1 2 3 5 6 7 8 9 10 11 15 16 17 19 20 21 22 23 24 26 27 29 31 32 33 34 35 36 37 38 40 42 45 46 49 51 
+copyright 0 
+appears 26 
+olver 20 
+proposal 51 
+in 0 1 4 5 9 10 11 12 15 16 17 18 19 20 22 24 25 26 27 29 30 32 33 36 37 40 42 44 47 49 51 53 
+placed 20 
+funeral 5 
+upon 26 34 39 42 
+errand 14 
+xxv 25 
+very 3 10 15 21 24 36 
+may 23 24 36 37 47 
+twist 0 1 3 15 16 
+matrimonial 37 
+addition 32 
+by 0 2 6 16 25 27 33 35 43 45 
+inch 52 
+eyes 37 52 
+shrivelled 19 
+dark 15 
+formally 6 
+victim 2 
+otherwise 43 
+tragic 17 
+project 0 
+ii 2 
+care 12 
+nice 6 
+immediate 11 
+xlviii 48 
+check 0 33 
+means 27 
+death 24 
+hopeful 9 
+beginning 49 
+situation 41 
+hurried 42 
+candle 31 
+tight 19 
+there 9 40 
+agreeably 30 
+masters 5 
+became 16 
+shows 23 39 
+xix 19 
+mode 11 
+relates 3 16 30 
+remainder 4 
+gone 18 
+on 8 14 17 19 23 24 32 37 39 42 45 46 50 
+unfit 24 
+grimwig 14 
+inmates 29 35 
+further 9 14 
+ran 7 
+concerning 9 14 
+pledge 44 
+trouble 43 
+arm 30 
+importance 24 35 36 
+strong 20 
+fagin 25 45 
+twilight 49 
+xxix 29 
+acquainted 10 39 
+unceremoniously 27 
+dull 21 38 
+hard 21 
+metropolis 42 
+meet 49 
+into 4 6 21 43 52 
+advanced 46 
+series 0 
+certain 1 
+good 17 20 
+indeed 11 41 
+parlour 15 37 
+asking 3 
+called 47 
+dissimulation 44 
+slight 11 32 
+master 18 
+education 2 
+account 29 38 
+destiny 17 
+reputable 18 
+associate 45 
+alone 41 
+now 33 34 
+little 15 31 53 
+systematic 2 
+clocks 46 
+things 25 26 
+reader 13 37 39 
+waited 45 
+cries 35 
+brownlows 14 
+police 11 
+denthe 25 
+step 46 
+bear 34 
+few 32 53 
+about 16 18 
+whom 13 39 
+told 53 
+show 22 
+how 3 15 18 39 43 
+treats 1 2 11 24 
+particulars 9 14 34 
+those 53 
+whence 37 
+fagins 52 
+their 18 38 39 49 53 
+away 12 52 
+introduces 39 
+blowing 21 
+price 10 
+claypole 7 43 45 
+even 23 
+reputation 17 
+up 2 19 31 45 
+having 7 42 
+breath 7 
+dead 47 
+should 36 
+affording 51 
+together 39 
+girls 40 
+encounters 8 
+seldom 41 
+connected 13 
+he 2 5 7 8 12 14 16 20 26 
+fresh 41 
+hoarser 28 
+figured 53 
+cried 22 
+arts 44 
+attendant 32 
+sat 25 37 
+hand 2 31 
+murderous 17 
+changing 0 
+cold 23 
+gained 8 26 
+which 1 3 8 12 14 16 19 23 25 26 27 29 34 37 38 40 46 47 50 
+awoke 9 20 
+comprehending 51 
+come 41 
+rose 35 44 
+river 50 
+keep 27 
+mysterious 26 
+better 10 12 
+heads 39 
+makes 4 
+own 43 
+wherein 20 25 33 43 
+windy 19 
+sound 9 
+chill 19 
+associates 5 10 
+cheerless 21 37 
+pace 7 
+related 13 
+decided 42 
+poor 24 
+but 10 24 36 40 51 
+too 34 
+and 1 2 3 6 7 8 9 10 11 12 15 16 17 18 19 21 23 24 25 26 28 31 32 33 34 35 36 38 39 40 41 43 44 45 46 47 49 50 51 52 53 
+months 2 6 53 
+over 0 6 12 19 20 48 
+resorted 29 
+apprenticed 6 
+fixed 37 
+kept 46 
+found 24 
+is 12 17 19 20 24 36 39 40 43 45 53 
+already 39 
+squandered 40 
+overcast 38 
+xxiv 24 
+last 36 40 51 52 53 
+improving 18 
+coach 12 
+arrives 34 44 
+settlement 51 
+deception 2 
+length 16 49 
+sort 8 
+dont 22 
+truly 47 
+were 15 16 25 32 51 
+next 2 9 18 45 
+containing 9 35 38 41 
+almost 34 
+adventures 28 
+damp 19 
+like 41 
+grate 37 
+got 21 43 
+former 27 
+past 46 
+specimen 11 
+deserted 27 47 
+difficulty 41 
+summer 33 38 
+passed 18 38 
+gloomy 15 
+evening 38 39 
+glow 33 
+word 51 
+happened 34 
+introduced 13 
+xxiii 23 
+thick 20 
+virtue 43 
+burglary 22 
+felt 41 
+position 31 
+same 22 25 
+bounds 48 
+attending 1 
+deal 20 
+conversation 23 35 49 
+interrupts 49 
+person 9 
+melodramas 17 
+low 15 
+his 1 4 5 7 9 10 11 12 17 18 19 28 31 32 33 37 45 
+nearly 12 47 53 
+company 25 
+mr 11 14 18 20 23 25 37 38 42 43 49 
+uncommon 37 
+make 22 
+under 48 
+contrast 37 
+getting 3 
+while 25 41 
+explanation 51 
+continues 7 
+happy 32 
+harry 35 
+sequel 36 40 
+passing 25 
+sinecure 3 
+that 20 23 30 31 36 39 41 43 45 46 47 48 49 50 53 
+our 0 
+its 29 36 
+xxvii 27 
+historian 53 
+determined 19 
+glim 22 
+saffron 15 
+minute 7 
+exposure 32 
+claimed 16 
+some 13 23 28 34 35 39 
+with 5 10 13 14 20 28 30 31 32 37 39 46 50 51 52 
+result 35 
+here 7 
+delay 32 45 
+proceeds 28 
+born 1 
+beadle 23 27 
+remains 53 
+to 0 1 5 8 12 13 17 18 20 25 26 27 29 32 34 36 40 42 44 49 50 52 53 
+quarters 46 
+buildings 1 50 
+set 5 22 
+xxxii 32 
+house 29 35 
+country 0 25 
+seemly 27 
+large 16 21 
+den 15 
+fails 44 
+removed 25 
+narrated 51 
+dodger 18 43 
+xliv 44 
+an 4 5 14 29 38 42 51 
+pain 32 
+circumstances 1 
+yet 51 
+friends 12 18 32 33 
+twists 2 
+xiv 14 
+or 2 4 7 51 
+could 44 
+soon 14 22 
+read 36 
+soles 20 
+buttoning 19 
+astonishes 6 
+xliii 43 
+once 7 8 
+personage 27 
+v 5 
+performed 26 
+susceptible 23 
+chain 31 
+miss 15 
+throats 28 
+society 18 
+such 22 
+families 4 
+brownlow 49 
+are 0 13 26 47 50 53 
+young 8 30 34 
+x 10 
+rested 7 
+injure 17 
+goaded 6 
+prudent 1 
+great 4 17 36 
+long 9 
+deeds 48 
+atones 27 
+scattered 16 
+xlvii 47 
+swift 46 
+gentleman 8 9 12 34 
+between 23 35 38 
+beautiful 33 
+aspect 30 
+discussed 19 
+than 12 29 51 
+space 16 52 
+laws 0 
+l 50 
+just 6 
+tale 53 
+present 17 
+mingles 5 
+peeping 31 
+sickly 6 
+sleep 9 42 
+birth 1 
+viii 8 
+these 25 
+dickens 0 
+you 28 43 
+floor 52 
+chapter 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 
+employed 45 
+passage 22 
+my 22 
+mrs 38 
+flew 33 
+iv 4 
+taunts 6 
+business 5 
+offered 4 
+rotherhithe 50 
+history 10 13 24 25 26 
+redeem 44 
+night 19 21 23 42 47 48 52 
+substance 23 
+matrons 24 
+chamber 40 
+important 10 
+old 9 12 15 25 26 42 45 
+youd 28 
+xxxiii 33 
+maylie 35 44 
+though 29 
+dock 52 
+appointment 46 
+follow 36 
+xxi 21 
+time 5 6 18 36 44 47 
+round 19 
+girl 44 
+bolter 43 
+all 0 17 44 48 
+rapid 46 
+walks 8 
+woman 46 
+merry 12 15 
+commission 3 
+thames 50 
+said 13 22 
+hallo 22 
+secret 45 
+common 41 
+either 4 
+noisome 40 
+liii 53 
+attracted 35 
+xv 15 
+unpoliteness 27 
+thought 30 
+human 52 
+nocturnal 38 
+swiftly 33 
+lead 32 
+trial 6 41 
+xii 12 
+handsome 29 
+wet 21 
+gutenberg 0 
+would 3 27 30 
+narrow 16 
+xxx 30 
+no 9 24 27 36 41 51 
+pursuit 50 
+collar 19 
+continuing 17 
+notable 19 
+following 39 
+perceive 37 
+escape 50 
+suprises 41 
+relate 53 
+unsatisfactory 35 
+contains 23 34 
+li 51 
+teeth 28 
+grinding 28 
+xlix 49 
+after 3 16 28 45 
+greatcoat 19 
+aha 22 
+public 1 4 42 
+closed 53 
+xlv 45 
+quiet 24 
+publichouse 15 
+bridge 46 
+water 21 
+bitter 23 
+as 22 27 28 36 37 44 46 
+entry 4 
+has 29 
+highroad 8 
+xiii 13 
+fond 15 
+vi 6 
+day 18 
+ladys 30 
+lulled 42 
+course 2 
+out 14 18 31 
+xvi 16 
+paved 52 
+hours 47 
+william 20 
+bates 18 
+acquaintance 42 
+notwithstanding 36 
+came 33 
+undertakers 5 
+blackest 50 
+comprising 14 
+stage 17 
+seemed 45 
+eleven 46 
+uttered 14 
+body 19 
+londons 48 
+bad 48 
+kind 32 
+rouses 6 
+streets 7 16 40 47 
+faces 52 
+sure 0 
+xlvi 46 
+days 10 
+pulling 19 
+comfort 29 
+pursue 18 
+becomes 10 42 
+drew 30 
+cases 37 
+misfortunes 41 
+adventure 34 35 
+since 48 
+street 21 26 
+avocations 18 
+town 1 
+xxviii 28 
+critical 31 
+xli 41 
+terminated 8 16 
+went 14 
+new 5 10 13 20 30 34 45 
+appertaining 13 
+bolting 22 
+darkness 48 
+happiness 33 34 
+compact 43 
+xxxvii 37 
+intelligence 49 
+character 26 42 
+emerged 46 
+rather 6 29 
+other 1 9 
+muttered 28 
+shoes 20 
+hackneycoach 49 
+modern 29 
+district 11 
+lady 23 27 
+three 46 53 
+ever 12 
+howl 28 
+worthy 39 
+words 53 
+reverts 12 25 
+short 10 24 36 
+stews 40 
+been 3 11 16 20 21 25 33 38 40 48 
+olivers 14 17 30 32 35 42 
+pal 22 
+ix 9 
+fortunes 53 
+loud 22 
+rattled 12 
+looking 21 
+lii 52 
+week 3 
+until 7 
+unpropitious 17 
+wolves 28 
+ebook 0 
+was 1 2 3 6 8 9 12 19 20 21 23 24 28 33 34 37 38 40 41 43 44 45 46 47 48 49 52 
+raining 21 
+rising 13 
+humble 27 
+ailings 32 
+prediction 14 
+xviii 18 
+dens 40 
+another 4 
+purchases 10 
+late 9 
+two 46 47 51 
+xi 11 
+key 36 
+if 33 
+characters 10 39 
+vii 7 
+stormy 21 
+experiences 33 
+committed 11 48 
+him 6 14 30 
+himself 5 
+foot 22 
+wide 48 
+exhibiting 42 
+plan 19 
+relative 34 
+refractory 7 
+courts 16 
+entered 43 
+appear 36 
+open 16 31 
+wish 28 
+alighted 49 
+your 0 28 43 
+door 22 31 
+noon 18 
+unfavourable 5 
+court 52 
+monks 38 39 49 
+forms 5 
+consequences 47 
+hung 48 
+furnishes 11 
+have 3 53 
+alive 52 
+it 1 6 8 9 17 19 21 24 27 28 33 34 36 37 38 43 47 48 49 
+jew 13 15 19 39 
+obscure 15 
+criminal 30 
+voice 22 
+banks 50 
+within 11 48 
+events 51 
+obtained 4 
+pens 16 
+points 23 
+pinmoney 51 
+stile 8 
+visitors 30 
+bypath 8 
+fang 11 
+impious 3 
+marriage 51 
+moodily 37 
+bumble 23 37 38 
+horrors 48 
+full 33 
+youthful 12 
+paused 7 
+beasts 16 
+intelligent 13 
+justice 11 
+clouds 21 38 
+they 21 22 30 
+magistrate 11 
+broken 32 
+oliver 0 1 2 3 4 5 6 7 8 9 10 12 13 14 15 16 18 20 25 28 29 32 33 34 
+close 38 49 
+growth 2 
+offence 3 11 
+genius 42 
+notion 5 
+profane 3 
+i 1 28 
+pools 21 
+xxii 22 
+pleasant 9 13 23 
+laid 39 
+brittles 31 
+brought 2 
+shop 5 
+began 26 32 
+advantageous 4 
+eight 2 8 
+reversion 4 
+remarkable 14 
+along 7 
+cannot 4 
+experience 10 
+not 3 7 37 44 
+inquired 31 
+xxxv 35 
+narrative 12 
+who 24 34 45 46 53 
+discoveries 41 
+row 22 
+treachery 2 
+hoarse 22 
+xlii 42 
+whos 31 
+assurances 30 
+rail 52 
+one 14 24 36 41 46 51 
+simple 53 
+xl 40 
+involves 31 
+xxvi 26 
+season 6 
+adept 44 
+friend 43 
+mission 45 
+xxxviii 38 
+furniture 29 
+marks 42 
+find 20 
+ten 2 
+disturbed 24 
+eager 41 52 
+xxxvi 36 
+from 9 25 26 49 52 
+replied 31 
+asked 43 
+showing 15 41 
+her 24 41 42 44 
+effect 44 
+stay 14 
+strange 8 40 
+mysteries 51 
+xxxi 31 
+administering 11 
+more 3 8 51 
+workhouse 25 37 
+year 47 
+wheres 13 
+peered 52 
+the 0 1 2 3 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 
+hill 15 
+done 26 
+sudden 33 
+spring 33 
+pair 20 
+xxxiv 34 
+inseparable 26 
+before 12 26 47 52 53 
+pupils 9 
+this 6 10 13 24 25 26 53 
+so 27 43 
+swiftest 7 
+for 0 1 2 3 5 7 10 16 27 28 44 45 
+among 1 28 40 
+near 3 50 
+morning 9 20 21 45 
+be 0 1 4 23 24 27 30 36 47 
+workhousegate 7 
+dirtiest 50 
+corner 26 
+wholly 44 
+messenger 24 
+most 27 40 41 
+world 0 
+place 1 3 4 36 
+roof 52 
+room 24 29 
+appearance 45 
+expedition 21 
+worst 48 
+shading 31 
+high 10 
+daybreak 47 
+betimes 45 
+at 6 7 8 10 14 16 33 38 49 50 
+tear 28 
+abuts 50 
+customary 18 
+silent 47 
+had 11 16 18 20 21 24 25 26 29 33 38 40 48 
+first 4 5 33 
+scene 26 34 
+inquisitive 52 
+snow 23 
+oldfashioned 29 
+action 6 
+road 8 
+air 29 
