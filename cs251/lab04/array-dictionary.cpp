@@ -21,6 +21,15 @@ ArrayDictionary::addRecord( KeyType key, DataType record)
 {
     if (findRecord(key) != NULL)
 	{
+        int i;
+        for (i = 0; i < currentNumber; i++)
+    	{
+    		if (strcmp(array[i].key, key) == 0)
+    		{
+    			array[i].data = (DataType*)record;
+    		}
+    	}
+        
 		return false;
 	}
 	
