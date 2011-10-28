@@ -257,8 +257,6 @@ SearchEngine::dispatch( FILE * fout, const char * documentRequested)
 	{
 		if (list[i] == NULL) continue;
 		
-		printf("%d matched: %s\n", counter, list[i]->_url);
-				
 		fprintf(fout, "<h3>%d. <a href=\"%s\">%s</a><h3>\n", counter+1, list[i]->_url, list[i]->_url);
 		fprintf(fout, "<blockquote>%s<p></blockquote>\n", list[i]->_description);
 	
