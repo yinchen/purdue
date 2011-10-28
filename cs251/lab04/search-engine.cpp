@@ -5,6 +5,11 @@
 #include "search-engine.h"
 #include "webcrawl.h"
 
+DictionaryType dictType;
+hrtime_t average;
+
+int searches = 0;
+
 SearchEngine::SearchEngine( int port, DictionaryType dictionaryType):
   MiniHTTPD(port)
 {
@@ -19,6 +24,8 @@ SearchEngine::SearchEngine( int port, DictionaryType dictionaryType):
 		_wordToURLList = new BinarySearchDictionary();
 	else
 		_wordToURLList = NULL;
+		
+	dictType = dictionaryType;
 
 	// populate dictionary and sort it if necessary
 	URLRecord **records = new URLRecord*[1024];
@@ -191,6 +198,8 @@ SearchEngine::dispatch( FILE * fout, const char * documentRequested)
 	fprintf(fout, "<H1> <Center><em>Boiler Search</em></H1>\n");
 	fprintf(fout, "<H2> Search Results for \"%s\"</center></H2>\n", query);
 	
+	hrtime_t time1, time2;
+	
 	int counter;
 	counter = 0;
 	
@@ -198,6 +207,10 @@ SearchEngine::dispatch( FILE * fout, const char * documentRequested)
 	listCount = 0;
 	
 	URLRecord **list = new URLRecord*[500];
+	
+	if (average == NULL)
+		average = 0.0;
+	time1 = gethrtime();
 	
 	for (i = 0; i < numWords; i++)
 	{
@@ -253,6 +266,10 @@ SearchEngine::dispatch( FILE * fout, const char * documentRequested)
 		}
 	}
 	
+	time2 = gethrtime();
+	
+	average += time2-time1;	
+	
 	for (i = 0; i < listCount; i++)
 	{
 		if (list[i] == NULL) continue;
@@ -262,7 +279,24 @@ SearchEngine::dispatch( FILE * fout, const char * documentRequested)
 	
 		counter++;
 	}
-
+	
+	searches++;
+	
+	fprintf(fout, "<BR>\n");
+	fprintf(fout, "<h3>Search Time: %lld ns</h3>\n", time2 - time1);
+	fprintf(fout, "<h3>Average Search Time: %lld ns</h3>\n", average/searches);
+	
+	if (dictType == ArrayDictionaryType)
+		fprintf(fout, "<h3>Dictionary Used: Array Dictionary</h3>\n");
+	else if (dictType == HashDictionaryType)
+		fprintf(fout, "<h3>Dictionary Used: Hash Dictionary</h3>\n");
+	else if (dictType == AVLDictionaryType)
+		fprintf(fout, "<h3>Dictionary Used: AVL Dictionary</h3>\n");
+	else if (dictType == BinarySearchDictionaryType)
+		fprintf(fout, "<h3>Dictionary Used: Binary Search Dictionary</h3>\n");
+	else
+		fprintf(fout, "<h3>Dictionary Used: Unknown Dictionary</h3>\n");
+	
 	// add search form at the end
 	fprintf(fout, "<HR><H2>\n");
 	fprintf(fout, "<FORM ACTION=\"search\">\n");

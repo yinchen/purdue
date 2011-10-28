@@ -31,8 +31,9 @@ public:
   DataType findRecord( KeyType key);
 
   // Removes one element from the table
+  AVLNode* findNode(KeyType key);
   bool removeElement(KeyType key);
-
+  
   // Returns all the elements in the table as an array of strings.
   // *n is the size of the table and it is returned by reference
   KeyType * keys(int * n);
