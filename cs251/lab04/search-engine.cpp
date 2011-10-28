@@ -21,39 +21,44 @@ SearchEngine::SearchEngine( int port, DictionaryType dictionaryType):
 		_wordToURLList = NULL;
 
 	// populate dictionary and sort it if necessary
-	URLRecord *records = new URLRecord[1024];
+	URLRecord **records = new URLRecord*[1024];
+	
+	int i;
+	for (i = 0; i < 1024; i++)
+	{
+		records[i] = new URLRecord();
+	}
 	
 	FILE *infile;
 	infile = fopen("url.txt", "r");
 	
 	char *line;
-	line = new char[256];
+	line = new char[512];
 	
-	int index;
-	index = 0;
-	
-	while (fgets(line, 256, infile))
+	while (fgets(line, 512, infile))
 	{
 		if (strcmp(line, "\n") != 0)
 		{
+			// parse the index
+			char *token = new char[512];
+			token = strtok(line, " \n");
+			int index = atoi(token);
+			
 			// parse the url
-			char *url = new char[256];
-			strtok(line, " ");
-			
-			strcpy(url, strtok(NULL, " "));
-			url[strlen(url) - 1] = '\0';
-			
+			token = strtok(NULL, " \n");
+			char *url = new char[512];
+			strcpy(url, token);
+						
 			// parse the description
 			fgets(line, 512, infile);
 			
 			char *desc = new char[512];
-			strcpy(desc, line);
+			token = strtok(line, "\n");
+			strcpy(desc, token);
 			
 			// store this entry
-			records[index]._url = strdup(url);
-			records[index]._description = strdup(desc);	
-
-			index++;			
+			records[index]->_url = url;
+			records[index]->_description = desc;			
 		}
 	}
 	
@@ -62,17 +67,17 @@ SearchEngine::SearchEngine( int port, DictionaryType dictionaryType):
 	
 	infile = fopen("word.txt", "r");
 	
-	line = new char[256];
+	line = new char[512];
 	
-	while (fgets(line, 256, infile))
+	while (fgets(line, 512, infile))
 	{
 		if (strcmp(line, "\n") != 0)
 		{
 			// parse the word
-			char *token = new char[256];
-			token = strtok(line, " ");
+			char *token = new char[512];
+			token = strtok(line, " \n");
 			
-			char *word = new char[256];
+			char *word = new char[512];
 			strcpy(word, token);
 			
 			URLRecordList *head;
@@ -81,18 +86,21 @@ SearchEngine::SearchEngine( int port, DictionaryType dictionaryType):
 			URLRecordList *prev;
 			prev = NULL;
 			
-			strtok(NULL, " ");
+			token = strtok(NULL, " \n");
 			
 			while (token != NULL)
 			{
 				int position = atoi(token);
+				
+				if (records[position]->_url == NULL)
+					continue;
 				
 				URLRecordList *entry = new URLRecordList();
 				
 				if (head == NULL)
 					head = entry;
 				
-				entry->_urlRecord = &records[position];
+				entry->_urlRecord = records[position];
 				entry->_next = NULL;
 				
 				if (prev != NULL)
@@ -100,13 +108,11 @@ SearchEngine::SearchEngine( int port, DictionaryType dictionaryType):
 					
 				prev = entry;
 				
-				token = strtok(NULL, " ");
+				token = strtok(NULL, " \n");
 			}
 			
 			_wordToURLList->addRecord(word, (URLRecordList*)head);
 			
-			delete prev;
-			delete head;
 			delete word;
 			delete token;
 		}
@@ -158,7 +164,7 @@ SearchEngine::dispatch( FILE * fout, const char * documentRequested)
 	
 	while (word != NULL)
 	{
-		words[numWords] = new char[100];
+		words[numWords] = new char[50];
 		
 		strcpy(words[numWords], word);
 		numWords++;
@@ -166,23 +172,8 @@ SearchEngine::dispatch( FILE * fout, const char * documentRequested)
 		word = strtok(NULL, "+");
 	}
 
-	// search index for urls and descriptions
-	const int nurls = 2;
-
-	char * urls[] = 
-	{
-		"http://www.cs.purdue.edu",
-		"http://www.cs.purdue.edu/homes/cs251"
-	};
-
-	char * description[] =
-	{
-		"Computer Science Department. Purdue University.",
-		"CS251 Data Structures"
-	};
-	
 	// create friendly search string
-	char *query = new char[100*100];
+	char *query = new char[100*50];
 	strcpy(query, "");
 	
 	for (i = 0; i < numWords; i++)
@@ -199,14 +190,82 @@ SearchEngine::dispatch( FILE * fout, const char * documentRequested)
 	fprintf(fout, "<TITLE>Search Results</TITLE>\r\n");
 	fprintf(fout, "<H1> <Center><em>Boiler Search</em></H1>\n");
 	fprintf(fout, "<H2> Search Results for \"%s\"</center></H2>\n", query);
-
-	for (int i = 0; i < nurls; i++)
+	
+	int counter;
+	counter = 0;
+	
+	int listCount;
+	listCount = 0;
+	
+	URLRecord **list = new URLRecord*[500];
+	
+	for (i = 0; i < numWords; i++)
 	{
-		fprintf(fout, "<h3>%d. <a href=\"%s\">%s</a><h3>\n", i+1, urls[i], urls[i]);
-		fprintf(fout, "<blockquote>%s<p></blockquote>\n", description[i]);
+		URLRecordList* data;
+		data = (URLRecordList*)_wordToURLList->findRecord(words[i]);
+		
+		while (data != NULL)
+		{
+			int exists = 0;
+			
+			int j;
+			for (j = 0; j < listCount; j++)
+			{
+				if (list[j] == data->_urlRecord)
+				{
+					exists = 1;
+					break;
+				}
+			}
+			
+			if (exists == 0)
+			{
+				list[listCount] = data->_urlRecord;
+				listCount++;
+			}
+			
+			data = data->_next;
+		}
+	}
+	
+	for (i = 0; i < listCount; i++)
+	{
+		int j;
+		for (j = 0; j < numWords; j++)
+		{
+			URLRecordList* data;
+			data = (URLRecordList*)_wordToURLList->findRecord(words[j]);
+			
+			int exists = 0;
+			
+			while (data != NULL)
+			{
+				if (data->_urlRecord == list[i])
+				{
+					exists = 1;
+				}
+				
+				data = data->_next;
+			}
+			
+			if (exists == 0)
+				list[i] = NULL;
+		}
+	}
+	
+	for (i = 0; i < listCount; i++)
+	{
+		if (list[i] == NULL) continue;
+		
+		printf("%d matched: %s\n", counter, list[i]->_url);
+				
+		fprintf(fout, "<h3>%d. <a href=\"%s\">%s</a><h3>\n", counter+1, list[i]->_url, list[i]->_url);
+		fprintf(fout, "<blockquote>%s<p></blockquote>\n", list[i]->_description);
+	
+		counter++;
 	}
 
-	// Add search form at the end
+	// add search form at the end
 	fprintf(fout, "<HR><H2>\n");
 	fprintf(fout, "<FORM ACTION=\"search\">\n");
 	fprintf(fout, "Search:\n");

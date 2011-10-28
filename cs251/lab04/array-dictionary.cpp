@@ -7,16 +7,16 @@
 
 #include "array-dictionary.h"
 
-// Constructor
+// constructor
 ArrayDictionary::ArrayDictionary()
 {
-	maxNumber = 100;
+	maxNumber = 500;
 	currentNumber = 0;
 	
 	array = new ArrayDictionaryNode[maxNumber];	
 }
 
-// Add a record to the dictionary. Returns false if key already exists
+// add a record to the dictionary. Returns false if key already exists
 bool
 ArrayDictionary::addRecord( KeyType key, DataType record)
 {
@@ -35,7 +35,7 @@ ArrayDictionary::addRecord( KeyType key, DataType record)
 		int i;
 		for (i = 0; i < currSize; i++)
 		{
-			tmp[i].key = (char*)malloc(sizeof(char)*25);
+			tmp[i].key = (char*)malloc(sizeof(char)*50);
 			strcpy(tmp[i].key, array[i].key);
 			tmp[i].data = new DataType;
 			tmp[i].data = (DataType*)array[i].data;
@@ -46,7 +46,7 @@ ArrayDictionary::addRecord( KeyType key, DataType record)
 		array = tmp;
 	}
 	
-	array[currentNumber].key = (char*)malloc(sizeof(char)*25);
+	array[currentNumber].key = (char*)malloc(sizeof(char)*50);
 	strcpy(array[currentNumber].key, key);
 	array[currentNumber].data = new DataType;
 	array[currentNumber].data = (DataType*)record;
@@ -55,7 +55,7 @@ ArrayDictionary::addRecord( KeyType key, DataType record)
 	return true;
 }
 
-// Find a key in the dictionary and return corresponding record or NULL
+// find a key in the dictionary and return corresponding record or NULL
 DataType
 ArrayDictionary::findRecord(KeyType key)
 {
@@ -64,26 +64,23 @@ ArrayDictionary::findRecord(KeyType key)
 	{
 		if (strcmp(array[i].key, key) == 0)
 		{
-			return (DataType*)array[i].data;
+			return (DataType)array[i].data;
 		}
-		
-		i++;
 	}
 	
 	return NULL;
 }
 
-// Removes one element from the table
+// removes one element from the table
 bool
 ArrayDictionary::removeElement(KeyType key)
 {
     // add your code here
 	
-	return true;
-	
+	return true;	
 }
 
-// Returns all the elements in the table as an array of strings.
+// returns all the elements in the table as an array of strings.
 // *n is the size of the table and it is returned by reference
 KeyType *
 ArrayDictionary::keys(int * n)
@@ -97,7 +94,7 @@ ArrayDictionary::keys(int * n)
 		strcpy((char*)data[i], array[i].key);
 	}
 	
-	*n = currentNumber;
+	n = &currentNumber;
 	
 	return data;
 }
