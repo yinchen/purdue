@@ -57,11 +57,11 @@ AVLDictionary::addRecord( KeyType key, DataType record)
     while(curr != NULL)
 	{
         prev = curr;
-        if(key < curr->key)
+        if (strcmp(key, curr->key) < 0)
 		{
             curr = curr->left;
         }
-        else if(key > curr->key)
+        else if (strcmp(key, curr->key) > 0)
 		{
             curr = curr->right;
         }
@@ -72,7 +72,7 @@ AVLDictionary::addRecord( KeyType key, DataType record)
         }
     }
 
-    if(key < prev->key)
+    if (strcmp(key, prev->key) < 0)
 	{
         prev->left = n;
     }
@@ -299,7 +299,7 @@ AVLDictionary::findRecord( KeyType key)
 		{
 			return (DataType)curr->data;
 		}
-		else if (strcmp(curr->key, key) < 0)
+		else if (strcmp(curr->key, key) > 0)
 		{
 			curr = curr->left;
 		}
@@ -322,7 +322,7 @@ AVLDictionary::findNode(KeyType key)
 		{
 			return n;
 		}
-		else if (strcmp(n->key, key) < 0)
+		else if (strcmp(n->key, key) > 0)
 		{
 			n = n->left;
 		}
