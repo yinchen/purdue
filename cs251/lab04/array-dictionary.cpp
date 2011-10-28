@@ -100,7 +100,7 @@ ArrayDictionary::removeElement(KeyType key)
             continue;
         
 	    tmp[index].key = (char*)malloc(sizeof(char)*50);
-	    strcpy(tmp[i].key, array[i].key);
+	    strcpy(tmp[index].key, array[i].key);
 	    tmp[index].data = new DataType;
 	    tmp[index].data = (DataType*)array[i].data;
         
