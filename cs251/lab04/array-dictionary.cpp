@@ -1,4 +1,3 @@
-
 // Implementation of a dictionary using an array and sequential search
 // The array will be dynamically resized if necessary
 
@@ -75,9 +74,37 @@ ArrayDictionary::findRecord(KeyType key)
 bool
 ArrayDictionary::removeElement(KeyType key)
 {
-    // add your code here
+    if (findRecord(key) == NULL)
+    {
+		return false;
+	}
+    
+    ArrayDictionaryNode *tmp = new ArrayDictionaryNode[maxNumber];
 	
-	return true;	
+    int index;
+    index = 0;
+    
+	int i;
+	for (i = 0; i < currentNumber; i++)
+	{
+        if (strcmp(array[i].key, key) == 0)
+            continue;
+        
+	    tmp[index].key = (char*)malloc(sizeof(char)*50);
+	    strcpy(tmp[i].key, array[i].key);
+	    tmp[index].data = new DataType;
+	    tmp[index].data = (DataType*)array[i].data;
+        
+        index++;
+	}
+	
+	delete [] array;
+	
+	array = tmp;
+    
+    currentNumber--;
+    
+    return true;
 }
 
 // returns all the elements in the table as an array of strings.
