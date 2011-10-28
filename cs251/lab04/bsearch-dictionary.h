@@ -19,6 +19,7 @@ public:
 
   // Sort array using heap sort.
   void sort();
+  void siftDown(int root, int bottom);
 
     // Removes one element from the table
   //bool removeElement(KeyType key);

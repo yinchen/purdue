@@ -19,18 +19,14 @@ ArrayDictionary::ArrayDictionary()
 bool
 ArrayDictionary::addRecord( KeyType key, DataType record)
 {
-    if (findRecord(key) != NULL)
+    int i;
+	for (i = 0; i < currentNumber; i++)
 	{
-        int i;
-        for (i = 0; i < currentNumber; i++)
-    	{
-    		if (strcmp(array[i].key, key) == 0)
-    		{
-    			array[i].data = (DataType*)record;
-    		}
-    	}
-        
-		return false;
+		if (strcmp(array[i].key, key) == 0)
+		{
+			array[i].data = (DataType*)record;
+			return false;
+		}
 	}
 	
 	if (currentNumber == maxNumber)
@@ -83,8 +79,20 @@ ArrayDictionary::findRecord(KeyType key)
 bool
 ArrayDictionary::removeElement(KeyType key)
 {
-    if (findRecord(key) == NULL)
-    {
+    int found;
+	found = 0;
+	
+	int i;
+	for (i = 0; i < currentNumber; i++)
+	{
+		if (strcmp(array[i].key, key) == 0)
+		{
+			found = 1;
+		}
+	}
+	
+	if (found == 0)
+	{
 		return false;
 	}
     
@@ -93,7 +101,6 @@ ArrayDictionary::removeElement(KeyType key)
     int index;
     index = 0;
     
-	int i;
 	for (i = 0; i < currentNumber; i++)
 	{
         if (strcmp(array[i].key, key) == 0)

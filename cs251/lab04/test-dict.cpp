@@ -57,6 +57,12 @@ void test2(Dictionary * dict)
   e = dict->addRecord("Rachael", (void*)8);
   assert(e);
   
+  e = dict->addRecord("Matt", (void*)9);
+  assert(e);
+  
+  e = dict->addRecord("Libby", (void*)9);
+  assert(e);
+  
   e = dict->addRecord("Monica", (void*)9);
   assert(e);
   
