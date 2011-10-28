@@ -130,7 +130,7 @@ ArrayDictionary::keys(int * n)
 		strcpy((char*)data[i], array[i].key);
 	}
 	
-	n = &currentNumber;
+	*n = currentNumber;
 	
 	return data;
 }
