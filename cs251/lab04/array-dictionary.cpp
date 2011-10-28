@@ -85,7 +85,7 @@ ArrayDictionary::removeElement(KeyType key)
 {
     if (findRecord(key) == NULL)
     {
-		return false;
+		return true;
 	}
     
     ArrayDictionaryNode *tmp = new ArrayDictionaryNode[maxNumber];
