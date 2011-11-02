@@ -19,7 +19,7 @@ const char* usage =
 int QueueLength = 5;
 
 // Processes time request
-void processTimeRequest(int socket);
+void processRequest(int socket);
 
 int
 main(int argc, char** argv)
@@ -71,7 +71,7 @@ main(int argc, char** argv)
     if (error)
     {
         perror("listen");
-        exit( -1 );
+        exit(-1);
     }
 
     while (1)
@@ -90,7 +90,7 @@ main(int argc, char** argv)
         }
 
         // Process request.
-        processTimeRequest(slaveSocket);
+        processRequest(slaveSocket);
 
         // Close socket
         close(slaveSocket);
@@ -98,67 +98,116 @@ main(int argc, char** argv)
 }
 
 void
-processTimeRequest(int fd)
+processRequest(int socket)
 {
     // Buffer used to store the name received from the client
-    const int MaxName = 1024;
-    char name[MaxName + 1];
-    int nameLength = 0;
+    const int size = 1024;
+    char currString[size + 1];
     int n;
-
-    // Send prompt
-    const char* prompt = "\nType your name:";
-    write(fd, prompt, strlen(prompt));
+    int length = 0;
 
     // Currently character read
     unsigned char newChar;
 
     // Last character read
-    unsigned char lastChar = 0;
+    unsigned char oldChar = 0;
+    
+    // Flag for GET request
+    int hasGET = 0;
+    
+    // Requested document path
+    char docPath[size + 1] = {0};
 
-    //
-    // The client should send <name><cr><lf>
-    // Read the name of the client character by character until a
-    // <CR><LF> is found.
-    //
-
-    while (nameLength < MaxName &&
-        (n = read(fd, &newChar, sizeof(newChar))) > 0)
+    while (n = read(socket, &newChar, sizeof(newChar)))
     {
-        if ( lastChar == '\015' && newChar == '\012')
+        length++;
+
+        if (newChar == ' ')
         {
-            // Discard previous <CR> from name
-            nameLength--;
+            if (hasGET == 0)
+            {
+                hasGET = 1;
+            }
+            else if (docPath == 0)
+            {
+                currString[length - 1] = 0;
+                strcpy(docPath, currString);
+            }
+        }
+        else if (newChar == '\n' && oldChar == '\r')
+        {
             break;
         }
-
-        name[nameLength] = newChar;
-        nameLength++;
-
-        lastChar = newChar;
+        else
+        {
+            oldChar = newChar;
+            currString[length - 1] = newChar;
+        }
     }
 
-    // Add null character at the end of the string
-    name[nameLength] = 0;
-
-    printf("name=%s\n", name);
-
-    // Get time of day
-    time_t now;
-    time(&now);
-    char *timeString = ctime(&now);
-
-    // Send name and greetings
-    const char* hi = "\nHi ";
-    const char* timeIs = " the time is:\n";
-    write(fd, hi, strlen(hi));
-    write(fd, name, strlen(name));
-    write(fd, timeIs, strlen(timeIs));
-
-    // Send the time of day 
-    write(fd, timeString, strlen(timeString));
-
-    // Send last newline
-    const char* newline = "\n";
-    write(fd, newline, strlen(newline));
+    // Map document path to server path
+    char cwd[size + 1] = {0};
+    getcwd(cwd, sizeof(cwd));
+    
+    if (strncmp(docPath, "/icons", strlen("/icons")) == 0)
+    {
+        strcat(cwd, "http-root-dir/");
+        strcat(cwd, docPath);
+    }
+    else if (strncmp(docPath, "/htdocs", strlen("/icons")) == 0)
+    {
+        strcat(cwd, "http-root-dir/");
+        strcat(cwd, docPath);
+    }
+    else
+    {
+        if (strcmp(docPath, "/") == 0)
+        {
+            strcpy(docPath, "index.html");
+        }
+        
+        strcat(cwd, "http-root-dir/htdocs/");
+        strcat(cwd, docPath);
+    }
+    
+    // Determine requested content type
+    char contentType[size + 1] = {0};
+    
+    if (strstr(docPath, ".html") != 0)
+    {
+        strcpy(contentType, "text/html");
+    }
+    else if (strstr(docPath, ".jpg") != 0)
+    {
+        strcpy(contentType, "images/jpeg");
+    }
+    else if (strstr(docPath, ".gif") != 0)
+    {
+        strcpy(contentType, "images/gif");
+    }
+    else
+    {
+        strcpy(contentType, "text/plain");
+    }
+    
+    // Respond with server not implemented, for now
+    const char *message = "Server is not implemented";
+    write(socket, "HTTP/1.0", 8);
+    write(socket, " ", 1);
+    write(socket, "501", 3);
+    write(socket, " ", 1);
+    write(socket, "Not", 3);
+    write(socket, "Implemented", 11);
+    write(socket, "\n\r", 2);
+    write(socket, "Server:", 7);
+    write(socket, " ", 1);
+    write(socket, "Mattserv 1.0", 12);
+    write(socket, "\n\r", 2);
+    write(socket, "Content-type:", 13);
+    write(socket, " ", 1);
+    write(socket, contentType, strlen(contentType));
+    write(socket, "\n\r", 2);
+    write(socket, "\n\r", 2);
+    write(socket, message, strlen(message));
 }
+
