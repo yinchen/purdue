@@ -120,17 +120,15 @@ processRequest(int socket)
 
     while (n = read(socket, &newChar, sizeof(newChar)))
     {
-        length++;
-
         if (newChar == ' ')
         {
             if (hasGET == 0)
             {
                 hasGET = 1;
             }
-            else if (docPath == 0)
+            else
             {
-                currString[length - 1] = 0;
+                currString[length] = 0;
                 strcpy(docPath, currString);
             }
         }
@@ -141,32 +139,37 @@ processRequest(int socket)
         else
         {
             oldChar = newChar;
-            currString[length - 1] = newChar;
+            
+            if (hasGET == 1)
+            {
+                currString[length] = newChar;
+                length++;
+            }
         }
     }
-
+    
     // Map document path to server path
     char cwd[size + 1] = {0};
     getcwd(cwd, sizeof(cwd));
     
     if (strncmp(docPath, "/icons", strlen("/icons")) == 0)
     {
-        strcat(cwd, "http-root-dir/");
+        strcat(cwd, "/http-root-dir/");
         strcat(cwd, docPath);
     }
     else if (strncmp(docPath, "/htdocs", strlen("/icons")) == 0)
     {
-        strcat(cwd, "http-root-dir/");
+        strcat(cwd, "/http-root-dir/");
         strcat(cwd, docPath);
     }
     else
     {
         if (strcmp(docPath, "/") == 0)
         {
-            strcpy(docPath, "index.html");
+            strcpy(docPath, "/index.html");
         }
         
-        strcat(cwd, "http-root-dir/htdocs/");
+        strcat(cwd, "/http-root-dir/htdocs");
         strcat(cwd, docPath);
     }
     
@@ -190,24 +193,57 @@ processRequest(int socket)
         strcpy(contentType, "text/plain");
     }
     
-    // Respond with server not implemented, for now
-    const char *message = "Server is not implemented";
-    write(socket, "HTTP/1.0", 8);
-    write(socket, " ", 1);
-    write(socket, "501", 3);
-    write(socket, " ", 1);
-    write(socket, "Not", 3);
-    write(socket, "Implemented", 11);
-    write(socket, "\n\r", 2);
-    write(socket, "Server:", 7);
-    write(socket, " ", 1);
-    write(socket, "Mattserv 1.0", 12);
-    write(socket, "\n\r", 2);
-    write(socket, "Content-type:", 13);
-    write(socket, " ", 1);
-    write(socket, contentType, strlen(contentType));
-    write(socket, "\n\r", 2);
-    write(socket, "\n\r", 2);
-    write(socket, message, strlen(message));
+    FILE *document;
+    document = fopen(cwd, "r");
+    
+    if (document > 0)
+    {    
+        write(socket, "HTTP/1.0", 8);
+        write(socket, " ", 1);
+        write(socket, "200", 3);
+        write(socket, " ", 1);
+        write(socket, "OK", 2);
+        write(socket, "\n\r", 2);
+        write(socket, "Server:", 7);
+        write(socket, " ", 1);
+        write(socket, "Mattserv 1.0", 12);
+        write(socket, "\n\r", 2);
+        write(socket, "Content-type:", 13);
+        write(socket, " ", 1);
+        write(socket, contentType, strlen(contentType));
+        write(socket, "\n\r", 2);
+        write(socket, "\n\r", 2);
+        
+        char *line;
+        line = new char[size + 1];
+        while (fgets(line, size + 1, document))
+        {
+            write(socket, line, strlen(line));
+        }
+        
+        fclose(document);
+    }
+    else
+    {
+        const char *message = "File not found";
+        write(socket, "HTTP/1.0", 8);
+        write(socket, " ", 1);
+        write(socket, "404", 3);
+        write(socket, " ", 1);
+        write(socket, "File", 4);
+        write(socket, "Not", 3);
+        write(socket, "Found", 5);
+        write(socket, "\n\r", 2);
+        write(socket, "Server:", 7);
+        write(socket, " ", 1);
+        write(socket, "Mattserv 1.0", 12);
+        write(socket, "\n\r", 2);
+        write(socket, "Content-type:", 13);
+        write(socket, " ", 1);
+        write(socket, contentType, strlen(contentType));
+        write(socket, "\n\r", 2);
+        write(socket, "\n\r", 2);
+        write(socket, message, strlen(message));
+    }
 }
 
