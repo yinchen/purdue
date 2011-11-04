@@ -227,7 +227,10 @@ processRequest(int socket)
         
         char *buff = (char*)malloc(sizeof(char) * length);
         
-        fread(buff, 1, length, document);
+        size_t result = fread(buff, 1, length, document);
+        if (result != length)
+            perror("fread");
+        
         write(socket, buff, length);
         
         fclose(document);
