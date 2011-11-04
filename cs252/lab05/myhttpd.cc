@@ -214,12 +214,21 @@ processRequest(int socket)
         write(socket, "\n\r", 2);
         write(socket, "\n\r", 2);
         
-        char *line;
-        line = new char[size + 1];
-        while (fgets(line, size + 1, document))
-        {
-            write(socket, line, strlen(line));
-        }
+        // char *line;
+        // line = new char[size + 1];
+        // while (fgets(line, size + 1, document))
+        // {
+        //     write(socket, line, strlen(line));
+        // }
+        
+        fseek(document, 0, SEEK_END);
+        long length = ftell(document);
+        rewind(document);
+        
+        char *buff = (char*)malloc(sizeof(char) * length);
+        
+        fread(buff, 1, length, document);
+        write(socket, buff, length);
         
         fclose(document);
     }
