@@ -194,7 +194,10 @@ processRequest(int socket)
     }
     
     FILE *document;
-    document = fopen(cwd, "r");
+    if (strstr(contentType, "image/") != 0)
+        document = fopen(cwd, "rb");
+    else
+        document = fopen(cwd, "r");
     
     if (document > 0)
     {    
