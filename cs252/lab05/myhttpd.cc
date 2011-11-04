@@ -208,7 +208,7 @@ processRequest(int socket)
         char* slen = (char*)malloc(sizeof(char) * 16);
         sprintf(slen, "%d", length);
         
-        write(socket, "HTTP/1.0 200 OK", 13);
+        write(socket, "HTTP/1.0 200 OK", 15);
         write(socket, "\n\r", 2);
         write(socket, "Server: Mattserv 1.0", 20);
         write(socket, "\n\r", 2);
