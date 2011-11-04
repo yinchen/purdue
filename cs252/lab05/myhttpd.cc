@@ -252,7 +252,7 @@ processRequest(int socket)
         write(socket, "\n\r", 2);
         write(socket, "Content-type:", 13);
         write(socket, " ", 1);
-        write(socket, contentType, strlen(contentType));
+        write(socket, "text/html", 9);
         write(socket, "\n\r", 2);
         write(socket, "\n\r", 2);
         write(socket, message, strlen(message));
