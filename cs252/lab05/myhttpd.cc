@@ -235,13 +235,11 @@ processRequest(int socket)
         //     write(socket, line, strlen(line));
         // }
         
-        char *buff = (char*)malloc(sizeof(char) * length);
+        char *buff = (char*)malloc(sizeof(char) * 1024);
         
-        size_t result = fread(buff, 1, length, document);
-        if (result != length)
-            perror("fread");
-        
-        write(socket, buff, length);
+        size_t result;
+        while ((result = fread(buff, 1, 1024, document)) > 0)
+            write(socket, buff, result);
         
         fclose(document);
     }
