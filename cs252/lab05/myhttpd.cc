@@ -198,6 +198,13 @@ processRequest(int socket)
     
     if (document > 0)
     {    
+        fseek(document, 0, SEEK_END);
+        long length = ftell(document);
+        rewind(document);
+        
+        char* slen = (char*)malloc(sizeof(char) * 16);
+        sprintf(slen, "%d", length);
+        
         write(socket, "HTTP/1.0", 8);
         write(socket, " ", 1);
         write(socket, "200", 3);
@@ -211,6 +218,9 @@ processRequest(int socket)
         write(socket, "Content-type:", 13);
         write(socket, " ", 1);
         write(socket, contentType, strlen(contentType));
+        write(socket, "Content-length:", 15);
+        write(socket, " ", 1);
+        write(socket, slen, strlen(slen));
         write(socket, "\n\r", 2);
         write(socket, "\n\r", 2);
         
@@ -220,10 +230,6 @@ processRequest(int socket)
         // {
         //     write(socket, line, strlen(line));
         // }
-        
-        fseek(document, 0, SEEK_END);
-        long length = ftell(document);
-        rewind(document);
         
         char *buff = (char*)malloc(sizeof(char) * length);
         
