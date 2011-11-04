@@ -223,6 +223,7 @@ processRequest(int socket)
         write(socket, slen, strlen(slen));
         write(socket, "\n\r", 2);
         write(socket, "\n\r", 2);
+        write(socket, "\n\r", 2);
         
         // char *line;
         // line = new char[size + 1];
