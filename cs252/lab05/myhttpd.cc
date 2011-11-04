@@ -182,11 +182,11 @@ processRequest(int socket)
     }
     else if (strstr(docPath, ".jpg") != 0)
     {
-        strcpy(contentType, "images/jpeg");
+        strcpy(contentType, "image/jpeg");
     }
     else if (strstr(docPath, ".gif") != 0)
     {
-        strcpy(contentType, "images/gif");
+        strcpy(contentType, "image/gif");
     }
     else
     {
