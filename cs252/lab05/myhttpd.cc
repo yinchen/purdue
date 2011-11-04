@@ -205,23 +205,15 @@ processRequest(int socket)
         char* slen = (char*)malloc(sizeof(char) * 16);
         sprintf(slen, "%d", length);
         
-        write(socket, "HTTP/1.0", 8);
-        write(socket, " ", 1);
-        write(socket, "200", 3);
-        write(socket, " ", 1);
-        write(socket, "OK", 2);
+        write(socket, "HTTP/1.0 200 OK", 13);
         write(socket, "\n\r", 2);
-        write(socket, "Server:", 7);
-        write(socket, " ", 1);
-        write(socket, "Mattserv 1.0", 12);
+        write(socket, "Server: Mattserv 1.0", 20);
         write(socket, "\n\r", 2);
-        write(socket, "Content-type:", 13);
-        write(socket, " ", 1);
+        write(socket, "Content-type: ", 14);
         write(socket, contentType, strlen(contentType));
-        write(socket, "Content-length:", 15);
-        write(socket, " ", 1);
-        write(socket, slen, strlen(slen));
         write(socket, "\n\r", 2);
+        write(socket, "Content-length: ", 16);
+        write(socket, slen, strlen(slen));
         write(socket, "\n\r", 2);
         write(socket, "\n\r", 2);
         
