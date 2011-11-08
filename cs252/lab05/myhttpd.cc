@@ -17,8 +17,8 @@ const char* usage =
 "                                                               \n";
 
 int QueueLength = 5;
+int Concurrency = 0; // 0 = none, 1 = (-f) process based, 2 = (-t) thread based, 3 = (-p) thread pool based
 
-// Processes time request
 void processRequest(int socket);
 
 int
@@ -30,9 +30,40 @@ main(int argc, char** argv)
         fprintf(stderr, "%s", usage);
         exit(-1);
     }
-  
-    // Get the port from the arguments
-    int port = atoi(argv[1]);
+    
+    int port = 0;
+    
+    // Get the concurrency type from the arguments
+    if (argv[1][0] == '-')
+    {
+        if (argv[1][1] == 'f')
+        {
+            Concurrency = 1;
+        }
+        else if (argv[1][1] == 't')
+        {
+            Concurrency = 2;
+        }
+        else if (argv[1][1] == 'p')
+        {
+            Concurrency = 3;
+        }
+        else
+        {
+            fprintf(stderr, "%s", usage);
+            exit(-1);
+        }
+        
+        // Get the port from the arguments
+        port = atoi(argv[2]);
+    }
+    else
+    {
+        Concurrency = 0;
+        
+        // Get the port from the arguments
+        int port = atoi(argv[1]);
+    }
 
     // Set the IP address and port for this server
     struct sockaddr_in serverIPAddress; 
@@ -88,9 +119,27 @@ main(int argc, char** argv)
             perror("accept");
             exit(-1);
         }
-
-        // Process request.
-        processRequest(slaveSocket);
+        
+        if (Concurrency == 1)
+        {
+            pid_t slave = fork();
+            
+            if (slave == 0)
+            {
+                // Process request.
+                processRequest(slaveSocket);
+                
+                // Close socket
+                close(slaveSocket);
+                
+                exit(1);
+            }
+        }
+        else
+        {
+            // Process request.
+            processRequest(slaveSocket);            
+        }
 
         // Close socket
         close(slaveSocket);
