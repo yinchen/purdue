@@ -1,5 +1,5 @@
 CXX = g++ -fPIC
-NETLIBS= -lnsl -lsocket
+NETLIBS= -lnsl -lsocket -lpthread
 
 all: myhttpd daytime-server daytime-client use-dlopen hello.so
 
