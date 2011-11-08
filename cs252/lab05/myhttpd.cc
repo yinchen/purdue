@@ -356,7 +356,11 @@ processRequest(int socket)
     
     if (strstr(docPath, "./") != 0)
     {
-        strcpy(docPath, realpath(docPath));        
+        char resolved[size + 1] = {0};
+        char *res = realpath(docPath, resolved);
+        
+        if (res)
+            strcpy(docPath, resolved);        
     }
     
     if (debug == 1) printf("GET %s\n", docPath);
