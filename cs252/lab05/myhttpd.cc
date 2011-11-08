@@ -354,13 +354,13 @@ processRequest(int socket)
         strcat(cwd, docPath);
     }
     
-    if (strstr(docPath, "./") != 0)
+    if (strstr(docPath, "..") != 0)
     {
         char resolved[size + 1] = {0};
         char *res = realpath(docPath, resolved);
         
         if (res)
-            if (strstr(resolved, cwd) != 0)
+            if (strlen(resolved) >= strlen(cwd) + 21)
                 strcpy(cwd, resolved);
     }
     
