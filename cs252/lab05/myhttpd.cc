@@ -360,7 +360,8 @@ processRequest(int socket)
         char *res = realpath(docPath, resolved);
         
         if (res)
-            strcpy(docPath, resolved);        
+            if (strstr(resolved, cwd) != 0)
+                strcpy(cwd, resolved);
     }
     
     if (debug == 1) printf("GET %s\n", docPath);
