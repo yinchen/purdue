@@ -354,6 +354,11 @@ processRequest(int socket)
         strcat(cwd, docPath);
     }
     
+    if (strstr(docPath, "./") != 0)
+    {
+        strcpy(docPath, realpath(docPath));        
+    }
+    
     if (debug == 1) printf("GET %s\n", docPath);
     
     // Determine requested content type
