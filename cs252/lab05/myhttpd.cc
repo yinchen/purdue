@@ -20,6 +20,7 @@ int QueueLength = 5;
 int Concurrency = 0; // 0 = none, 1 = (-f) process based, 2 = (-t) thread based, 3 = (-p) thread pool based
 
 void processRequest(int socket);
+extern "C" void killzombie(int sig);
 
 int
 main(int argc, char** argv)
@@ -63,6 +64,20 @@ main(int argc, char** argv)
         
         // Get the port from the arguments
         int port = atoi(argv[1]);
+    }
+    
+    // Catch the zombie processes
+    struct sigaction signalAction;
+    
+    signalAction.sa_handler = killzombie;
+    sigemptyset(&signalAction.sa_mask);
+    signalAction.sa_flags = SA_RESTART;
+    
+    int error = sigaction(SIGCHLD, &signalAction, NULL);
+    if (error) 
+    {
+        perror("sigaction");
+        exit(-1);
     }
 
     // Set the IP address and port for this server
@@ -313,6 +328,12 @@ processRequest(int socket)
         write(socket, "\n\r", 2);
         write(socket, "\n\r", 2);
         write(socket, message, strlen(message));
+    }
+    
+    extern "C" void killzombie(int sig)
+    {
+        int pid = wait3(0, 0, NULL);
+        while(waitpid(-1, NULL, WNOHANG) > 0);
     }
 }
 
