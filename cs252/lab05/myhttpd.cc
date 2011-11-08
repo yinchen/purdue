@@ -403,8 +403,10 @@ processRequest(int socket)
         write(socket, "\n\r", 2);
         write(socket, "\n\r", 2);
         
+        long count = 0;
+        
         char c;
-        while (read(fileno(document), &c, sizeof(c)))
+        while (count = read(fileno(document), &c, sizeof(c)))
             write(socket, &c, sizeof(c));
         
         fclose(document);
