@@ -331,11 +331,10 @@ processRequest(int socket)
         write(socket, "\n\r", 2);
         write(socket, message, strlen(message));
     }
-    
-    extern "C" void killzombie(int sig)
-    {
-        int pid = wait3(0, 0, NULL);
-        while(waitpid(-1, NULL, WNOHANG) > 0);
-    }
 }
-
+    
+extern "C" void killzombie(int sig)
+{
+    int pid = wait3(0, 0, NULL);
+    while(waitpid(-1, NULL, WNOHANG) > 0);
+}
