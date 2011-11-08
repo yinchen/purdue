@@ -197,6 +197,10 @@ main(int argc, char** argv)
             pthread_mutex_init(&mt, &mattr);
             
             pthread_t tid[5];
+            pthread_attr_t attr;
+            
+            pthread_attr_init(&attr);
+            pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM);            
             
             for(int i = 0; i < 5; i++)
             {
