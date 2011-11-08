@@ -74,7 +74,14 @@ main(int argc, char** argv)
         }
         
         // Get the port from the arguments
-        port = atoi(argv[2]);
+        if (argc < 3)
+        {
+            port = 56442;
+        }
+        else
+        {
+            port = atoi(argv[2]);
+        }
     }
     else
     {
