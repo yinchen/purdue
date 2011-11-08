@@ -400,14 +400,6 @@ processRequest(int socket)
         write(socket, "\n\r", 2);
         write(socket, "Content-Type: ", 14);
         write(socket, contentType, strlen(contentType));
-        
-        if (strstr(contentType, "image/") != 0)
-        {
-            write(socket, "\n\r", 2);
-            write(socket, "Content-Transfer-Encoding: ", 27);
-            write(socket, "binary", 6);
-        }
-        
         write(socket, "\n\r", 2);
         write(socket, "\n\r", 2);
         
