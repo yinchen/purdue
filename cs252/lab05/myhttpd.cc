@@ -76,7 +76,7 @@ main(int argc, char** argv)
         // Get the port from the arguments
         if (argc < 3)
         {
-            port = 56442;
+            port = 6442;
         }
         else
         {
