@@ -333,7 +333,12 @@ processRequest(int socket)
         strcat(cwd, "/http-root-dir/");
         strcat(cwd, docPath);
     }
-    else if (strncmp(docPath, "/htdocs", strlen("/icons")) == 0)
+    else if (strncmp(docPath, "/htdocs", strlen("/htdocs")) == 0)
+    {
+        strcat(cwd, "/http-root-dir/");
+        strcat(cwd, docPath);
+    }
+    else if (strncmp(docPath, "/cgi-bin", strlen("/cgi-bin")) == 0)
     {
         strcat(cwd, "/http-root-dir/");
         strcat(cwd, docPath);
