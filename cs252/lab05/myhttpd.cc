@@ -7,6 +7,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
+#include <signal.h>
+#include <sys/wait.h>
 
 const char* usage =
 "usage: myhttpd [-f|-t|-p] [<port>]                             \n"
