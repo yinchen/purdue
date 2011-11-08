@@ -20,7 +20,7 @@ const char* usage =
 "   -p: Pool of threads                                         \n"
 "                                                               \n";
 
-int debug = 1; // enable for debug messages
+int debug = 0; // enable for debug messages
 
 int QueueLength = 5;
 int Concurrency = 0; // 0 = none, 1 = (-f) process based, 2 = (-t) thread based, 3 = (-p) thread pool based
