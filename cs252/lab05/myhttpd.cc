@@ -148,6 +148,9 @@ main(int argc, char** argv)
 
         if (slaveSocket < 0)
         {
+            if (errno == EINTR)
+                continue;
+            
             perror("accept");
             exit(-1);
         }
