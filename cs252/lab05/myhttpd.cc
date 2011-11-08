@@ -421,18 +421,17 @@ processRequest(int socket)
         write(socket, "\n\r", 2);
         write(socket, "\n\r", 2);
         
-        // char *line;
-        // line = new char[size + 1];
-        // while (fgets(line, size + 1, document))
-        // {
-        //     write(socket, line, strlen(line));
-        // }
+        char c;
+        while (read(document, &c, sizeof(c)))
+        {
+            write(socket, &c, sizeof(c));
+        }
         
-        char *buff = (char*)malloc(sizeof(char) * 1024);
-        
-        size_t result;
-        while ((result = fread(buff, 1, 1024, document)) > 0)
-            write(socket, buff, result);
+        // char *buff = (char*)malloc(sizeof(char) * 1024);
+        // 
+        // size_t result;
+        // while ((result = fread(buff, 1, 1024, document)) > 0)
+        //     write(socket, buff, result);
         
         fclose(document);
     }
