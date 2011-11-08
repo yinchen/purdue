@@ -75,8 +75,8 @@ main(int argc, char** argv)
     sigemptyset(&signalAction.sa_mask);
     signalAction.sa_flags = SA_RESTART;
     
-    int error = sigaction(SIGCHLD, &signalAction, NULL);
-    if (error) 
+    int error1 = sigaction(SIGCHLD, &signalAction, NULL);
+    if (error1) 
     {
         perror("sigaction");
         exit(-1);
