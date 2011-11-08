@@ -395,13 +395,13 @@ processRequest(int socket)
     if (document > 0)
     {    
         write(socket, "HTTP/1.1 200 OK", 15);
-        write(socket, "\n\r", 2);
+        write(socket, "\r\n", 2);
         write(socket, "Server: Mattserv/1.0", 20);
-        write(socket, "\n\r", 2);
+        write(socket, "\r\n", 2);
         write(socket, "Content-Type: ", 14);
         write(socket, contentType, strlen(contentType));
-        write(socket, "\n\r", 2);
-        write(socket, "\n\r", 2);
+        write(socket, "\r\n", 2);
+        write(socket, "\r\n", 2);
         
         long count = 0;
         
@@ -417,12 +417,12 @@ processRequest(int socket)
         const char *message = "File not found";
         
         write(socket, "HTTP/1.1 404 File Not Found", 27);
-        write(socket, "\n\r", 2);
+        write(socket, "\r\n", 2);
         write(socket, "Server: Mattserv/1.0", 20);
-        write(socket, "\n\r", 2);
+        write(socket, "\r\n", 2);
         write(socket, "Content-type: text/html", 23);
-        write(socket, "\n\r", 2);
-        write(socket, "\n\r", 2);
+        write(socket, "\r\n", 2);
+        write(socket, "\r\n", 2);
         
         write(socket, message, strlen(message));
     }
