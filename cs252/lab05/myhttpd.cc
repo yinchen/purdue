@@ -38,7 +38,7 @@ int
 main(int argc, char** argv)
 {
     // Print usage if not enough arguments
-    if (argc < 2)
+    if (argc < 1 || argc > 3)
     {
         fprintf(stderr, "%s", usage);
         exit(-1);
@@ -90,7 +90,14 @@ main(int argc, char** argv)
         if (debug == 1) printf("Using concurrency mode: none.\n");
         
         // Get the port from the arguments
-        port = atoi(argv[1]);
+        if (argc < 2)
+        {
+            port = 6442;
+        }
+        else
+        {
+            port = atoi(argv[1]);
+        }
     }
         
     // Catch the zombie processes
