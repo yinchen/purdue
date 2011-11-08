@@ -173,6 +173,9 @@ main(int argc, char** argv)
                 
                 exit(1);
             }
+
+            // Close socket
+            close(slaveSocket);
         }
         else if (Concurrency == 2)
         {
@@ -187,11 +190,11 @@ main(int argc, char** argv)
         else
         {
             // Process request.
-            processRequest(slaveSocket);            
-        }
+            processRequest(slaveSocket);
 
-        // Close socket
-        close(slaveSocket);
+            // Close socket
+            close(slaveSocket);
+        }
     }  
 }
 
