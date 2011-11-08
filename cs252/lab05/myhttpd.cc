@@ -407,7 +407,8 @@ processRequest(int socket)
         
         char c;
         while (count = read(fileno(document), &c, sizeof(c)))
-            write(socket, &c, sizeof(c));
+            if (write(socket, &c, sizeof(c)) != count)
+                perror("write");
         
         fclose(document);
     }
