@@ -18,6 +18,8 @@ const char* usage =
 "   -p: Pool of threads                                         \n"
 "                                                               \n";
 
+int debug = 1; // enable for debug messages
+
 int QueueLength = 5;
 int Concurrency = 0; // 0 = none, 1 = (-f) process based, 2 = (-t) thread based, 3 = (-p) thread pool based
 
@@ -65,9 +67,12 @@ main(int argc, char** argv)
         Concurrency = 0;
         
         // Get the port from the arguments
-        int port = atoi(argv[1]);
+        port = atoi(argv[1]);
     }
     
+    // DEBUG
+    if (debug == 1) printf("Using concurrency mode %d.\n", Concurrency);
+        
     // Catch the zombie processes
     struct sigaction signalAction;
     
@@ -81,7 +86,10 @@ main(int argc, char** argv)
         perror("sigaction");
         exit(-1);
     }
-
+    
+    // DEBUG
+    if (debug == 1) printf("Launching web server on port %d... ", port);
+    
     // Set the IP address and port for this server
     struct sockaddr_in serverIPAddress; 
     memset(&serverIPAddress, 0, sizeof(serverIPAddress));
@@ -96,7 +104,7 @@ main(int argc, char** argv)
         perror("socket");
         exit(-1);
     }
-
+    
     // Set socket options to reuse port. Otherwise we will
     // have to wait about 2 minutes before reusing the sae port number
     int optval = 1; 
@@ -122,6 +130,9 @@ main(int argc, char** argv)
         exit(-1);
     }
 
+    // DEBUG
+    if (debug == 1) printf("Complete.\n");
+        
     while (1)
     {
         // Accept incoming connections
