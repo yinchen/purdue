@@ -70,7 +70,6 @@ main(int argc, char** argv)
         port = atoi(argv[1]);
     }
     
-    // DEBUG
     if (debug == 1) printf("Using concurrency mode %d.\n", Concurrency);
         
     // Catch the zombie processes
@@ -87,7 +86,6 @@ main(int argc, char** argv)
         exit(-1);
     }
     
-    // DEBUG
     if (debug == 1) printf("Launching web server on port %d... ", port);
     
     // Set the IP address and port for this server
@@ -130,8 +128,8 @@ main(int argc, char** argv)
         exit(-1);
     }
 
-    // DEBUG
     if (debug == 1) printf("Complete.\n");
+    if (debug == 1) printf("\n");
         
     while (1)
     {
@@ -249,6 +247,8 @@ processRequest(int socket)
         strcat(cwd, "/http-root-dir/htdocs");
         strcat(cwd, docPath);
     }
+    
+    if (debug == 1) printf("GET %s\n", docPath);
     
     // Determine requested content type
     char contentType[size + 1] = {0};
