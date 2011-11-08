@@ -9,6 +9,7 @@
 #include <time.h>
 #include <signal.h>
 #include <sys/wait.h>
+#include <errno.h>
 
 const char* usage =
 "usage: myhttpd [-f|-t|-p] [<port>]                             \n"
