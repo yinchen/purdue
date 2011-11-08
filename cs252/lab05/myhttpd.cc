@@ -422,7 +422,7 @@ processRequest(int socket)
         write(socket, "\n\r", 2);
         
         char c;
-        while (read(document, &c, sizeof(c)))
+        while (read(fileno(document), &c, sizeof(c)))
         {
             write(socket, &c, sizeof(c));
         }
