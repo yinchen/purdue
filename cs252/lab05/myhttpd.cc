@@ -10,6 +10,7 @@
 #include <signal.h>
 #include <sys/wait.h>
 #include <errno.h>
+#include <pthread.h>
 
 const char* usage =
 "usage: myhttpd [-f|-t|-p] [<port>]                             \n"
@@ -25,6 +26,8 @@ int QueueLength = 5;
 int Concurrency = 0; // 0 = none, 1 = (-f) process based, 2 = (-t) thread based, 3 = (-p) thread pool based
 
 void processRequest(int socket);
+void processRequestThread(int socket);
+
 extern "C" void killzombie(int sig);
 
 int
@@ -171,6 +174,16 @@ main(int argc, char** argv)
                 exit(1);
             }
         }
+        else if (Concurrency == 2)
+        {
+            pthread_t tid;
+            pthread_attr_t attr;
+            
+            pthread_attr_init(&attr);
+            pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM);
+            
+            pthread_create(&tid, &attr, (void * (*)(void *))processRequestThread, (void *)slaveSocket);
+        }
         else
         {
             // Process request.
@@ -180,6 +193,13 @@ main(int argc, char** argv)
         // Close socket
         close(slaveSocket);
     }  
+}
+
+void
+processRequestThread(int socket)
+{
+    processRequest(socket);
+    close(socket);
 }
 
 void
