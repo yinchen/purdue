@@ -27,6 +27,10 @@ int Concurrency = 0; // 0 = none, 1 = (-f) process based, 2 = (-t) thread based,
 
 void processRequest(int socket);
 void processRequestThread(int socket);
+void poolSlave(int socket);
+
+pthread_mutex_t mt;
+pthread_mutexattr_t mattr;
 
 extern "C" void killzombie(int sig);
 
@@ -187,6 +191,20 @@ main(int argc, char** argv)
             
             pthread_create(&tid, &attr, (void * (*)(void *))processRequestThread, (void *)slaveSocket);
         }
+        else if (Concurrency == 3)
+        {            
+            pthread_mutexattr_init(&mattr);
+            pthread_mutex_init(&mt, &mattr);
+            
+            pthread_t tid[5];
+            
+            for(int i = 0; i < 5; i++)
+            {
+                pthread_create(&tid[i], &attr, (void * (*)(void *))poolSlave, (void *)masterSocket);
+            }
+            
+            pthread_join(tid[0], NULL);
+        }
         else
         {
             // Process request.
@@ -203,6 +221,39 @@ processRequestThread(int socket)
 {
     processRequest(socket);
     close(socket);
+}
+
+void
+poolSlave(int socket)
+{
+    while(1)
+    {
+        pthread_mutex_lock(&mt);
+        
+        // Accept incoming connections
+        struct sockaddr_in clientIPAddress;
+        int alen = sizeof(clientIPAddress);
+        int slaveSocket = accept(socket,
+            (struct sockaddr *)&clientIPAddress,
+            (socklen_t*)&alen);
+        
+        pthread_mutex_unlock(&mt);
+
+        if (slaveSocket < 0)
+        {
+            if (errno == EINTR)
+                continue;
+            
+            perror("accept");
+            exit(-1);
+        }
+        
+        // Process request
+        processRequest(slaveSocket);
+        
+        // Close socket
+        close(slaveSocket);
+    }
 }
 
 void
