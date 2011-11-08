@@ -38,7 +38,7 @@ int
 main(int argc, char** argv)
 {
     // Print usage if not enough arguments
-    if (argc < 1 || argc > 3)
+    if (argc > 3)
     {
         fprintf(stderr, "%s", usage);
         exit(-1);
@@ -47,7 +47,7 @@ main(int argc, char** argv)
     int port = 0;
     
     // Get the concurrency type from the arguments
-    if (argv[1][0] == '-')
+    if (argc > 1 && argv[1][0] == '-')
     {
         if (argv[1][1] == 'f')
         {
