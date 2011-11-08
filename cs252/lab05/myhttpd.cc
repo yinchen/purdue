@@ -135,7 +135,7 @@ main(int argc, char** argv)
 
     // Put socket in listening mode and set the 
     // size of the queue of unprocessed connections
-    error = listen( masterSocket, QueueLength);
+    error = listen(masterSocket, QueueLength);
     if (error)
     {
         perror("listen");
@@ -144,80 +144,81 @@ main(int argc, char** argv)
 
     if (debug == 1) printf("Complete.\n");
     if (debug == 1) printf("\n");
+    
+    if (Concurrency == 3)
+    {            
+        pthread_mutexattr_init(&mattr);
+        pthread_mutex_init(&mt, &mattr);
         
-    while (1)
-    {
-        // Accept incoming connections
-        struct sockaddr_in clientIPAddress;
-        int alen = sizeof(clientIPAddress);
-        int slaveSocket = accept(masterSocket,
-            (struct sockaddr *)&clientIPAddress,
-            (socklen_t*)&alen);
-
-        if (slaveSocket < 0)
+        pthread_t tid[5];
+        pthread_attr_t attr;
+        
+        pthread_attr_init(&attr);
+        pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM);            
+        
+        for(int i = 0; i < 5; i++)
         {
-            if (errno == EINTR)
-                continue;
-            
-            perror("accept");
-            exit(-1);
+            pthread_create(&tid[i], &attr, (void * (*)(void *))poolSlave, (void *)masterSocket);
         }
         
-        if (Concurrency == 1)
+        pthread_join(tid[0], NULL);
+    }
+    else
+    {
+        while (1)
         {
-            pid_t slave = fork();
+            // Accept incoming connections
+            struct sockaddr_in clientIPAddress;
+            int alen = sizeof(clientIPAddress);
+            int slaveSocket = accept(masterSocket, (struct sockaddr *)&clientIPAddress, (socklen_t*)&alen);
+    
+            if (slaveSocket < 0)
+            {
+                if (errno == EINTR)
+                    continue;
+                
+                perror("accept");
+                exit(-1);
+            }
             
-            if (slave == 0)
+            if (Concurrency == 1)
+            {
+                pid_t slave = fork();
+                
+                if (slave == 0)
+                {
+                    // Process request.
+                    processRequest(slaveSocket);
+                    
+                    // Close socket
+                    close(slaveSocket);
+                    
+                    exit(1);
+                }
+    
+                // Close socket
+                close(slaveSocket);
+            }
+            else if (Concurrency == 2)
+            {
+                pthread_t tid;
+                pthread_attr_t attr;
+                
+                pthread_attr_init(&attr);
+                pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM);
+                
+                pthread_create(&tid, &attr, (void * (*)(void *))processRequestThread, (void *)slaveSocket);
+            }
+            else
             {
                 // Process request.
                 processRequest(slaveSocket);
-                
+    
                 // Close socket
                 close(slaveSocket);
-                
-                exit(1);
             }
-
-            // Close socket
-            close(slaveSocket);
-        }
-        else if (Concurrency == 2)
-        {
-            pthread_t tid;
-            pthread_attr_t attr;
-            
-            pthread_attr_init(&attr);
-            pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM);
-            
-            pthread_create(&tid, &attr, (void * (*)(void *))processRequestThread, (void *)slaveSocket);
-        }
-        else if (Concurrency == 3)
-        {            
-            pthread_mutexattr_init(&mattr);
-            pthread_mutex_init(&mt, &mattr);
-            
-            pthread_t tid[5];
-            pthread_attr_t attr;
-            
-            pthread_attr_init(&attr);
-            pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM);            
-            
-            for(int i = 0; i < 5; i++)
-            {
-                pthread_create(&tid[i], &attr, (void * (*)(void *))poolSlave, (void *)masterSocket);
-            }
-            
-            pthread_join(tid[0], NULL);
-        }
-        else
-        {
-            // Process request.
-            processRequest(slaveSocket);
-
-            // Close socket
-            close(slaveSocket);
-        }
-    }  
+        }  
+    }
 }
 
 void
@@ -237,9 +238,7 @@ poolSlave(int socket)
         // Accept incoming connections
         struct sockaddr_in clientIPAddress;
         int alen = sizeof(clientIPAddress);
-        int slaveSocket = accept(socket,
-            (struct sockaddr *)&clientIPAddress,
-            (socklen_t*)&alen);
+        int slaveSocket = accept(socket, (struct sockaddr *)&clientIPAddress, (socklen_t*)&alen);
         
         pthread_mutex_unlock(&mt);
 
