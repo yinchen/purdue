@@ -388,7 +388,7 @@ processRequest(int socket)
     
     FILE *document;
     if (strstr(contentType, "image/") != 0)
-        document = fopen(cwd, "rb");
+        document = fopen(cwd, "r");
     else
         document = fopen(cwd, "r");
     
@@ -403,7 +403,7 @@ processRequest(int socket)
         
         write(socket, "HTTP/1.1 200 OK", 15);
         write(socket, "\n\r", 2);
-        write(socket, "Server: Mattserv 1.0", 20);
+        write(socket, "Server: Mattserv/1.0", 20);
         write(socket, "\n\r", 2);
         write(socket, "Content-Type: ", 14);
         write(socket, contentType, strlen(contentType));
@@ -446,7 +446,7 @@ processRequest(int socket)
         write(socket, "\n\r", 2);
         write(socket, "Server:", 7);
         write(socket, " ", 1);
-        write(socket, "Mattserv 1.0", 12);
+        write(socket, "Mattserv/1.0", 12);
         write(socket, "\n\r", 2);
         write(socket, "Content-type:", 13);
         write(socket, " ", 1);
