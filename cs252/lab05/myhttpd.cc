@@ -394,7 +394,7 @@ processRequest(int socket)
     
     if (document > 0)
     {    
-        write(socket, "HTTP/1.1 200 OK", 15);
+        write(socket, "HTTP/1.0 200 Document follows", 29);
         write(socket, "\n\r", 2);
         write(socket, "Server: Mattserv/1.0", 20);
         write(socket, "\n\r", 2);
@@ -415,7 +415,7 @@ processRequest(int socket)
     else
     {
         const char *message = "File not found";
-        write(socket, "HTTP/1.1", 8);
+        write(socket, "HTTP/1.0", 8);
         write(socket, " ", 1);
         write(socket, "404", 3);
         write(socket, " ", 1);
