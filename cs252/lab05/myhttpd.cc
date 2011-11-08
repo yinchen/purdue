@@ -394,12 +394,12 @@ processRequest(int socket)
     
     if (document > 0)
     {    
-        fseek(document, 0, SEEK_END);
-        long length = ftell(document);
-        rewind(document);
+        // fseek(document, 0, SEEK_END);
+        // long length = ftell(document);
+        // rewind(document);
         
-        char* slen = (char*)malloc(sizeof(char) * 16);
-        sprintf(slen, "%d", length);
+        // char* slen = (char*)malloc(sizeof(char) * 16);
+        // sprintf(slen, "%d", length);
         
         write(socket, "HTTP/1.1 200 OK", 15);
         write(socket, "\n\r", 2);
@@ -408,24 +408,22 @@ processRequest(int socket)
         write(socket, "Content-Type: ", 14);
         write(socket, contentType, strlen(contentType));
         
-        if (strstr(contentType, "image/") != 0)
-        {
-            write(socket, "\n\r", 2);
-            write(socket, "Content-Transfer-Encoding: ", 27);
-            write(socket, "binary", 6);
-        }
+        // if (strstr(contentType, "image/") != 0)
+        // {
+        //     write(socket, "\n\r", 2);
+        //     write(socket, "Content-Transfer-Encoding: ", 27);
+        //     write(socket, "binary", 6);
+        // }
         
         write(socket, "\n\r", 2);
-        write(socket, "Content-Length: ", 16);
-        write(socket, slen, strlen(slen));
-        write(socket, "\n\r", 2);
+        // write(socket, "Content-Length: ", 16);
+        // write(socket, slen, strlen(slen));
+        // write(socket, "\n\r", 2);
         write(socket, "\n\r", 2);
         
         char c;
         while (read(fileno(document), &c, sizeof(c)))
-        {
             write(socket, &c, sizeof(c));
-        }
         
         // char *buff = (char*)malloc(sizeof(char) * 1024);
         // 
