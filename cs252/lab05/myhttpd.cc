@@ -44,14 +44,20 @@ main(int argc, char** argv)
         if (argv[1][1] == 'f')
         {
             Concurrency = 1;
+            
+            if (debug == 1) printf("Using concurrency mode: process based.\n");
         }
         else if (argv[1][1] == 't')
         {
             Concurrency = 2;
+            
+            if (debug == 1) printf("Using concurrency mode: thread based.\n");
         }
         else if (argv[1][1] == 'p')
         {
             Concurrency = 3;
+            
+            if (debug == 1) printf("Using concurrency mode: thread pool based.\n");
         }
         else
         {
@@ -66,11 +72,11 @@ main(int argc, char** argv)
     {
         Concurrency = 0;
         
+        if (debug == 1) printf("Using concurrency mode: none.\n");
+        
         // Get the port from the arguments
         port = atoi(argv[1]);
     }
-    
-    if (debug == 1) printf("Using concurrency mode %d.\n", Concurrency);
         
     // Catch the zombie processes
     struct sigaction signalAction;
