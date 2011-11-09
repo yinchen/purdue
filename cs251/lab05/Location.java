@@ -9,7 +9,7 @@ import javax.accessibility.*;
 import java.awt.*; 
 import java.awt.Color;
 import java.awt.BorderLayout;
-//
+
 import java.awt.event.*; 
 import java.beans.*; 
 import java.util.*; 
@@ -17,67 +17,70 @@ import java.io.*;
 import java.applet.*; 
 import java.net.*;
 
-
-
-
-class Location extends JPanel{
-	private String name;
-	private int x, y, id;
+class Location extends JPanel
+{
+    private String _name;
+    private int _id, _x, _y;
 	
-	public Location(){
+	public Location() {}
+	
+	public Location(int x, int y)
+    {
+		_x = x;
+		_y = y;
 	}
 	
-	public Location(int xIn, int yIn){
-		x = xIn;
-		y = yIn;
+	public Location(String name, int id, int x, int y)
+    {
+		_name = name;
+    	_id = id;
+		_x = x;
+		_y = y;
 	}
 	
-	public Location(String nameIn, int xIn, int yIn, int idIn){
-		name = nameIn;
-		x = xIn;
-		y = yIn;
-		id = idIn;
+    public String getName()
+    {
+    	return _name;
+	}
+    
+	public void setName(String name)
+    {
+		_name = name;
 	}
 	
-	public void setName(String nameIn){
-		name = nameIn;
+    public int getID()
+    {
+		return _id;
+	}
+    
+	public void setID(int id)
+    {
+		_id = id;
+	}	
+	
+	public int getX()
+    {
+		return _x;
+	}
+    
+	public void setX(int x)
+    {
+		_x = x;
 	}
 	
-	public void setCoor(int xIn, int yIn){
-		x = xIn;
-		y = yIn;
+	public int getY()
+    {
+		return _y;
 	}
 	
-	public void setId(int idIn){
-		id = idIn;
-	}
+	public void setY(int y)
+    {
+		_y = y;
+	}	
 	
-	public String getName(){
-		return name;
-	}
-	
-	public int getX(){
-		return x;
-	}
-	
-	public int getY(){
-		return y;
-	}
-	
-	public void setX(int xIn){
-		x = xIn;
-	}
-	
-	public void setY(int yIn){
-		y = yIn;
-	}
-	
-	public int getId(){
-		return id;
-	}
-	
-	public void paint(Graphics g){
-		g.fillOval(x-8, y-8, 16, 16);
+	public void paint(Graphics g)
+    {
+		g.fillOval(x - 8, y - 8, 16, 16);
 	}
 }
 
