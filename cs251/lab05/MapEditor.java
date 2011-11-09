@@ -14,7 +14,7 @@ import java.io.*;
 import java.applet.*; 
 import java.net.*;
 
-class MapEditor extends JFram
+class MapEditor extends JFrame
 {
     private int PREFERRED_WIDTH = 680;
     private int PREFERRED_HEIGHT = 600;
