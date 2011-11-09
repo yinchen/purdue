@@ -1,23 +1,4 @@
-import javax.swing.*; 
-import javax.swing.event.*; 
-import javax.swing.text.*; 
-import javax.swing.border.*; 
-import javax.swing.colorchooser.*; 
-import javax.swing.filechooser.*; 
-import javax.accessibility.*; 
-
-import java.awt.*; 
-import java.awt.Color;
-import java.awt.BorderLayout;
-
-import java.awt.event.*; 
-import java.beans.*; 
-import java.util.*; 
-import java.io.*; 
-import java.applet.*; 
-import java.net.*;
-
-class Location extends JPanel
+class Location
 {
     private String _name;
     private int _id, _x, _y;
@@ -76,10 +57,5 @@ class Location extends JPanel
     public void setY(int y)
     {
         _y = y;
-    }    
-    
-    public void paint(Graphics g)
-    {
-        g.fillOval(x - 8, y - 8, 16, 16);
     }
 }
