@@ -1,4 +1,3 @@
-
 import javax.swing.*; 
 import javax.swing.event.*; 
 import javax.swing.text.*; 
@@ -15,24 +14,26 @@ import java.io.*;
 import java.applet.*; 
 import java.net.*;
 
-class MapEditor extends JFrame{
-    // The preferred size of the demo
+class MapEditor extends JFram
+{
     private int PREFERRED_WIDTH = 680;
     private int PREFERRED_HEIGHT = 600;
     private JScrollPane scrollPane;
 
-    public static void main(String[] args) { 
+    public static void main(String[] args)
+    { 
  	MapEditor mapEditor = new MapEditor(); 
 	mapEditor.setVisible(true);
     } 
 
-    MapEditor() {
+    MapEditor()
+    {
 	setTitle("Map Editor");
 	setSize(PREFERRED_WIDTH, PREFERRED_HEIGHT);
 	setBackground(Color.gray);
 
 	JPanel panel = new JPanel();
-	panel.setLayout( new BorderLayout()); 
+	panel.setLayout(new BorderLayout()); 
 	getContentPane().add(panel);
 
 	Icon image = new ImageIcon("purdue-map.jpg");
@@ -42,6 +43,4 @@ class MapEditor extends JFrame{
 	scrollPane.getViewport().add(label);
 	panel.add(scrollPane, BorderLayout.CENTER);
     }
-
-};
-
+}
