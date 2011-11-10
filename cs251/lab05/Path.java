@@ -1,59 +1,44 @@
-class Path{
-	private String type;
-	private int idfrom, idto;
-	private boolean used, NTSave;
-	
-	public Path(){
-		used = false;
-	}
-	
-	public Path(String typeIn, int idfromIn, int idtoIn){
-		type = typeIn;
-		idfrom = idfromIn;
-		idto = idtoIn;
-		used = true;
-	}
-	
-	public void setType(String typeIn){
-		type = typeIn;
-	}
-	
-	public void setIdto(int idtoIn){
-		idto = idtoIn;
-	}
-	
-	public void setIdfrom(int idfromIn){
-		idfrom = idfromIn;
-	}
-	
-	
-	
-	public String getType(){
-		return type;
-	}
-	
-	public int getIdfrom(){
-		return idfrom;
-	}
-	
-	public int getIdto(){
-		return idto;
-	}
-	
-	public void setUsed(boolean setTo){
-		used = setTo;
-	}
-	
-	public boolean getUsed(){
-		return used;
-	}
-	
-	public void setNTSave(boolean in){
-		NTSave = in;
-	}
-	
-	public boolean getNTSave(){
-		return NTSave;
-	}
+class Path
+{
+    private String _type;
+    private int _to, _from;
+    
+    public Path() {}
+    
+    public Path(String type, int to, int from)
+    {
+        _type = type;
+        _to = to;
+        _from = from;
+    }
+    
+    public String getType()
+    {
+        return _type;
+    }
+    
+    public void setType(String type)
+    {
+        _type = type;
+    }
+    
+    public int getTo()
+    {
+        return _to;
+    }
+    
+    public void setTo(int to)
+    {
+        _to = to;
+    }
+    
+    public int getFrom()
+    {
+        return _from;
+    }
+    
+    public void setFrom(int from)
+    {
+        _from = from;
+    } 
 }
-
