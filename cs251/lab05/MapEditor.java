@@ -14,12 +14,12 @@ import java.io.*;
 import java.applet.*; 
 import java.net.*;
 
-class MapEditor extends JFrame
+class MapEditor extends JFrame implements ActionListener
 {
     private int PREFERRED_WIDTH = 680;
     private int PREFERRED_HEIGHT = 600;
     
-    private JScrollPane _scrollPane;
+    private EditorMenu _menu;
     private ZoomPane _zoomPane;
     private MapScene _map;
 
@@ -38,6 +38,8 @@ class MapEditor extends JFrame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         Image image = new ImageIcon("purdue-map.jpg").getImage();
+        
+        _menu = new EditorMenu(this, this);
         
         _map = new MapScene(image);
         _zoomPane = new ZoomPane(_map);
@@ -63,6 +65,11 @@ class MapEditor extends JFrame
         
         _zoomPane.getZoomPanel().addMouseListener(listener);
         _zoomPane.getZoomPanel().addMouseMotionListener(motionListener);
+    }
+    
+    public void actionPerformed(ActionEvent event)
+    {
+        // do nothing
     }
 }
 
