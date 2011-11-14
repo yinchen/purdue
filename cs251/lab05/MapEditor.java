@@ -18,29 +18,51 @@ class MapEditor extends JFrame
 {
     private int PREFERRED_WIDTH = 680;
     private int PREFERRED_HEIGHT = 600;
-    private JScrollPane scrollPane;
+    
+    private JScrollPane _scrollPane;
+    private ZoomPane _zoomPane;
+    private MapScene _map;
 
-    public static void main(String[] args)
+    public static void main(String[] args) 
     { 
- 	MapEditor mapEditor = new MapEditor(); 
-	mapEditor.setVisible(true);
+        MapEditor mapEditor = new MapEditor(); 
+        mapEditor.setVisible(true);
     } 
 
     MapEditor()
     {
-	setTitle("Map Editor");
-	setSize(PREFERRED_WIDTH, PREFERRED_HEIGHT);
-	setBackground(Color.gray);
-
-	JPanel panel = new JPanel();
-	panel.setLayout(new BorderLayout()); 
-	getContentPane().add(panel);
-
-	Icon image = new ImageIcon("purdue-map.jpg");
-	
-	JLabel label = new JLabel(image);
-	scrollPane = new JScrollPane();
-	scrollPane.getViewport().add(label);
-	panel.add(scrollPane, BorderLayout.CENTER);
+        setTitle("Map Editor");
+        setSize(PREFERRED_WIDTH, PREFERRED_HEIGHT);
+        setBackground(Color.gray);
+        
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        Image image = new ImageIcon("purdue-map.jpg").getImage();
+        
+        _map = new MapScene(image);
+        _zoomPane = new ZoomPane(_map);
+        
+        getContentPane().add(_zoomPane);
+        getContentPane().add(_zoomPane.getJSlider(), "Last");
+        
+        MouseAdapter listener = new MouseAdapter() {
+            public void mousePressed(MouseEvent e)
+            {
+                Point point = _zoomPane.toViewCoordinates(e.getPoint());
+                _map.mousePressed(point);
+            }
+        };
+        
+        MouseMotionAdapter motionListener = new MouseMotionAdapter() {
+            public void mouseDragged(MouseEvent e)
+            {
+                Point point = _zoomPane.toViewCoordinates(e.getPoint());
+                _map.mouseDragged(point);
+            }
+        };
+        
+        _zoomPane.getZoomPanel().addMouseListener(listener);
+        _zoomPane.getZoomPanel().addMouseMotionListener(motionListener);
     }
 }
+
