@@ -20,7 +20,6 @@ public class ZoomPane extends JScrollPane
 
     public ZoomPanel getZoomPanel() { return _panel; }
 
-
     public Point toViewCoordinates(Point point)
     {
         double scale = _panel.getScale();
