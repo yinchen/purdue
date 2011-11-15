@@ -90,6 +90,8 @@ WebCrawler::onContentFound(char c)
         buffer = strcat(description, single);
         
         strcpy(description, buffer);
+        
+        delete [] single;
     }
 }
 
