@@ -226,6 +226,8 @@ WebCrawler::writeWordFile(const char *wordFileName)
         
         URLRecordList *curr = _wordToURLRecordList->_buckets[i]->_data;
         
+        int abort = 0;
+        
         while (curr != NULL)
         {
             if (curr->_urlRecordIndex < 0 ||
