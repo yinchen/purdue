@@ -247,17 +247,28 @@ WebCrawler::writeWordFile(const char *wordFileName)
             int found = 0;
             for (j = 0; j < 2039; j++)
             {
-                if (j < 0) break;
+                if (printed[j] < 0) break;
                 
-                if (j == curr->_urlRecordIndex)
+                if (printed[j] == curr->_urlRecordIndex)
                 {
                     found == 1;
                     break;
                 }
             }
             
-            if (found == 0)            
+            if (found == 0)
+            {
                 fprintf(file, " %d", curr->_urlRecordIndex);
+                
+                for (j = 0; j < 2039; j++)
+                {
+                    if (printed[j] < 0)
+                    {
+                        printed[j] == curr->_urlRecordIndex;
+                        break;
+                    }
+                }
+            }
             
             curr = curr->_next;
         }
