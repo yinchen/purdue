@@ -123,45 +123,45 @@ Data HashTableTemplate<Data>::operator[] (const char * &key) {
 template <typename Data>
 bool HashTableTemplate<Data>::removeElement(const char * key)
 {
-    // Get hash bucket
-    int h = hash(key);
-
-    HashTableTemplateEntry<Data> * e = _buckets[h];
-    HashTableTemplateEntry<Data> * prev = NULL;
-    while (e!=NULL) {
-        if (!strcmp(e->_key, key)) {
-            // Entry found
-            if (prev != NULL) {
-                prev->_next = e->_next;
-            }
-            else {
-                _buckets[h] = e->_next;
-            }
-            delete e;
-            return true;
-        }
-        prev = e;
-        e = e->_next;
+  // Get hash bucket
+  int h = hash(key);
+  
+  HashTableTemplateEntry<Data> * e = _buckets[h];
+  HashTableTemplateEntry<Data> * prev = NULL;
+  while (e!=NULL) {
+    if (!strcmp(e->_key, key)) {
+      // Entry found
+      if (prev != NULL) {
+	prev->_next = e->_next;
+      }
+      else {
+	_buckets[h] = e->_next;
+      }
+      delete e;
+      return true;
     }
-    return false;
+    prev = e;
+    e = e->_next;
+  }
+  return false;
 }
 
 template <typename Data>
 class HashTableTemplateIterator {
-    int _currentBucket;
-    HashTableTemplateEntry<Data> *_currentEntry;
-    HashTableTemplate<Data> * _hashTable;
-  public:
-    HashTableTemplateIterator(HashTableTemplate<Data> * hashTable);
-    bool next(const char * & key, Data & data);
+  int _currentBucket;
+  HashTableTemplateEntry<Data> *_currentEntry;
+  HashTableTemplate<Data> * _hashTable;
+ public:
+  HashTableTemplateIterator(HashTableTemplate<Data> * hashTable);
+  bool next(const char * & key, Data & data);
 };
 
 template <typename Data>
 HashTableTemplateIterator<Data>::HashTableTemplateIterator(HashTableTemplate<Data> * hashTable)
 {
-    _currentBucket = 0;
-    _currentEntry = NULL;
-    _hashTable = hashTable;
+  _currentBucket = 0;
+  _currentEntry = NULL;
+  _hashTable = hashTable;
 }
 
 template <typename Data>

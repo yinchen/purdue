@@ -27,7 +27,7 @@ class WebCrawler : public SimpleHTMLParser {
 
     HashTableTemplate<int> * _urlToUrlRecord; // maps a URL to its index in the URLArray 
   
-    HashTableTemplate<URLRecordList *> * _wordToURLRecordList; // maps a word to a list of URLs
+    HashTableTemplate<URLRecordList *> *_wordToURLRecordList; // maps a word to a list of URLs
 
     public:
         // Create a web crawler object with the initial urls
