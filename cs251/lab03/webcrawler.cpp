@@ -251,7 +251,7 @@ WebCrawler::writeWordFile(const char *wordFileName)
                 
                 if (printed[j] == curr->_urlRecordIndex)
                 {
-                    found == 1;
+                    found = 1;
                     break;
                 }
             }
