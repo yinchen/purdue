@@ -22,6 +22,7 @@ class MapEditor extends JFrame implements ActionListener
     private EditorMenu _menu;
     private ZoomPane _zoomPane;
     private MapScene _map;
+    private JSlider _zoomSlider;
 
     public static void main(String[] args) 
     { 
@@ -45,7 +46,10 @@ class MapEditor extends JFrame implements ActionListener
         _zoomPane = new ZoomPane(_map);
         
         getContentPane().add(_zoomPane);
-        getContentPane().add(_zoomPane.getJSlider(), "Last");
+        
+        _zoomSlider = _zoomPane.getJSlider();
+        
+        getContentPane().add(_zoomSlider, "Last");
         
         MouseAdapter listener = new MouseAdapter() {
             public void mousePressed(MouseEvent e)
@@ -69,7 +73,58 @@ class MapEditor extends JFrame implements ActionListener
     
     public void actionPerformed(ActionEvent event)
     {
-        // do nothing
+        String action = event.getActionCommand();
+        
+        if (action == "New")
+        {
+        
+        }
+        else if (action == "Open...")
+        {
+        
+        }
+        else if (action == "Save")
+        {
+        
+        }
+        else if (action == "Save As...")
+        {
+        
+        }
+        else if (action == "Exit")
+        {
+            System.exit(0);
+        }
+        
+        if (action == "Zoom In")
+        {
+            _zoomSlider.setValue(_zoomSlider.getValue() + 5);
+        }
+        else if (action == "Zoom Out")
+        {
+            _zoomSlider.setValue(_zoomSlider.getValue() - 5);
+        }
+        
+        if (action == "Insert Location")
+        {
+        
+        }
+        else if (action == "Insert Path")
+        {
+        
+        }
+        else if (action == "Delete Location")
+        {
+        
+        }
+        else if (action == "Delete Path")
+        {
+        
+        }
+        else if (action == "Show Properties")
+        {
+        
+        }
     }
 }
 
