@@ -73,24 +73,43 @@ public class EditorMenu extends JMenuBar
         
         JMenuItem item;
         
-        item = new JMenuItem("Insert Location");
+        item = new JCheckBoxMenuItem("Insert Location");
         item.addActionListener(callback);
         _modeMenu.add(item);
         
-        item = new JMenuItem("Insert Path");
+        item = new JCheckBoxMenuItem("Insert Path");
         item.addActionListener(callback);
         _modeMenu.add(item);
         
-        item = new JMenuItem("Delete Location");
+        item = new JCheckBoxMenuItem("Delete Location");
         item.addActionListener(callback);
         _modeMenu.add(item);
         
-        item = new JMenuItem("Delete Path");
+        item = new JCheckBoxMenuItem("Delete Path");
         item.addActionListener(callback);
         _modeMenu.add(item);
         
-        item = new JMenuItem("Show Properties");
+        item = new JCheckBoxMenuItem("Show Properties");
         item.addActionListener(callback);
         _modeMenu.add(item);
+        
+        item.setSelected(true);
+    }
+    
+    public void toggleModeMenu(String selectedItem)
+    {
+        for (int i = 0; i < _modeMenu.getItemCount(); i++)
+        {
+            JMenuItem item = _modeMenu.getItem(i);
+            
+            if (item.getText() == selectedItem)
+            {
+                item.setSelected(true);
+            }
+            else
+            {
+                item.setSelected(false);
+            }
+        }
     }
 }

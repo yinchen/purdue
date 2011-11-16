@@ -23,12 +23,19 @@ class MapEditor extends JFrame implements ActionListener
     private ZoomPane _zoomPane;
     private MapScene _map;
     private JSlider _zoomSlider;
+    
+    private MouseAdapter _listener;
+    private MouseMotionAdapter _motionListener;
+    
+    public int CURRENT_MODE = 0;
+    
+    public XmlDataSource _data;
 
     public static void main(String[] args) 
     { 
         MapEditor mapEditor = new MapEditor(); 
         mapEditor.setVisible(true);
-    } 
+    }
 
     MapEditor()
     {
@@ -38,11 +45,19 @@ class MapEditor extends JFrame implements ActionListener
         
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        Image image = new ImageIcon("purdue-map.jpg").getImage();
+        _data = new XmlDataSource();        
+        initialize();
+    }
+    
+    private void initialize()
+    {
+        System.out.print("Initializing... ");
+        
+        Image image = new ImageIcon(_data.getBitmapFileName()).getImage();
         
         _menu = new EditorMenu(this, this);
         
-        _map = new MapScene(image);
+        _map = new MapScene(this, image);
         _zoomPane = new ZoomPane(_map);
         
         getContentPane().add(_zoomPane);
@@ -51,15 +66,21 @@ class MapEditor extends JFrame implements ActionListener
         
         getContentPane().add(_zoomSlider, "Last");
         
-        MouseAdapter listener = new MouseAdapter() {
+        _listener = new MouseAdapter() {
             public void mousePressed(MouseEvent e)
             {
                 Point point = _zoomPane.toViewCoordinates(e.getPoint());
                 _map.mousePressed(point);
             }
+            
+            public void mouseReleased(MouseEvent e)
+            {
+                Point point = _zoomPane.toViewCoordinates(e.getPoint());
+                _map.mouseReleased(point);
+            }
         };
         
-        MouseMotionAdapter motionListener = new MouseMotionAdapter() {
+        _motionListener = new MouseMotionAdapter() {
             public void mouseDragged(MouseEvent e)
             {
                 Point point = _zoomPane.toViewCoordinates(e.getPoint());
@@ -67,8 +88,24 @@ class MapEditor extends JFrame implements ActionListener
             }
         };
         
-        _zoomPane.getZoomPanel().addMouseListener(listener);
-        _zoomPane.getZoomPanel().addMouseMotionListener(motionListener);
+        _zoomPane.getZoomPanel().addMouseListener(_listener);
+        _zoomPane.getZoomPanel().addMouseMotionListener(_motionListener);
+        
+        System.out.println("Ready.");
+    }
+    
+    private void reinitialize()
+    {
+        System.out.print("Reinitializing... ");
+        
+        Image image = new ImageIcon(_data.getBitmapFileName()).getImage();        
+        
+        _map = new MapScene(this, image);
+        _zoomPane.updateScene(_map);
+        
+        _map.changeNotify();
+        
+        System.out.println("Ready.");
     }
     
     public void actionPerformed(ActionEvent event)
@@ -77,19 +114,19 @@ class MapEditor extends JFrame implements ActionListener
         
         if (action == "New")
         {
-        
+            newFile();
         }
         else if (action == "Open...")
         {
-        
+            openFile();
         }
         else if (action == "Save")
         {
-        
+            saveFile();
         }
         else if (action == "Save As...")
         {
-        
+            saveFileAs();
         }
         else if (action == "Exit")
         {
@@ -107,23 +144,70 @@ class MapEditor extends JFrame implements ActionListener
         
         if (action == "Insert Location")
         {
-        
+            CURRENT_MODE = 1;
+            _menu.toggleModeMenu(action);
         }
         else if (action == "Insert Path")
         {
-        
+            CURRENT_MODE = 2;
+            _menu.toggleModeMenu(action);
         }
         else if (action == "Delete Location")
         {
-        
+            CURRENT_MODE = 3;
+            _menu.toggleModeMenu(action);
         }
         else if (action == "Delete Path")
         {
-        
+            CURRENT_MODE = 4;
+            _menu.toggleModeMenu(action);
         }
         else if (action == "Show Properties")
         {
+            CURRENT_MODE = 0;
+            _menu.toggleModeMenu(action);
+        }
+    }
+    
+    void newFile()
+    {
+        _data = new XmlDataSource();
+        reinitialize();
+    }
+    
+    void openFile()
+    {
+        JFileChooser fc = new JFileChooser();
         
+        int returnVal = fc.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION)
+        {
+            File file = fc.getSelectedFile();
+            _data = new XmlDataSource(file.getName());
+                  
+            reinitialize();
+            
+            for (Location l : _data.Locations)
+            {
+                System.out.println(l.getID() + ": (" + l.getX() + ", " + l.getY() + ")");
+            }
+        }
+    }
+    
+    void saveFile()
+    {
+        // not implemented
+    }
+    
+    void saveFileAs()
+    {
+        JFileChooser fc = new JFileChooser();
+        
+        int returnVal = fc.showSaveDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION)
+        {
+            File file = fc.getSelectedFile();
+            _data.writeFile(file.getName());
         }
     }
 }

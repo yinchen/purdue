@@ -1,7 +1,7 @@
 all: MapEditor
 
 MapEditor: 
-	javac MapEditor.java EditorMenu.java Scene.java ZoomPane.java MapScene.java Location.java Path.java
+	javac Location.java Path.java XmlDataSource.java Scene.java MapScene.java ZoomPane.java EditorMenu.java MapEditor.java
 
 clean:
 	rm -f *.java~ *.class

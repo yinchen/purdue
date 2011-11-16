@@ -17,6 +17,11 @@ public class ZoomPane extends JScrollPane
         getVerticalScrollBar().setUnitIncrement(5);
         getHorizontalScrollBar().setUnitIncrement(5);
     }
+    
+    public void updateScene(Scene scene)
+    {
+        _panel.setScene(scene);    
+    }
 
     public ZoomPanel getZoomPanel() { return _panel; }
 
@@ -104,6 +109,8 @@ public class ZoomPane extends JScrollPane
         {
             _scene = scene;
             _scene.addChangeListener(this);
+            
+            repaint();
         }
 
         public void stateChanged(ChangeEvent e)
