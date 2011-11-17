@@ -1,6 +1,5 @@
 .data
 
-newline:    .asciiz "\n"
 heading1:   .asciiz "Array "
 heading2:   .asciiz " (of size "
 headbrack:  .asciiz "):"
@@ -14,6 +13,14 @@ heading5:   .asciiz "\nThe number of compare operations used is: "
 # main()
 main:       jal array1
             jal array2
+            # jal array3
+            # jal array4
+            # jal array5
+            # jal array6
+            # jal array7
+            # jal array8
+            # jal array9
+            # jal array10
 
             li $v0, 10                # syscall code 10 is for exit.
             syscall                   # make the syscall.
@@ -21,7 +28,7 @@ main:       jal array1
 
 # array1()
 array1:     sub $sp, $sp, 4           # increase the stack size 
-            sw $ra, 0($sp)            # save ra 
+            sw $ra, 0($sp)            # save $ra 
             
             la $s0, array1a           # load the array
             move $a0, $s0
@@ -31,6 +38,11 @@ array1:     sub $sp, $sp, 4           # increase the stack size
             lw $a3, k1
             li $v1, 0                 # start with first element
             jal recurSel
+            
+            li $a0, 1                 # i($a0) = 1
+            lw $a1, size1             # size($a1) = size1
+            lw $a2, k1                # k($a2) = k1
+            
             jal printFinal
             
             j rest
@@ -38,7 +50,7 @@ array1:     sub $sp, $sp, 4           # increase the stack size
 
 # array2()
 array2:     sub $sp, $sp, 4           # increase the stack size 
-            sw $ra, 0($sp)            # save ra 
+            sw $ra, 0($sp)            # save $ra 
             
             la $s0, array2a           # load the array
             move $a0, $s0
@@ -48,18 +60,24 @@ array2:     sub $sp, $sp, 4           # increase the stack size
             lw $a3, k2     
             li $v1, 0                 # start with first element
             jal recurSel
+            
+            li $a0, 2                 # i($a0) = 2
+            lw $a1, size2             # size($a1) = size2
+            lw $a2, k2                # k($a2) = k2
+            
             jal printFinal
             
             j rest
 
 
-# printFinal($a0 = list, $a1 = start, $a2 = end, $a3 = k)
+# printFinal($a0 = i, $a1 = size, $a2 = k)
 printFinal: sub $sp, $sp, 4           # increase the stack size 
-            sw $ra, 0($sp)            # save ra 
+            sw $ra, 0($sp)            # save $ra 
             
-            move $a1, $v0
-            move $a2, $v1
-            la $a0, heading3          # format heading
+            mul $s0, $a2, 4
+            lw $s5, 0($s0)            # list[k]($s5) = list[k]
+                        
+            la $a0, heading1          # format heading
             li $v0, 4                 # syscall code 4 is for printing.
             syscall                   # make the syscall.
 
@@ -68,8 +86,6 @@ printFinal: sub $sp, $sp, 4           # increase the stack size
             syscall                   # make the syscall.
 
             la $a0, heading4          # format heading
-            move $a1, $v0
-            move $a2, $v1
             li $v0, 4                 # syscall code 4 is for printing.
             syscall                   # make the syscall.
             
@@ -77,10 +93,7 @@ printFinal: sub $sp, $sp, 4           # increase the stack size
 
 
 # partition($a0 = list, $a1 = left, $a2 = right, $a3 = pivotIndex) 
-partition:  sub $sp, $sp, 4           # increase the stack size 
-            sw $ra, 0($sp)            # save ra 
-            
-            mul $s0, $a3, 4
+partition:  mul $s0, $a3, 4
             add $s0, $a0, $s0
             lw $t0, 0($s0)            # $t0 = list[pivotIndex]
 
@@ -110,7 +123,6 @@ partition:  sub $sp, $sp, 4           # increase the stack size
             move $t3, $t9             # swap list[right]($t1) and list[storeIndex]($t3)
             
             move $v0, $t6             # $v0 = storeIndex
-            j rest                    # return
 
 # for i from left to right-1
 loop:       addi $s7, $s7, 1          # numCompare($s7) = numCompare($s7) + 1
@@ -128,7 +140,7 @@ loop:       addi $s7, $s7, 1          # numCompare($s7) = numCompare($s7) + 1
             blt $s4, $a2, loop
 
 loop1:      sub $sp, $sp, 4           # increase the stack size 
-            sw $ra, 0($sp)            # save ra 
+            sw $ra, 0($sp)            # save $ra 
             
             move $t9, $t3
             move $t3, $t4             
@@ -136,12 +148,10 @@ loop1:      sub $sp, $sp, 4           # increase the stack size
             
             addi $t6, $t6, 1          # storeIndex($t6) = storeIndex($t6) + 1
             
-            j rest
-            
 
 # rescurSel($a0 = list, $a1 = left, $a2 = right, $a3 = k) 
 recurSel:   sub $sp, $sp, 4           # increase the stack size 
-            sw $ra, 0($sp)            # save ra 
+            sw $ra, 0($sp)            # save $ra 
             
             move $t0, $a3             # $t0 = k($a3)
 
@@ -157,7 +167,7 @@ recurSel:   sub $sp, $sp, 4           # increase the stack size
 
 # recurSel1($a0 = list, $a1 = left, $a2 = right, $a3 = pivotIndex)
 recurSel1:  sub $sp, $sp, 4           # increase the stack size 
-            sw $ra, 0($sp)            # save ra 
+            sw $ra, 0($sp)            # save $ra 
             
             mul $s0, $a3, 4
             add $s0, $a0, $s0
@@ -167,7 +177,7 @@ recurSel1:  sub $sp, $sp, 4           # increase the stack size
 
 # recurSel2($a0 = list, $a1 = left, $a2 = right, $a3 = pivotIndex)
 recurSel2:  sub $sp, $sp, 4           # increase the stack size 
-            sw $ra, 0($sp)            # save ra 
+            sw $ra, 0($sp)            # save $ra 
             
             addi $t0, $v0, -1         # $t0 = pivotNewIndex - 1
             move $a2, $s1
@@ -177,7 +187,7 @@ recurSel2:  sub $sp, $sp, 4           # increase the stack size
 
 # recurSel3($a0 = list, $a1 = left, $a2 = right, $a3 = pivotIndex)
 recurSel3:  sub $sp, $sp, 4           # increase the stack size 
-            sw $ra, 0($sp)            # save ra 
+            sw $ra, 0($sp)            # save $ra 
             
             addi $t0, $v0, 1          # $t0 = pivotNewIndex + 1
             move $a1, $s1
@@ -186,7 +196,7 @@ recurSel3:  sub $sp, $sp, 4           # increase the stack size
             j rest
 
 
-rest:       lw $ra, 0($sp)            # restore ra 
+rest:       lw $ra, 0($sp)            # restore $ra 
             addi $sp, $sp, 4          # decrease the stack size 
             
             jr $ra
