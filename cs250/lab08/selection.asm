@@ -64,19 +64,25 @@ printFinal: move $a1, $v0
 
 
 # partition($a0 = list, $a1 = left, $a2 = right, $a3 = pivotIndex) 
-partition:  mul $a3, $a3, 4
-            add $a3, $a0, $a3
-            lw $t0, 0($a3)            # $t0 = list[pivotIndex]
+partition:  mul $s0, $a3, 4
+            add $s0, $a0, $s0
+            lw $t0, 0($s0)            # $t0 = list[pivotIndex]
 
-            mul $a2, $a2, 4
-            add $a2, $a0, $a2
-            lw $t1, 0($a2)            # $t1 = list[right]
+            mul $s0, $a2, 4
+            add $s0, $a0, $s0
+            lw $t1, 0($s0)            # $t1 = list[right]
 
             move $t2, $t0             # swap $t0 and $t1
             move $t0, $t1             
             move $t1, $t2
             
             move $t2, $a1             # $t2 = left
+            
+            # for loop
+            
+            move $t2, $t0             # swap $t0 and $t1
+            move $t0, $t1             
+            move $t1, $t2
             
             move $v0, $t2             # $v0 = storeIndex
             jr $ra
@@ -94,9 +100,9 @@ recurSel:   move $t0, $a3             # $t0 = k
 
 
 # recurSel1($a0 = list, $a1 = left, $a2 = right, $a3 = pivotIndex)
-recurSel1:  mul $a3, $a3, 4
-            add $a3, $a0, $a3
-            lw $v0, 0($a3)            # $v0 = list[k]
+recurSel1:  mul $s0, $a3, 4
+            add $s0, $a0, $s0
+            lw $v0, 0($s0)            # $v0 = list[k]
             jr $ra
 
 # recurSel2($a0 = list, $a1 = left, $a2 = right, $a3 = pivotIndex)
