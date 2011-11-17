@@ -58,32 +58,52 @@ public class XmlDataSource
             
 	        String line = br.readLine();
 	        
-	        StringTokenizer st = new StringTokenizer(line, "\"");
-	        
-	        _bitmapFile = st.nextToken();
-	        _scale = Double.valueOf(line.split("\"")[3]);
+	        line = line.substring(line.indexOf('"') + 1, line.length());
+            _bitmapFile = line.substring(0, line.indexOf('"'));
+            
+            line = line.substring(line.indexOf('"') + 1, line.length());
+            line = line.substring(line.indexOf('"') + 1, line.length());
+	        _scale = Double.parseDouble(line.substring(0, line.indexOf('"')));
 	        
 	        line = br.readLine();
-	        while (line != null)
-	        {
-	            if (line == "</mapfile>" ||
-	                line.split("\"") == null) break;
-	            
-	            if (line.split("\"")[0] == "<location id=")
+	        while (line.equals("</mapfile>") == false)
+	        {   
+	            String tmp = line.substring(1, line.indexOf(' '));
+	            if (tmp.equals("location") == true)
                 {
                     Location l = new Location();
-                    l.setID(Integer.valueOf(line.split("\"")[1]));
-                    l.setName(line.split("\"")[3]);
-                    l.setX(Integer.valueOf(line.split("\"")[5]));
-                    l.setY(Integer.valueOf(line.split("\"")[7]));
+                    
+                    line = line.substring(line.indexOf('"') + 1, line.length());
+                    l.setID(Integer.parseInt(line.substring(0, line.indexOf('"'))));
+                    
+                    line = line.substring(line.indexOf('"') + 1, line.length());
+                    line = line.substring(line.indexOf('"') + 1, line.length());
+                    l.setName(line.substring(0, line.indexOf('"')));
+                    
+                    line = line.substring(line.indexOf('"') + 1, line.length());
+                    line = line.substring(line.indexOf('"') + 1, line.length());
+                    l.setX(Integer.parseInt(line.substring(0, line.indexOf('"'))));
+                    
+                    line = line.substring(line.indexOf('"') + 1, line.length());
+                    line = line.substring(line.indexOf('"') + 1, line.length());
+                    l.setY(Integer.parseInt(line.substring(0, line.indexOf('"'))));
+                    
                     Locations.add(l);
                 }
-                else if (line.split("\"")[0] == "<path idfrom=")
+                else if (tmp.equals("path") == true)
                 {
                     Path p = new Path();
-                    p.setFrom(Integer.valueOf(line.split("\"")[1]));
-                    p.setTo(Integer.valueOf(line.split("\"")[3]));
-                    p.setType(line.split("\"")[5]);
+                    
+                    line = line.substring(line.indexOf('"') + 1, line.length());
+                    p.setFrom(Integer.parseInt(line.substring(0, line.indexOf('"'))));
+                    
+                    line = line.substring(line.indexOf('"') + 1, line.length());
+                    line = line.substring(line.indexOf('"') + 1, line.length());
+                    p.setTo(Integer.parseInt(line.substring(0, line.indexOf('"'))));
+                    
+                    line = line.substring(line.indexOf('"') + 1, line.length());
+                    line = line.substring(line.indexOf('"') + 1, line.length());
+                    p.setType(line.substring(0, line.indexOf('"')));
                     
                     Paths.add(p);
                 }
