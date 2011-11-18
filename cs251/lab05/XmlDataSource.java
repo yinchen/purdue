@@ -49,6 +49,33 @@ public class XmlDataSource
         _scale = value;    
     }
     
+    public Location getLocationByID(int ID)
+    {
+        for (Location l : Locations)
+        {
+            if (l.getID() == ID)
+            {
+                return l;
+            }
+        }
+        
+        return null;
+    }
+    
+    public Location getLocationByPoint(int x, int y, int radius)
+    {
+        for (Location l : Locations)
+        {
+            if (((x - radius) <= l.getX() && l.getX() <= (x + radius)) &&
+                ((y - radius) <= l.getY() && l.getY() <= (y + radius)))
+            {
+                return l;
+            }
+        }
+        
+        return null;
+    }
+    
     public void readFile(String fileName)
     {
         try
@@ -101,10 +128,6 @@ public class XmlDataSource
                     line = line.substring(line.indexOf('"') + 1, line.length());
                     p.setTo(Integer.parseInt(line.substring(0, line.indexOf('"'))));
                     
-                    line = line.substring(line.indexOf('"') + 1, line.length());
-                    line = line.substring(line.indexOf('"') + 1, line.length());
-                    p.setType(line.substring(0, line.indexOf('"')));
-                    
                     Paths.add(p);
                 }
                 
@@ -133,7 +156,7 @@ public class XmlDataSource
             
             for (Path p : Paths)
             {
-                pw.println("<path idfrom=\"" + p.getFrom() + "\" idto=\"" + p.getTo() + "\" type=\"" + p.getType() + "\" />");
+                pw.println("<path idfrom=\"" + p.getFrom() + "\" idto=\"" + p.getTo() + "\" />");
             }
             
             pw.println("</mapfile>");

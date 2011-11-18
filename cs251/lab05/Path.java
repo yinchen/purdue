@@ -1,25 +1,13 @@
 class Path
 {
-    private String _type;
     private int _to, _from;
     
     public Path() {}
     
-    public Path(String type, int to, int from)
+    public Path(int from, int to)
     {
-        _type = type;
-        _to = to;
         _from = from;
-    }
-    
-    public String getType()
-    {
-        return _type;
-    }
-    
-    public void setType(String type)
-    {
-        _type = type;
+        _to = to;
     }
     
     public int getTo()

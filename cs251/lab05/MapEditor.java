@@ -27,9 +27,11 @@ class MapEditor extends JFrame implements ActionListener
     private MouseAdapter _listener;
     private MouseMotionAdapter _motionListener;
     
-    public int CURRENT_MODE = 0;
+    public int CURRENT_MODE = 5;
     
     public XmlDataSource _data;
+    
+    private String currentFileName = null;
 
     public static void main(String[] args) 
     { 
@@ -77,6 +79,12 @@ class MapEditor extends JFrame implements ActionListener
             {
                 Point point = _zoomPane.toViewCoordinates(e.getPoint());
                 _map.mouseReleased(point);
+            }
+            
+            public void mouseClicked(MouseEvent e)
+            {
+                Point point = _zoomPane.toViewCoordinates(e.getPoint());
+                _map.mouseClicked(point);
             }
         };
         
@@ -164,14 +172,31 @@ class MapEditor extends JFrame implements ActionListener
         }
         else if (action == "Show Properties")
         {
-            CURRENT_MODE = 0;
+            CURRENT_MODE = 5;
             _menu.toggleModeMenu(action);
         }
     }
     
     void newFile()
     {
+        String bitmapFile = (String)JOptionPane.showInputDialog(this, "Enter the file name of the bitmap image: ", "New Map File", JOptionPane.PLAIN_MESSAGE, null, null, "");
+        if ((bitmapFile == null) || (bitmapFile.length() == 0))
+        {
+            return;
+        }
+        
+        String feetPerPixel = (String)JOptionPane.showInputDialog(this, "Enter the feet-per-pixel constant: ", "New Map File", JOptionPane.PLAIN_MESSAGE, null, null, "");
+        if ((feetPerPixel == null) || (feetPerPixel.length() == 0))
+        {
+            return;
+        }
+        
+        currentFileName = null;
+        
         _data = new XmlDataSource();
+        _data.setBitmapFileName(bitmapFile);
+        _data.setFeetPerPixel(Double.parseDouble(feetPerPixel));
+        
         reinitialize();
     }
     
@@ -184,19 +209,23 @@ class MapEditor extends JFrame implements ActionListener
         {
             File file = fc.getSelectedFile();
             _data = new XmlDataSource(file.getName());
-                  
-            reinitialize();
             
-            for (Location l : _data.Locations)
-            {
-                System.out.println(l.getID() + ": (" + l.getX() + ", " + l.getY() + ")");
-            }
+            currentFileName = file.getName();
+            
+            reinitialize();
         }
     }
     
     void saveFile()
     {
-        // not implemented
+        if (currentFileName != null)
+        {
+            _data.writeFile(currentFileName);
+        }
+        else
+        {
+            saveFileAs();
+        }
     }
     
     void saveFileAs()
