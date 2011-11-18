@@ -207,26 +207,30 @@ public class MapScene implements Scene
         }
         else if (_parent.CURRENT_MODE == 4)
         {
-            Location l = _parent._data.getLocationByPoint(pt.x, pt.y, 16);
-            
-            if (l != null)
+            for (Location l1 : _parent._data.Locations)
             {
-                Path target = null;
-                for (Path p : _parent._data.Paths)
+                for (Location l2 : _parent._data.Locations)
                 {
-                    if (p.getFrom() == l.getID() ||
-                        p.getTo() == l.getID())
+                    if (l1 == l2) continue;
+                    
+                    double distance = distanceToLine(l1.getX(), l1.getY(), l2.getX(), l2.getY(), pt.x, pt.y);
+                    
+                    if (distance <= 16)
                     {
-                        target = p;
+                        Path p = null;
+                        p = _parent._data.getPathByIDs(l1.getID(), l2.getID());
+                        
+                        if (p == null)
+                        {
+                            p = _parent._data.getPathByIDs(l2.getID(), l1.getID());
+                        }
+                        
+                        if (p != null)
+                        {
+                            _parent._data.Paths.remove(p);
+                        }
                     }
                 }
-                
-                if (target != null)
-                {
-                    _parent._data.Paths.remove(target);
-                }
-                
-                _parent._data.Locations.remove(l);
             }
         }
         else if (_parent.CURRENT_MODE == 5)

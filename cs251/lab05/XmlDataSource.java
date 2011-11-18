@@ -76,6 +76,20 @@ public class XmlDataSource
         return null;
     }
     
+    public Path getPathByIDs(int from, int to)
+    {
+        for (Path p : Paths)
+        {
+            if (p.getFrom() == from &&
+                p.getTo() == to)
+            {
+                return p;
+            }
+        }
+        
+        return null;
+    }
+    
     public void readFile(String fileName)
     {
         try
