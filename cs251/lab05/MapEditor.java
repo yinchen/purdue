@@ -14,25 +14,8 @@ import java.io.*;
 import java.applet.*; 
 import java.net.*;
 
-class MapEditor extends JFrame implements ActionListener
+class MapEditor extends MapUI
 {
-    private int PREFERRED_WIDTH = 680;
-    private int PREFERRED_HEIGHT = 600;
-    
-    private EditorMenu _menu;
-    private ZoomPane _zoomPane;
-    private MapScene _map;
-    private JSlider _zoomSlider;
-    
-    private MouseAdapter _listener;
-    private MouseMotionAdapter _motionListener;
-    
-    public int CURRENT_MODE = 5;
-    
-    public XmlDataSource _data;
-    
-    private String currentFileName = null;
-
     public static void main(String[] args) 
     { 
         MapEditor mapEditor = new MapEditor(); 

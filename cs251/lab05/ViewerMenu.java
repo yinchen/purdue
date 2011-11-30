@@ -4,13 +4,8 @@ import java.awt.*;
 import java.awt.event.*; 
 import java.util.*;
 
-public class ViewerMenu extends JMenuBar
+public class ViewerMenu extends MapMenu
 {
-    private JMenuBar _menu;
-    private JMenu _fileMenu;
-    private JMenu _viewMenu;
-    private JMenu _modeMenu;
-
     public ViewerMenu(JFrame window, ActionListener callback)
     {
         setupFileMenu(callback);
@@ -31,19 +26,7 @@ public class ViewerMenu extends JMenuBar
         
         JMenuItem item;
         
-        item = new JMenuItem("New");
-        item.addActionListener(callback);
-        _fileMenu.add(item);
-        
         item = new JMenuItem("Open...");
-        item.addActionListener(callback);
-        _fileMenu.add(item);
-        
-        item = new JMenuItem("Save");
-        item.addActionListener(callback);
-        _fileMenu.add(item);
-        
-        item = new JMenuItem("Save As...");
         item.addActionListener(callback);
         _fileMenu.add(item);
         
@@ -69,47 +52,16 @@ public class ViewerMenu extends JMenuBar
     
     protected void setupModeMenu(ActionListener callback)
     {
-        _modeMenu = new JMenu("Mode");
+        _modeMenu = new JMenu("Actions");
         
         JMenuItem item;
         
-        item = new JCheckBoxMenuItem("Insert Location");
+        item = new JMenuItem("Find");
         item.addActionListener(callback);
         _modeMenu.add(item);
         
-        item = new JCheckBoxMenuItem("Insert Path");
+        item = new JMenuItem("Directions");
         item.addActionListener(callback);
         _modeMenu.add(item);
-        
-        item = new JCheckBoxMenuItem("Delete Location");
-        item.addActionListener(callback);
-        _modeMenu.add(item);
-        
-        item = new JCheckBoxMenuItem("Delete Path");
-        item.addActionListener(callback);
-        _modeMenu.add(item);
-        
-        item = new JCheckBoxMenuItem("Show Properties");
-        item.addActionListener(callback);
-        _modeMenu.add(item);
-        
-        item.setSelected(true);
-    }
-    
-    public void toggleModeMenu(String selectedItem)
-    {
-        for (int i = 0; i < _modeMenu.getItemCount(); i++)
-        {
-            JMenuItem item = _modeMenu.getItem(i);
-            
-            if (item.getText() == selectedItem)
-            {
-                item.setSelected(true);
-            }
-            else
-            {
-                item.setSelected(false);
-            }
-        }
     }
 }

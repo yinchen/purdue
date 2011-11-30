@@ -3,7 +3,7 @@ all: MapEditor MapViewer
 MapEditor: 
 	javac Location.java Path.java XmlDataSource.java Scene.java MapScene.java ZoomPane.java EditorMenu.java MapEditor.java
 
-MapEditor: 
+MapViewer: 
 	javac Location.java Path.java XmlDataSource.java Scene.java MapScene.java ZoomPane.java ViewerMenu.java MapViewer.java
 
 clean:

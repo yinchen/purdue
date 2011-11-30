@@ -7,7 +7,7 @@ import java.util.*;
 
 public class MapScene implements Scene
 {
-    private MapEditor _parent;
+    private MapUI _parent;
     
     private ChangeListener _listener;
     private Image _image;
@@ -18,8 +18,10 @@ public class MapScene implements Scene
     
     private int _locationID = 0;
     private int _pathID = 0;
+    
+    private Location _locationFound = null;
 
-    public MapScene(MapEditor parent, Image image)
+    public MapScene(MapUI parent, Image image)
     {
         _parent = parent;     
         _image = image;
@@ -71,7 +73,10 @@ public class MapScene implements Scene
             
             if (start != null && end != null)
             {
-                g.setColor(Color.BLUE);
+                if (_parent instanceof MapViewer)
+                    g.setColor(new Color(115, 192, 255, 100));
+                else
+                    g.setColor(Color.BLUE);
                 g.setStroke(new BasicStroke(8, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
                 g.drawLine(start.getX(), start.getY(), end.getX(), end.getY());
             }
@@ -79,8 +84,17 @@ public class MapScene implements Scene
         
         for (Location l : _parent._data.Locations)
         {
-            g.setColor(Color.RED);
+            if (_parent instanceof MapViewer)
+                g.setColor(new Color(245, 115, 115, 100));
+            else
+                g.setColor(Color.RED);
             g.fillOval(l.getX() - 16, l.getY() - 16, 32, 32);
+        }
+        
+        if (_locationFound != null)
+        {
+            g.setColor(Color.RED);
+            g.fillOval(_locationFound.getX() - 16, _locationFound.getY() - 16, 32, 32);
         }
     }
 
@@ -244,6 +258,14 @@ public class MapScene implements Scene
         
         changeNotify();
     }
+    
+    public void find(int locationID)
+    {
+        Location l = _parent._data.getLocationByID(locationID);
+        _locationFound = l;
+
+        _parent._zoomPane.centerAt(new Point(l.getX(), l.getY()));        
+    }
 
     public int getWidth() { return _image.getWidth(null); }
     public int getHeight() { return _image.getHeight(null); }
@@ -251,15 +273,5 @@ public class MapScene implements Scene
     public void addChangeListener(ChangeListener listener)
     {
         _listener = listener;
-    }
-    
-    public int distanceToLine(int x1, int y1, int x2, int y2, int x3, int y3)
-    {
-        double distance = 0.0;
-        distance = Math.pow(((y2 - y1)*(x3 - x1) + (x2 - x1)*(y3 - y1)), 2.0);
-        distance = distance / (Math.pow((x2 - x1), 2.0) + Math.pow((y2 - y1), 2.0));
-        distance = Math.sqrt(distance);
-        
-        return (int)distance;
     }
 }

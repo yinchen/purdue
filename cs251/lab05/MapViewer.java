@@ -14,25 +14,8 @@ import java.io.*;
 import java.applet.*; 
 import java.net.*;
 
-class MapViewer extends JFrame implements ActionListener
+class MapViewer extends MapUI
 {
-    private int PREFERRED_WIDTH = 680;
-    private int PREFERRED_HEIGHT = 600;
-    
-    private ViewerMenu _menu;
-    private ZoomPane _zoomPane;
-    private MapScene _map;
-    private JSlider _zoomSlider;
-    
-    private MouseAdapter _listener;
-    private MouseMotionAdapter _motionListener;
-    
-    public int CURRENT_MODE = 5;
-    
-    public XmlDataSource _data;
-    
-    private String currentFileName = null;
-
     public static void main(String[] args) 
     { 
         MapViewer mapViewer = new MapViewer(); 
@@ -120,23 +103,11 @@ class MapViewer extends JFrame implements ActionListener
     {
         String action = event.getActionCommand();
         
-        if (action == "New")
-        {
-            newFile();
-        }
-        else if (action == "Open...")
+        if (action == "Open...")
         {
             openFile();
         }
-        else if (action == "Save")
-        {
-            saveFile();
-        }
-        else if (action == "Save As...")
-        {
-            saveFileAs();
-        }
-        else if (action == "Exit")
+       else if (action == "Exit")
         {
             System.exit(0);
         }
@@ -150,54 +121,14 @@ class MapViewer extends JFrame implements ActionListener
             _zoomSlider.setValue(_zoomSlider.getValue() - 5);
         }
         
-        if (action == "Insert Location")
+        if (action == "Find")
         {
-            CURRENT_MODE = 1;
-            _menu.toggleModeMenu(action);
+            find();
         }
-        else if (action == "Insert Path")
+        else if (action == "Directions")
         {
-            CURRENT_MODE = 2;
-            _menu.toggleModeMenu(action);
+            directions();
         }
-        else if (action == "Delete Location")
-        {
-            CURRENT_MODE = 3;
-            _menu.toggleModeMenu(action);
-        }
-        else if (action == "Delete Path")
-        {
-            CURRENT_MODE = 4;
-            _menu.toggleModeMenu(action);
-        }
-        else if (action == "Show Properties")
-        {
-            CURRENT_MODE = 5;
-            _menu.toggleModeMenu(action);
-        }
-    }
-    
-    void newFile()
-    {
-        String bitmapFile = (String)JOptionPane.showInputDialog(this, "Enter the file name of the bitmap image: ", "New Map File", JOptionPane.PLAIN_MESSAGE, null, null, "");
-        if ((bitmapFile == null) || (bitmapFile.length() == 0))
-        {
-            return;
-        }
-        
-        String feetPerPixel = (String)JOptionPane.showInputDialog(this, "Enter the feet-per-pixel constant: ", "New Map File", JOptionPane.PLAIN_MESSAGE, null, null, "");
-        if ((feetPerPixel == null) || (feetPerPixel.length() == 0))
-        {
-            return;
-        }
-        
-        currentFileName = null;
-        
-        _data = new XmlDataSource();
-        _data.setBitmapFileName(bitmapFile);
-        _data.setFeetPerPixel(Double.parseDouble(feetPerPixel));
-        
-        reinitialize();
     }
     
     void openFile()
@@ -216,28 +147,38 @@ class MapViewer extends JFrame implements ActionListener
         }
     }
     
-    void saveFile()
+    void find()
     {
-        if (currentFileName != null)
+        ArrayList<String> locationNames = new ArrayList<String>();
+        for (Location l : _data.Locations)
         {
-            _data.writeFile(currentFileName);
+            locationNames.add(l.getName());
         }
-        else
+        
+        Collections.sort(locationNames);
+        
+        String locationName = (String)JOptionPane.showInputDialog(this, "Select a location to find: ", "Find", JOptionPane.PLAIN_MESSAGE, null, locationNames.toArray(), "");
+        if ((locationName == null) || (locationName.length() == 0))
         {
-            saveFileAs();
+            return;
         }
+        
+        Location target = null;
+        for (Location l : _data.Locations)
+        {
+            if (l.getName().equals(locationName))
+            {
+                target = l;
+                break;
+            }
+        }
+        
+        _map.find(target.getID());
     }
     
-    void saveFileAs()
+    void directions()
     {
-        JFileChooser fc = new JFileChooser();
-        
-        int returnVal = fc.showSaveDialog(this);
-        if (returnVal == JFileChooser.APPROVE_OPTION)
-        {
-            File file = fc.getSelectedFile();
-            _data.writeFile(file.getName());
-        }
+    
     }
 }
 

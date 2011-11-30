@@ -4,13 +4,8 @@ import java.awt.*;
 import java.awt.event.*; 
 import java.util.*;
 
-public class EditorMenu extends JMenuBar
+public class EditorMenu extends MapMenu
 {
-    private JMenuBar _menu;
-    private JMenu _fileMenu;
-    private JMenu _viewMenu;
-    private JMenu _modeMenu;
-
     public EditorMenu(JFrame window, ActionListener callback)
     {
         setupFileMenu(callback);
@@ -94,22 +89,5 @@ public class EditorMenu extends JMenuBar
         _modeMenu.add(item);
         
         item.setSelected(true);
-    }
-    
-    public void toggleModeMenu(String selectedItem)
-    {
-        for (int i = 0; i < _modeMenu.getItemCount(); i++)
-        {
-            JMenuItem item = _modeMenu.getItem(i);
-            
-            if (item.getText() == selectedItem)
-            {
-                item.setSelected(true);
-            }
-            else
-            {
-                item.setSelected(false);
-            }
-        }
     }
 }
