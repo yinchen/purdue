@@ -16,6 +16,8 @@ import java.net.*;
 
 class MapViewer extends MapUI
 {
+    public Graph graph = null;
+    
     public static void main(String[] args) 
     { 
         MapViewer mapViewer = new MapViewer(); 
@@ -135,6 +137,15 @@ class MapViewer extends MapUI
     {
         JFileChooser fc = new JFileChooser();
         
+        try
+        {
+            File f = new File(new File(".").getCanonicalPath());
+            fc.setCurrentDirectory(f);
+        }
+        catch (Exception ex)
+        {
+        }
+        
         int returnVal = fc.showOpenDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION)
         {
@@ -144,6 +155,24 @@ class MapViewer extends MapUI
             currentFileName = file.getName();
             
             reinitialize();
+            
+            graph = new Graph(_data.Locations.size());
+            
+            for (Location l : _data.Locations)
+            {
+                graph.setVertex(l.getID(), l.getName());
+            }
+            
+            for (Path p : _data.Paths)
+            {
+                Location start = _data.getLocationByID(p.getFrom());
+                Location end = _data.getLocationByID(p.getTo());
+                
+                Point sp = new Point((int)start.getX(), (int)start.getY());
+                Point ep = new Point((int)end.getX(), (int)end.getY());
+                
+                graph.setEdge(start.getID(), end.getID(), (int)(sp.distance(ep) * _data._scale));
+            }
         }
     }
     
@@ -178,7 +207,62 @@ class MapViewer extends MapUI
     
     void directions()
     {
-    
+        ArrayList<String> locationNames = new ArrayList<String>();
+        for (Location l : _data.Locations)
+        {
+            locationNames.add(l.getName());
+        }
+        
+        Collections.sort(locationNames);
+        
+        String locationName;
+        
+        locationName = (String)JOptionPane.showInputDialog(this, "Select a starting location: ", "Directions", JOptionPane.PLAIN_MESSAGE, null, locationNames.toArray(), "");
+        if ((locationName == null) || (locationName.length() == 0))
+        {
+            return;
+        }
+        
+        Location start = null;
+        for (Location l : _data.Locations)
+        {
+            if (l.getName().equals(locationName))
+            {
+                start = l;
+                break;
+            }
+        }
+        
+        locationName = (String)JOptionPane.showInputDialog(this, "Select an ending location: ", "Directions", JOptionPane.PLAIN_MESSAGE, null, locationNames.toArray(), "");
+        if ((locationName == null) || (locationName.length() == 0))
+        {
+            return;
+        }
+        
+        Location end = null;
+        for (Location l : _data.Locations)
+        {
+            if (l.getName().equals(locationName))
+            {
+                end = l;
+                break;
+            }
+        }
+        
+        Graph.Path p = graph.shortestPath(start.getID());
+        
+        JOptionPane.showMessageDialog(this, "The distance from " + start.getName() + " to " + end.getName() + " is " + p.distance[end.getID()] + " feet.", "Directions", JOptionPane.PLAIN_MESSAGE);
+        
+        ArrayList<Path> directionPaths = new ArrayList<Path>();
+        
+        int u = end.getID();
+        do
+        {
+            directionPaths.add(_data.getPathByIDs(p.path[u], u));
+            u = p.path[u];
+        } while (u != start.getID());
+		
+		_map.directions(start, end, directionPaths);
     }
 }
 

@@ -7,7 +7,7 @@ import java.net.*;
 public class XmlDataSource
 {
     private String _bitmapFile;
-    private double _scale;
+    public double _scale;
     public ArrayList<Location> Locations;
     public ArrayList<Path> Paths;
     
@@ -80,8 +80,10 @@ public class XmlDataSource
     {
         for (Path p : Paths)
         {
-            if (p.getFrom() == from &&
-                p.getTo() == to)
+            if ((p.getFrom() == from &&
+                 p.getTo() == to) ||
+                (p.getFrom() == to &&
+                 p.getTo() == from))
             {
                 return p;
             }

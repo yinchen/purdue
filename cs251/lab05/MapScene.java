@@ -20,6 +20,9 @@ public class MapScene implements Scene
     private int _pathID = 0;
     
     private Location _locationFound = null;
+    private ArrayList<Path> _directionPaths = null;
+    private Location _directionStart = null;
+    private Location _directionEnd = null;
 
     public MapScene(MapUI parent, Image image)
     {
@@ -95,6 +98,26 @@ public class MapScene implements Scene
         {
             g.setColor(Color.RED);
             g.fillOval(_locationFound.getX() - 16, _locationFound.getY() - 16, 32, 32);
+        }
+        
+        if (_directionPaths != null)
+        {
+            for (Path p : _directionPaths)
+            {
+                Location start = _parent._data.getLocationByID(p.getFrom());
+                Location end = _parent._data.getLocationByID(p.getTo());
+                
+                if (start != null && end != null)
+                {
+                    g.setColor(Color.BLUE);
+                    g.setStroke(new BasicStroke(8, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                    g.drawLine(start.getX(), start.getY(), end.getX(), end.getY());
+                }
+            }
+            
+            g.setColor(Color.RED);
+            g.fillOval(_directionStart.getX() - 16, _directionStart.getY() - 16, 32, 32);
+            g.fillOval(_directionEnd.getX() - 16, _directionEnd.getY() - 16, 32, 32);
         }
     }
 
@@ -261,10 +284,25 @@ public class MapScene implements Scene
     
     public void find(int locationID)
     {
+        _locationFound = null;
+        _directionPaths = null;
+        
         Location l = _parent._data.getLocationByID(locationID);
         _locationFound = l;
 
         _parent._zoomPane.centerAt(new Point(l.getX(), l.getY()));        
+    }
+    
+    public void directions(Location start, Location end, ArrayList<Path> directionPaths)
+    {
+        _locationFound = null;
+        _directionPaths = null;
+        
+        _directionStart = start;
+        _directionEnd = end;
+        _directionPaths = directionPaths;
+        
+        changeNotify();
     }
 
     public int getWidth() { return _image.getWidth(null); }
