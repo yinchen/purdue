@@ -4,9 +4,9 @@ import java.awt.*;
 import java.awt.event.*; 
 import java.util.*;
 
-public class EditorMenu extends MapMenu
+public class ViewerMenu extends MapMenu
 {
-    public EditorMenu(JFrame window, ActionListener callback)
+    public ViewerMenu(JFrame window, ActionListener callback)
     {
         setupFileMenu(callback);
         setupViewMenu(callback);
@@ -26,19 +26,7 @@ public class EditorMenu extends MapMenu
         
         JMenuItem item;
         
-        item = new JMenuItem("New");
-        item.addActionListener(callback);
-        _fileMenu.add(item);
-        
         item = new JMenuItem("Open...");
-        item.addActionListener(callback);
-        _fileMenu.add(item);
-        
-        item = new JMenuItem("Save");
-        item.addActionListener(callback);
-        _fileMenu.add(item);
-        
-        item = new JMenuItem("Save As...");
         item.addActionListener(callback);
         _fileMenu.add(item);
         
@@ -64,30 +52,16 @@ public class EditorMenu extends MapMenu
     
     protected void setupModeMenu(ActionListener callback)
     {
-        _modeMenu = new JMenu("Mode");
+        _modeMenu = new JMenu("Actions");
         
         JMenuItem item;
         
-        item = new JCheckBoxMenuItem("Insert Location");
+        item = new JMenuItem("Find");
         item.addActionListener(callback);
         _modeMenu.add(item);
         
-        item = new JCheckBoxMenuItem("Insert Path");
+        item = new JMenuItem("Directions");
         item.addActionListener(callback);
         _modeMenu.add(item);
-        
-        item = new JCheckBoxMenuItem("Delete Location");
-        item.addActionListener(callback);
-        _modeMenu.add(item);
-        
-        item = new JCheckBoxMenuItem("Delete Path");
-        item.addActionListener(callback);
-        _modeMenu.add(item);
-        
-        item = new JCheckBoxMenuItem("Show Properties");
-        item.addActionListener(callback);
-        _modeMenu.add(item);
-        
-        item.setSelected(true);
     }
 }

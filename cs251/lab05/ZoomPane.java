@@ -56,6 +56,20 @@ public class ZoomPane extends JScrollPane
 
         getViewport().setViewPosition(point);
     }
+    
+    public void centerAt(Point pt)
+    {
+        Point point = toViewCoordinates(pt);
+
+        double w = getViewport().getWidth();
+        double h = getViewport().getHeight();
+
+        int halfW = (int) (w/2.0);
+        int halfH = (int) (h/2.0);
+        point.translate(-halfW, -halfH);
+
+        getViewport().setViewPosition(point);
+    }
 
     protected JSlider getJSlider()
     {

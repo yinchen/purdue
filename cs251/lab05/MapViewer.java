@@ -14,17 +14,19 @@ import java.io.*;
 import java.applet.*; 
 import java.net.*;
 
-class MapEditor extends MapUI
+class MapViewer extends MapUI
 {
+    public Graph graph = null;
+    
     public static void main(String[] args) 
     { 
-        MapEditor mapEditor = new MapEditor(); 
-        mapEditor.setVisible(true);
+        MapViewer mapViewer = new MapViewer(); 
+        mapViewer.setVisible(true);
     }
 
-    MapEditor()
+    MapViewer()
     {
-        setTitle("Map Editor");
+        setTitle("Map Viewer");
         setSize(PREFERRED_WIDTH, PREFERRED_HEIGHT);
         setBackground(Color.gray);
         
@@ -40,7 +42,7 @@ class MapEditor extends MapUI
         
         Image image = new ImageIcon(_data.getBitmapFileName()).getImage();
         
-        _menu = new EditorMenu(this, this);
+        _menu = new ViewerMenu(this, this);
         
         _map = new MapScene(this, image);
         _zoomPane = new ZoomPane(_map);
@@ -103,23 +105,11 @@ class MapEditor extends MapUI
     {
         String action = event.getActionCommand();
         
-        if (action == "New")
-        {
-            newFile();
-        }
-        else if (action == "Open...")
+        if (action == "Open...")
         {
             openFile();
         }
-        else if (action == "Save")
-        {
-            saveFile();
-        }
-        else if (action == "Save As...")
-        {
-            saveFileAs();
-        }
-        else if (action == "Exit")
+       else if (action == "Exit")
         {
             System.exit(0);
         }
@@ -133,54 +123,14 @@ class MapEditor extends MapUI
             _zoomSlider.setValue(_zoomSlider.getValue() - 5);
         }
         
-        if (action == "Insert Location")
+        if (action == "Find")
         {
-            CURRENT_MODE = 1;
-            _menu.toggleModeMenu(action);
+            find();
         }
-        else if (action == "Insert Path")
+        else if (action == "Directions")
         {
-            CURRENT_MODE = 2;
-            _menu.toggleModeMenu(action);
+            directions();
         }
-        else if (action == "Delete Location")
-        {
-            CURRENT_MODE = 3;
-            _menu.toggleModeMenu(action);
-        }
-        else if (action == "Delete Path")
-        {
-            CURRENT_MODE = 4;
-            _menu.toggleModeMenu(action);
-        }
-        else if (action == "Show Properties")
-        {
-            CURRENT_MODE = 5;
-            _menu.toggleModeMenu(action);
-        }
-    }
-    
-    void newFile()
-    {
-        String bitmapFile = (String)JOptionPane.showInputDialog(this, "Enter the file name of the bitmap image: ", "New Map File", JOptionPane.PLAIN_MESSAGE, null, null, "");
-        if ((bitmapFile == null) || (bitmapFile.length() == 0))
-        {
-            return;
-        }
-        
-        String feetPerPixel = (String)JOptionPane.showInputDialog(this, "Enter the feet-per-pixel constant: ", "New Map File", JOptionPane.PLAIN_MESSAGE, null, null, "");
-        if ((feetPerPixel == null) || (feetPerPixel.length() == 0))
-        {
-            return;
-        }
-        
-        currentFileName = null;
-        
-        _data = new XmlDataSource();
-        _data.setBitmapFileName(bitmapFile);
-        _data.setFeetPerPixel(Double.parseDouble(feetPerPixel));
-        
-        reinitialize();
     }
     
     void openFile()
@@ -205,40 +155,114 @@ class MapEditor extends MapUI
             currentFileName = file.getName();
             
             reinitialize();
+            
+            graph = new Graph(_data.Locations.size());
+            
+            for (Location l : _data.Locations)
+            {
+                graph.setVertex(l.getID(), l.getName());
+            }
+            
+            for (Path p : _data.Paths)
+            {
+                Location start = _data.getLocationByID(p.getFrom());
+                Location end = _data.getLocationByID(p.getTo());
+                
+                Point sp = new Point((int)start.getX(), (int)start.getY());
+                Point ep = new Point((int)end.getX(), (int)end.getY());
+                
+                graph.setEdge(start.getID(), end.getID(), (int)(sp.distance(ep) * _data._scale));
+            }
         }
     }
     
-    void saveFile()
+    void find()
     {
-        if (currentFileName != null)
+        ArrayList<String> locationNames = new ArrayList<String>();
+        for (Location l : _data.Locations)
         {
-            _data.writeFile(currentFileName);
+            locationNames.add(l.getName());
         }
-        else
+        
+        Collections.sort(locationNames);
+        
+        String locationName = (String)JOptionPane.showInputDialog(this, "Select a location to find: ", "Find", JOptionPane.PLAIN_MESSAGE, null, locationNames.toArray(), "");
+        if ((locationName == null) || (locationName.length() == 0))
         {
-            saveFileAs();
+            return;
         }
+        
+        Location target = null;
+        for (Location l : _data.Locations)
+        {
+            if (l.getName().equals(locationName))
+            {
+                target = l;
+                break;
+            }
+        }
+        
+        _map.find(target.getID());
     }
     
-    void saveFileAs()
+    void directions()
     {
-        JFileChooser fc = new JFileChooser();
-        
-        try
+        ArrayList<String> locationNames = new ArrayList<String>();
+        for (Location l : _data.Locations)
         {
-            File f = new File(new File(".").getCanonicalPath());
-            fc.setCurrentDirectory(f);
-        }
-        catch (Exception ex)
-        {
+            locationNames.add(l.getName());
         }
         
-        int returnVal = fc.showSaveDialog(this);
-        if (returnVal == JFileChooser.APPROVE_OPTION)
+        Collections.sort(locationNames);
+        
+        String locationName;
+        
+        locationName = (String)JOptionPane.showInputDialog(this, "Select a starting location: ", "Directions", JOptionPane.PLAIN_MESSAGE, null, locationNames.toArray(), "");
+        if ((locationName == null) || (locationName.length() == 0))
         {
-            File file = fc.getSelectedFile();
-            _data.writeFile(file.getName());
+            return;
         }
+        
+        Location start = null;
+        for (Location l : _data.Locations)
+        {
+            if (l.getName().equals(locationName))
+            {
+                start = l;
+                break;
+            }
+        }
+        
+        locationName = (String)JOptionPane.showInputDialog(this, "Select an ending location: ", "Directions", JOptionPane.PLAIN_MESSAGE, null, locationNames.toArray(), "");
+        if ((locationName == null) || (locationName.length() == 0))
+        {
+            return;
+        }
+        
+        Location end = null;
+        for (Location l : _data.Locations)
+        {
+            if (l.getName().equals(locationName))
+            {
+                end = l;
+                break;
+            }
+        }
+        
+        Graph.Path p = graph.shortestPath(start.getID());
+        
+        JOptionPane.showMessageDialog(this, "The distance from " + start.getName() + " to " + end.getName() + " is " + p.distance[end.getID()] + " feet.", "Directions", JOptionPane.PLAIN_MESSAGE);
+        
+        ArrayList<Path> directionPaths = new ArrayList<Path>();
+        
+        int u = end.getID();
+        do
+        {
+            directionPaths.add(_data.getPathByIDs(p.path[u], u));
+            u = p.path[u];
+        } while (u != start.getID());
+		
+		_map.directions(start, end, directionPaths);
     }
 }
 
