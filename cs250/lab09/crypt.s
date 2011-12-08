@@ -20,9 +20,6 @@ loop1:
     cmp %ecx, %ebx
     jge out1
     nop
-    
-    // restore key
-    mov %ah, %dl
 
     // get plaintext[ebx]
     mov $plaintext, %edx
@@ -30,6 +27,7 @@ loop1:
     
     // compute xor
     mov (%edx), %al
+	mov %ah, %dl
     xor %dl, %al
     
     // get ciphertext[ebx]
@@ -55,15 +53,13 @@ loop2:
     jge out2
     nop
     
-    // restore key
-    mov %ah, %dl
-
     // get ciphertext[ebx]
     mov $ciphertext, %edx
     add %ebx, %edx
     
     // compute xor
     mov (%edx), %al
+	mov %ah, %dl
     xor %dl, %al
     
     // get decryptedtext[ebx]
@@ -74,7 +70,7 @@ loop2:
     mov %al, (%edx)
     
     incl %ebx    
-    jmp loop1
+    jmp loop2
     nop
 
 out2:
