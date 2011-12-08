@@ -1,5 +1,5 @@
 .data
-    plaintext: .ascii "There are no secrets better kept than the secrets that everybody guesses.\n"
+    plaintext: .ascii "Shaw said, \"There are no secrets better kept than the secrets that everybody guesses.\"\n"
     len = .-plaintext
     .comm ciphertext, len
     .comm decryptedtext, len
