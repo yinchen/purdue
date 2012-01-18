@@ -1,0 +1,92 @@
+# Graphs
+
+A graph G = (V, E) is comprised of V: set of veritcies, E: set of edges connecting the verticies. An edge E = (v1, v2) is a pair of verticies that indicates that verticies v1 and v2 are connected.
+
+  A  -------  B
+    \       /
+      \   /
+        C
+	  /	  \ 
+    /       \
+  E  -------  D
+
+V = { A, B, C, D, E }
+E = { (A, B), (A, C), (B, C), (C, E), (C, D), (E, D) }
+
+Graphs are useful because many problems can be represented with graphs. Examples:
+ - Communication network (Internet)
+ - Transport network (Google Maps where verticies = citices/locations, edges = roads/paths)
+ - Event dependencies (constructing a house)
+
+Once you represent a problem using graphs, there are already many algorithms that can solve the problem.
+
+Some types of algorthims:
+ - Shortest path algorithms
+ - Topological sort
+ - Spanning tree
+
+Undirected graphs: graphs where edges do not have direction (i.e. two-way streets)
+
+Directed graphs: graphs where edges do have direction (i.e. one-way streets)
+
+Data structures for graphs:
+ - Edge list
+ - Adjacency list
+ - Adjacency matrix
+
+### Edge List
+An edge list stores the verticies and the edges as an edge list. 
+
+        A
+	  /	  \ 
+    /       \
+  B  -------  C
+    \       /
+      \   /
+        D
+	  /	  \ 
+    /       \
+  F  -------  E
+  
+E = { (A, B), (A, C), (B, D), (C, D), (D, F), (D, E), (F, E) }
+
+
+### Adjacency List
+An adjacency list stores a list of verticies that are adjacent to a particular vertex for each each vertex.
+
+        A
+	  /	  \ 
+    /       \
+  B  -------  C
+    \       /
+      \   /
+        D
+	  /	  \ 
+    /       \
+  F  -------  E
+
+A = { A => { B, C }, B => { A, D }, C => { A, D }, F => { D, E }, E => { D, F }, D => { B, C, F, E } }
+
+
+### Adjacency Matrix
+An adjacency matrix is similar to the adjacency list, but it stores a matrix m x m where m is the number of verticies. This matrix M will store m[i, j] == 0 if i and j are not adjacent and it will store m[i, j] == 1 if i and j are adjacent.
+
+   A  B  C  D  E  F
+A  0  1  1  0  0  0
+B  1  0  0  1  0  0
+C  1  0  0  1  0  0
+D  0  1  1  0  1  1
+E  0  0  0  1  0  1
+F  0  0  0  1  1  0
+
+
+### Weighted Graphs
+A weighted graph is a graph that contains weights on the edges that represent distances, costs, etc. Example would be a simplified road map of the USA. The weight values must be positive, they cannot be negative values.
+
+
+### Shortest Path Algorithm
+The shortest path algorithm finds the shortest path from one starting vertex to every other vertex in the graph. This algorithm was created by Dijkstra.
+
+The algorithm stores in an array D[v] the estimated distance from the starting vertex v1 to vertex v2 at that point in the algorithm. D[v] is updated at each step. At the end of the algorithm, D[v] will contain the shortest distance from v1 to v2.
+
+Initially, D[v1] = 0 (distance from v1 to v1) and D[v2] = infinity (for all v2 != v1). At every step, we choose a vertex x with minimum distance D[x] that has not been visited.
