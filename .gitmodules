@@ -1,3 +1,6 @@
 [submodule "cs252/lab06"]
 	path = cs252/lab06
 	url = git@github.com:purdue-cs-groups/cs252-lab06.git
+[submodule "cs307/project01"]
+	path = cs307/project01
+	url = git@github.com:purdue-cs-groups/cs307-project01.git
