@@ -19,7 +19,7 @@ syscall print_proc_info(pid32 pid)
     
     // print PID information
     prptr = &proctab[pid];
-    kprintf("%s %d %d %s\r\n", prptr->prname, prptr->prprio, prptr->prstate, prptr->prstkptr);
+    kprintf("%s %d %d %x\r\n", prptr->prname, prptr->prprio, prptr->prstate, prptr->prstkptr);
 
     // restore interrupt mask
     restore(mask);
