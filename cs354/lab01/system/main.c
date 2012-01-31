@@ -9,6 +9,11 @@
 /*                                                                      */
 /************************************************************************/
 
+void noop()
+{
+	sleep(10);
+}
+
 int main(int argc, char **argv)
 {
     kprintf("Hello World!\r\n");
@@ -16,8 +21,8 @@ int main(int argc, char **argv)
 
     uint32 i;
 
-    resume(create(sleep(10000), 200, 20, "sleeper 1", 0));
-    resume(create(sleep(10000), 200, 20, "sleeper 2", 0));
+    resume(create(noop(), 200, 20, "sleeper 1", 0));
+    resume(create(noop(), 200, 20, "sleeper 2", 0));
     
     for (i = 0; i < NPROC; i++)
     {
