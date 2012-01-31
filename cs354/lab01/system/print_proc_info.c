@@ -13,7 +13,7 @@ syscall print_proc_info(pid32 pid)
 
     // check if PID is valid
     prptr = &proctab[pid];
-    if (pid > NPROC || *prptr == NULL)
+    if (pid > NPROC || proctab[pid] == NULL)
     {
         return SYSERR;
     }
