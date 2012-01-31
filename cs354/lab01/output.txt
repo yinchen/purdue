@@ -1,0 +1,20 @@
+(MIPS Xinu) #10 (mbmccorm@xinu01.cs.purdue.edu) Tue Jan 31 09:39:51 EST 2012
+
+  33554432 bytes physical memory.
+           [0x80000000 to 0x81FFFFFF]
+     65536 bytes reserved system area.
+           [0x80000000 to 0x8000FFFF]
+     37804 bytes Xinu code.
+           [0x80010000 to 0x800193AB]
+      8192 bytes stack space.
+           [0x800193AC to 0x8001B3AB]
+  33442900 bytes heap space.
+           [0x8001B3AC to 0x81FFFFFF]
+
+prnull 0 2 8001b2d0
+Main process 20 1 81ffff08
+sleeper 1 20 4 81feff20
+sleeper 2 20 4 81fefd28
+
+
+All user processes have completed.
