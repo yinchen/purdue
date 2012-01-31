@@ -6,7 +6,7 @@
 syscall print_proc_info(pid32 pid)
 {
     intmask mask;
-    struct	procent *prptr
+    struct	procent *prptr;
     
     // save interrupt mask
     mask = disable();
@@ -30,5 +30,7 @@ syscall print_proc_info(pid32 pid)
 
 	// restore interrupt mask
     restore(mask);
+
+    return OK;
 }
 
