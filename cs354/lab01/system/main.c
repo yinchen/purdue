@@ -21,8 +21,8 @@ int main(int argc, char **argv)
 
     pid32 i;
     
-    resume(create(noop, 200, 20, "sleeper 1", 0));
-    resume(create(noop, 200, 20, "sleeper 2", 0));
+    resume(create(noop, 1000, 20, "sleeper 1", 0));
+    resume(create(noop, 950, 20, "sleeper 2", 0));
     
     // print currently running processes
     for (i = 0; i < NPROC - 1; i++)
