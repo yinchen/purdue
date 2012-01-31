@@ -11,7 +11,7 @@
 
 void noop(void)
 {
-	sleep(10);
+	sleep(5000);
 }
 
 int main(int argc, char **argv)
@@ -25,7 +25,7 @@ int main(int argc, char **argv)
     resume(create(noop, 200, 20, "sleeper 2", 0));
     
     // print currently running processes
-    for (i = 0; i < NPROC; i++)
+    for (i = 0; i < NPROC - 1; i++)
     {
         print_proc_info(i);
     }
