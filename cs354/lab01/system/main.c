@@ -11,7 +11,8 @@
 
 int main(int argc, char **argv)
 {
-    kprintf("Hello World!\n\n");
+    kprintf("Hello World!\r\n");
+    kprintf("\r\n");
 
     uint32 i;
 

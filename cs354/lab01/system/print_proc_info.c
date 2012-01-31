@@ -13,13 +13,13 @@ syscall print_proc_info(pid32 pid)
 
     // check if PID is valid
     prptr = &proctab[pid];
-    if (pid > NPROC || prptr == NULL)
+    if (pid > NPROC || *prptr == NULL)
     {
         return SYSERR;
     }
     
     // print PID information
-    kprintf("%s %d %d %s\n", prptr->prname, prptr->prprio, prptr->prstate, prptr->prstkptr);
+    kprintf("%s %d %d %s\r\n", prptr->prname, prptr->prprio, prptr->prstate, prptr->prstkptr);
 
     // restore interrupt mask
     restore(mask);
