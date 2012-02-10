@@ -2,21 +2,32 @@ Task 1
 
 Starvation occurs in XINU when there are two or more processes eligible for execution that have different priorities. XINU assumes that at any time, the highest priority process eligible for CPU time is executing. Under this policy, the processes with higher priority will always be executing. As a result, the processes with lower priority will never get CPU time.
 
-The code below demonstrates this as the main() method is executing at priority 20 (as learned in Lab 1) and the two sleeper threads are at priority 30 and will never be executed.
+The code below demonstrates this as the main() method is executing at priority 20 (as learned in Lab 1) and the two sleeper threads are at priority 10 and will not be executed until main() has completed.
 
 
 #include <xinu.h>
 #include <stdio.h>
 
-void noop(void)
+void printc(char c)
 {
-	sleep(10);
+	int i;
+	while (1)
+	{
+		kprintf("%c", c);
+		for (i = 0; i < 10000; i++);
+	}
 }
 
 int main(int argc, char **argv)
 {
-    resume(create(noop, 500, 30, "sleeper 1", 0));
-    resume(create(noop, 500, 30, "sleeper 2", 0));
+    resume(create(printc, 500, 30, "sleeper 1", 1, 'A'));
+    resume(create(printc, 500, 30, "sleeper 2", 1, 'B'));
+
+    printc('D');
     
     return OK;
 }
+
+Priority 10: DDDDDDDDDDDDDDDDDDDDDDDDDD
+Priority 20: AAAAAAAAABBBBBBBBDDDDDDDDD
+Priority 30: AAAAAAAAAAAAAAAAAAAAAAAAAA

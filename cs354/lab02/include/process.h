@@ -1,5 +1,7 @@
 /* process.h - isbadpid */
 
+#define ROUND_ROBIN	1
+
 /* Maximum number of processes in the system */
 
 #ifndef NPROC

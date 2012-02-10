@@ -9,15 +9,22 @@
 /*                                                                      */
 /************************************************************************/
 
-void noop(void)
+void printc(char c)
 {
-	sleep(10);
+	int i;
+	while (1)
+	{
+		kprintf("%c", c);
+		for (i = 0; i < 10000; i++);
+	}
 }
 
 int main(int argc, char **argv)
 {
-    resume(create(noop, 500, 30, "sleeper 1", 0));
-    resume(create(noop, 500, 30, "sleeper 2", 0));
+    resume(create(printc, 500, 30, "sleeper 1", 1, 'A'));
+    resume(create(printc, 500, 30, "sleeper 2", 1, 'B'));
+
+    printc('D');
     
     return OK;
 }

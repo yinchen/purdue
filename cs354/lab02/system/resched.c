@@ -23,14 +23,29 @@ void	resched(void)		/* assumes interrupts are disabled	*/
 	ptold = &proctab[currpid];
 
 	if (ptold->prstate == PR_CURR) {  /* process remains running */
-		if (ptold->prprio > firstkey(readylist)) {
-			return;
+		if (ROUND_ROBIN == 1)
+		{
+			// always reschedule
+		}
+		else
+		{
+			if (ptold->prprio > firstkey(readylist)) {
+				return;
+			}
 		}
 
 		/* Old process will no longer remain current */
 
 		ptold->prstate = PR_READY;
-		insert(currpid, readylist, ptold->prprio);
+		
+		if (ROUND_ROBIN == 1)
+		{
+			enqueue(currpid, readylist);
+		}
+		else
+		{
+			insert(currpid, readylist, ptold->prprio);
+		}
 	}
 
 	/* Force context switch to highest priority ready process */
