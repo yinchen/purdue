@@ -15,7 +15,7 @@ pipid32	pipcreate(void)
 	if ((pip=newpip())==SYSERR) {
 		return SYSERR;
 	}
-	piptab[pip].pipowner = 0;	/* initialize table entry	*/
+	piptab[pip].powner = currpid;	/* initialize table entry	*/
 
 	return pip;
 }

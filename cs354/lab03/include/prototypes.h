@@ -169,6 +169,9 @@ extern	syscall	semdelete(sid32);
 /* in file semreset.c */
 extern	syscall	semreset(sid32, int32);
 
+/* in file pipcreate.c */
+extern	pipid32	pipcreate(void);
+
 /* in file send.c */
 extern	syscall	send(pid32, umsg32);
 
