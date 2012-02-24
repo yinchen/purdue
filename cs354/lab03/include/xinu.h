@@ -6,6 +6,7 @@
 #include <queue.h>
 #include <sched.h>
 #include <semaphore.h>
+#include <pipe.h>
 #include <memory.h>
 #include <bufpool.h>
 #include <clock.h>

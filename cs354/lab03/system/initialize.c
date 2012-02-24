@@ -18,6 +18,7 @@ static	void sysinit(void);	/* initializes system structures	*/
 
 struct	procent	proctab[NPROC];	/* Process table			*/
 struct	sentry	semtab[NSEM];	/* Semaphore table			*/
+struct	pentry	piptab[NPIPE];	/* Pipe table			*/
 struct	memblk	memlist;	/* List of free memory blocks		*/
 
 /* Active system status */
@@ -103,6 +104,7 @@ static	void	sysinit(void)
 	struct	procent	*prptr;		/* ptr to process table entry	*/
 	struct	dentry	*devptr;	/* ptr to device table entry	*/
 	struct	sentry	*semptr;	/* prr to semaphore table entry	*/
+	struct	pentry	*pipptr;	/* prr to pipe table entry	*/
 	struct	memblk	*memptr;	/* ptr to memory block		*/
 
 	/* Initialize system variables */
@@ -155,6 +157,16 @@ static	void	sysinit(void)
 		semptr->sstate = S_FREE;
 		semptr->scount = 0;
 		semptr->squeue = newqueue();
+	}
+
+	/* Initialize pipes */
+
+	for (i = 0; i < NPIPE; i++) {
+		pipptr = &piptab[i];
+		pipptr->pstate = PIPE_FREE;
+		pipptr->powner = 0;
+		pipptr->preader = 0;
+		pipptr->pwriter = 0;
 	}
 
 	/* Initialize buffer pools */

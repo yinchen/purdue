@@ -22,6 +22,8 @@ typedef	uint32	intmask;	/* saved interrupt mask			*/
 typedef	int32	ibid32;		/* index block ID (used in file system)	*/
 typedef	int32	dbid32;		/* data block ID (used in file system)	*/
 
+typedef	int32	pipid32;	/* pipe ID				*/
+
 /* Function declaration return types */
 
 typedef int32	syscall;	/* system call declaration		*/
