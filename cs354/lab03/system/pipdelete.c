@@ -7,7 +7,7 @@
  *------------------------------------------------------------------------
  */
 syscall	pipdelete(
-	  pipid32		pip		/* ID of semaphore to delete	*/
+	  pipid32	pip			/* ID of semaphore to delete	*/
 	)
 {
 	if (isbadpip(pip)) {
