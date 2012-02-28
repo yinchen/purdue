@@ -27,8 +27,8 @@ pipid32	pipcreate(void)
 local	pipid32	newpip(void)
 {
 	static	pipid32	nextpip = 0;	/* next pipe index to try	*/
-	pipid32	pip;			/* pipe ID to return	*/
-	int32	i;			/* iterate through # entries	*/
+	pipid32	pip;					/* pipe ID to return	*/
+	int32	i;						/* iterate through # entries	*/
 
 	for (i=0 ; i<NPIPE ; i++) {
 		pip = nextpip++;

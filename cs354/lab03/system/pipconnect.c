@@ -17,10 +17,12 @@ syscall	pipconnect(
 	}
 	
 	pipptr = &piptab[pip];
-	if (pipptr->pstate != PIPE_FREE) {
+	if (pipptr->pstate != PIPE_USED) {
 		return SYSERR;
 	}
 	pipptr->pstate = PIPE_CONNECTED;
+	pipptr->pend1 = end1;
+	pipptr->pend2 = end2;
 
 	return OK;
 }

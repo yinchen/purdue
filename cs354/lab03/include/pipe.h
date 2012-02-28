@@ -22,8 +22,8 @@ struct pentry {		/* entry in the pipe table		*/
 	uint16	pstate;	/* pipe state: PIPE_FREE, etc.		*/
 	char	pbuf[PIPE_SIZ];	/* pipe buffer			*/
 	pid32	powner;	/* id of the owner process		*/
-	pid32	preader;	/* id of the reading process		*/
-	pid32	pwriter;	/* id of the writing process		*/
+	pid32	pend1;	/* id of the end1 process		*/
+	pid32	pend2;	/* id of the end2 process		*/
 };
 
 extern	struct	pentry piptab[];
