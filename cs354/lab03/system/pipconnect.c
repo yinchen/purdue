@@ -22,7 +22,8 @@ syscall	pipconnect(
 	}
 	
 	pipptr = &piptab[pip];
-	if (pipptr->pstate != PIPE_USED) {
+	if (pipptr->pstate != PIPE_USED ||
+		pipptr->powner != currpid) {
 		restore(mask);
 		return SYSERR;
 	}

@@ -20,7 +20,8 @@ syscall	pipdisconnect(
 	}
 	
 	pipptr = &piptab[pip];
-	if (pipptr->pstate != PIPE_CONNECTED) {
+	if (pipptr->pstate != PIPE_CONNECTED ||
+		pipptr->powner != currpid) {
 		restore(mask);
 		return SYSERR;
 	}

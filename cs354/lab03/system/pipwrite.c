@@ -22,7 +22,8 @@ syscall	pipwrite(
 	}
 	
 	pipptr = &piptab[pip];
-	if (pipptr->pstate != PIPE_CONNECTED) {
+	if (pipptr->pstate != PIPE_CONNECTED ||
+		(pipptr->end1 != currpid && pipptr->end2 != currpid)) {
 		restore(mask);
 		return SYSERR;
 	}

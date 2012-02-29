@@ -20,8 +20,8 @@ syscall	pipdelete(
 	}
 	
 	pipptr = &piptab[pip];
-	if (pipptr->powner != currpid ||
-		pipptr->pstate != PIPE_USED) {
+	if (pipptr->pstate != PIPE_USED ||
+		pipptr->powner != currpid) {
 		restore(mask);
 		return SYSERR;
 	}
