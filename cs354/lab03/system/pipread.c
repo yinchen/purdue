@@ -1,16 +1,18 @@
-/* pipdelete.c - pipdelete */
+/* pipread.c - pipread */
 
 #include <xinu.h>
 
 /*------------------------------------------------------------------------
- * pipdelete  --  Delete a pipe by releasing its table entry
+ * pipread  --  Read from a pipe, blocking if empty
  *------------------------------------------------------------------------
  */
-syscall	pipdelete(
-	 	pipid32		pip			/* ID of semaphore to delete	*/
+syscall	pipread(
+		pipid32		pip,		/* ID of pipe to read from			*/
+		char 		*buf,		/* pointer to buffer to read to		*/
+		uint32		len			/* number of bytes to read 			*/
 	)
 {
-	intmask	mask;				/* saved interrupt mask			*/
+	intmask	mask;				/* saved interrupt mask				*/
 
 	mask = disable();
 
@@ -20,13 +22,12 @@ syscall	pipdelete(
 	}
 	
 	pipptr = &piptab[pip];
-	if (pipptr->powner != currpid ||
-		pipptr->pstate != PIPE_USED) {
+	if (pipptr->pstate != PIPE_CONNECTED) {
 		restore(mask);
 		return SYSERR;
 	}
 
-	pipptr->pstate = PIPE_FREE;
+	// do stuff here
 
 	restore(mask);
 	return OK;

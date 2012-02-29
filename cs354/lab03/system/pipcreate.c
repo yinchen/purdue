@@ -8,15 +8,21 @@ local	pipid32	newpip(void);
  *  pipcreate  -  create a new pipe and return the ID to the caller
  *------------------------------------------------------------------------
  */
-pipid32	pipcreate(void)
+syscall pipcreate(void)
 {
-	pipid32	pip;				/* pipe ID to return	*/
+	intmask	mask;					/* saved interrupt mask			*/
+	pipid32	pip;					/* pipe ID to return			*/
 
-	if ((pip=newpip())==SYSERR) {
+	mask = disable();
+
+	if ((pip=_newpip()) == SYSERR) {
+		restore(mask);
 		return SYSERR;
 	}
-	piptab[pip].powner = currpid;	/* initialize table entry	*/
 
+	piptab[pip].powner = currpid;	/* initialize table entry		*/
+
+	restore(mask);
 	return pip;
 }
 
@@ -24,10 +30,10 @@ pipid32	pipcreate(void)
  *  newpip  -  allocate an unused pipe and return its index
  *------------------------------------------------------------------------
  */
-local	pipid32	newpip(void)
+local	pipid32	_newpip(void)
 {
-	static	pipid32	nextpip = 0;	/* next pipe index to try	*/
-	pipid32	pip;					/* pipe ID to return	*/
+	static	pipid32	nextpip = 0;	/* next pipe index to try		*/
+	pipid32	pip;					/* pipe ID to return			*/
 	int32	i;						/* iterate through # entries	*/
 
 	for (i=0 ; i<NPIPE ; i++) {
@@ -39,5 +45,6 @@ local	pipid32	newpip(void)
 			return pip;
 		}
 	}
+
 	return SYSERR;
 }

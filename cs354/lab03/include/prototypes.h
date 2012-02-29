@@ -170,7 +170,22 @@ extern	syscall	semdelete(sid32);
 extern	syscall	semreset(sid32, int32);
 
 /* in file pipcreate.c */
-extern	pipid32	pipcreate(void);
+extern	syscall	pipcreate(void);
+
+/* in file pipdelete.c */
+extern	syscall	pipdelete(pipid32 pip);
+
+/* in file pipconnect.c */
+extern	syscall	pipconnect(pipid32 pip, pid32 end1, pid32 end2);
+
+/* in file pipdisconnect.c */
+extern	syscall	pipdisconnect(pipid32 pip);
+
+/* in file pipwrite.c */
+extern	syscall	pipwrite(pipid32 pip, char *buf, uint32 len);
+
+/* in file pipread.c */
+extern	syscall	pipread(pipid32 pip, char *buf, uint32 len);
 
 /* in file send.c */
 extern	syscall	send(pid32, umsg32);
