@@ -27,7 +27,16 @@ syscall	pipwrite(
 		return SYSERR;
 	}
 
+	/* Wait for buffer to be ready for writing */
+	if (wait(pipptr->pwrsem) == SYSERR) {
+		restore(mask);
+		return SYSERR;
+	}
+
 	// do stuff here
+
+	/* Signal that the buffer is ready for reading */
+	signal(pipptr->prdsem);
 
 	restore(mask);
 	return OK;

@@ -13,6 +13,8 @@ struct 	pentry {					/* entry in the pipe table			*/
 		pid32	powner;				/* id of the owner process			*/
 		pid32	pend1;				/* id of the end1 process			*/
 		pid32	pend2;				/* id of the end2 process			*/
+		sid32	prdsem;				/* reader semaphore					*/
+		sid32	pwrsem;				/* writer semaphore					*/
 		char	pbuf[PIPE_SIZ];		/* pipe buffer						*/
 };
 

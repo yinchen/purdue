@@ -27,7 +27,16 @@ syscall	pipread(
 		return SYSERR;
 	}
 
+	/* Wait for buffer to be ready for reading */
+	if (wait(pipptr->prdsem) == SYSERR) {
+		restore(mask);
+		return SYSERR;
+	}
+
 	// do stuff here
+
+	/* Signal that the buffer is ready for writing */
+	signal(pipptr->pwrsem);
 
 	restore(mask);
 	return OK;

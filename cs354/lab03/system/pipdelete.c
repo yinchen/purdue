@@ -27,6 +27,9 @@ syscall	pipdelete(
 	}
 
 	pipptr->pstate = PIPE_FREE;
+	pipptr->powner = 0;
+	pipptr->prdsem = semdelete(pipptr->prdsem);
+	pipptr->pwrsem = semdelete(pipptr->pwrsem);
 
 	restore(mask);
 	return OK;

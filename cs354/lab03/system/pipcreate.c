@@ -20,7 +20,11 @@ syscall pipcreate(void)
 		return SYSERR;
 	}
 
-	piptab[pip].powner = currpid;	/* initialize table entry		*/
+	pipptr = &piptab[pip];
+	pipptr->pstate = PIPE_USED;
+	pipptr->powner = currpid;		/* initialize table entry		*/
+	pipptr->prdsem = semcreate(0);	/* create reader semaphore 		*/
+	pipptr->pwrsem = semcreate(0);	/* create writer semaphore		*/
 
 	restore(mask);
 	return pip;
@@ -36,12 +40,11 @@ local	pipid32	_newpip(void)
 	pipid32	pip;					/* pipe ID to return			*/
 	int32	i;						/* iterate through # entries	*/
 
-	for (i=0 ; i<NPIPE ; i++) {
+	for (i = 0; i < NPIPE; i++) {
 		pip = nextpip++;
 		if (nextpip >= NPIPE)
 			nextpip = 0;
 		if (piptab[pip].pstate == PIPE_FREE) {
-			piptab[pip].pstate = PIPE_USED;
 			return pip;
 		}
 	}
