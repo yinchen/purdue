@@ -165,8 +165,10 @@ static	void	sysinit(void)
 		pipptr = &piptab[i];
 		pipptr->pstate = PIPE_FREE;
 		pipptr->powner = 0;
-		pipptr->preader = 0;
-		pipptr->pwriter = 0;
+		pipptr->pend1 = 0;
+		pipptr->pend2 = 0;
+		pipptr->prdsem = 0;
+		pipptr->pwrsem = 0;
 	}
 
 	/* Initialize buffer pools */
