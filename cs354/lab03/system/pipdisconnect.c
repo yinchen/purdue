@@ -18,10 +18,12 @@ syscall	pipdisconnect(
 		restore(mask);
 		return SYSERR;
 	}
+
+	struct pentry *pipptr;		/* ptr to pipe table entry	*/
 	
 	pipptr = &piptab[pip];
 	if (pipptr->pstate != PIPE_CONNECTED ||
-		pipptr->powner != currpid) {
+		pipptr->powner != getpid()) {
 		restore(mask);
 		return SYSERR;
 	}

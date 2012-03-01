@@ -2,7 +2,7 @@
 
 #include <xinu.h>
 
-local	pipid32	newpip(void);
+local	pipid32	_newpip(void);
 
 /*------------------------------------------------------------------------
  *  pipcreate  -  create a new pipe and return the ID to the caller
@@ -20,9 +20,11 @@ syscall pipcreate(void)
 		return SYSERR;
 	}
 
+	struct pentry *pipptr;			/* ptr to pipe table entry		*/
+
 	pipptr = &piptab[pip];
 	pipptr->pstate = PIPE_USED;
-	pipptr->powner = currpid;		/* initialize table entry		*/
+	pipptr->powner = getpid();		/* initialize table entry		*/
 	pipptr->prdsem = semcreate(0);	/* create reader semaphore 		*/
 	pipptr->pwrsem = semcreate(0);	/* create writer semaphore		*/
 	pipptr->pbufs = 0;				/* set buffer starting index	*/
