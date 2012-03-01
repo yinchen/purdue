@@ -41,7 +41,7 @@ void consumer(pipid32 pip)
 		for (i = 0; i < 10; i++)
 		{
 			char *buf;
-			pipwrite(pip, buf, 12);
+			pipread(pip, buf, 12);
 
 			kprintf(buf);
 			kprintf("\r\n");
