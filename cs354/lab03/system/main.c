@@ -11,14 +11,11 @@
 
 void producer(pipid32 pip)
 {
-	// while(1)
-	// {
-		int i;
-		for (i = 0; i < 10; i++)
-		{
-			pipwrite(pip, "matt is cool", 12);
-		}
-	// }
+	int i;
+	for (i = 0; i < 10; i++)
+	{
+		pipwrite(pip, "matt is cool", 12);
+	}
 }
 
 void consumer(pipid32 pip)
@@ -31,8 +28,7 @@ void consumer(pipid32 pip)
 			char buf[12];
 			pipread(pip, buf, 12);
 
-			kprintf(buf);
-			kprintf("\r\n");
+			kprintf("%s\r\n", buf);
 		}
 
 		suspend(getpid());
