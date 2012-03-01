@@ -31,7 +31,8 @@ syscall	pipread(
 	}
 
 	/* Wait for buffer to be ready for reading */
-	if (wait(pipptr->prdsem) == SYSERR) {
+	if (wait(pipptr->prdsem) == SYSERR ||
+		semcount(pipptr->prdsem) < len) {
 		restore(mask);
 		return SYSERR;
 	}
@@ -43,6 +44,8 @@ syscall	pipread(
 	/* Read characters from the circular buffer */
 	while (count < len)
 	{
+		if (semcount(pipptr->prdsem) < 1) break;
+
 		c = pipptr->pbuf[pipptr->pbufs];
 		*buffer++ = c;
 		pipptr->pbufc--;

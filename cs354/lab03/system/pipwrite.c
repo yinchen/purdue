@@ -32,7 +32,8 @@ syscall	pipwrite(
 	}
 
 	/* Wait for buffer to be ready for writing */
-	if (wait(pipptr->pwrsem) == SYSERR) {
+	if (wait(pipptr->pwrsem) == SYSERR ||
+		semcount(pipptr->pwrsem) < len) {
 		restore(mask);
 		return SYSERR;
 	}
@@ -43,6 +44,8 @@ syscall	pipwrite(
 	/* Write characters to the circular buffer */
 	while (count < len)
 	{
+		if (semcount(pipptr->pwrsem) < 1) break;
+
 		pipptr->pbuf[(pipptr->pbufs + pipptr->pbufc) % PIPE_SIZ] = *buffer++;
 		count++;
 		pipptr->pbufc++;
