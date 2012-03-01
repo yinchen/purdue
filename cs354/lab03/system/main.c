@@ -11,35 +11,30 @@
 
 void producer(pipid32 pip)
 {
-	// DEBUG
-	kprintf("BRK3\r\n");
-
 	while(1)
 	{
 		int i;
 		for (i = 0; i < 10; i++)
 		{
+			kprintf("pipwrite()\r\n"); // DEBUG
+
 			pipwrite(pip, "matt is cool", 12);
 		}
 
 		char c = getc(CONSOLE);
 		if (c == 'q') break;
 	}
-
-	// DEBUG
-	kprintf("BRK4\r\n");
 }
 
 void consumer(pipid32 pip)
 {
-	// DEBUG
-	kprintf("BRK5\r\n");
-
 	while(1)
 	{
 		int i;
 		for (i = 0; i < 10; i++)
 		{
+			kprintf("pipread()\r\n"); // DEBUG
+			
 			char *buf;
 			pipread(pip, buf, 12);
 
@@ -47,43 +42,22 @@ void consumer(pipid32 pip)
 			kprintf("\r\n");
 		}
 	}
-
-	// DEBUG
-	kprintf("BRK6\r\n");
 }
 
 int main(int argc, char **argv)
 {
-	// DEBUG
-	kprintf("BRK1\r\n");
-
 	pipid32 pip = pipcreate();
 
-	// DEBUG
-	kprintf("BRK2\r\n");
-
-    pid32 prpid = create(producer, 500, 20, "producer", 1, pip);
+	pid32 prpid = create(producer, 500, 20, "producer", 1, pip);
     pid32 copid = create(consumer, 500, 20, "consumer", 1, pip);
 
-    // DEBUG
-	kprintf("BRK7\r\n");
-
     pipconnect(pip, prpid, copid);
-
-    // DEBUG
-	kprintf("BRK8\r\n");
 
     resume(prpid);
 	resume(copid);
 
-	// DEBUG
-	kprintf("BRK9\r\n");
-
 	// pipdisconnect(pip);
 	// pipdelete(pip);
 
-	// DEBUG
-	kprintf("BRK10\r\n");
-    
-    return OK;
+	return OK;
 }
