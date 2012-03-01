@@ -21,6 +21,8 @@ syscall	pipread(
 		return SYSERR;
 	}
 
+	kprintf("here1\r\n");
+
 	struct pentry *pipptr;		/* ptr to pipe table entry			*/
 	
 	pipptr = &piptab[pip];
@@ -30,12 +32,16 @@ syscall	pipread(
 		return SYSERR;
 	}
 
+	kprintf("here2\r\n");
+
 	/* Wait for buffer to be ready for reading */
 	if (wait(pipptr->prdsem) == SYSERR ||
 		semcount(pipptr->prdsem) < len) {
 		restore(mask);
 		return SYSERR;
 	}
+
+	kprintf("here3\r\n");
 
 	char *buffer = buf;			/* local copy of buffer				*/
 	int count = 0;				/* character count for buffer		*/
@@ -60,5 +66,5 @@ syscall	pipread(
 	signal(pipptr->pwrsem);
 
 	restore(mask);
-	return OK;
+	return count;
 }

@@ -55,5 +55,5 @@ syscall	pipwrite(
 	signal(pipptr->prdsem);
 
 	restore(mask);
-	return OK;
+	return count;
 }
