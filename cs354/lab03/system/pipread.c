@@ -45,27 +45,11 @@ syscall	pipread(
 	{
 		wait(pipptr->prdsem);
 
-		kprintf("here4\r\n");
-
 		c = pipptr->pbuf[pipptr->pbufs];
-
-		kprintf("here5\r\n");
-
 		*buffer++ = c;
-
-		kprintf("here6\r\n");
-
 		pipptr->pbufc--;
-
-		kprintf("here7\r\n");
-
 		pipptr->pbufs = (pipptr->pbufs + 1) % PIPE_SIZ;
-
-		kprintf("here8\r\n");
-
 		count++;
-
-		kprintf("here9\r\n");
 
 		signal(pipptr->pwrsem);
 	}
