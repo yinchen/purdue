@@ -14,10 +14,16 @@ void producer(pipid32 pip)
 	// DEBUG
 	kprintf("BRK3\r\n");
 
-	int i;
-	for (i = 0; i < 10; i++)
+	while(1)
 	{
-		pipwrite(pip, "matt is cool", 12);
+		int i;
+		for (i = 0; i < 10; i++)
+		{
+			pipwrite(pip, "matt is cool", 12);
+		}
+
+		char c = getc(CONSOLE);
+		if (c == 'q') break;
 	}
 
 	// DEBUG
@@ -29,14 +35,17 @@ void consumer(pipid32 pip)
 	// DEBUG
 	kprintf("BRK5\r\n");
 
-	int i;
-	for (i = 0; i < 10; i++)
+	while(1)
 	{
-		char *buf;
-		pipwrite(pip, buf, 12);
+		int i;
+		for (i = 0; i < 10; i++)
+		{
+			char *buf;
+			pipwrite(pip, buf, 12);
 
-		kprintf(buf);
-    	kprintf("\r\n");
+			kprintf(buf);
+			kprintf("\r\n");
+		}
 	}
 
 	// DEBUG
