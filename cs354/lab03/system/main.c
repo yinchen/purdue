@@ -11,8 +11,8 @@
 
 void producer(pipid32 pip)
 {
-	while(1)
-	{
+	// while(1)
+	// {
 		int i;
 		for (i = 0; i < 10; i++)
 		{
@@ -20,10 +20,7 @@ void producer(pipid32 pip)
 
 			pipwrite(pip, "matt is cool", 12);
 		}
-
-		char c = getc(CONSOLE);
-		if (c == 'q') break;
-	}
+	// }
 }
 
 void consumer(pipid32 pip)
@@ -41,6 +38,8 @@ void consumer(pipid32 pip)
 			kprintf(buf);
 			kprintf("\r\n");
 		}
+
+		suspend(getpid();
 	}
 }
 
@@ -55,6 +54,20 @@ int main(int argc, char **argv)
 
     resume(prpid);
 	resume(copid);
+
+	while (1)
+	{
+		char c = getchar();
+
+		if (c == 'q')
+		{
+			break;
+		}
+		else if (c == '\n')
+		{
+			resume(copid);
+		}
+	}
 
 	// pipdisconnect(pip);
 	// pipdelete(pip);
