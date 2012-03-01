@@ -32,8 +32,7 @@ syscall	pipwrite(
 	}
 
 	/* Wait for buffer to be ready for writing */
-	if (wait(pipptr->pwrsem) == SYSERR ||
-		semcount(pipptr->pwrsem) < len) {
+	if (semcount(pipptr->pwrsem) < len) {
 		restore(mask);
 		return SYSERR;
 	}
@@ -46,6 +45,8 @@ syscall	pipwrite(
 	{
 		if (semcount(pipptr->pwrsem) < 1) break;
 
+		wait(pipptr->pwrsem);
+		
 		pipptr->pbuf[(pipptr->pbufs + pipptr->pbufc) % PIPE_SIZ] = *buffer++;
 		count++;
 		pipptr->pbufc++;

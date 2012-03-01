@@ -35,8 +35,7 @@ syscall	pipread(
 	kprintf("here2\r\n");
 
 	/* Wait for buffer to be ready for reading */
-	if (wait(pipptr->prdsem) == SYSERR ||
-		semcount(pipptr->prdsem) < len) {
+	if (semcount(pipptr->prdsem) < len) {
 		restore(mask);
 		return SYSERR;
 	}
@@ -52,6 +51,8 @@ syscall	pipread(
 	{
 		if (semcount(pipptr->prdsem) < 1) break;
 
+		wait(pipptr->prdsem);
+		
 		c = pipptr->pbuf[pipptr->pbufs];
 		*buffer++ = c;
 		pipptr->pbufc--;
