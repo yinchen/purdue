@@ -12,7 +12,7 @@
 void producer(pipid32 pip)
 {
 	int i;
-	for (i = 0; i < 10; i++)
+	for (i = 0; i < 100; i++)
 	{
 		pipwrite(pip, "matt is cool", 12);
 	}
@@ -61,8 +61,8 @@ int main(int argc, char **argv)
 		}
 	}
 
-	// pipdisconnect(pip);
-	// pipdelete(pip);
+	pipdisconnect(pip);
+	pipdelete(pip);
 
 	return OK;
 }
