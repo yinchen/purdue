@@ -43,17 +43,14 @@ syscall	pipwrite(
 	/* Write characters to the circular buffer */
 	while (count < len)
 	{
-		if (semcount(pipptr->pwrsem) < 1) break;
-
 		wait(pipptr->pwrsem);
 		
 		pipptr->pbuf[(pipptr->pbufs + pipptr->pbufc) % PIPE_SIZ] = *buffer++;
 		count++;
 		pipptr->pbufc++;
+	
+		signal(pipptr->prdsem);
 	}
-
-	/* Signal that the buffer is ready for reading */
-	signal(pipptr->prdsem);
 
 	restore(mask);
 	return count;

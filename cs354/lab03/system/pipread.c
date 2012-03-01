@@ -49,10 +49,8 @@ syscall	pipread(
 	/* Read characters from the circular buffer */
 	while (count < len)
 	{
-		if (semcount(pipptr->prdsem) < 1) break;
-
 		wait(pipptr->prdsem);
-		
+
 		c = pipptr->pbuf[pipptr->pbufs];
 		*buffer++ = c;
 		pipptr->pbufc--;
@@ -61,10 +59,9 @@ syscall	pipread(
 
 		kprintf("%c", c);
 		kprintf("\r\n");
-	}
 
-	/* Signal that the buffer is ready for writing */
-	signal(pipptr->pwrsem);
+		signal(pipptr->pwrsem);
+	}
 
 	restore(mask);
 	return count;
