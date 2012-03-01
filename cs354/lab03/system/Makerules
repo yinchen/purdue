@@ -25,6 +25,9 @@ C_FILES += dispatch.c exception.c sched_cntl.c clkinit.c clkhandler.c insertd.c 
 # Files for semaphores
 C_FILES += semcreate.c semdelete.c semcount.c signal.c signaln.c wait.c semreset.c
 
+# Files for pipes
+C_FILES += pipcreate.c pipdelete.c pipconnect.c pipdisconnect.c pipwrite.c pipread.c
+
 # Files for memory management
 C_FILES += getmem.c freemem.c getstk.c bufinit.c mkbufpool.c getbuf.c freebuf.c
 
