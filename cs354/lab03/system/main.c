@@ -4,25 +4,47 @@
 #include <stdio.h>
 
 /************************************************************************/
-/*									*/
-/* main - main program for testing Xinu					*/
-/*									*/
+/*																		*/
+/* main - main program for testing Xinu									*/
+/*																		*/
 /************************************************************************/
+
+void producer(pipid32 pip)
+{
+	int i;
+	for (i = 0; i < 10; i++)
+	{
+		pipwrite(pip, "matt is cool", 12);
+	}
+}
+
+void consumer(pipid32 pip)
+{
+	int i;
+	for (i = 0; i < 10; i++)
+	{
+		char *buf;
+		pipwrite(pip, buf, 12);
+
+		kprintf(buf);
+    	kprintf("\r\n");
+	}
+}
 
 int main(int argc, char **argv)
 {
-	umsg32 retval;
+	pipid32 pip = pipcreate();
 
-	/* Creating a shell process */
+    pid32 prpid = create(producer, 500, 20, "producer", 1, pip);
+    pid32 copid = create(consumer, 500, 20, "consumer", 1, pip);
 
-	resume(create(shell, 4096, 1, "shell", 1, CONSOLE));
+    pipconnect(pip, prpid, copid);
 
-	retval = recvclr();
-	while (TRUE) {
-		retval = receive();
-		kprintf("\n\n\rMain process recreating shell\n\n\r");
-		resume(create(shell, 4096, 1, "shell", 1, CONSOLE));
-	}
+    resume(prpid);
+	resume(copid);
 
-	return OK;
+	pipdisconnect(pip);
+	pipdelete(pip);
+    
+    return OK;
 }
