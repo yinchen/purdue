@@ -1,6 +1,7 @@
 /* pipwrite.c - pipwrite */
 
 #include <xinu.h>
+#include <stdio.h>
 
 /*------------------------------------------------------------------------
  * pipwrite  --  Write to a pipe, blocking if full
@@ -45,6 +46,8 @@ syscall	pipwrite(
 		pipptr->pbuf[(pipptr->pbufs + pipptr->pbufc) % PIPE_SIZ] = *buffer++;
 		count++;
 		pipptr->pbufc++;
+
+		kprintf("A\r\n");
 	}
 
 	/* Signal that the buffer is ready for reading */
