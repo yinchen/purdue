@@ -52,8 +52,8 @@ int main(int argc, char **argv)
 
     pipconnect(pip, prpid, copid);
 
-    ready(prpid);
-	ready(copid);
+    resume(prpid);
+	resume(copid);
 
 	while (1)
 	{
