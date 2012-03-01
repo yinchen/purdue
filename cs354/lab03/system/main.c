@@ -32,7 +32,7 @@ void consumer(pipid32 pip)
 		{
 			kprintf("pipread()\r\n"); // DEBUG
 			
-			char *buf;
+			char buf[12];
 			pipread(pip, buf, 12);
 
 			kprintf(buf);
