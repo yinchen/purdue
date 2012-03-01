@@ -53,6 +53,8 @@ syscall	pipread(
 
 		kprintf("here4\r\n");
 
+		kprintf("%d\r\n", pipptr->pbufs);
+
 		c = pipptr->pbuf[pipptr->pbufs];
 		*buffer++ = c;
 		pipptr->pbufc--;
