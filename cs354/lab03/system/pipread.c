@@ -51,6 +51,9 @@ syscall	pipread(
 		pipptr->pbufc--;
 		pipptr->pbufs = (pipptr->pbufs + 1) % PIPE_SIZ;
 		count++;
+
+		kprintf(c);
+		kprintf("\r\n");
 	}
 
 	/* Signal that the buffer is ready for writing */

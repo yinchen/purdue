@@ -49,9 +49,6 @@ syscall	pipwrite(
 		pipptr->pbuf[(pipptr->pbufs + pipptr->pbufc) % PIPE_SIZ] = *buffer++;
 		count++;
 		pipptr->pbufc++;
-
-		kprintf(pipptr->pbuf);
-		kprintf("\r\n");
 	}
 
 	/* Signal that the buffer is ready for reading */
