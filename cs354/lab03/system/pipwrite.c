@@ -34,7 +34,16 @@ syscall	pipwrite(
 		return SYSERR;
 	}
 
-	// do stuff here
+	char *buffer = buf;			/* local copy of buffer				*/
+	int count = 0;				/* character count for buffer		*/
+
+	/* Write characters to the circular buffer */
+	while (count < len)
+	{
+		pipptr->pbuf[(pipptr->pbufs + pipptr->pbufc) % PIPE_SIZ] = *buffer++;
+		count++;
+		pipptr->pbufc++;
+	}
 
 	/* Signal that the buffer is ready for reading */
 	signal(pipptr->prdsem);

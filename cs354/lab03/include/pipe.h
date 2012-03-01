@@ -16,6 +16,8 @@ struct 	pentry {					/* entry in the pipe table			*/
 		sid32	prdsem;				/* reader semaphore					*/
 		sid32	pwrsem;				/* writer semaphore					*/
 		char	pbuf[PIPE_SIZ];		/* pipe buffer						*/
+		int32	pbufs;				/* pipe buffer starting index		*/
+		int32	pbufc;				/* pipe buffer character count		*/
 };
 
 extern	struct	pentry 	piptab[];	/* pipe table 						*/

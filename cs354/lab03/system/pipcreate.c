@@ -25,6 +25,8 @@ syscall pipcreate(void)
 	pipptr->powner = currpid;		/* initialize table entry		*/
 	pipptr->prdsem = semcreate(0);	/* create reader semaphore 		*/
 	pipptr->pwrsem = semcreate(0);	/* create writer semaphore		*/
+	pipptr->pbufs = 0;				/* set buffer starting index	*/
+	pipptr->pbufc = 0;				/* set buffer character count	*/
 
 	restore(mask);
 	return pip;

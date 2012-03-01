@@ -34,7 +34,19 @@ syscall	pipread(
 		return SYSERR;
 	}
 
-	// do stuff here
+	char *buffer = buf;			/* local copy of buffer				*/
+	int count = 0;				/* character count for buffer		*/
+	char c;						/* temporary holder for characters	*/
+
+	/* Read characters from the circular buffer */
+	while (count < len)
+	{
+		c = pipptr->pbuf[pipptr->pbufs];
+		*buffer++ = c;
+		pipptr->pbufc--;
+		pipptr->pbufs = (pipptr->pbufs + 1) % PIPE_SIZ;
+		count++;
+	}
 
 	/* Signal that the buffer is ready for writing */
 	signal(pipptr->pwrsem);
