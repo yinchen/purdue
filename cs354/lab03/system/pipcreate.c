@@ -26,7 +26,7 @@ syscall pipcreate(void)
 	pipptr->pstate = PIPE_USED;
 	pipptr->powner = getpid();		/* initialize table entry		*/
 	pipptr->prdsem = semcreate(0);	/* create reader semaphore 		*/
-	pipptr->pwrsem = semcreate(0);	/* create writer semaphore		*/
+	pipptr->pwrsem = semcreate(PIPE_SIZ);	/* create writer semaphore		*/
 	pipptr->pbufs = 0;				/* set buffer starting index	*/
 	pipptr->pbufc = 0;				/* set buffer character count	*/
 
