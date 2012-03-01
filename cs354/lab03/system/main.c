@@ -11,6 +11,9 @@
 
 void producer(pipid32 pip)
 {
+	// DEBUG
+	kprintf("BRK1\r\n");
+
 	int i;
 	for (i = 0; i < 10; i++)
 	{
@@ -20,6 +23,9 @@ void producer(pipid32 pip)
 
 void consumer(pipid32 pip)
 {
+	// DEBUG
+	kprintf("BRK1\r\n");
+	
 	int i;
 	for (i = 0; i < 10; i++)
 	{
@@ -33,18 +39,36 @@ void consumer(pipid32 pip)
 
 int main(int argc, char **argv)
 {
+	// DEBUG
+	kprintf("BRK1\r\n");
+
 	pipid32 pip = pipcreate();
+
+	// DEBUG
+	kprintf("BRK1\r\n");
 
     pid32 prpid = create(producer, 500, 20, "producer", 1, pip);
     pid32 copid = create(consumer, 500, 20, "consumer", 1, pip);
 
+    // DEBUG
+	kprintf("BRK1\r\n");
+
     pipconnect(pip, prpid, copid);
+
+    // DEBUG
+	kprintf("BRK1\r\n");
 
     resume(prpid);
 	resume(copid);
 
+	// DEBUG
+	kprintf("BRK1\r\n");
+
 	pipdisconnect(pip);
 	pipdelete(pip);
+
+	// DEBUG
+	kprintf("BRK1\r\n");
     
     return OK;
 }
