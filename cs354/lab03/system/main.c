@@ -79,8 +79,8 @@ int main(int argc, char **argv)
 	// DEBUG
 	kprintf("BRK9\r\n");
 
-	pipdisconnect(pip);
-	pipdelete(pip);
+	// pipdisconnect(pip);
+	// pipdelete(pip);
 
 	// DEBUG
 	kprintf("BRK10\r\n");
