@@ -16,8 +16,6 @@ void producer(pipid32 pip)
 		int i;
 		for (i = 0; i < 10; i++)
 		{
-			kprintf("pipwrite()\r\n"); // DEBUG
-
 			pipwrite(pip, "matt is cool", 12);
 		}
 	// }
@@ -30,8 +28,6 @@ void consumer(pipid32 pip)
 		int i;
 		for (i = 0; i < 10; i++)
 		{
-			kprintf("pipread()\r\n"); // DEBUG
-			
 			char buf[12];
 			pipread(pip, buf, 12);
 
