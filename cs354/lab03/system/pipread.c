@@ -52,7 +52,7 @@ syscall	pipread(
 		pipptr->pbufs = (pipptr->pbufs + 1) % PIPE_SIZ;
 		count++;
 
-		kprintf(c);
+		kprintf("%c", c);
 		kprintf("\r\n");
 	}
 
