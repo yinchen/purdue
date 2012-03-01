@@ -39,7 +39,7 @@ void consumer(pipid32 pip)
 			kprintf("\r\n");
 		}
 
-		suspend(getpid();
+		suspend(getpid());
 	}
 }
 
