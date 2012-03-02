@@ -1,7 +1,6 @@
 /* pipwrite.c - pipwrite */
 
 #include <xinu.h>
-#include <stdio.h>
 
 /*------------------------------------------------------------------------
  * pipwrite  --  Write to a pipe, blocking if full
@@ -31,7 +30,7 @@ syscall	pipwrite(
 		return SYSERR;
 	}
 
-	/* Wait for buffer to be ready for writing */
+	/* Ensure there is enough space for the entire write request */
 	if (semcount(pipptr->pwrsem) < len) {
 		restore(mask);
 		return SYSERR;

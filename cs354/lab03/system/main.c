@@ -11,11 +11,16 @@
 
 void producer(pipid32 pip)
 {
-	int i;
-	for (i = 0; i < 100; i++)
+	while(1)
 	{
-		pipwrite(pip, "matt is cool", 12);
-	}
+	    int i;
+	    for (i = 0; i < 10; i++)
+	    {
+	        pipwrite(pip, "matt is cool", 13);
+	    }
+	    
+	    suspend(getpid());
+    }
 }
 
 void consumer(pipid32 pip)
@@ -25,10 +30,12 @@ void consumer(pipid32 pip)
 		int i;
 		for (i = 0; i < 10; i++)
 		{
-			char buf[12];
-			pipread(pip, buf, 12);
+		    int count = 0;
+			char buf[13];
+			
+			count = pipread(pip, buf, 13);
 
-			kprintf("%s\r\n", buf);
+			kprintf("%s\r\n", buf, count);
 		}
 
 		suspend(getpid());
@@ -57,12 +64,16 @@ int main(int argc, char **argv)
 		}
 		else if (c == '\n')
 		{
+		    resume(prpid);
 			resume(copid);
 		}
 	}
 
 	pipdisconnect(pip);
 	pipdelete(pip);
+
+    kprintf("\r\n");
+    kprintf("Goodbye.\r\n");
 
 	return OK;
 }

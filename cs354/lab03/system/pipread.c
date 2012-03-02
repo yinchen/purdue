@@ -30,7 +30,7 @@ syscall	pipread(
 		return SYSERR;
 	}
 
-	/* Wait for buffer to be ready for reading */
+	/* Ensure there is enough space for the entire read request */
 	if (semcount(pipptr->prdsem) < len) {
 		restore(mask);
 		return SYSERR;
@@ -38,7 +38,7 @@ syscall	pipread(
 
 	char *buffer = buf;			/* local copy of buffer				*/
 	int count = 0;				/* character count for buffer		*/
-	char c;						/* temporary holder for characters	*/
+	char c;						/* temporary space for characters	*/
 
 	/* Read characters from the circular buffer */
 	while (count < len)

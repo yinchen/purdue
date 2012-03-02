@@ -1,0 +1,17 @@
+Matt McCormick
+mbmccorm@purdue.edu
+Lab 3
+
+Features that work:
+- pipcreate()
+- pipconnect()
+- pipwrite()
+- pipread()
+- pipdisconnect()
+- pipdelete()
+
+Features that do not work:
+- N/A
+
+Additional information:
+- You must press "q" then ENTER in order to quit the application
