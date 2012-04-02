@@ -1,8 +1,0 @@
-1) True, False
-2) A, B, C, B
-3) Yes, No, Yes, Yes
-4) D, C
-5) No, Yes
-6) C
-7) False, False, True, False
-8) A
