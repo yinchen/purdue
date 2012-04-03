@@ -9,7 +9,22 @@
 /*																		*/
 /************************************************************************/
 
-void processB(pid32 prA)
+void processA(pid32 prB)
+{
+	int32 i = 0;
+	while (i < 10)
+	{
+		kprintf("Sending message.\r\n");
+
+		sendb(prB, 4);
+
+		kprintf("Message sent.\r\n");	
+
+		i++;
+	}
+}
+
+void processB1()
 {
 	while(1)
 	{
@@ -21,32 +36,23 @@ void processB(pid32 prA)
     }
 }
 
-void processC(pid32 prA)
+void processB2()
 {
 	kprintf("Ignoring messages.\r\n");
 }
 
 int main(int argc, char **argv)
 {
-	kprintf("Creating new process.\r\n");
+	kprintf("Creating new processes.\r\n");
 
-	pid32 prB = create(processB, 500, 20, "processB", 1, currpid);
-	resume(prB);
+	pid32 prB1 = create(processB1, 500, 20, "processB", 0);
+	resume(prB1);
 
-	pid32 prC = create(processC, 500, 20, "processC", 1, currpid);
-	resume(prC);
+	pid32 prB2 = create(processB2, 500, 20, "processB2", 0);
+	resume(prB2);
 
-	int32 i = 0;
-	while (i < 10)
-	{
-		kprintf("Sending message.\r\n");
-
-		sendb(prC, 4);
-
-		kprintf("Message sent.\r\n");	
-
-		i++;
-	}
+	pid32 prA = create(processC, 500, 20, "processA", 1, prB2);
+	resume(prA);
 
 	kprintf("Exiting.\r\n");
 
