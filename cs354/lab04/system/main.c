@@ -45,8 +45,6 @@ void processB1(void)
 
 void processB2(void)
 {
-	kprintf("B2: Ignoring all messages...\r\n");
-
 	while(1)
 	{
 		// noop
