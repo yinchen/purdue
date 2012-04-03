@@ -18,12 +18,13 @@ syscall	sendb(
 	struct	procent *sndprptr;			/* ptr to process' table entry	*/
 
 	mask = disable();					/* save interrupts				*/
+	
+	kprintf("HERE 0");
+
 	if (isbadpid(pid)) {
 		restore(mask);
 		return SYSERR;
 	}
-
-	kprintf("HERE 0");
 
 	prptr = &proctab[pid];				/* check pid and prstate		*/
 	if (prptr->prstate == PR_FREE) {
