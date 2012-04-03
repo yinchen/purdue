@@ -33,8 +33,8 @@ int main(int argc, char **argv)
 	pid32 prB = create(processB, 500, 20, "processB", 1, currpid);
 	resume(prB);
 
-	pid32 prB = create(processB, 500, 20, "processC", 1, currpid);
-	resume(prB);
+	pid32 prC = create(processC, 500, 20, "processC", 1, currpid);
+	resume(prC);
 
 	while (1)
 	{
