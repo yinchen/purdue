@@ -44,10 +44,19 @@ syscall	sendb(
 		resched();						/*   and reschedule				*/
 	}
 	else {
-		kprintf("DEBUG: sendb.c:2247\r\n");
+		kprintf("DEBUG: sendb.c:47\r\n");
 
 		prptr->prmsg = msg;				/* deliver message 				*/
 		prptr->prhasmsg = TRUE;			/* indicate message is waiting 	*/
+	}
+
+	/* If recipient waiting or in timed-wait make it ready */
+
+	if (prptr->prstate == PR_RECV) {
+		ready(pid, RESCHED_YES);
+	} else if (prptr->prstate == PR_RECTIM) {
+		unsleep(pid);
+		ready(pid, RESCHED_YES);
 	}
 
 	restore(mask);						/* restore interrupts 			*/
