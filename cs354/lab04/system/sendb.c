@@ -19,7 +19,7 @@ syscall	sendb(
 
 	mask = disable();					/* save interrupts				*/
 	
-	kprintf("HERE 0");
+	kprintf("DEBUG: sendb.c:22\r\n");
 
 	if (isbadpid(pid)) {
 		restore(mask);
@@ -34,7 +34,7 @@ syscall	sendb(
 
 	sndprptr = &proctab[currpid];		/* get sending process entry	*/
 	if (prptr->prhasmsg) {
-		kprintf("HERE 1");
+		kprintf("DEBUG: sendb.c:37\r\n");
 
 		sndprptr->sndmsg = msg;			/* hold message					*/
 		sndprptr->sndflag = TRUE;		/* indicate message is sending	*/
@@ -44,7 +44,7 @@ syscall	sendb(
 		resched();						/*   and reschedule				*/
 	}
 	else {
-		kprintf("HERE 2");
+		kprintf("DEBUG: sendb.c:2247\r\n");
 
 		prptr->prmsg = msg;				/* deliver message 				*/
 		prptr->prhasmsg = TRUE;			/* indicate message is waiting 	*/
