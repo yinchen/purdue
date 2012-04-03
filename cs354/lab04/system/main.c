@@ -24,7 +24,7 @@ void processA(pid32 prB)
 	}
 }
 
-void processB1()
+void processB1(void)
 {
 	while(1)
 	{
@@ -36,7 +36,7 @@ void processB1()
     }
 }
 
-void processB2()
+void processB2(void)
 {
 	kprintf("Ignoring messages.\r\n");
 }
