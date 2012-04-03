@@ -4,24 +4,27 @@
 #include <stdio.h>
 
 /************************************************************************/
-/*									*/
-/* main - main program for testing Xinu					*/
-/*									*/
+/*																		*/
+/* main - main program for testing Xinu									*/
+/*																		*/
 /************************************************************************/
+
+void processB(pid32 prA)
+{
+	while(1)
+	{
+	    kprintf(receiveb(prA));
+    }
+}
 
 int main(int argc, char **argv)
 {
-	umsg32 retval;
+	pid32 prB = create(processB, 500, 20, "processB", 1, currpid);
+	resume(prB);
 
-	/* Creating a shell process */
-
-	resume(create(shell, 4096, 1, "shell", 1, CONSOLE));
-
-	retval = recvclr();
-	while (TRUE) {
-		retval = receive();
-		kprintf("\n\n\rMain process recreating shell\n\n\r");
-		resume(create(shell, 4096, 1, "shell", 1, CONSOLE));
+	while (1)
+	{
+		sendb(prB, "hello");
 	}
 
 	return OK;
