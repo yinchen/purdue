@@ -36,13 +36,16 @@ int main(int argc, char **argv)
 	pid32 prC = create(processC, 500, 20, "processC", 1, currpid);
 	resume(prC);
 
-	while (1)
+	int32 i = 0;
+	while (i < 10)
 	{
 		kprintf("Sending message.\r\n");
 
 		sendb(prC, 4);
 
 		kprintf("Message sent.\r\n");	
+
+		i++;
 	}
 
 	kprintf("Exiting.\r\n");
