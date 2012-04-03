@@ -13,7 +13,7 @@ void processB(pid32 prA)
 {
 	while(1)
 	{
-	    kprintf(receiveb());
+	    kprintf("%d", receiveb());
     }
 }
 
