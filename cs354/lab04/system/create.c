@@ -60,6 +60,11 @@ pid32	create(
 	prptr->prdesc[1] = CONSOLE;	/* stdout is CONSOLE device	*/
 	prptr->prdesc[2] = CONSOLE;	/* stderr is CONSOLE device	*/
 
+	/* Continue initialize process table entry for new process */
+
+	prptr->sndflag = FALSE;
+	prptr->sndqueue = newqueue();
+
 	/* Initialize stack as if the process was called		*/
 
 	*saddr = STACKMAGIC;

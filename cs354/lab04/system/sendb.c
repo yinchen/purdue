@@ -28,17 +28,14 @@ syscall	sendb(
 		return SYSERR;
 	}
 
-	pid32 sndpid = currpid();			/* get sending process id 		*/
-	sndprptr = &proctab[sndpid];		/* get sending process entry	*/
-
+	sndprptr = &proctab[currpid];		/* get sending process entry	*/
 	if (prptr->prhasmsg) {
 		sndprptr->sndmsg = msg;			/* hold message					*/
 		sndprptr->sndflag = TRUE;		/* indicate message is sending	*/
-
 		sndprptr->prstate = PR_SND;		/* put process in sending state */
-		insert(sndpid, sendlist, 0);	/* put process in sending queue */
 
-		resched();						/* block process				*/
+		enqueue(currpid, prptr->sndqueue);	/* enqueue on process		*/
+		resched();						/*   and reschedule				*/
 	}
 	else {
 		prptr->prmsg = msg;				/* deliver message 				*/
