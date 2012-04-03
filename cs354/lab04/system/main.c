@@ -39,13 +39,18 @@ void processB1(void)
 void processB2(void)
 {
 	kprintf("Ignoring messages.\r\n");
+
+	while(1)
+	{
+		// do nothing
+	}
 }
 
 int main(int argc, char **argv)
 {
 	kprintf("Creating new processes.\r\n");
 
-	pid32 prB1 = create(processB1, 500, 20, "processB", 0);
+	pid32 prB1 = create(processB1, 500, 20, "processB1", 0);
 	resume(prB1);
 
 	pid32 prB2 = create(processB2, 500, 20, "processB2", 0);
