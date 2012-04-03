@@ -11,6 +11,7 @@ umsg32	receiveb(void)
 {
 	intmask	mask;						/* saved interrupt mask			*/
 	struct	procent *prptr;				/* ptr to process' table entry	*/
+	struct	procent *sndprptr;			/* ptr to process' table entry	*/
 	umsg32	msg;						/* message to return			*/
 
 	mask = disable();
@@ -18,7 +19,7 @@ umsg32	receiveb(void)
 	prptr = &proctab[currpid];
 	if (prptr->prhasmsg == FALSE) {
 		pid32 sndpid = dequeue(prptr->sndqueue);
-		
+
 		if (sndpid != EMPTY) {
 			sndprptr = &proctab[sndpid];		/* get sending process entry	*/
 			msg = sndprptr->sndmsg;				/* retrieve message				*/
