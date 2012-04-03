@@ -13,7 +13,7 @@ void processB(pid32 prA)
 {
 	while(1)
 	{
-	    kprintf(receiveb(prA));
+	    kprintf(receiveb());
     }
 }
 
@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 
 	while (1)
 	{
-		sendb(prB, "hello");
+		sendb(prB, 4);
 	}
 
 	return OK;
