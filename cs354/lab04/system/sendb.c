@@ -1,6 +1,7 @@
 /* sendb.c - sendb */
 
 #include <xinu.h>
+#include <stdio.h>
 
 /*------------------------------------------------------------------------
  *  sendb  -  pass a message to a process and start recipient if waiting
@@ -22,6 +23,8 @@ syscall	sendb(
 		return SYSERR;
 	}
 
+	kprintf("HERE 0");
+
 	prptr = &proctab[pid];				/* check pid and prstate		*/
 	if (prptr->prstate == PR_FREE) {
 		restore(mask);
@@ -30,6 +33,8 @@ syscall	sendb(
 
 	sndprptr = &proctab[currpid];		/* get sending process entry	*/
 	if (prptr->prhasmsg) {
+		kprintf("HERE 1");
+
 		sndprptr->sndmsg = msg;			/* hold message					*/
 		sndprptr->sndflag = TRUE;		/* indicate message is sending	*/
 		sndprptr->prstate = PR_SND;		/* put process in sending state */
@@ -38,6 +43,8 @@ syscall	sendb(
 		resched();						/*   and reschedule				*/
 	}
 	else {
+		kprintf("HERE 2");
+
 		prptr->prmsg = msg;				/* deliver message 				*/
 		prptr->prhasmsg = TRUE;			/* indicate message is waiting 	*/
 	}
