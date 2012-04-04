@@ -1,0 +1,15 @@
+Matt McCormick
+mbmccorm@purdue.edu
+Lab 4
+
+Features that work:
+- sendb()
+- receiveb()
+
+Features that do not work:
+- N/A
+
+Additional information:
+- Sending process queue is stored on the process table entry, similar to how semaphores do
+- This makes it easy to enqueue and dequeue sending processes and does not require searching a global queue
+- If receiving process completes execution while a sender is blocked, sendb() returns SYSERR and continues
