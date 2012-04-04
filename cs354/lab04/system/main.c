@@ -20,6 +20,8 @@ void processA(pid32 prB)
 
 		i++;
 	}
+
+	while(1) {} // noop
 }
 
 void processB1(void)
@@ -31,14 +33,13 @@ void processB1(void)
 
 	    i++;
     }
+
+    while(1) {} // noop
 }
 
 void processB2(void)
 {
-	while(1)
-	{
-		// noop
-	}
+	while(1) {} // noop
 }
 
 int main(int argc, char **argv)
