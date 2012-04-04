@@ -11,16 +11,12 @@
 
 void processA(pid32 prB)
 {
-	kprintf("A : Sending 10 messages...\r\n");
-
 	int32 i = 0;
 	while (i < 10)
 	{
-		kprintf("A : Sending message.\r\n");
+		kprintf("SND: 4\r\n");
 
-		sendb(prB, 4);
-
-		kprintf("A : Message sent.\r\n");	
+		sendb(prB, 4);	
 
 		i++;
 	}
@@ -28,16 +24,10 @@ void processA(pid32 prB)
 
 void processB1(void)
 {
-	kprintf("B1: Receiving 5 messages...\r\n");
-
 	int i = 0;
 	while(i < 5)
 	{
-		kprintf("B1: Receiving message.\r\n");
-
-	    kprintf("B1: %d\r\n", receiveb());
-
-	    kprintf("B1: Message received.\r\n");
+		kprintf("RCV: %d\r\n", receiveb());
 
 	    i++;
     }
@@ -53,8 +43,6 @@ void processB2(void)
 
 int main(int argc, char **argv)
 {
-	kprintf("Creating new processes.\r\n");
-
 	pid32 prB1 = create(processB1, 500, 20, "processB1", 0);
 	resume(prB1);
 
@@ -63,8 +51,6 @@ int main(int argc, char **argv)
 
 	pid32 prA = create(processA, 500, 20, "processA", 1, prB1);
 	resume(prA);
-
-	kprintf("Exiting.\r\n");
 
 	return OK;
 }
