@@ -61,7 +61,7 @@ int main(int argc, char **argv)
 	pid32 prB2 = create(processB2, 500, 20, "processB2", 0);
 	resume(prB2);
 
-	pid32 prA = create(processA, 500, 20, "processA", 1, prB2);
+	pid32 prA = create(processA, 500, 20, "processA", 1, prB1);
 	resume(prA);
 
 	kprintf("Exiting.\r\n");
