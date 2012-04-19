@@ -6,7 +6,7 @@
 	$student = mysql_fetch_array($result);
 
 ?>
-<p>Hello <?=$student['Name']?>. Below is the list of your courses:<p>
+<p>Hello <?=$student['Name']?>. Below is the list of your grades:<p>
 <table cellpadding="0" cellspacing="0">
 	<tr>
 		<th>Evaluation Name</th>

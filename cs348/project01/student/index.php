@@ -4,7 +4,7 @@
 
 	if (empty($_GET['StudentID']))
 	{	
-		$result = mysql_query("SELECT * FROM Students");
+		$result = mysql_query("SELECT * FROM Students ORDER BY Name ASC");
 		while($row = mysql_fetch_array($result))
 		{
 			$StudentID .= "<option value='" . $row['StudentID'] . "'>" . $row['Name'] . "</option>\n";
@@ -20,7 +20,7 @@
 		</tr>
 	</table>
 	<br />
-	<input type="submit" value="Login" />
+	<input type="submit" value="Continue" />
 </form>
 <div class="home">
 	<a href="<?=$RootDirectory?>">Click here to return home</a>

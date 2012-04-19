@@ -9,7 +9,7 @@
 	</tr>
 	<?php
 
-		$result = mysql_query("SELECT * FROM Students");
+		$result = mysql_query("SELECT * FROM Students ORDER BY Name ASC");
 
 		while($row = mysql_fetch_array($result))
 		{
