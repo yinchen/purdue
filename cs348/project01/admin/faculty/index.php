@@ -18,13 +18,17 @@
 			echo "<td>" . $row[0] . "</td>\n";
 			echo "<td>" . $row[4] . "</td>\n";
 			echo "<td>" . $row[2] . "</td>\n";
-			echo "<td><a href=\"" . $RootDirectory . "admin/faculties/edit.php?id=" . $row[0] . "\">Edit</a></td>\n";
+			echo "<td><a href=\"" . $RootDirectory . "admin/faculty/edit.php?id=" . $row[0] . "\">Edit</a>
+			          <a href=\"" . $RootDirectory . "admin/faculty/delete.php?id=" . $row[0] . "\">Delete</a></td>\n";
 			echo "</tr>\n";
 		}
 
 	?>
 </table>
+<br />
+<input type="button" value="Create Faculty" onClick="location.href='<?=$RootDirectory?>admin/faculty/create.php';" />
+<br />
 <div class="home">
-	<a href="<?=$RootDirectory?>">Click here to return home</a>
+	<a href="<?=$RootDirectory?>admin">Click here to return to the menu</a>
 </div>
 <?php include "../../include/footer.php"; ?>

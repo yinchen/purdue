@@ -49,6 +49,7 @@ table tr th {
 	border-left: solid 1px #cccccc;
 	padding: 8px;
 	text-align: left;
+	background: #E7ECEE;
 }
 
 table tr td {
@@ -64,4 +65,30 @@ table tr td {
 #footer {
 	font-size: 12px;
 	margin-top: 40px;
+}
+
+form {
+	margin-top: 30px;
+}
+
+form table {
+	border: none;
+}
+
+form table tr {
+
+}
+
+form table tr td {
+	border: none;
+	padding: 0px;
+	padding-right: 8px;
+}
+
+input[type="submit"] {
+	padding: 5px;
+}
+
+input[type="button"] {
+	padding: 5px;
 }

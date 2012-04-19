@@ -6,17 +6,19 @@
 	$student = mysql_fetch_array($result);
 
 ?>
-<p>Hello <?=$student['Name']?>. Below is the list of your courses:<p>
+<p>Hello <?=$student['Name']?>. Below is the list of your evaluations:<p>
 <table cellpadding="0" cellspacing="0">
 	<tr>
 		<th>Evaluation Name</th>
 		<th>Course Name</th>
 		<th>Weightage</th>
-		<th>Grade</th>
+		<th>Type</th>
+		<th>Deadline Date</th>
+		<th>Meeting Room</th>
 	</tr>
 	<?php
 
-		$result = mysql_query("SELECT * FROM EvaluationGrades G LEFT OUTER JOIN CourseEvaluations AS E ON G.EvaluationID = E.EvaluationID LEFT OUTER JOIN Courses AS C ON E.CourseID = C.CourseID WHERE G.StudentID = '" . $student['StudentID'] . "' ORDER BY E.DeadlineDate ASC");
+		$result = mysql_query("SELECT * FROM CourseEvaluations E LEFT OUTER JOIN Courses AS C ON E.CourseID = C.CourseID LEFT OUTER JOIN CourseStudents AS S ON C.CourseID = S.CourseID WHERE S.StudentID = '" . $student['StudentID'] . "' ORDER BY E.DeadlineDate ASC");
 
 		while($row = mysql_fetch_array($result))
 		{
@@ -24,7 +26,16 @@
 			echo "<td>" . $row['EvaluationName'] . "</td>\n";
 			echo "<td>" . $row['CourseName'] . "</td>\n";
 			echo "<td>" . $row['Weightage'] . "</td>\n";
-			echo "<td>" . $row['Grade'] . "</td>\n";
+			if ($row['Type'] == 0)
+				echo "<td>Homework</td>\n";
+			else if ($row['Type'] == 1)
+				echo "<td>Midterm</td>\n";
+			else if ($row['Type'] == 2)
+				echo "<td>Final Exam</td>\n";
+			else if ($row['Type'] == 3)
+				echo "<td>Project</td>\n";
+			echo "<td>" . $row['DeadlineDate'] . "</td>\n";
+			echo "<td>" . $row['MeetingRoom'] . "</td>\n";
 			echo "</tr>\n";
 		}
 

@@ -8,6 +8,9 @@
 	<div class="item">
 		<a href="<?=$RootDirectory?>admin/faculty">Manage Faculty</a>
 	</div>
+	<div class="item">
+		<a href="<?=$RootDirectory?>admin/students">Manage Students</a>
+	</div>
 </div>
 <div class="home">
 	<a href="<?=$RootDirectory?>">Click here to return home</a>
