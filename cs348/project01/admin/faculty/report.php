@@ -5,7 +5,6 @@
 	<tr>
 		<th>Department</th>
 		<th>Name</th>
-		<th>Actions</th>
 	</tr>
 	<?php
 
@@ -16,8 +15,6 @@
 			echo "<tr>\n";
 			echo "<td>" . $row[4] . "</td>\n";
 			echo "<td>" . $row[2] . "</td>\n";
-			echo "<td><a href=\"" . $RootDirectory . "admin/faculty/edit.php?id=" . $row[0] . "\">Edit</a>
-			          <a href=\"" . $RootDirectory . "admin/faculty/delete.php?id=" . $row[0] . "\">Delete</a></td>\n";
 			echo "</tr>\n";
 		}
 
