@@ -1,4 +1,3 @@
-#! /p/php/bin/php
 <?php include "../../include/config.php"; ?>
 <?php
 

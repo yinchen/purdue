@@ -1,4 +1,3 @@
-#! /p/php/bin/php
 <!DOCTYPE html>
 <html>
 <head>

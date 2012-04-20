@@ -1,4 +1,3 @@
-#! /p/php/bin/php
 <?php include "include/config.php"; ?>
 <?php include "include/header.php"; ?>
 <p>Please select your context from the list below:<p>

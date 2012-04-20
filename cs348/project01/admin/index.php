@@ -1,4 +1,3 @@
-#! /p/php/bin/php
 <?php include "../include/config.php"; ?>
 <?php include "../include/header.php"; ?>
 <p>Hello Administrator. Please select an action from the list below:<p>
