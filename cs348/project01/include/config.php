@@ -7,5 +7,8 @@
 	if (!$con)
 	{
 		die("Could not connect: " . oci_error());
+
+		$e = oci_error();
+    	trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
 	}
 ?>
