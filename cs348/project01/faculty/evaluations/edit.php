@@ -9,7 +9,7 @@
 	{
 		$result = mysql_query("UPDATE CourseEvaluations SET CourseID='" . $_POST['CourseID'] . "', EvaluationName='" . $_POST['EvaluationName'] . "', Type='" . $_POST['Type'] . "', Weightage='" . $_POST['Weightage'] . "', DeadlineDate='" . $_POST['DeadlineDate'] . "', MeetingRoom='" . $_POST['MeetingRoom'] . "' WHERE EvaluationID='" . $_GET['id'] . "'");
 
-		header("Location: " . $RootDirectory . "faculty/evaluations?FacultyID=" . $faculty['FacultyID']);
+		header("Location: index.php?FacultyID=" . $faculty['FacultyID']);
 		exit;
 	}
 

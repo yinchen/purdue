@@ -7,20 +7,34 @@
 
 	if (empty($_POST) == false)
 	{
-		$result = mysql_query("INSERT INTO EvaluationGrades (EvaluationID, StudentID, Grade) VALUES ('" . $_POST['CourseID'] . "', '" . $_POST['EvaluationName'] . "', '" . $_POST['Type'] . "', '" . $_POST['Weightage'] . "', '" . $_POST['DeadlineDate'] . "', '" . $_POST['MeetingRoom'] . "')");
+		$result = mysql_query("INSERT INTO EvaluationGrades (EvaluationID, StudentID, Grade) VALUES ('" . $_POST['EvaluationID'] . "', '" . $_POST['StudentID'] . "', '" . $_POST['Grade'] . "')");
 
-		header("Location: " . $RootDirectory . "faculty/evaluations?FacultyID=" . $faculty['FacultyID']);
+		header("Location: index.php?FacultyID=" . $faculty['FacultyID']);
 		exit;
 	}
 
-	$result = mysql_query("SELECT * FROM Courses WHERE FacultyID='" . $faculty['FacultyID'] . "'");
+	$result = mysql_query("SELECT * FROM Courses WHERE FacultyID='" . $faculty['FacultyID'] . "' ORDER BY CourseName ASC");
 	while($row = mysql_fetch_array($result))
 	{
-		$CourseID .= "<option value='" . $row['CourseID'] . "'>" . $row['CourseName'] . "</option>\n";
+		$EvaluationID .= "<optgroup label='" . $row['CourseName'] . "'>\n";
+
+		$result2 = mysql_query("SELECT * FROM CourseEvaluations WHERE CourseID='" . $row['CourseID'] . "' ORDER BY EvaluationName ASC");
+		while($row2 = mysql_fetch_array($result2))
+		{
+			$EvaluationID .= "<option value='" . $row2['EvaluationID'] . "'>" . $row2['EvaluationName'] . "</option>\n";
+		}
+
+		$EvaluationID .= "</optgroup>\n";
+	}
+
+	$result = mysql_query("SELECT * FROM Students ORDER BY Name ASC");
+	while($row = mysql_fetch_array($result))
+	{
+		$StudentID .= "<option value='" . $row['StudentID'] . "'>" . $row['Name'] . "</option>\n";
 	}
 
 ?>
-<p>Hello <?=$faculty['Name']?> (Faculty). You are currently creating a course evaluation:<p>
+<p>Hello <?=$faculty['Name']?> (Faculty). You are currently creating a grade:<p>
 <form action="create.php?FacultyID=<?=$faculty['FacultyID']?>" method="post">
 	<table cellpadding="0" cellspacing="0">
 		<tr>
@@ -37,7 +51,7 @@
 		</tr>
 	</table>
 	<br />
-	<input type="submit" value="Create Evaluation" />
+	<input type="submit" value="Create Grade" />
 </form>
 <div class="home">
 	<a href="<?=$RootDirectory?>faculty?FacultyID=<?=$faculty['FacultyID']?>">Click here to return to the menu</a>

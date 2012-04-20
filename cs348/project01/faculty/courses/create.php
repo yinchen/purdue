@@ -9,7 +9,7 @@
 	{
 		$result = mysql_query("INSERT INTO Courses (CourseName, Semester, Year, Meets_At, Room, FacultyID) VALUES ('" . $_POST['CourseName'] . "', '" . $_POST['Semester'] . "', '" . $_POST['Year'] . "', '" . $_POST['Meets_At'] . "', '" . $_POST['Room'] . "', '" . $faculty['FacultyID'] . "')");
 
-		header("Location: " . $RootDirectory . "faculty/courses?FacultyID=" . $faculty['FacultyID']);
+		header("Location: index.php?FacultyID=" . $faculty['FacultyID']);
 		exit;
 	}
 

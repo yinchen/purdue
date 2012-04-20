@@ -7,60 +7,60 @@
 
 	if (empty($_POST) == false)
 	{
-		$result = mysql_query("UPDATE CourseEvaluations SET CourseID='" . $_POST['CourseID'] . "', EvaluationName='" . $_POST['EvaluationName'] . "', Type='" . $_POST['Type'] . "', Weightage='" . $_POST['Weightage'] . "', DeadlineDate='" . $_POST['DeadlineDate'] . "', MeetingRoom='" . $_POST['MeetingRoom'] . "' WHERE EvaluationID='" . $_GET['id'] . "'");
+		$result = mysql_query("UPDATE EvaluationGrades SET EvaluationID='" . $_POST['EvaluationID'] . "', StudentID='" . $_POST['StudentID'] . "', Grade='" . $_POST['Grade'] . "' WHERE EvaluationID='" . $_GET['evaluationid'] . "' AND StudentID='" . $_GET['studentid'] . "'");
 
-		header("Location: " . $RootDirectory . "faculty/evaluations?FacultyID=" . $faculty['FacultyID']);
+		header("Location: index.php?FacultyID=" . $faculty['FacultyID']);
 		exit;
 	}
 
-	$result = mysql_query("SELECT * FROM CourseEvaluations WHERE EvaluationID='" . $_GET['id'] . "'");
+	$result = mysql_query("SELECT * FROM EvaluationGrades WHERE StudentID='" . $_GET['studentid'] . "' AND EvaluationID='" . $_GET['evaluationid'] . "'");
 	$row = mysql_fetch_array($result);
 
-	$result2 = mysql_query("SELECT * FROM Courses WHERE FacultyID='" . $faculty['FacultyID'] . "'");
+	$result2 = mysql_query("SELECT * FROM Courses WHERE FacultyID='" . $faculty['FacultyID'] . "' ORDER BY CourseName ASC");
 	while($row2 = mysql_fetch_array($result2))
 	{
-		if ($row['CourseID'] == $row2['CourseID'])
-			$CourseID .= "<option value='" . $row2['CourseID'] . "' selected='true'>" . $row2['CourseName'] . "</option>\n";
+		$EvaluationID .= "<optgroup label='" . $row2['CourseName'] . "'>\n";
+
+		$result3 = mysql_query("SELECT * FROM CourseEvaluations WHERE CourseID='" . $row2['CourseID'] . "' ORDER BY EvaluationName ASC");
+		while($row3 = mysql_fetch_array($result3))
+		{
+			if ($row3['EvaluationID'] == $row['EvaluationID'])
+				$EvaluationID .= "<option value='" . $row3['EvaluationID'] . "' selected='true'>" . $row3['EvaluationName'] . "</option>\n";
+			else
+				$EvaluationID .= "<option value='" . $row3['EvaluationID'] . "'>" . $row3['EvaluationName'] . "</option>\n";
+		}
+
+		$EvaluationID .= "</optgroup>\n";
+	}
+
+	$result2 = mysql_query("SELECT * FROM Students ORDER BY Name ASC");
+	while($row2 = mysql_fetch_array($result2))
+	{
+		if ($row2['StudentID'] == $row['StudentID'])
+			$StudentID .= "<option value='" . $row2['StudentID'] . "' selected='true'>" . $row2['Name'] . "</option>\n";
 		else
-			$CourseID .= "<option value='" . $row2['CourseID'] . "'>" . $row2['CourseName'] . "</option>\n";
+			$StudentID .= "<option value='" . $row2['StudentID'] . "'>" . $row2['Name'] . "</option>\n";
 	}
 
 ?>
-<p>Hello <?=$faculty['Name']?> (Faculty). You are currently editing a course evaluation:<p>
-<form action="edit.php?FacultyID=<?=$faculty['FacultyID']?>&id=<?=$row['EvaluationID']?>" method="post">
+<p>Hello <?=$faculty['Name']?> (Faculty). You are currently editing a grade:<p>
+<form action="edit.php?FacultyID=<?=$faculty['FacultyID']?>&studentid=<?=$row['StudentID']?>&evaluationid=<?=$row['EvaluationID']?>" method="post">
 	<table cellpadding="0" cellspacing="0">
 		<tr>
-			<td><b>Course: </b></td>
-			<td><select name="CourseID"><?=$CourseID?></select></td>
+			<td><b>Evaluation: </b></td>
+			<td><select name="EvaluationID"><?=$EvaluationID?></select></td>
 		</tr>
 		<tr>
-			<td><b>Name: </b></td>
-			<td><input name="EvaluationName" type="text" value="<?=$row['EvaluationName']?>" /></td>
+			<td><b>Student: </b></td>
+			<td><select name="StudentID"><?=$StudentID?></select></td>
 		</tr>
 		<tr>
-			<td><b>Type: </b></td>
-			<td><select name="Type">
-				<option value="0" <?php if ($row['Type'] == 0) echo "selected='true'"; ?>>Homework</option>
-				<option value="1" <?php if ($row['Type'] == 1) echo "selected='true'"; ?>>Midterm</option>
-				<option value="2" <?php if ($row['Type'] == 2) echo "selected='true'"; ?>>Final Exam</option>
-				<option value="3" <?php if ($row['Type'] == 3) echo "selected='true'"; ?>>Project</option>
-				</select></td>
-		</tr>
-		<tr>
-			<td><b>Weightage: </b></td>
-			<td><input name="Weightage" type="text" value="<?=$row['Weightage']?>" /></td>
-		</tr>
-		<tr>
-			<td><b>Deadline Date: </b></td>
-			<td><input name="DeadlineDate" type="text" value="<?=$row['DeadlineDate']?>" /></td>
-		</tr>
-		<tr>
-			<td><b>Meeting Room: </b></td>
-			<td><input name="MeetingRoom" type="text" value="<?=$row['MeetingRoom']?>" /></td>
+			<td><b>Grade: </b></td>
+			<td><input name="Grade" type="text" value="<?=$row['Grade']?>" /></td>
 		</tr>
 	</table>
 	<br />
-	<input type="submit" value="Edit Evaluation" />
+	<input type="submit" value="Edit Grade" />
 </form>
 <div class="home">
 	<a href="<?=$RootDirectory?>faculty?FacultyID=<?=$faculty['FacultyID']?>">Click here to return to the menu</a>
