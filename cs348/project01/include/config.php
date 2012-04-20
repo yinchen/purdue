@@ -1,7 +1,7 @@
 #! /p/php/bin/php
 <?php
 
-	$RootDirectory = "/348/";
+	$RootDirectory = "/cgi-bin/mbmccorm/348/";
 
 	$con = mysql_connect("data.mccormicktechnologies.com", "mccormick_tech", "mcc0rm1ck_t3ch!");
 	if (!$con)
