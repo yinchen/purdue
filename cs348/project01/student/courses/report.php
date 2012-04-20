@@ -3,8 +3,9 @@
 <?php include "../../include/header.php"; ?>
 <?php
 
-	$result = mysql_query("SELECT * FROM Students WHERE StudentID='" . $_GET['StudentID'] . "'");
-	$student = mysql_fetch_array($result);
+	$result = oci_parse($con, "SELECT * FROM Students WHERE StudentID='" . $_GET['StudentID'] . "'");
+	oci_execute($result);
+	$student = oci_fetch_array($result);
 
 ?>
 <p>Hello <?=$student['Name']?> (Student). Below is the report of your courses:<p>
@@ -19,9 +20,10 @@
 	</tr>
 	<?php
 
-		$result = mysql_query("SELECT * FROM CourseStudents S LEFT OUTER JOIN Courses AS C ON S.CourseID = C.CourseID LEFT OUTER JOIN Faculties AS F ON C.FacultyID = F.FacultyID WHERE S.StudentID = '" . $student['StudentID'] . "' ORDER BY CourseName");
-
-		while($row = mysql_fetch_array($result))
+		$result = oci_parse($con, "SELECT * FROM CourseStudents S LEFT OUTER JOIN Courses AS C ON S.CourseID = C.CourseID LEFT OUTER JOIN Faculties AS F ON C.FacultyID = F.FacultyID WHERE S.StudentID = '" . $student['StudentID'] . "' ORDER BY CourseName");
+		oci_execute($result);
+		
+		while($row = oci_fetch_array($result))
 		{
 			echo "<tr>\n";
 			echo "<td>" . $row['CourseName'] . "</td>\n";

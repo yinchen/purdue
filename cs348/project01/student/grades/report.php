@@ -3,8 +3,9 @@
 <?php include "../../include/header.php"; ?>
 <?php
 
-	$result = mysql_query("SELECT * FROM Students WHERE StudentID='" . $_GET['StudentID'] . "'");
-	$student = mysql_fetch_array($result);
+	$result = oci_parse($con, "SELECT * FROM Students WHERE StudentID='" . $_GET['StudentID'] . "'");
+	oci_execute($result);
+	$student = oci_fetch_array($result);
 
 ?>
 <p>Hello <?=$student['Name']?> (Student). Below is the report of your grades for each of your course evaluations:<p>
@@ -17,9 +18,10 @@
 	</tr>
 	<?php
 
-		$result = mysql_query("SELECT C.CourseName, E.EvaluationName, E.Type, G.Grade FROM EvaluationGrades G LEFT OUTER JOIN CourseEvaluations AS E ON G.EvaluationID = E.EvaluationID LEFT OUTER JOIN Courses AS C ON E.CourseID = C.CourseID WHERE G.StudentID = '" . $student['StudentID'] . "' ORDER BY C.CourseName, E.DeadlineDate ASC");
+		$result = oci_parse($con, "SELECT C.CourseName, E.EvaluationName, E.Type, G.Grade FROM EvaluationGrades G LEFT OUTER JOIN CourseEvaluations AS E ON G.EvaluationID = E.EvaluationID LEFT OUTER JOIN Courses AS C ON E.CourseID = C.CourseID WHERE G.StudentID = '" . $student['StudentID'] . "' ORDER BY C.CourseName, E.DeadlineDate ASC");
+		oci_execute($result);
 
-		while($row = mysql_fetch_array($result))
+		while($row = oci_fetch_array($result))
 		{
 			echo "<tr>\n";
 			echo "<td>" . $row['CourseName'] . "</td>\n";
@@ -49,9 +51,10 @@
 	</tr>
 	<?php
 
-		$result = mysql_query("SELECT C.CourseName, C.Semester, C.Year, S2.Name, (SELECT SUM(G.Grade * E.Weightage) FROM CourseEvaluations E RIGHT OUTER JOIN EvaluationGrades AS G ON G.EvaluationID = E.EvaluationID WHERE E.CourseID = C.CourseID AND G.StudentID = S1.StudentID) AS CurrentGrade FROM CourseStudents S1 JOIN Students AS S2 ON S2.StudentID = S1.StudentID JOIN Courses AS C ON C.CourseID = S1.CourseID WHERE S1.StudentID = '" . $student['StudentID'] . "' ORDER BY C.CourseName");
-
-		while($row = mysql_fetch_array($result))
+		$result = oci_parse($con, "SELECT C.CourseName, C.Semester, C.Year, S2.Name, (SELECT SUM(G.Grade * E.Weightage) FROM CourseEvaluations E RIGHT OUTER JOIN EvaluationGrades AS G ON G.EvaluationID = E.EvaluationID WHERE E.CourseID = C.CourseID AND G.StudentID = S1.StudentID) AS CurrentGrade FROM CourseStudents S1 JOIN Students AS S2 ON S2.StudentID = S1.StudentID JOIN Courses AS C ON C.CourseID = S1.CourseID WHERE S1.StudentID = '" . $student['StudentID'] . "' ORDER BY C.CourseName");
+		oci_execute($result);
+		
+		while($row = oci_fetch_array($result))
 		{
 			echo "<tr>\n";
 			echo "<td>" . $row['CourseName'] . "</td>\n";

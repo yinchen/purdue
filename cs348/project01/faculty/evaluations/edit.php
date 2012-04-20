@@ -3,22 +3,26 @@
 <?php include "../../include/header.php"; ?>
 <?php
 
-	$result = mysql_query("SELECT * FROM Faculties WHERE FacultyID='" . $_GET['FacultyID'] . "'");
-	$faculty = mysql_fetch_array($result);
+	$result = oci_parse($con, "SELECT * FROM Faculties WHERE FacultyID='" . $_GET['FacultyID'] . "'");
+	oci_execute($result);
+	$faculty = oci_fetch_array($result);
 
 	if (empty($_POST) == false)
 	{
-		$result = mysql_query("UPDATE CourseEvaluations SET CourseID='" . $_POST['CourseID'] . "', EvaluationName='" . $_POST['EvaluationName'] . "', Type='" . $_POST['Type'] . "', Weightage='" . $_POST['Weightage'] . "', DeadlineDate='" . $_POST['DeadlineDate'] . "', MeetingRoom='" . $_POST['MeetingRoom'] . "' WHERE EvaluationID='" . $_GET['id'] . "'");
+		$result = oci_parse($con, "UPDATE CourseEvaluations SET CourseID='" . $_POST['CourseID'] . "', EvaluationName='" . $_POST['EvaluationName'] . "', Type='" . $_POST['Type'] . "', Weightage='" . $_POST['Weightage'] . "', DeadlineDate='" . $_POST['DeadlineDate'] . "', MeetingRoom='" . $_POST['MeetingRoom'] . "' WHERE EvaluationID='" . $_GET['id'] . "'");
+		oci_execute($result);
 
 		header("Location: index.php?FacultyID=" . $faculty['FacultyID']);
 		exit;
 	}
 
-	$result = mysql_query("SELECT * FROM CourseEvaluations WHERE EvaluationID='" . $_GET['id'] . "'");
-	$row = mysql_fetch_array($result);
+	$result = oci_parse($con, "SELECT * FROM CourseEvaluations WHERE EvaluationID='" . $_GET['id'] . "'");
+	oci_execute($result);
+	$row = oci_fetch_array($result);
 
-	$result2 = mysql_query("SELECT * FROM Courses WHERE FacultyID='" . $faculty['FacultyID'] . "'");
-	while($row2 = mysql_fetch_array($result2))
+	$result2 = oci_parse($con, "SELECT * FROM Courses WHERE FacultyID='" . $faculty['FacultyID'] . "'");
+	oci_execute($result2);
+	while($row2 = oci_fetch_array($result2))
 	{
 		if ($row['CourseID'] == $row2['CourseID'])
 			$CourseID .= "<option value='" . $row2['CourseID'] . "' selected='true'>" . $row2['CourseName'] . "</option>\n";

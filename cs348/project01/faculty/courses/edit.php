@@ -3,19 +3,22 @@
 <?php include "../../include/header.php"; ?>
 <?php
 
-	$result = mysql_query("SELECT * FROM Faculties WHERE FacultyID='" . $_GET['FacultyID'] . "'");
-	$faculty = mysql_fetch_array($result);
+	$result = oci_parse($con, "SELECT * FROM Faculties WHERE FacultyID='" . $_GET['FacultyID'] . "'");
+	oci_execute($result);
+	$faculty = oci_fetch_array($result);
 
 	if (empty($_POST) == false)
 	{
-		$result = mysql_query("UPDATE Courses SET CourseName='" . $_POST['CourseName'] . "', Semester='" . $_POST['Semester'] . "', Year='" . $_POST['Year'] . "', Meets_At='" . $_POST['Meets_At'] . "', Room='" . $_POST['Room'] . "' WHERE CourseID='" . $_GET['id'] . "' AND FacultyID='" . $faculty['FacultyID'] . "'");
+		$result = oci_parse($con, "UPDATE Courses SET CourseName='" . $_POST['CourseName'] . "', Semester='" . $_POST['Semester'] . "', Year='" . $_POST['Year'] . "', Meets_At='" . $_POST['Meets_At'] . "', Room='" . $_POST['Room'] . "' WHERE CourseID='" . $_GET['id'] . "' AND FacultyID='" . $faculty['FacultyID'] . "'");
+		oci_execute($result);
 
 		header("Location: index.php?FacultyID=" . $faculty['FacultyID']);
 		exit;
 	}
 
-	$result = mysql_query("SELECT * FROM Courses WHERE CourseID='" . $_GET['id'] . "' AND FacultyID='" . $faculty['FacultyID'] . "'");
-	$row = mysql_fetch_array($result);
+	$result = oci_parse($con, "SELECT * FROM Courses WHERE CourseID='" . $_GET['id'] . "' AND FacultyID='" . $faculty['FacultyID'] . "'");
+	oci_execute($result);
+	$row = oci_fetch_array($result);
 
 ?>
 <p>Hello <?=$faculty['Name']?> (Faculty). You are currently editing a course:<p>

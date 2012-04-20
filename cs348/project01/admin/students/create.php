@@ -5,8 +5,9 @@
 
 	if (empty($_POST) == false)
 	{
-		$result = mysql_query("INSERT INTO Students (Name) VALUES ('" . $_POST['Name'] . "')");
-
+		$result = oci_parse($con, "INSERT INTO Students (Name) VALUES ('" . $_POST['Name'] . "')");
+		oci_execute($result);
+		
 		header("Location: " . $RootDirectory . "admin/students");
 		exit;
 	}

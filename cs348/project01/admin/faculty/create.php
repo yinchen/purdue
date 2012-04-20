@@ -5,14 +5,16 @@
 
 	if (empty($_POST) == false)
 	{
-		$result = mysql_query("INSERT INTO Faculties (DepartmentID, Name) VALUES ('" . $_POST['DepartmentID'] . "', '" . $_POST['Name'] . "')");
+		$result = oci_parse($con, "INSERT INTO Faculties (DepartmentID, Name) VALUES ('" . $_POST['DepartmentID'] . "', '" . $_POST['Name'] . "')");
+		oci_execute($result);
 
 		header("Location: " . $RootDirectory . "admin/faculty");
 		exit;
 	}
 
-	$result = mysql_query("SELECT * FROM Departments");
-	while($row = mysql_fetch_array($result))
+	$result = oci_parse($con, "SELECT * FROM Departments");
+	oci_execute($result);
+	while($row = oci_fetch_array($result))
 	{
 		$DepartmentID .= "<option value='" . $row['DepartmentID'] . "'>" . $row['Name'] . "</option>\n";
 	}

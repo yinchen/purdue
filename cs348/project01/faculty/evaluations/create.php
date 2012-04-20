@@ -3,19 +3,22 @@
 <?php include "../../include/header.php"; ?>
 <?php
 
-	$result = mysql_query("SELECT * FROM Faculties WHERE FacultyID='" . $_GET['FacultyID'] . "'");
-	$faculty = mysql_fetch_array($result);
+	$result = oci_parse($con, "SELECT * FROM Faculties WHERE FacultyID='" . $_GET['FacultyID'] . "'");
+	oci_execute($result);
+	$faculty = oci_fetch_array($result);
 
 	if (empty($_POST) == false)
 	{
-		$result = mysql_query("INSERT INTO CourseEvaluations (CourseID, EvaluationName, Type, Weightage, DeadlineDate, MeetingRoom) VALUES ('" . $_POST['CourseID'] . "', '" . $_POST['EvaluationName'] . "', '" . $_POST['Type'] . "', '" . $_POST['Weightage'] . "', '" . $_POST['DeadlineDate'] . "', '" . $_POST['MeetingRoom'] . "')");
+		$result = oci_parse($con, "INSERT INTO CourseEvaluations (CourseID, EvaluationName, Type, Weightage, DeadlineDate, MeetingRoom) VALUES ('" . $_POST['CourseID'] . "', '" . $_POST['EvaluationName'] . "', '" . $_POST['Type'] . "', '" . $_POST['Weightage'] . "', '" . $_POST['DeadlineDate'] . "', '" . $_POST['MeetingRoom'] . "')");
+		oci_execute($result);
 
 		header("Location: index.php?FacultyID=" . $faculty['FacultyID']);
 		exit;
 	}
 
-	$result = mysql_query("SELECT * FROM Courses WHERE FacultyID='" . $faculty['FacultyID'] . "'");
-	while($row = mysql_fetch_array($result))
+	$result = oci_parse($con, "SELECT * FROM Courses WHERE FacultyID='" . $faculty['FacultyID'] . "'");
+	oci_execute($result);
+	while($row = oci_fetch_array($result))
 	{
 		$CourseID .= "<option value='" . $row['CourseID'] . "'>" . $row['CourseName'] . "</option>\n";
 	}

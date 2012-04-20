@@ -3,8 +3,9 @@
 <?php include "../../include/header.php"; ?>
 <?php
 
-	$result = mysql_query("SELECT * FROM Faculties WHERE FacultyID='" . $_GET['FacultyID'] . "'");
-	$faculty = mysql_fetch_array($result);
+	$result = oci_parse($con, "SELECT * FROM Faculties WHERE FacultyID='" . $_GET['FacultyID'] . "'");
+	oci_execute($result);
+	$faculty = oci_fetch_array($result);
 
 ?>
 <p>Hello <?=$faculty['Name']?> (Faculty). Below is the list of the grades for your courses:<p>
@@ -18,9 +19,10 @@
 	</tr>
 	<?php
 
-		$result = mysql_query("SELECT E.EvaluationID, S.StudentID, C.CourseName, E.EvaluationName, S.Name, G.Grade FROM EvaluationGrades G JOIN Students AS S ON S.StudentID = G.StudentID JOIN CourseEvaluations AS E ON E.EvaluationID = G.EvaluationID JOIN Courses AS C ON C.CourseID = E.CourseID WHERE C.FacultyID = '" . $faculty['FacultyID'] . "'");
-
-		while($row = mysql_fetch_array($result))
+		$result = oci_parse($con, "SELECT E.EvaluationID, S.StudentID, C.CourseName, E.EvaluationName, S.Name, G.Grade FROM EvaluationGrades G JOIN Students AS S ON S.StudentID = G.StudentID JOIN CourseEvaluations AS E ON E.EvaluationID = G.EvaluationID JOIN Courses AS C ON C.CourseID = E.CourseID WHERE C.FacultyID = '" . $faculty['FacultyID'] . "'");
+		oci_execute($result);
+		
+		while($row = oci_fetch_array($result))
 		{
 			echo "<tr>\n";
 			echo "<td>" . $row['CourseName'] . "</td>\n";

@@ -5,14 +5,16 @@
 
 	if (empty($_POST) == false)
 	{
-		$result = mysql_query("UPDATE Departments SET Name='" . $_POST['Name'] . "', HeadName='" . $_POST['HeadName'] . "' WHERE DepartmentID='" . $_GET['id'] . "'");
+		$result = oci_parse($con, "UPDATE Departments SET Name='" . $_POST['Name'] . "', HeadName='" . $_POST['HeadName'] . "' WHERE DepartmentID='" . $_GET['id'] . "'");
+		oci_execute($result);
 
 		header("Location: " . $RootDirectory . "admin/departments");
 		exit;
 	}
 
-	$result = mysql_query("SELECT * FROM Departments WHERE DepartmentID='" . $_GET['id'] . "'");
-	$row = mysql_fetch_array($result);
+	$result = oci_parse($con, "SELECT * FROM Departments WHERE DepartmentID='" . $_GET['id'] . "'");
+	$row = oci_fetch_array($result);
+	oci_execute($result);
 
 ?>
 <p>Hello Administrator. You are currently editing a department:<p>

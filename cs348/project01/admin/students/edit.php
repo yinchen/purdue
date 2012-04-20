@@ -5,14 +5,16 @@
 
 	if (empty($_POST) == false)
 	{
-		$result = mysql_query("UPDATE Students SET Name='" . $_POST['Name'] . "' WHERE StudentID='" . $_GET['id'] . "'");
+		$result = oci_parse($con, "UPDATE Students SET Name='" . $_POST['Name'] . "' WHERE StudentID='" . $_GET['id'] . "'");
+		oci_execute($result);
 
 		header("Location: " . $RootDirectory . "admin/students");
 		exit;
 	}
 
-	$result = mysql_query("SELECT * FROM Students WHERE StudentID='" . $_GET['id'] . "'");
-	$row = mysql_fetch_array($result);
+	$result = oci_parse($con, "SELECT * FROM Students WHERE StudentID='" . $_GET['id'] . "'");
+	oci_execute($result);
+	$row = oci_fetch_array($result);
 
 ?>
 <p>Hello Administrator. You are currently editing a student:<p>

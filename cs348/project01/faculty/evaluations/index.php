@@ -3,8 +3,9 @@
 <?php include "../../include/header.php"; ?>
 <?php
 
-	$result = mysql_query("SELECT * FROM Faculties WHERE FacultyID='" . $_GET['FacultyID'] . "'");
-	$faculty = mysql_fetch_array($result);
+	$result = oci_parse($con, "SELECT * FROM Faculties WHERE FacultyID='" . $_GET['FacultyID'] . "'");
+	oci_execute($result);
+	$faculty = oci_fetch_array($result);
 
 ?>
 <p>Hello <?=$faculty['Name']?> (Faculty). Below is the list of your course evaluations:<p>
@@ -20,9 +21,10 @@
 	</tr>
 	<?php
 
-		$result = mysql_query("SELECT * FROM CourseEvaluations E LEFT OUTER JOIN Courses AS C ON E.CourseID = C.CourseID WHERE C.FacultyID = '" . $faculty['FacultyID'] . "' ORDER BY E.DeadlineDate ASC");
+		$result = oci_parse($con, "SELECT * FROM CourseEvaluations E LEFT OUTER JOIN Courses AS C ON E.CourseID = C.CourseID WHERE C.FacultyID = '" . $faculty['FacultyID'] . "' ORDER BY E.DeadlineDate ASC");
+		oci_execute($result);
 
-		while($row = mysql_fetch_array($result))
+		while($row = oci_fetch_array($result))
 		{
 			echo "<tr>\n";
 			echo "<td>" . $row['CourseName'] . "</td>\n";

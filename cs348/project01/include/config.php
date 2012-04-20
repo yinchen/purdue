@@ -3,12 +3,9 @@
 
 	$RootDirectory = "/cgi-bin/mbmccorm/348/";
 
-	$con = mysql_connect("data.mccormicktechnologies.com", "mccormick_tech", "mcc0rm1ck_t3ch!");
+	$con = oci_connect("mbmccorm@csora", "veStU554UChA", "claros.cs.purdue.edu:1524/strep");
 	if (!$con)
 	{
-		die("Could not connect: " . mysql_error());
+		die("Could not connect: " . oci_error());
 	}
-
-	mysql_select_db("mbmccormick_cs348", $con);
-
 ?>

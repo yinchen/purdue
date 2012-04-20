@@ -3,27 +3,32 @@
 <?php include "../../include/header.php"; ?>
 <?php
 
-	$result = mysql_query("SELECT * FROM Faculties WHERE FacultyID='" . $_GET['FacultyID'] . "'");
-	$faculty = mysql_fetch_array($result);
+	$result = oci_parse($con, "SELECT * FROM Faculties WHERE FacultyID='" . $_GET['FacultyID'] . "'");
+	oci_execute($result);
+	$faculty = oci_fetch_array($result);
 
 	if (empty($_POST) == false)
 	{
-		$result = mysql_query("UPDATE EvaluationGrades SET EvaluationID='" . $_POST['EvaluationID'] . "', StudentID='" . $_POST['StudentID'] . "', Grade='" . $_POST['Grade'] . "' WHERE EvaluationID='" . $_GET['evaluationid'] . "' AND StudentID='" . $_GET['studentid'] . "'");
+		$result = oci_parse($con, "UPDATE EvaluationGrades SET EvaluationID='" . $_POST['EvaluationID'] . "', StudentID='" . $_POST['StudentID'] . "', Grade='" . $_POST['Grade'] . "' WHERE EvaluationID='" . $_GET['evaluationid'] . "' AND StudentID='" . $_GET['studentid'] . "'");
+		oci_execute($result);
 
 		header("Location: index.php?FacultyID=" . $faculty['FacultyID']);
 		exit;
 	}
 
-	$result = mysql_query("SELECT * FROM EvaluationGrades WHERE StudentID='" . $_GET['studentid'] . "' AND EvaluationID='" . $_GET['evaluationid'] . "'");
-	$row = mysql_fetch_array($result);
+	$result = oci_parse($con, "SELECT * FROM EvaluationGrades WHERE StudentID='" . $_GET['studentid'] . "' AND EvaluationID='" . $_GET['evaluationid'] . "'");
+	oci_execute($result);
+	$row = oci_fetch_array($result);
 
-	$result2 = mysql_query("SELECT * FROM Courses WHERE FacultyID='" . $faculty['FacultyID'] . "' ORDER BY CourseName ASC");
-	while($row2 = mysql_fetch_array($result2))
+	$result2 = oci_parse($con, "SELECT * FROM Courses WHERE FacultyID='" . $faculty['FacultyID'] . "' ORDER BY CourseName ASC");
+	oci_execute($result2);
+	while($row2 = oci_fetch_array($result2))
 	{
 		$EvaluationID .= "<optgroup label='" . $row2['CourseName'] . "'>\n";
 
-		$result3 = mysql_query("SELECT * FROM CourseEvaluations WHERE CourseID='" . $row2['CourseID'] . "' ORDER BY EvaluationName ASC");
-		while($row3 = mysql_fetch_array($result3))
+		$result3 = oci_parse($con, "SELECT * FROM CourseEvaluations WHERE CourseID='" . $row2['CourseID'] . "' ORDER BY EvaluationName ASC");
+		oci_execute($result3);
+		while($row3 = oci_fetch_array($result3))
 		{
 			if ($row3['EvaluationID'] == $row['EvaluationID'])
 				$EvaluationID .= "<option value='" . $row3['EvaluationID'] . "' selected='true'>" . $row3['EvaluationName'] . "</option>\n";
@@ -34,8 +39,9 @@
 		$EvaluationID .= "</optgroup>\n";
 	}
 
-	$result2 = mysql_query("SELECT * FROM Students ORDER BY Name ASC");
-	while($row2 = mysql_fetch_array($result2))
+	$result2 = oci_parse($con, "SELECT * FROM Students ORDER BY Name ASC");
+	oci_execute($result2);
+	while($row2 = oci_fetch_array($result2))
 	{
 		if ($row2['StudentID'] == $row['StudentID'])
 			$StudentID .= "<option value='" . $row2['StudentID'] . "' selected='true'>" . $row2['Name'] . "</option>\n";

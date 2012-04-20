@@ -4,8 +4,9 @@
 
 	if (empty($_GET['FacultyID']))
 	{	
-		$result = mysql_query("SELECT * FROM Faculties ORDER BY Name ASC");
-		while($row = mysql_fetch_array($result))
+		$result = oci_parse($con, "SELECT * FROM Faculties ORDER BY Name ASC");
+		oci_execute($result);
+		while($row = oci_fetch_array($result))
 		{
 			$FacultyID .= "<option value='" . $row['FacultyID'] . "'>" . $row['Name'] . "</option>\n";
 		}
@@ -30,8 +31,9 @@
 	}
 	else
 	{
-		$result = mysql_query("SELECT * FROM Faculties WHERE FacultyID='" . $_GET['FacultyID'] . "'");
-		$faculty = mysql_fetch_array($result);
+		$result = oci_parse($con, "SELECT * FROM Faculties WHERE FacultyID='" . $_GET['FacultyID'] . "'");
+		oci_execute($result);
+		$faculty = oci_fetch_array($result);
 
 ?>
 <p>Hello <?=$faculty['Name']?> (Faculty). Please select an action from the list below:<p>

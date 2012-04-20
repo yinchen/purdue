@@ -5,8 +5,8 @@
 
 	if (empty($_GET['StudentID']))
 	{	
-		$result = mysql_query("SELECT * FROM Students ORDER BY Name ASC");
-		while($row = mysql_fetch_array($result))
+		$result = oci_parse($con, "SELECT * FROM Students ORDER BY Name ASC");
+		while($row = oci_fetch_array($result))
 		{
 			$StudentID .= "<option value='" . $row['StudentID'] . "'>" . $row['Name'] . "</option>\n";
 		}
@@ -31,8 +31,8 @@
 	}
 	else
 	{
-		$result = mysql_query("SELECT * FROM Students WHERE StudentID='" . $_GET['StudentID'] . "'");
-		$student = mysql_fetch_array($result);
+		$result = oci_parse($con, "SELECT * FROM Students WHERE StudentID='" . $_GET['StudentID'] . "'");
+		$student = oci_fetch_array($result);
 
 ?>
 <p>Hello <?=$student['Name']?> (Student). You can view any of the following reports:<p>

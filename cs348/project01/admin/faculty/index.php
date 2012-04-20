@@ -10,9 +10,10 @@
 	</tr>
 	<?php
 
-		$result = mysql_query("SELECT * FROM Faculties F LEFT OUTER JOIN Departments AS D ON F.DepartmentID = D.DepartmentID");
-
-		while($row = mysql_fetch_array($result))
+		$result = oci_parse($con, "SELECT * FROM Faculties F LEFT OUTER JOIN Departments AS D ON F.DepartmentID = D.DepartmentID");
+		oci_execute($result);
+		
+		while($row = oci_fetch_array($result))
 		{
 			echo "<tr>\n";
 			echo "<td>" . $row[4] . "</td>\n";

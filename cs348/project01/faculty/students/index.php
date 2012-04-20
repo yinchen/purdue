@@ -3,8 +3,9 @@
 <?php include "../../include/header.php"; ?>
 <?php
 
-	$result = mysql_query("SELECT * FROM Faculties WHERE FacultyID='" . $_GET['FacultyID'] . "'");
-	$faculty = mysql_fetch_array($result);
+	$result = oci_parse($con, "SELECT * FROM Faculties WHERE FacultyID='" . $_GET['FacultyID'] . "'");
+	oci_execute($result);
+	$faculty = oci_fetch_array($result);
 
 ?>
 <p>Hello <?=$faculty['Name']?> (Faculty). Below is the list of the students assigned to your courses:<p>
@@ -16,9 +17,10 @@
 	</tr>
 	<?php
 
-		$result = mysql_query("SELECT C.CourseID, S.StudentID, P.Name, C.CourseName FROM Courses C JOIN CourseStudents AS S ON S.CourseID = C.CourseID LEFT OUTER JOIN Students AS P ON P.StudentID = S.StudentID WHERE C.FacultyID = '" . $faculty['FacultyID'] . "'");
-
-		while($row = mysql_fetch_array($result))
+		$result = oci_parse($con, "SELECT C.CourseID, S.StudentID, P.Name, C.CourseName FROM Courses C JOIN CourseStudents AS S ON S.CourseID = C.CourseID LEFT OUTER JOIN Students AS P ON P.StudentID = S.StudentID WHERE C.FacultyID = '" . $faculty['FacultyID'] . "'");
+		oci_execute($result);
+		
+		while($row = oci_fetch_array($result))
 		{
 			echo "<tr>\n";
 			echo "<td>" . $row['Name'] . "</td>\n";

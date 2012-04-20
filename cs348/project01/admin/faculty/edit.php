@@ -5,17 +5,20 @@
 
 	if (empty($_POST) == false)
 	{
-		$result = mysql_query("UPDATE Faculties SET DepartmentID='" . $_POST['DepartmentID'] . "', Name='" . $_POST['Name'] . "' WHERE FacultyID='" . $_GET['id'] . "'");
+		$result = oci_parse($con, "UPDATE Faculties SET DepartmentID='" . $_POST['DepartmentID'] . "', Name='" . $_POST['Name'] . "' WHERE FacultyID='" . $_GET['id'] . "'");
+		oci_execute($result);
 
 		header("Location: " . $RootDirectory . "admin/faculty");
 		exit;
 	}
 
-	$result = mysql_query("SELECT * FROM Faculties WHERE FacultyID='" . $_GET['id'] . "'");
-	$row = mysql_fetch_array($result);
+	$result = oci_parse($con, "SELECT * FROM Faculties WHERE FacultyID='" . $_GET['id'] . "'");
+	$row = oci_fetch_array($result);
+	oci_execute($result);
 
-	$result2 = mysql_query("SELECT * FROM Departments");
-	while($row2 = mysql_fetch_array($result2))
+	$result2 = oci_parse($con, "SELECT * FROM Departments");
+	oci_execute($result2);
+	while($row2 = oci_fetch_array($result2))
 	{
 		if ($row['DepartmentID'] == $row2['DepartmentID'])
 			$DepartmentID .= "<option value='" . $row2['DepartmentID'] . "' selected='true'>" . $row2['Name'] . "</option>\n";

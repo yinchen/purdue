@@ -5,7 +5,8 @@
 
 	if (empty($_POST) == false)
 	{
-		$result = mysql_query("INSERT INTO Departments (Name, HeadName) VALUES ('" . $_POST['Name'] . "', '" . $_POST['HeadName'] . "')");
+		$result = oci_parse($con, "INSERT INTO Departments (Name, HeadName) VALUES ('" . $_POST['Name'] . "', '" . $_POST['HeadName'] . "')");
+		oci_execute($result);
 
 		header("Location: " . $RootDirectory . "admin/departments");
 		exit;

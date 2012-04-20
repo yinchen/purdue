@@ -9,9 +9,10 @@
 	</tr>
 	<?php
 
-		$result = mysql_query("SELECT * FROM Departments");
+		$result = oci_parse($con, "SELECT * FROM Departments ORDER BY Name");
+		oci_execute($result);
 
-		while($row = mysql_fetch_array($result))
+		while($row = oci_fetch_array($result))
 		{
 			echo "<tr>\n";
 			echo "<td>" . $row['Name'] . "</td>\n";

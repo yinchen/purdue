@@ -3,12 +3,14 @@
 <?php include "../../include/header.php"; ?>
 <?php
 
-	$result = mysql_query("SELECT * FROM Faculties WHERE FacultyID='" . $_GET['FacultyID'] . "'");
-	$faculty = mysql_fetch_array($result);
+	$result = oci_parse($con, "SELECT * FROM Faculties WHERE FacultyID='" . $_GET['FacultyID'] . "'");
+	oci_execute($result);
+	$faculty = oci_fetch_array($result);
 
 	if (empty($_POST) == false)
 	{
-		$result = mysql_query("INSERT INTO Courses (CourseName, Semester, Year, Meets_At, Room, FacultyID) VALUES ('" . $_POST['CourseName'] . "', '" . $_POST['Semester'] . "', '" . $_POST['Year'] . "', '" . $_POST['Meets_At'] . "', '" . $_POST['Room'] . "', '" . $faculty['FacultyID'] . "')");
+		$result = oci_parse($con, "INSERT INTO Courses (CourseName, Semester, Year, Meets_At, Room, FacultyID) VALUES ('" . $_POST['CourseName'] . "', '" . $_POST['Semester'] . "', '" . $_POST['Year'] . "', '" . $_POST['Meets_At'] . "', '" . $_POST['Room'] . "', '" . $faculty['FacultyID'] . "')");
+		oci_execute($result);
 
 		header("Location: index.php?FacultyID=" . $faculty['FacultyID']);
 		exit;

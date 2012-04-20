@@ -10,9 +10,10 @@
 	</tr>
 	<?php
 
-		$result = mysql_query("SELECT * FROM Students ORDER BY Name ASC");
+		$result = oci_parse($con, "SELECT * FROM Students ORDER BY Name ASC");
+		oci_execute($result);
 
-		while($row = mysql_fetch_array($result))
+		while($row = oci_fetch_array($result))
 		{
 			echo "<tr>\n";
 			echo "<td>" . $row['StudentID'] . "</td>\n";

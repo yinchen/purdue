@@ -2,8 +2,9 @@
 <?php include "../../include/config.php"; ?>
 <?php
 
-	$result = mysql_query("DELETE FROM Departments WHERE DepartmentID='" . $_GET['id'] . "'");
-
+	$result = oci_parse($con, "DELETE FROM Departments WHERE DepartmentID='" . $_GET['id'] . "'");
+	oci_execute($result);
+	
 	header("Location: " . $RootDirectory . "admin/departments");
 	exit;
 

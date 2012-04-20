@@ -3,8 +3,9 @@
 <?php include "../../include/header.php"; ?>
 <?php
 
-	$result = mysql_query("SELECT * FROM Faculties WHERE FacultyID='" . $_GET['FacultyID'] . "'");
-	$faculty = mysql_fetch_array($result);
+	$result = oci_parse($con, "SELECT * FROM Faculties WHERE FacultyID='" . $_GET['FacultyID'] . "'");
+	oci_execute($result);
+	$faculty = oci_fetch_array($result);
 
 ?>
 <p>Hello <?=$faculty['Name']?> (Faculty). Below is the report of courses:<p>
@@ -18,9 +19,10 @@
 	</tr>
 	<?php
 
-		$result = mysql_query("SELECT C.CourseID, C.CourseName, C.Meets_At, C.Room, (SELECT COUNT(*) FROM CourseStudents S WHERE S.CourseID = C.CourseID) AS NumStudents, (SELECT COUNT(*) FROM CourseEvaluations E WHERE E.CourseID = C.CourseID) AS NumEvaluations FROM Courses C WHERE C.FacultyID = '" . $faculty['FacultyID'] . "' ORDER BY C.CourseName");
+		$result = oci_parse($con, "SELECT C.CourseID, C.CourseName, C.Meets_At, C.Room, (SELECT COUNT(*) FROM CourseStudents S WHERE S.CourseID = C.CourseID) AS NumStudents, (SELECT COUNT(*) FROM CourseEvaluations E WHERE E.CourseID = C.CourseID) AS NumEvaluations FROM Courses C WHERE C.FacultyID = '" . $faculty['FacultyID'] . "' ORDER BY C.CourseName");
+		oci_execute($result);
 
-		while($row = mysql_fetch_array($result))
+		while($row = oci_fetch_array($result))
 		{
 			echo "<tr>\n";
 			echo "<td>" . $row['CourseName'] . "</td>\n";
