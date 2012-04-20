@@ -6,37 +6,32 @@
 	$faculty = mysql_fetch_array($result);
 
 ?>
-<p>Hello <?=$faculty['Name']?> (Faculty). Below is the list of your courses:<p>
+<p>Hello <?=$faculty['Name']?> (Faculty). Below is the report of courses:<p>
 <table cellpadding="0" cellspacing="0">
 	<tr>
-		<th>Name</th>
-		<th>Semester</th>
-		<th>Year</th>
+		<th>Course</th>
 		<th>Meets At</th>
 		<th>Room Number</th>
-		<th>Actions</th>
+		<th>Students</th>
+		<th>Evaluations</th>
 	</tr>
 	<?php
 
-		$result = mysql_query("SELECT * FROM Courses C WHERE C.FacultyID = '" . $faculty['FacultyID'] . "' ORDER BY C.CourseName");
+		$result = mysql_query("SELECT C.CourseID, C.CourseName, C.Meets_At, C.Room, (SELECT COUNT(*) FROM CourseStudents S WHERE S.CourseID = C.CourseID) AS NumStudents, (SELECT COUNT(*) FROM CourseEvaluations E WHERE E.CourseID = C.CourseID) AS NumEvaluations FROM Courses C WHERE C.FacultyID = '" . $faculty['FacultyID'] . "' ORDER BY C.CourseName");
 
 		while($row = mysql_fetch_array($result))
 		{
 			echo "<tr>\n";
 			echo "<td>" . $row['CourseName'] . "</td>\n";
-			echo "<td>" . $row['Semester'] . "</td>\n";
-			echo "<td>" . $row['Year'] . "</td>\n";
 			echo "<td>" . $row['Meets_At'] . "</td>\n";
 			echo "<td>" . $row['Room'] . "</td>\n";
-			echo "<td><a href=\"edit.php?FacultyID=" . $faculty['FacultyID'] . "&id=" . $row['CourseID'] . "\">Edit</a>
-			          <a href=\"delete.php?FacultyID=" . $faculty['FacultyID'] . "&id=" . $row['CourseID'] . "\">Delete</a></td>\n";
+			echo "<td>" . $row['NumStudents'] . "</td>\n";
+			echo "<td>" . $row['NumEvaluations'] . "</td>\n";
 			echo "</tr>\n";
 		}
 
 	?>
 </table>
-<br />
-<input type="button" value="Create Course" onClick="location.href='create.php?FacultyID=<?=$faculty['FacultyID']?>';" />
 <br />
 <div class="home">
 	<a href="<?=$RootDirectory?>faculty?FacultyID=<?=$faculty['FacultyID']?>">Click here to return to the menu</a>

@@ -53,7 +53,7 @@
 <p>You can also view any of the following reports:<p>
 <div class="list">
 	<div class="item">
-		<a href="courses/report.php?FacultyID=<?=$faculty['FacultyID']?>">Report of Classes</a>
+		<a href="courses/report.php?FacultyID=<?=$faculty['FacultyID']?>">Report of Courses</a>
 	</div>
 	<div class="item">
 		<a href="grades/report.php?FacultyID=<?=$faculty['FacultyID']?>">Report of Students and Grades</a>

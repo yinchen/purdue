@@ -6,7 +6,7 @@
 	$student = mysql_fetch_array($result);
 
 ?>
-<p>Hello <?=$student['Name']?> (Student). Below is the list of your evaluations:<p>
+<p>Hello <?=$student['Name']?> (Student). Below is the report of your evaluations:<p>
 <table cellpadding="0" cellspacing="0">
 	<tr>
 		<th>Course</th>
@@ -34,7 +34,7 @@
 				echo "<td>Final Exam</td>\n";
 			else if ($row['Type'] == 3)
 				echo "<td>Project</td>\n";
-			echo "<td>" . $row['DeadlineDate'] . "</td>\n";
+			echo "<td>" . date("F j, Y, g:i a", strtotime($row['DeadlineDate'])) . "</td>\n";
 			echo "<td>" . $row['MeetingRoom'] . "</td>\n";
 			echo "</tr>\n";
 		}

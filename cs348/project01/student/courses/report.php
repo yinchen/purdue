@@ -6,7 +6,7 @@
 	$student = mysql_fetch_array($result);
 
 ?>
-<p>Hello <?=$student['Name']?> (Student). Below is the list of your courses:<p>
+<p>Hello <?=$student['Name']?> (Student). Below is the report of your courses:<p>
 <table cellpadding="0" cellspacing="0">
 	<tr>
 		<th>Course</th>
@@ -18,7 +18,7 @@
 	</tr>
 	<?php
 
-		$result = mysql_query("SELECT * FROM CourseStudents S LEFT OUTER JOIN Courses AS C ON S.CourseID = C.CourseID LEFT OUTER JOIN Faculties AS F ON C.FacultyID = F.FacultyID WHERE S.StudentID = '" . $student['StudentID'] . "'");
+		$result = mysql_query("SELECT * FROM CourseStudents S LEFT OUTER JOIN Courses AS C ON S.CourseID = C.CourseID LEFT OUTER JOIN Faculties AS F ON C.FacultyID = F.FacultyID WHERE S.StudentID = '" . $student['StudentID'] . "' ORDER BY CourseName");
 
 		while($row = mysql_fetch_array($result))
 		{

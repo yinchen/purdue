@@ -52,7 +52,7 @@
 		</tr>
 		<tr>
 			<td><b>Deadline Date: </b></td>
-			<td><input name="DeadlineDate" type="text" value="<?=$row['DeadlineDate']?>" /></td>
+			<td><input name="DeadlineDate" type="text" value="<?=$row['DeadlineDate']?>" /> Format is "YYYY-MM-DD HH:MM:SS"</td>
 		</tr>
 		<tr>
 			<td><b>Meeting Room: </b></td>

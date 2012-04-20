@@ -35,7 +35,7 @@
 				echo "<td>Final Exam</td>\n";
 			else if ($row['Type'] == 3)
 				echo "<td>Project</td>\n";
-			echo "<td>" . $row['DeadlineDate'] . "</td>\n";
+			echo "<td>" . date("F j, Y, g:i a", strtotime($row['DeadlineDate'])) . "</td>\n";
 			echo "<td>" . $row['MeetingRoom'] . "</td>\n";
 			echo "<td><a href=\"edit.php?FacultyID=" . $faculty['FacultyID'] . "&id=" . $row['EvaluationID'] . "\">Edit</a>
 			          <a href=\"delete.php?FacultyID=" . $faculty['FacultyID'] . "&id=" . $row['EvaluationID'] . "\">Delete</a></td>\n";
