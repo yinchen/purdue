@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>University Course Management System</title>
-    <link rel="stylesheet" href="<?php $RootDirectory; ?>css/stylesheet.css" />
+    <link rel="stylesheet" href="<?php echo $RootDirectory; ?>css/stylesheet.css" />
 </head>
 <body>
     <div id="page">
