@@ -3,13 +3,13 @@
 <p>Please select your context from the list below:<p>
 <div class="list">
 	<div class="item">
-		<a href="<?=$RootDirectory?>admin">Administrator</a>
+		<a href="<?php echo $RootDirectory; ?>admin">Administrator</a>
 	</div>
 	<div class="item">
-		<a href="<?=$RootDirectory?>faculty">Faculty</a>
+		<a href="<?php echo $RootDirectory; ?>faculty">Faculty</a>
 	</div>
 	<div class="item">
-		<a href="<?=$RootDirectory?>student">Student</a>
+		<a href="<?php echo $RootDirectory; ?>student">Student</a>
 	</div>
 </div>
 <?php include "include/footer.php"; ?>
