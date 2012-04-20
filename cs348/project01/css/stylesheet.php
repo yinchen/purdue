@@ -1,3 +1,4 @@
+<?php header('Content-type: text/css'); ?>
 body {
 	background: #eeeeee;
   	font-family: Helvetica, Arial, sans-serif;
