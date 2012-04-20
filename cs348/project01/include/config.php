@@ -1,3 +1,4 @@
+#! /p/php/bin/php
 <?php
 
 	$RootDirectory = "/348/";

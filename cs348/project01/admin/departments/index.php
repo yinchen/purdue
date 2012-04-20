@@ -1,3 +1,4 @@
+#! /p/php/bin/php
 <?php include "../../include/config.php"; ?>
 <?php include "../../include/header.php"; ?>
 <p>Hello Administrator. Below is the list of departments:<p>

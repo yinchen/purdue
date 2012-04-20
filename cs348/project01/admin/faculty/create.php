@@ -1,4 +1,4 @@
-
+#! /p/php/bin/php
 <?php include "../../include/config.php"; ?>
 <?php include "../../include/header.php"; ?>
 <?php
