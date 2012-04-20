@@ -6,29 +6,25 @@
 	$student = mysql_fetch_array($result);
 
 ?>
-<p>Hello <?=$student['Name']?>. Below is the list of your courses:<p>
+<p>Hello <?=$student['Name']?> (Student). Below is the list of your grades:<p>
 <table cellpadding="0" cellspacing="0">
 	<tr>
+		<th>Evaluation Name</th>
 		<th>Course</th>
-		<th>Semester</th>
-		<th>Year</th>
-		<th>Meets At</th>
-		<th>Room</th>
-		<th>Faculty</th>
+		<th>Weightage</th>
+		<th>Grade</th>
 	</tr>
 	<?php
 
-		$result = mysql_query("SELECT * FROM CourseStudents S LEFT OUTER JOIN Courses AS C ON S.CourseID = C.CourseID LEFT OUTER JOIN Faculties AS F ON C.FacultyID = F.FacultyID WHERE S.StudentID = '" . $student['StudentID'] . "'");
+		$result = mysql_query("SELECT * FROM EvaluationGrades G LEFT OUTER JOIN CourseEvaluations AS E ON G.EvaluationID = E.EvaluationID LEFT OUTER JOIN Courses AS C ON E.CourseID = C.CourseID WHERE G.StudentID = '" . $student['StudentID'] . "' ORDER BY E.DeadlineDate ASC");
 
 		while($row = mysql_fetch_array($result))
 		{
 			echo "<tr>\n";
+			echo "<td>" . $row['EvaluationName'] . "</td>\n";
 			echo "<td>" . $row['CourseName'] . "</td>\n";
-			echo "<td>" . $row['Semester'] . "</td>\n";
-			echo "<td>" . $row['Year'] . "</td>\n";
-			echo "<td>" . $row['Meets_At'] . "</td>\n";
-			echo "<td>" . $row['Room'] . "</td>\n";
-			echo "<td>" . $row['Name'] . "</td>\n";
+			echo "<td>" . $row['Weightage'] . "</td>\n";
+			echo "<td>" . $row['Grade'] . "</td>\n";
 			echo "</tr>\n";
 		}
 

@@ -14,7 +14,7 @@
 	}
 
 ?>
-<p>Hello <?=$faculty['Name']?>. You are currently creating a course:<p>
+<p>Hello <?=$faculty['Name']?> (Faculty). You are currently creating a course:<p>
 <form action="create.php?FacultyID=<?=$faculty['FacultyID']?>" method="post">
 	<table cellpadding="0" cellspacing="0">
 		<tr>

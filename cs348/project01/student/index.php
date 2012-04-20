@@ -34,16 +34,16 @@
 		$student = mysql_fetch_array($result);
 
 ?>
-<p>Hello <?=$student['Name']?>. Please select an action from the list below:<p>
+<p>Hello <?=$student['Name']?> (Student). You can view any of the following reports:<p>
 <div class="list">
 	<div class="item">
-		<a href="<?=$RootDirectory?>student/evaluations?StudentID=<?=$student['StudentID']?>">Calendar of Evaluations</a>
+		<a href="evaluations/report.php?StudentID=<?=$student['StudentID']?>">Calendar of Evaluations</a>
 	</div>
 	<div class="item">
-		<a href="<?=$RootDirectory?>student/courses?StudentID=<?=$student['StudentID']?>">My Courses</a>
+		<a href="courses/report.php?StudentID=<?=$student['StudentID']?>">My Courses</a>
 	</div>
 	<div class="item">
-		<a href="<?=$RootDirectory?>student/grades?StudentID=<?=$student['StudentID']?>">My Grades</a>
+		<a href="grades/report.php?StudentID=<?=$student['StudentID']?>">My Grades</a>
 	</div>
 </div>
 <div class="home">

@@ -10,7 +10,7 @@
 <table cellpadding="0" cellspacing="0">
 	<tr>
 		<th>Evaluation Name</th>
-		<th>Course Name</th>
+		<th>Course</th>
 		<th>Weightage</th>
 		<th>Grade</th>
 	</tr>

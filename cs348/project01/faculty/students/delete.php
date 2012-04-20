@@ -6,7 +6,7 @@
 
 	$result = mysql_query("DELETE FROM CourseStudents WHERE CourseID='" . $_GET['courseid'] . "' AND StudentID='" . $_GET['studentid'] . "'");
 
-	header("Location: " . $RootDirectory . "faculty/students?FacultyID=" . $faculty['FacultyID']);
+	header("Location: index.php?FacultyID=" . $faculty['FacultyID']);
 	exit;
 
 ?>

@@ -34,19 +34,29 @@
 		$faculty = mysql_fetch_array($result);
 
 ?>
-<p>Hello <?=$faculty['Name']?>. Please select an action from the list below:<p>
+<p>Hello <?=$faculty['Name']?> (Faculty). Please select an action from the list below:<p>
 <div class="list">
 	<div class="item">
-		<a href="<?=$RootDirectory?>faculty/courses?FacultyID=<?=$faculty['FacultyID']?>">Manage Courses</a>
+		<a href="courses?FacultyID=<?=$faculty['FacultyID']?>">Manage Courses</a>
 	</div>
 	<div class="item">
-		<a href="<?=$RootDirectory?>faculty/evaluations?FacultyID=<?=$faculty['FacultyID']?>">Manage Evaluations</a>
+		<a href="evaluations?FacultyID=<?=$faculty['FacultyID']?>">Manage Evaluations</a>
 	</div>
 	<div class="item">
-		<a href="<?=$RootDirectory?>faculty/students?FacultyID=<?=$faculty['FacultyID']?>">Manage Students</a>
+		<a href="students?FacultyID=<?=$faculty['FacultyID']?>">Manage Student Assignments</a>
 	</div>
 	<div class="item">
-		<a href="<?=$RootDirectory?>faculty/grades?FacultyID=<?=$faculty['FacultyID']?>">Manage Grades</a>
+		<a href="grades?FacultyID=<?=$faculty['FacultyID']?>">Manage Grades</a>
+	</div>
+</div>
+<br />
+<p>You can also view any of the following reports:<p>
+<div class="list">
+	<div class="item">
+		<a href="courses/report.php?FacultyID=<?=$faculty['FacultyID']?>">Report of Classes</a>
+	</div>
+	<div class="item">
+		<a href="grades/report.php?FacultyID=<?=$faculty['FacultyID']?>">Report of Students and Grades</a>
 	</div>
 </div>
 <div class="home">

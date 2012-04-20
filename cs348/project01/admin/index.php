@@ -3,13 +3,23 @@
 <p>Hello Administrator. Please select an action from the list below:<p>
 <div class="list">
 	<div class="item">
-		<a href="<?=$RootDirectory?>admin/departments">Manage Departments</a>
+		<a href="departments">Manage Departments</a>
 	</div>
 	<div class="item">
-		<a href="<?=$RootDirectory?>admin/faculty">Manage Faculty</a>
+		<a href="faculty">Manage Faculty</a>
 	</div>
 	<div class="item">
-		<a href="<?=$RootDirectory?>admin/students">Manage Students</a>
+		<a href="students">Manage Students</a>
+	</div>
+</div>
+<br />
+<p>You can also view any of the following reports:<p>
+<div class="list">
+	<div class="item">
+		<a href="<?=$RootDirectory?>departments/report.php?FacultyID=<?=$faculty['FacultyID']?>">Department Report</a>
+	</div>
+	<div class="item">
+		<a href="<?=$RootDirectory?>faculty/report.php?FacultyID=<?=$faculty['FacultyID']?>">Faculty Report</a>
 	</div>
 </div>
 <div class="home">

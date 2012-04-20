@@ -6,10 +6,10 @@
 	$faculty = mysql_fetch_array($result);
 
 ?>
-<p>Hello <?=$faculty['Name']?>. Below is the list of your courses:<p>
+<p>Hello <?=$faculty['Name']?> (Faculty). Below is the list of your courses:<p>
 <table cellpadding="0" cellspacing="0">
 	<tr>
-		<th>Course Name</th>
+		<th>Course</th>
 		<th>Meets At</th>
 		<th>Room Number</th>
 		<th>Students</th>
@@ -28,15 +28,15 @@
 			echo "<td>" . $row['Room'] . "</td>\n";
 			echo "<td>" . $row['NumStudents'] . "</td>\n";
 			echo "<td>" . $row['NumEvaluations'] . "</td>\n";
-			echo "<td><a href=\"" . $RootDirectory . "faculty/courses/edit.php?FacultyID=" . $faculty['FacultyID'] . "&id=" . $row['CourseID'] . "\">Edit</a>
-			          <a href=\"" . $RootDirectory . "faculty/courses/delete.php?FacultyID=" . $faculty['FacultyID'] . "&id=" . $row['CourseID'] . "\">Delete</a></td>\n";
+			echo "<td><a href=\"edit.php?FacultyID=" . $faculty['FacultyID'] . "&id=" . $row['CourseID'] . "\">Edit</a>
+			          <a href=\"delete.php?FacultyID=" . $faculty['FacultyID'] . "&id=" . $row['CourseID'] . "\">Delete</a></td>\n";
 			echo "</tr>\n";
 		}
 
 	?>
 </table>
 <br />
-<input type="button" value="Create Course" onClick="location.href='<?=$RootDirectory?>faculty/courses/create.php?FacultyID=<?=$faculty['FacultyID']?>';" />
+<input type="button" value="Create Course" onClick="location.href='create.php?FacultyID=<?=$faculty['FacultyID']?>';" />
 <br />
 <div class="home">
 	<a href="<?=$RootDirectory?>faculty?FacultyID=<?=$faculty['FacultyID']?>">Click here to return to the menu</a>
