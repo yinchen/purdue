@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `CourseEvaluations` (
+CREATE TABLE `CourseEvaluations` (
   `EvaluationID` int(10) NOT NULL AUTO_INCREMENT,
   `CourseID` int(10) DEFAULT NULL,
   `EvaluationName` varchar(50) DEFAULT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS `CourseEvaluations` (
   CONSTRAINT `FK_CourseEvaluations_CourseID` FOREIGN KEY (`CourseID`) REFERENCES `Courses` (`CourseID`)
 );
 
-CREATE TABLE IF NOT EXISTS `Courses` (
+CREATE TABLE `Courses` (
   `CourseID` int(10) NOT NULL AUTO_INCREMENT,
   `CourseName` varchar(50) DEFAULT NULL,
   `Semester` varchar(50) DEFAULT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS `Courses` (
   CONSTRAINT `FK_Courses_FacultyID` FOREIGN KEY (`FacultyID`) REFERENCES `Faculties` (`FacultyID`)
 );
 
-CREATE TABLE IF NOT EXISTS `CourseStudents` (
+CREATE TABLE `CourseStudents` (
   `CourseID` int(10) NOT NULL DEFAULT '0',
   `StudentID` int(10) NOT NULL DEFAULT '0',
   PRIMARY KEY (`CourseID`,`StudentID`),
@@ -33,14 +33,14 @@ CREATE TABLE IF NOT EXISTS `CourseStudents` (
   CONSTRAINT `FK_CourseStudents_StudentID` FOREIGN KEY (`StudentID`) REFERENCES `Students` (`StudentID`)
 );
 
-CREATE TABLE IF NOT EXISTS `Departments` (
+CREATE TABLE `Departments` (
   `DepartmentID` int(10) NOT NULL AUTO_INCREMENT,
   `Name` varchar(50) DEFAULT NULL,
   `HeadName` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`DepartmentID`)
 );
 
-CREATE TABLE IF NOT EXISTS `EvaluationGrades` (
+CREATE TABLE `EvaluationGrades` (
   `EvaluationID` int(10) NOT NULL DEFAULT '0',
   `StudentID` int(10) NOT NULL DEFAULT '0',
   `Grade` decimal(5,2) DEFAULT NULL,
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `EvaluationGrades` (
   CONSTRAINT `FK_EvaluationGrades_StudentID` FOREIGN KEY (`StudentID`) REFERENCES `Students` (`StudentID`)
 );
 
-CREATE TABLE IF NOT EXISTS `Faculties` (
+CREATE TABLE `Faculties` (
   `FacultyID` int(10) NOT NULL AUTO_INCREMENT,
   `DepartmentID` int(10) DEFAULT NULL,
   `Name` varchar(50) DEFAULT NULL,
@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS `Faculties` (
   CONSTRAINT `FK_Faculties_DepartmentID` FOREIGN KEY (`DepartmentID`) REFERENCES `Departments` (`DepartmentID`)
 );
 
-CREATE TABLE IF NOT EXISTS `Students` (
+CREATE TABLE `Students` (
   `StudentID` int(10) NOT NULL AUTO_INCREMENT,
   `Name` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`StudentID`)
