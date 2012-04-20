@@ -24,8 +24,6 @@
 	?>
 </table>
 <br />
-<input type="button" value="Create Department" onClick="location.href='<?=$RootDirectory?>admin/departments/create.php';" />
-<br />
 <div class="home">
 	<a href="<?=$RootDirectory?>admin">Click here to return to the menu</a>
 </div>
