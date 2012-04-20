@@ -17,7 +17,7 @@
 	$row = mysql_fetch_array($result);
 
 ?>
-<p>Hello <?=$faculty['Name']?>. You are currently creating a course:<p>
+<p>Hello <?=$faculty['Name']?>. You are currently editing a course:<p>
 <form action="edit.php?FacultyID=<?=$faculty['FacultyID']?>&id=<?=$row['CourseID']?>" method="post">
 	<table cellpadding="0" cellspacing="0">
 		<tr>
