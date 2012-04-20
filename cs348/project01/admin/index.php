@@ -16,10 +16,10 @@
 <p>You can also view any of the following reports:<p>
 <div class="list">
 	<div class="item">
-		<a href="<?=$RootDirectory?>departments/report.php?FacultyID=<?=$faculty['FacultyID']?>">Department Report</a>
+		<a href="departments/report.php">Department Report</a>
 	</div>
 	<div class="item">
-		<a href="<?=$RootDirectory?>faculty/report.php?FacultyID=<?=$faculty['FacultyID']?>">Faculty Report</a>
+		<a href="faculty/report.php">Faculty Report</a>
 	</div>
 </div>
 <div class="home">
