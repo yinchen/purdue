@@ -28,7 +28,7 @@
 			echo "<td>" . $row['SEMESTER'] . "</td>\n";
 			echo "<td>" . $row['YEAR'] . "</td>\n";
 			echo "<td>" . $row['NAME'] . "</td>\n";
-			echo "<td>" . $row['CurrentGrade'] . "</td>\n";
+			echo "<td>" . $row['CURRENTGRADE'] . "</td>\n";
 			echo "</tr>\n";
 		}
 
