@@ -1,5 +1,5 @@
 CREATE TABLE CourseEvaluations (
-  EvaluationID integer NOT NULL AUTO_INCREMENT,
+  EvaluationID integer NOT NULL,
   CourseID integer DEFAULT NULL,
   EvaluationName varchar(50) DEFAULT NULL,
   Type integer DEFAULT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE CourseEvaluations (
 );
 
 CREATE TABLE Courses (
-  CourseID integer NOT NULL AUTO_INCREMENT,
+  CourseID integer NOT NULL,
   CourseName varchar(50) DEFAULT NULL,
   Semester varchar(50) DEFAULT NULL,
   Year integer DEFAULT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE CourseStudents (
 );
 
 CREATE TABLE Departments (
-  DepartmentID integer NOT NULL AUTO_INCREMENT,
+  DepartmentID integer NOT NULL,
   Name varchar(50) DEFAULT NULL,
   HeadName varchar(50) DEFAULT NULL,
   PRIMARY KEY (DepartmentID)
@@ -51,7 +51,7 @@ CREATE TABLE EvaluationGrades (
 );
 
 CREATE TABLE Faculties (
-  FacultyID integer NOT NULL AUTO_INCREMENT,
+  FacultyID integer NOT NULL,
   DepartmentID integer DEFAULT NULL,
   Name varchar(50) DEFAULT NULL,
   PRIMARY KEY (FacultyID),
@@ -60,7 +60,7 @@ CREATE TABLE Faculties (
 );
 
 CREATE TABLE Students (
-  StudentID integer NOT NULL AUTO_INCREMENT,
+  StudentID integer NOT NULL,
   Name varchar(50) DEFAULT NULL,
   PRIMARY KEY (StudentID)
 );
