@@ -12,8 +12,8 @@
 	}
 
 	$result = oci_parse($con, "SELECT * FROM Departments WHERE DepartmentID='" . $_GET['id'] . "'");
-	$row = oci_fetch_array($result);
 	oci_execute($result);
+	$row = oci_fetch_array($result);
 
 ?>
 <p>Hello Administrator. You are currently editing a department:<p>

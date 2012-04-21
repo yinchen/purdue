@@ -12,8 +12,8 @@
 	}
 
 	$result = oci_parse($con, "SELECT * FROM Faculties WHERE FacultyID='" . $_GET['id'] . "'");
-	$row = oci_fetch_array($result);
 	oci_execute($result);
+	$row = oci_fetch_array($result);
 
 	$result2 = oci_parse($con, "SELECT * FROM Departments");
 	oci_execute($result2);
