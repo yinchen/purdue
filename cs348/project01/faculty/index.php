@@ -8,7 +8,7 @@
 		oci_execute($result);
 		while($row = oci_fetch_array($result))
 		{
-			$FacultyID .= "<option value='" . $row['FacultyID'] . "'>" . $row['NAME'] . "</option>\n";
+			$FacultyID .= "<option value='" . $row['FACULTYID'] . "'>" . $row['NAME'] . "</option>\n";
 		}
 
 ?>

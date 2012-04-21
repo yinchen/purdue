@@ -27,7 +27,7 @@
 
 ?>
 <p>Hello Administrator. You are currently editing a faculty:<p>
-<form action="edit.php?id=<?php echo $row['FacultyID']; ?>" method="post">
+<form action="edit.php?id=<?php echo $row['FACULTYID']; ?>" method="post">
 	<table cellpadding="0" cellspacing="0">
 		<tr>
 			<td><b>Department: </b></td>

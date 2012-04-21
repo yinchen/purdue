@@ -8,7 +8,7 @@
 
 	if (empty($_POST) == false)
 	{
-		$result = oci_parse($con, "INSERT INTO CourseEvaluations (CourseID, EvaluationName, Type, Weightage, DeadlineDate, MeetingRoom) VALUES ('" . $_POST['CourseID'] . "', '" . $_POST['EvaluationName'] . "', '" . $_POST['Type'] . "', '" . $_POST['Weightage'] . "', '" . $_POST['DeadlineDate'] . "', '" . $_POST['MeetingRoom'] . "')");
+		$result = oci_parse($con, "INSERT INTO CourseEvaluations (EvaluationID, CourseID, EvaluationName, Type, Weightage, DeadlineDate, MeetingRoom) VALUES ('" . $_POST['EvaluationID'] . "', '" . $_POST['CourseID'] . "', '" . $_POST['EvaluationName'] . "', '" . $_POST['Type'] . "', '" . $_POST['Weightage'] . "', '" . $_POST['DeadlineDate'] . "', '" . $_POST['MeetingRoom'] . "')");
 		oci_execute($result);
 
 		header("Location: index.php?FacultyID=" . $faculty['FACULTYID']);
@@ -26,6 +26,10 @@
 <p>Hello <?php echo $faculty['NAME']; ?> (Faculty). You are currently creating a course evaluation:<p>
 <form action="create.php?FacultyID=<?php echo $faculty['FACULTYID']; ?>" method="post">
 	<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><b>ID: </b></td>
+			<td><input name="EvaluationID" text="text" /></td>
+		</tr>
 		<tr>
 			<td><b>Course: </b></td>
 			<td><select name="CourseID"><?php echo $CourseID; ?></select></td>
