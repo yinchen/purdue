@@ -7,7 +7,7 @@
 	$faculty = oci_fetch_array($result);
 
 ?>
-<p>Hello <?=$faculty['Name']?> (Faculty). Below is the report of courses:<p>
+<p>Hello <?php echo faculty['Name']; ?> (Faculty). Below is the report of courses:<p>
 <table cellpadding="0" cellspacing="0">
 	<tr>
 		<th>Course</th>
@@ -36,6 +36,6 @@
 </table>
 <br />
 <div class="home">
-	<a href="<?=$RootDirectory?>faculty/index.php?FacultyID=<?=$faculty['FacultyID']?>">Click here to return to the menu</a>
+	<a href="<?php echo RootDirectory; ?>faculty/index.php?FacultyID=<?php echo faculty['FacultyID']; ?>">Click here to return to the menu</a>
 </div>
 <?php include "../../include/footer.php"; ?>

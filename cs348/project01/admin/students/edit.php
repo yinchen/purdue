@@ -17,17 +17,17 @@
 
 ?>
 <p>Hello Administrator. You are currently editing a student:<p>
-<form action="edit.php?id=<?=$row['StudentID']?>" method="post">
+<form action="edit.php?id=<?php echo row['StudentID']; ?>" method="post">
 	<table cellpadding="0" cellspacing="0">
 		<tr>
 			<td><b>Name: </b></td>
-			<td><input name="Name" type="text" value="<?=$row['Name']?>" /></td>
+			<td><input name="Name" type="text" value="<?php echo row['Name']; ?>" /></td>
 		</tr>
 	</table>
 	<br />
 	<input type="submit" value="Edit Student" />
 </form>
 <div class="home">
-	<a href="<?=$RootDirectory?>admin/index.php">Click here to return to the menu</a>
+	<a href="<?php echo RootDirectory; ?>admin/index.php">Click here to return to the menu</a>
 </div>
 <?php include "../../include/footer.php"; ?>

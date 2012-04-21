@@ -24,7 +24,7 @@
 	<table cellpadding="0" cellspacing="0">
 		<tr>
 			<td><b>Department: </b></td>
-			<td><select name="DepartmentID"><?=$DepartmentID?></select></td>
+			<td><select name="DepartmentID"><?php echo DepartmentID; ?></select></td>
 		</tr>
 		<tr>
 			<td><b>Name: </b></td>
@@ -35,6 +35,6 @@
 	<input type="submit" value="Create Faculty" />
 </form>
 <div class="home">
-	<a href="<?=$RootDirectory?>admin/index.php">Click here to return to the menu</a>
+	<a href="<?php echo RootDirectory; ?>admin/index.php">Click here to return to the menu</a>
 </div>
 <?php include "../../include/footer.php"; ?>

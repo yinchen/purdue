@@ -39,16 +39,16 @@
 	}
 
 ?>
-<p>Hello <?=$faculty['Name']?> (Faculty). You are currently creating a grade:<p>
-<form action="create.php?FacultyID=<?=$faculty['FacultyID']?>" method="post">
+<p>Hello <?php echo faculty['Name']; ?> (Faculty). You are currently creating a grade:<p>
+<form action="create.php?FacultyID=<?php echo faculty['FacultyID']; ?>" method="post">
 	<table cellpadding="0" cellspacing="0">
 		<tr>
 			<td><b>Evaluation: </b></td>
-			<td><select name="EvaluationID"><?=$EvaluationID?></select></td>
+			<td><select name="EvaluationID"><?php echo EvaluationID; ?></select></td>
 		</tr>
 		<tr>
 			<td><b>Student: </b></td>
-			<td><select name="StudentID"><?=$StudentID?></select></td>
+			<td><select name="StudentID"><?php echo StudentID; ?></select></td>
 		</tr>
 		<tr>
 			<td><b>Grade: </b></td>
@@ -59,6 +59,6 @@
 	<input type="submit" value="Create Grade" />
 </form>
 <div class="home">
-	<a href="<?=$RootDirectory?>faculty/index.php?FacultyID=<?=$faculty['FacultyID']?>">Click here to return to the menu</a>
+	<a href="<?php echo RootDirectory; ?>faculty/index.php?FacultyID=<?php echo faculty['FacultyID']; ?>">Click here to return to the menu</a>
 </div>
 <?php include "../../include/footer.php"; ?>

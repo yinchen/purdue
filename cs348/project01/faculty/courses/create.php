@@ -16,8 +16,8 @@
 	}
 
 ?>
-<p>Hello <?=$faculty['Name']?> (Faculty). You are currently creating a course:<p>
-<form action="create.php?FacultyID=<?=$faculty['FacultyID']?>" method="post">
+<p>Hello <?php echo faculty['Name']; ?> (Faculty). You are currently creating a course:<p>
+<form action="create.php?FacultyID=<?php echo faculty['FacultyID']; ?>" method="post">
 	<table cellpadding="0" cellspacing="0">
 		<tr>
 			<td><b>Course Name: </b></td>
@@ -44,6 +44,6 @@
 	<input type="submit" value="Create Course" />
 </form>
 <div class="home">
-	<a href="<?=$RootDirectory?>faculty/index.php?FacultyID=<?=$faculty['FacultyID']?>">Click here to return to the menu</a>
+	<a href="<?php echo RootDirectory; ?>faculty/index.php?FacultyID=<?php echo faculty['FacultyID']; ?>">Click here to return to the menu</a>
 </div>
 <?php include "../../include/footer.php"; ?>

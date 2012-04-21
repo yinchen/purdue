@@ -23,6 +23,6 @@
 	</div>
 </div>
 <div class="home">
-	<a href="<?=$RootDirectory?>/index.php">Click here to return home</a>
+	<a href="<?php echo RootDirectory; ?>/index.php">Click here to return home</a>
 </div>
 <?php include "../include/footer.php"; ?>

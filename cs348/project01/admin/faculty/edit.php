@@ -27,21 +27,21 @@
 
 ?>
 <p>Hello Administrator. You are currently editing a faculty:<p>
-<form action="edit.php?id=<?=$row['FacultyID']?>" method="post">
+<form action="edit.php?id=<?php echo row['FacultyID']; ?>" method="post">
 	<table cellpadding="0" cellspacing="0">
 		<tr>
 			<td><b>Department: </b></td>
-			<td><select name="DepartmentID"><?=$DepartmentID?></select></td>
+			<td><select name="DepartmentID"><?php echo DepartmentID; ?></select></td>
 		</tr>
 		<tr>
 			<td><b>Name: </b></td>
-			<td><input name="Name" type="text" value="<?=$row['Name']?>" /></td>
+			<td><input name="Name" type="text" value="<?php echo row['Name']; ?>" /></td>
 		</tr>
 	</table>
 	<br />
 	<input type="submit" value="Edit Faculty" />
 </form>
 <div class="home">
-	<a href="<?=$RootDirectory?>admin/index.php">Click here to return to the menu</a>
+	<a href="<?php echo RootDirectory; ?>admin/index.php">Click here to return to the menu</a>
 </div>
 <?php include "../../include/footer.php"; ?>

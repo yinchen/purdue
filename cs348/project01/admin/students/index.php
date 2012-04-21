@@ -25,9 +25,9 @@
 	?>
 </table>
 <br />
-<input type="button" value="Create Student" onClick="location.href='<?=$RootDirectory?>admin/students/create.php';" />
+<input type="button" value="Create Student" onClick="location.href='<?php echo RootDirectory; ?>admin/students/create.php';" />
 <br />
 <div class="home">
-	<a href="<?=$RootDirectory?>admin/index.php">Click here to return to the menu</a>
+	<a href="<?php echo RootDirectory; ?>admin/index.php">Click here to return to the menu</a>
 </div>
 <?php include "../../include/footer.php"; ?>
