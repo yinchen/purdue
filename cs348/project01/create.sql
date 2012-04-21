@@ -1,4 +1,3 @@
-DROP TABLE CourseEvaluations CASCADE CONSTRAINTS;
 CREATE TABLE CourseEvaluations (
   EvaluationID integer NOT NULL,
   CourseID integer NULL REFERENCES Courses (CourseID),
@@ -10,7 +9,6 @@ CREATE TABLE CourseEvaluations (
   PRIMARY KEY (EvaluationID)
 );
 
-DROP TABLE Courses CASCADE CONSTRAINTS;
 CREATE TABLE Courses (
   CourseID integer NOT NULL,
   CourseName varchar(50) NULL,
@@ -22,14 +20,12 @@ CREATE TABLE Courses (
   PRIMARY KEY (CourseID)
 );
 
-DROP TABLE CourseStudents CASCADE CONSTRAINTS;
 CREATE TABLE CourseStudents (
   CourseID integer NOT NULL REFERENCES Courses (CourseID),
   StudentID integer NOT NULL REFERENCES Students (StudentID),
   PRIMARY KEY (CourseID,StudentID)
 );
 
-DROP TABLE Departments CASCADE CONSTRAINTS;
 CREATE TABLE Departments (
   DepartmentID integer NOT NULL,
   Name varchar(50) NULL,
@@ -37,7 +33,6 @@ CREATE TABLE Departments (
   PRIMARY KEY (DepartmentID)
 );
 
-DROP TABLE EvaluationGrades CASCADE CONSTRAINTS;
 CREATE TABLE EvaluationGrades (
   EvaluationID integer NOT NULL REFERENCES CourseEvaluations (EvaluationID),
   StudentID integer NOT NULL REFERENCES Students (StudentID),
@@ -45,7 +40,6 @@ CREATE TABLE EvaluationGrades (
   PRIMARY KEY (EvaluationID,StudentID)
 );
 
-DROP TABLE Faculties CASCADE CONSTRAINTS;
 CREATE TABLE Faculties (
   FacultyID integer NOT NULL,
   DepartmentID integer NULL REFERENCES Departments (DepartmentID),
@@ -53,7 +47,6 @@ CREATE TABLE Faculties (
   PRIMARY KEY (FacultyID)
 );
 
-DROP TABLE Students CASCADE CONSTRAINTS;
 CREATE TABLE Students (
   StudentID integer NOT NULL,
   Name varchar(50) NULL,
