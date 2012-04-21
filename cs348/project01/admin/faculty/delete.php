@@ -4,7 +4,7 @@
 	$result = oci_parse($con, "DELETE FROM Faculties WHERE FacultyID='" . $_GET['id'] . "'");
 	oci_execute($result);
 
-	header("Location: " . $RootDirectory . "admin/faculty");
+	header("Location: index.php");
 	exit;
 
 ?>

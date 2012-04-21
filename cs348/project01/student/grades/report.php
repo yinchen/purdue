@@ -67,6 +67,6 @@
 </table>
 <br />
 <div class="home">
-	<a href="<?=$RootDirectory?>student?StudentID=<?=$student['StudentID']?>">Click here to return to the menu</a>
+	<a href="<?=$RootDirectory?>student/index.php?StudentID=<?=$student['StudentID']?>">Click here to return to the menu</a>
 </div>
 <?php include "../../include/footer.php"; ?>

@@ -23,6 +23,6 @@
 </table>
 <br />
 <div class="home">
-	<a href="<?=$RootDirectory?>admin">Click here to return to the menu</a>
+	<a href="<?=$RootDirectory?>admin/index.php">Click here to return to the menu</a>
 </div>
 <?php include "../../include/footer.php"; ?>

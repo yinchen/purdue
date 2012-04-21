@@ -39,6 +39,6 @@
 <input type="button" value="Create Grade" onClick="location.href='create.php?FacultyID=<?=$faculty['FacultyID']?>';" />
 <br />
 <div class="home">
-	<a href="<?=$RootDirectory?>faculty?FacultyID=<?=$faculty['FacultyID']?>">Click here to return to the menu</a>
+	<a href="<?=$RootDirectory?>faculty/index.php?FacultyID=<?=$faculty['FacultyID']?>">Click here to return to the menu</a>
 </div>
 <?php include "../../include/footer.php"; ?>

@@ -60,6 +60,6 @@
 	<input type="submit" value="Create Evaluation" />
 </form>
 <div class="home">
-	<a href="<?=$RootDirectory?>faculty?FacultyID=<?=$faculty['FacultyID']?>">Click here to return to the menu</a>
+	<a href="<?=$RootDirectory?>faculty/index.php?FacultyID=<?=$faculty['FacultyID']?>">Click here to return to the menu</a>
 </div>
 <?php include "../../include/footer.php"; ?>

@@ -7,7 +7,7 @@
 		$result = oci_parse($con, "INSERT INTO Students (Name) VALUES ('" . $_POST['Name'] . "')");
 		oci_execute($result);
 		
-		header("Location: " . $RootDirectory . "admin/students");
+		header("Location: index.php");
 		exit;
 	}
 
@@ -24,6 +24,6 @@
 	<input type="submit" value="Create Student" />
 </form>
 <div class="home">
-	<a href="<?=$RootDirectory?>admin">Click here to return to the menu</a>
+	<a href="<?=$RootDirectory?>admin/index.php">Click here to return to the menu</a>
 </div>
 <?php include "../../include/footer.php"; ?>

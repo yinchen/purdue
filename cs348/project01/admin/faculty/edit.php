@@ -7,7 +7,7 @@
 		$result = oci_parse($con, "UPDATE Faculties SET DepartmentID='" . $_POST['DepartmentID'] . "', Name='" . $_POST['Name'] . "' WHERE FacultyID='" . $_GET['id'] . "'");
 		oci_execute($result);
 
-		header("Location: " . $RootDirectory . "admin/faculty");
+		header("Location: index.php");
 		exit;
 	}
 
@@ -42,6 +42,6 @@
 	<input type="submit" value="Edit Faculty" />
 </form>
 <div class="home">
-	<a href="<?=$RootDirectory?>admin">Click here to return to the menu</a>
+	<a href="<?=$RootDirectory?>admin/index.php">Click here to return to the menu</a>
 </div>
 <?php include "../../include/footer.php"; ?>

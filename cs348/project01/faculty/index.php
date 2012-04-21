@@ -24,7 +24,7 @@
 	<input type="submit" value="Continue" />
 </form>
 <div class="home">
-	<a href="<?=$RootDirectory?>">Click here to return home</a>
+	<a href="<?=$RootDirectory?>/index.php">Click here to return home</a>
 </div>
 <?php
 
@@ -39,16 +39,16 @@
 <p>Hello <?=$faculty['Name']?> (Faculty). Please select an action from the list below:<p>
 <div class="list">
 	<div class="item">
-		<a href="courses?FacultyID=<?=$faculty['FacultyID']?>">Manage Courses</a>
+		<a href="courses/index.php?FacultyID=<?=$faculty['FacultyID']?>">Manage Courses</a>
 	</div>
 	<div class="item">
-		<a href="evaluations?FacultyID=<?=$faculty['FacultyID']?>">Manage Evaluations</a>
+		<a href="evaluations/index.php?FacultyID=<?=$faculty['FacultyID']?>">Manage Evaluations</a>
 	</div>
 	<div class="item">
-		<a href="students?FacultyID=<?=$faculty['FacultyID']?>">Manage Student Assignments</a>
+		<a href="students/index.php?FacultyID=<?=$faculty['FacultyID']?>">Manage Student Assignments</a>
 	</div>
 	<div class="item">
-		<a href="grades?FacultyID=<?=$faculty['FacultyID']?>">Manage Grades</a>
+		<a href="grades/index.php?FacultyID=<?=$faculty['FacultyID']?>">Manage Grades</a>
 	</div>
 </div>
 <br />
@@ -62,7 +62,7 @@
 	</div>
 </div>
 <div class="home">
-	<a href="<?=$RootDirectory?>">Click here to return home</a>
+	<a href="<?=$RootDirectory?>/index.php">Click here to return home</a>
 </div>
 <?php
 

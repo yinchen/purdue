@@ -7,7 +7,7 @@
 		$result = oci_parse($con, "UPDATE Students SET Name='" . $_POST['Name'] . "' WHERE StudentID='" . $_GET['id'] . "'");
 		oci_execute($result);
 
-		header("Location: " . $RootDirectory . "admin/students");
+		header("Location: index.php");
 		exit;
 	}
 
@@ -28,6 +28,6 @@
 	<input type="submit" value="Edit Student" />
 </form>
 <div class="home">
-	<a href="<?=$RootDirectory?>admin">Click here to return to the menu</a>
+	<a href="<?=$RootDirectory?>admin/index.php">Click here to return to the menu</a>
 </div>
 <?php include "../../include/footer.php"; ?>
