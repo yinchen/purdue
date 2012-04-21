@@ -4,7 +4,7 @@
 
 	if (empty($_POST) == false)
 	{
-		$result = oci_parse($con, "INSERT INTO Faculties (DepartmentID, Name) VALUES ('" . $_POST['DepartmentID'] . "', '" . $_POST['Name'] . "')");
+		$result = oci_parse($con, "INSERT INTO Faculties (FacultyID, DepartmentID, Name) VALUES ('" . $_POST['FacultyID'] . "', '" . $_POST['DepartmentID'] . "', '" . $_POST['Name'] . "')");
 		oci_execute($result);
 
 		header("Location: index.php");
@@ -23,8 +23,12 @@
 <form action="create.php" method="post">
 	<table cellpadding="0" cellspacing="0">
 		<tr>
+			<td><b>ID: </b></td>
+			<td><input name="FacultyID" type="text" /></td>
+		</tr>
+		<tr>
 			<td><b>Department: </b></td>
-			<td><select name="DepartmentID"><?php echo DepartmentID; ?></select></td>
+			<td><select name="DepartmentID"><?php echo $DepartmentID; ?></select></td>
 		</tr>
 		<tr>
 			<td><b>Name: </b></td>

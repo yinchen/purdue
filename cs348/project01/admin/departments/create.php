@@ -4,7 +4,7 @@
 
 	if (empty($_POST) == false)
 	{
-		$result = oci_parse($con, "INSERT INTO Departments (Name, HeadName) VALUES ('" . $_POST['Name'] . "', '" . $_POST['HeadName'] . "')");
+		$result = oci_parse($con, "INSERT INTO Departments (DepartmentID, Name, HeadName) VALUES ('" . $_POST['DepartmentID'] . "', '" . $_POST['Name'] . "', '" . $_POST['HeadName'] . "')");
 		oci_execute($result);
 
 		header("Location: index.php");
@@ -15,6 +15,10 @@
 <p>Hello Administrator. You are currently creating a department:<p>
 <form action="create.php" method="post">
 	<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><b>ID: </b></td>
+			<td><input name="DepartmentID" type="text" /></td>
+		</tr>
 		<tr>
 			<td><b>Name: </b></td>
 			<td><input name="Name" type="text" /></td>

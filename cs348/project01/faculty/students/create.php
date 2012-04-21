@@ -35,7 +35,7 @@
 	<table cellpadding="0" cellspacing="0">
 		<tr>
 			<td><b>Course: </b></td>
-			<td><select name="CourseID"><?php echo CourseID; ?></select></td>
+			<td><select name="CourseID"><?php echo $CourseID; ?></select></td>
 		</tr>
 		<tr>
 			<td><b>Student: </b></td>

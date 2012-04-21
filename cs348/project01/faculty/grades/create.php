@@ -44,7 +44,7 @@
 	<table cellpadding="0" cellspacing="0">
 		<tr>
 			<td><b>Evaluation: </b></td>
-			<td><select name="EvaluationID"><?php echo EvaluationID; ?></select></td>
+			<td><select name="EvaluationID"><?php echo $EvaluationID; ?></select></td>
 		</tr>
 		<tr>
 			<td><b>Student: </b></td>
