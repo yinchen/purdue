@@ -36,7 +36,7 @@
 				echo "<td>Final Exam</td>\n";
 			else if ($row['TYPE'] == 3)
 				echo "<td>Project</td>\n";
-			echo "<td>" . date("F j, Y, g:i a", strtotime($row['DEADLINEDATE'])) . "</td>\n";
+			echo "<td>" . date("F j, Y", strtotime($row['DEADLINEDATE'])) . "</td>\n";
 			echo "<td>" . $row['MEETINGROOM'] . "</td>\n";
 			echo "</tr>\n";
 		}
