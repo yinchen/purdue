@@ -30,8 +30,8 @@
 	}
 
 ?>
-<p>Hello <?php echo faculty['Name']; ?> (Faculty). You are currently assigning a student to one of your courses:<p>
-<form action="create.php?FacultyID=<?php echo faculty['FacultyID']; ?>" method="post">
+<p>Hello <?php echo $faculty['Name']; ?> (Faculty). You are currently assigning a student to one of your courses:<p>
+<form action="create.php?FacultyID=<?php echo $faculty['FacultyID']; ?>" method="post">
 	<table cellpadding="0" cellspacing="0">
 		<tr>
 			<td><b>Course: </b></td>
@@ -39,13 +39,13 @@
 		</tr>
 		<tr>
 			<td><b>Student: </b></td>
-			<td><select name="StudentID"><?php echo StudentID; ?></select></td>
+			<td><select name="StudentID"><?php echo $studentID; ?></select></td>
 		</tr>
 	</table>
 	<br />
 	<input type="submit" value="Assign Student" />
 </form>
 <div class="home">
-	<a href="<?php echo RootDirectory; ?>faculty/index.php?FacultyID=<?php echo faculty['FacultyID']; ?>">Click here to return to the menu</a>
+	<a href="<?php echo $RootDirectory; ?>faculty/index.php?FacultyID=<?php echo $faculty['FacultyID']; ?>">Click here to return to the menu</a>
 </div>
 <?php include "../../include/footer.php"; ?>

@@ -30,8 +30,8 @@
 	}
 
 ?>
-<p>Hello <?php echo faculty['Name']; ?> (Faculty). You are currently editing a course evaluation:<p>
-<form action="edit.php?FacultyID=<?php echo faculty['FacultyID']; ?>&id=<?php echo row['EvaluationID']; ?>" method="post">
+<p>Hello <?php echo $faculty['Name']; ?> (Faculty). You are currently editing a course evaluation:<p>
+<form action="edit.php?FacultyID=<?php echo $faculty['FacultyID']; ?>&id=<?php echo $row['EvaluationID']; ?>" method="post">
 	<table cellpadding="0" cellspacing="0">
 		<tr>
 			<td><b>Course: </b></td>
@@ -39,7 +39,7 @@
 		</tr>
 		<tr>
 			<td><b>Name: </b></td>
-			<td><input name="EvaluationName" type="text" value="<?php echo row['EvaluationName']; ?>" /></td>
+			<td><input name="EvaluationName" type="text" value="<?php echo $row['EvaluationName']; ?>" /></td>
 		</tr>
 		<tr>
 			<td><b>Type: </b></td>
@@ -52,21 +52,21 @@
 		</tr>
 		<tr>
 			<td><b>Weightage: </b></td>
-			<td><input name="Weightage" type="text" value="<?php echo row['Weightage']; ?>" /></td>
+			<td><input name="Weightage" type="text" value="<?php echo $row['Weightage']; ?>" /></td>
 		</tr>
 		<tr>
 			<td><b>Deadline Date: </b></td>
-			<td><input name="DeadlineDate" type="text" value="<?php echo row['DeadlineDate']; ?>" /> Format is "YYYY-MM-DD HH:MM:SS"</td>
+			<td><input name="DeadlineDate" type="text" value="<?php echo $row['DeadlineDate']; ?>" /> Format is "YYYY-MM-DD HH:MM:SS"</td>
 		</tr>
 		<tr>
 			<td><b>Meeting Room: </b></td>
-			<td><input name="MeetingRoom" type="text" value="<?php echo row['MeetingRoom']; ?>" /></td>
+			<td><input name="MeetingRoom" type="text" value="<?php echo $row['MeetingRoom']; ?>" /></td>
 		</tr>
 	</table>
 	<br />
 	<input type="submit" value="Edit Evaluation" />
 </form>
 <div class="home">
-	<a href="<?php echo RootDirectory; ?>faculty/index.php?FacultyID=<?php echo faculty['FacultyID']; ?>">Click here to return to the menu</a>
+	<a href="<?php echo $RootDirectory; ?>faculty/index.php?FacultyID=<?php echo $faculty['FacultyID']; ?>">Click here to return to the menu</a>
 </div>
 <?php include "../../include/footer.php"; ?>

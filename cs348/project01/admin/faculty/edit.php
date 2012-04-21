@@ -27,7 +27,7 @@
 
 ?>
 <p>Hello Administrator. You are currently editing a faculty:<p>
-<form action="edit.php?id=<?php echo row['FacultyID']; ?>" method="post">
+<form action="edit.php?id=<?php echo $row['FacultyID']; ?>" method="post">
 	<table cellpadding="0" cellspacing="0">
 		<tr>
 			<td><b>Department: </b></td>
@@ -35,13 +35,13 @@
 		</tr>
 		<tr>
 			<td><b>Name: </b></td>
-			<td><input name="Name" type="text" value="<?php echo row['Name']; ?>" /></td>
+			<td><input name="Name" type="text" value="<?php echo $row['Name']; ?>" /></td>
 		</tr>
 	</table>
 	<br />
 	<input type="submit" value="Edit Faculty" />
 </form>
 <div class="home">
-	<a href="<?php echo RootDirectory; ?>admin/index.php">Click here to return to the menu</a>
+	<a href="<?php echo $RootDirectory; ?>admin/index.php">Click here to return to the menu</a>
 </div>
 <?php include "../../include/footer.php"; ?>

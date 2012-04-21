@@ -35,6 +35,6 @@
 	<input type="submit" value="Create Faculty" />
 </form>
 <div class="home">
-	<a href="<?php echo RootDirectory; ?>admin/index.php">Click here to return to the menu</a>
+	<a href="<?php echo $RootDirectory; ?>admin/index.php">Click here to return to the menu</a>
 </div>
 <?php include "../../include/footer.php"; ?>

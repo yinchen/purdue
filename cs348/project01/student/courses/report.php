@@ -7,7 +7,7 @@
 	$student = oci_fetch_array($result);
 
 ?>
-<p>Hello <?php echo student['Name']; ?> (Student). Below is the report of your courses:<p>
+<p>Hello <?php echo $student['Name']; ?> (Student). Below is the report of your courses:<p>
 <table cellpadding="0" cellspacing="0">
 	<tr>
 		<th>Course</th>
@@ -37,6 +37,6 @@
 	?>
 </table>
 <div class="home">
-	<a href="<?php echo RootDirectory; ?>student/index.php?StudentID=<?php echo student['StudentID']; ?>">Click here to return to the menu</a>
+	<a href="<?php echo $RootDirectory; ?>student/index.php?StudentID=<?php echo $student['StudentID']; ?>">Click here to return to the menu</a>
 </div>
 <?php include "../../include/footer.php"; ?>

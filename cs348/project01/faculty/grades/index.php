@@ -7,7 +7,7 @@
 	$faculty = oci_fetch_array($result);
 
 ?>
-<p>Hello <?php echo faculty['Name']; ?> (Faculty). Below is the list of the grades for your courses:<p>
+<p>Hello <?php echo $faculty['Name']; ?> (Faculty). Below is the list of the grades for your courses:<p>
 <table cellpadding="0" cellspacing="0">
 	<tr>
 		<th>Course</th>
@@ -36,9 +36,9 @@
 	?>
 </table>
 <br />
-<input type="button" value="Create Grade" onClick="location.href='create.php?FacultyID=<?php echo faculty['FacultyID']; ?>';" />
+<input type="button" value="Create Grade" onClick="location.href='create.php?FacultyID=<?php echo $faculty['FacultyID']; ?>';" />
 <br />
 <div class="home">
-	<a href="<?php echo RootDirectory; ?>faculty/index.php?FacultyID=<?php echo faculty['FacultyID']; ?>">Click here to return to the menu</a>
+	<a href="<?php echo $RootDirectory; ?>faculty/index.php?FacultyID=<?php echo $faculty['FacultyID']; ?>">Click here to return to the menu</a>
 </div>
 <?php include "../../include/footer.php"; ?>

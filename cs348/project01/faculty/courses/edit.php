@@ -20,34 +20,34 @@
 	$row = oci_fetch_array($result);
 
 ?>
-<p>Hello <?php echo faculty['Name']; ?> (Faculty). You are currently editing a course:<p>
-<form action="edit.php?FacultyID=<?php echo faculty['FacultyID']; ?>&id=<?php echo row['CourseID']; ?>" method="post">
+<p>Hello <?php echo $faculty['Name']; ?> (Faculty). You are currently editing a course:<p>
+<form action="edit.php?FacultyID=<?php echo $faculty['FacultyID']; ?>&id=<?php echo $row['CourseID']; ?>" method="post">
 	<table cellpadding="0" cellspacing="0">
 		<tr>
 			<td><b>Course Name: </b></td>
-			<td><input name="CourseName" type="text" value="<?php echo row['CourseName']; ?>" /></td>
+			<td><input name="CourseName" type="text" value="<?php echo $row['CourseName']; ?>" /></td>
 		</tr>
 		<tr>
 			<td><b>Semester: </b></td>
-			<td><input name="Semester" type="text" value="<?php echo row['Semester']; ?>" /></td>
+			<td><input name="Semester" type="text" value="<?php echo $row['Semester']; ?>" /></td>
 		</tr>
 		<tr>
 			<td><b>Year: </b></td>
-			<td><input name="Year" type="text" value="<?php echo row['Year']; ?>" /></td>
+			<td><input name="Year" type="text" value="<?php echo $row['Year']; ?>" /></td>
 		</tr>
 		<tr>
 			<td><b>Meets At: </b></td>
-			<td><input name="Meets_At" type="text" value="<?php echo row['Meets_At']; ?>" /></td>
+			<td><input name="Meets_At" type="text" value="<?php echo $row['Meets_At']; ?>" /></td>
 		</tr>
 		<tr>
 			<td><b>Room: </b></td>
-			<td><input name="Room" type="text" value="<?php echo row['Room']; ?>" /></td>
+			<td><input name="Room" type="text" value="<?php echo $row['Room']; ?>" /></td>
 		</tr>
 	</table>
 	<br />
 	<input type="submit" value="Edit Course" />
 </form>
 <div class="home">
-	<a href="<?php echo RootDirectory; ?>faculty/index.php?FacultyID=<?php echo faculty['FacultyID']; ?>">Click here to return to the menu</a>
+	<a href="<?php echo $RootDirectory; ?>faculty/index.php?FacultyID=<?php echo $faculty['FacultyID']; ?>">Click here to return to the menu</a>
 </div>
 <?php include "../../include/footer.php"; ?>
