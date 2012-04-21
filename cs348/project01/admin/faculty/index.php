@@ -9,7 +9,7 @@
 	</tr>
 	<?php
 
-		$result = oci_parse($con, "SELECT * FROM Faculties F LEFT OUTER JOIN Departments AS D ON F.DepartmentID = D.DepartmentID");
+		$result = oci_parse($con, "SELECT * FROM Faculties F LEFT OUTER JOIN Departments ON F.DepartmentID = Departments.DepartmentID");
 		oci_execute($result);
 		
 		while($row = oci_fetch_array($result))

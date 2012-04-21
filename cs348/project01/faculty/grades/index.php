@@ -18,7 +18,7 @@
 	</tr>
 	<?php
 
-		$result = oci_parse($con, "SELECT E.EvaluationID, S.StudentID, C.CourseName, E.EvaluationName, S.Name, G.Grade FROM EvaluationGrades G JOIN Students AS S ON S.StudentID = G.StudentID JOIN CourseEvaluations AS E ON E.EvaluationID = G.EvaluationID JOIN Courses AS C ON C.CourseID = E.CourseID WHERE C.FacultyID = '" . $faculty['FACULTYID'] . "'");
+		$result = oci_parse($con, "SELECT CourseEvaluations.EvaluationID, Students.StudentID, Courses.CourseName, CourseEvaluations.EvaluationName, Students.Name, G.Grade FROM EvaluationGrades G JOIN Students ON Students.StudentID = G.StudentID JOIN CourseEvaluations ON CourseEvaluations.EvaluationID = G.EvaluationID JOIN Courses ON Courses.CourseID = CourseEvaluations.CourseID WHERE Courses.FacultyID = '" . $faculty['FACULTYID'] . "'");
 		oci_execute($result);
 		
 		while($row = oci_fetch_array($result))

@@ -16,7 +16,7 @@
 	</tr>
 	<?php
 
-		$result = oci_parse($con, "SELECT C.CourseID, S.StudentID, P.Name, C.CourseName FROM Courses C JOIN CourseStudents AS S ON S.CourseID = C.CourseID LEFT OUTER JOIN Students AS P ON P.StudentID = S.StudentID WHERE C.FacultyID = '" . $faculty['FACULTYID'] . "'");
+		$result = oci_parse($con, "SELECT C.CourseID, CourseStudents.StudentID, Students.Name, C.CourseName FROM Courses C JOIN CourseStudents ON CourseStudents.CourseID = C.CourseID LEFT OUTER JOIN Students ON Students.StudentID = CourseStudents.StudentID WHERE C.FacultyID = '" . $faculty['FACULTYID'] . "'");
 		oci_execute($result);
 		
 		while($row = oci_fetch_array($result))

@@ -17,7 +17,7 @@
 	</tr>
 	<?php
 
-		$result = oci_parse($con, "SELECT C.CourseName, E.EvaluationName, E.Type, G.Grade FROM EvaluationGrades G LEFT OUTER JOIN CourseEvaluations AS E ON G.EvaluationID = E.EvaluationID LEFT OUTER JOIN Courses AS C ON E.CourseID = C.CourseID WHERE G.StudentID = '" . $student['STUDENTID'] . "' ORDER BY C.CourseName, E.DeadlineDate ASC");
+		$result = oci_parse($con, "SELECT Courses.CourseName, CourseEvaluations.EvaluationName, CourseEvaluations.Type, G.Grade FROM EvaluationGrades G LEFT OUTER JOIN CourseEvaluations ON G.EvaluationID = CourseEvaluations.EvaluationID LEFT OUTER JOIN Courses ON CourseEvaluations.CourseID = Courses.CourseID WHERE G.StudentID = '" . $student['STUDENTID'] . "' ORDER BY Courses.CourseName, CourseEvaluations.DeadlineDate ASC");
 		oci_execute($result);
 
 		while($row = oci_fetch_array($result))

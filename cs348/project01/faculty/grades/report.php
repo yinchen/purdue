@@ -18,7 +18,7 @@
 	</tr>
 	<?php
 
-		$result = oci_parse($con, "SELECT C.CourseName, C.Semester, C.Year, S2.Name, (SELECT SUM(G.Grade * E.Weightage) FROM CourseEvaluations E RIGHT OUTER JOIN EvaluationGrades AS G ON G.EvaluationID = E.EvaluationID WHERE E.CourseID = C.CourseID AND G.StudentID = S1.StudentID) AS CurrentGrade FROM CourseStudents S1 JOIN Students AS S2 ON S2.StudentID = S1.StudentID JOIN Courses AS C ON C.CourseID = S1.CourseID WHERE C.FacultyID = '" . $faculty['FACULTYID'] . "' ORDER BY C.CourseName, S2.Name");
+		$result = oci_parse($con, "SELECT Courses.CourseName, Courses.Semester, Courses.Year, Students.Name, (SELECT SUM(EvaluationGrades.Grade * E.Weightage) FROM CourseEvaluations E RIGHT OUTER JOIN EvaluationGrades ON EvaluationGrades.EvaluationID = E.EvaluationID WHERE E.CourseID = Courses.CourseID AND EvaluationGrades.StudentID = CourseStudents.StudentID) AS CurrentGrade FROM CourseStudents JOIN Students ON Students.StudentID = CourseStudents.StudentID JOIN Courses ON Courses.CourseID = CourseStudents.CourseID WHERE Courses.FacultyID = '" . $faculty['FACULTYID'] . "' ORDER BY Courses.CourseName, Students.Name");
 		oci_execute($result);
 		
 		while($row = oci_fetch_array($result))
