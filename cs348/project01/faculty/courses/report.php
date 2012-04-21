@@ -7,7 +7,7 @@
 	$faculty = oci_fetch_array($result);
 
 ?>
-<p>Hello <?php echo $faculty['Name']; ?> (Faculty). Below is the report of courses:<p>
+<p>Hello <?php echo $faculty['NAME']; ?> (Faculty). Below is the report of courses:<p>
 <table cellpadding="0" cellspacing="0">
 	<tr>
 		<th>Course</th>
@@ -18,15 +18,15 @@
 	</tr>
 	<?php
 
-		$result = oci_parse($con, "SELECT C.CourseID, C.CourseName, C.Meets_At, C.Room, (SELECT COUNT(*) FROM CourseStudents S WHERE S.CourseID = C.CourseID) AS NumStudents, (SELECT COUNT(*) FROM CourseEvaluations E WHERE E.CourseID = C.CourseID) AS NumEvaluations FROM Courses C WHERE C.FacultyID = '" . $faculty['FacultyID'] . "' ORDER BY C.CourseName");
+		$result = oci_parse($con, "SELECT C.CourseID, C.CourseName, C.Meets_At, C.Room, (SELECT COUNT(*) FROM CourseStudents S WHERE S.CourseID = C.CourseID) AS NumStudents, (SELECT COUNT(*) FROM CourseEvaluations E WHERE E.CourseID = C.CourseID) AS NumEvaluations FROM Courses C WHERE C.FacultyID = '" . $faculty['FACULTYID'] . "' ORDER BY C.CourseName");
 		oci_execute($result);
 
 		while($row = oci_fetch_array($result))
 		{
 			echo "<tr>\n";
-			echo "<td>" . $row['CourseName'] . "</td>\n";
-			echo "<td>" . $row['Meets_At'] . "</td>\n";
-			echo "<td>" . $row['Room'] . "</td>\n";
+			echo "<td>" . $row['COURSENAME'] . "</td>\n";
+			echo "<td>" . $row['MEETS_AT'] . "</td>\n";
+			echo "<td>" . $row['ROOM'] . "</td>\n";
 			echo "<td>" . $row['NumStudents'] . "</td>\n";
 			echo "<td>" . $row['NumEvaluations'] . "</td>\n";
 			echo "</tr>\n";
@@ -36,6 +36,6 @@
 </table>
 <br />
 <div class="home">
-	<a href="<?php echo $RootDirectory; ?>faculty/index.php?FacultyID=<?php echo $faculty['FacultyID']; ?>">Click here to return to the menu</a>
+	<a href="<?php echo $RootDirectory; ?>faculty/index.php?FacultyID=<?php echo $faculty['FACULTYID']; ?>">Click here to return to the menu</a>
 </div>
 <?php include "../../include/footer.php"; ?>

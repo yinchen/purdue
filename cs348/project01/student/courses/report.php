@@ -7,7 +7,7 @@
 	$student = oci_fetch_array($result);
 
 ?>
-<p>Hello <?php echo $student['Name']; ?> (Student). Below is the report of your courses:<p>
+<p>Hello <?php echo $student['NAME']; ?> (Student). Below is the report of your courses:<p>
 <table cellpadding="0" cellspacing="0">
 	<tr>
 		<th>Course</th>
@@ -19,24 +19,24 @@
 	</tr>
 	<?php
 
-		$result = oci_parse($con, "SELECT * FROM CourseStudents S LEFT OUTER JOIN Courses AS C ON S.CourseID = C.CourseID LEFT OUTER JOIN Faculties AS F ON C.FacultyID = F.FacultyID WHERE S.StudentID = '" . $student['StudentID'] . "' ORDER BY CourseName");
+		$result = oci_parse($con, "SELECT * FROM CourseStudents S LEFT OUTER JOIN Courses AS C ON S.CourseID = C.CourseID LEFT OUTER JOIN Faculties AS F ON C.FacultyID = F.FacultyID WHERE S.StudentID = '" . $student['STUDENTID'] . "' ORDER BY CourseName");
 		oci_execute($result);
 		
 		while($row = oci_fetch_array($result))
 		{
 			echo "<tr>\n";
-			echo "<td>" . $row['CourseName'] . "</td>\n";
-			echo "<td>" . $row['Semester'] . "</td>\n";
-			echo "<td>" . $row['Year'] . "</td>\n";
-			echo "<td>" . $row['Meets_At'] . "</td>\n";
-			echo "<td>" . $row['Room'] . "</td>\n";
-			echo "<td>" . $row['Name'] . "</td>\n";
+			echo "<td>" . $row['COURSENAME'] . "</td>\n";
+			echo "<td>" . $row['SEMESTER'] . "</td>\n";
+			echo "<td>" . $row['YEAR'] . "</td>\n";
+			echo "<td>" . $row['MEETS_AT'] . "</td>\n";
+			echo "<td>" . $row['ROOM'] . "</td>\n";
+			echo "<td>" . $row['NAME'] . "</td>\n";
 			echo "</tr>\n";
 		}
 
 	?>
 </table>
 <div class="home">
-	<a href="<?php echo $RootDirectory; ?>student/index.php?StudentID=<?php echo $student['StudentID']; ?>">Click here to return to the menu</a>
+	<a href="<?php echo $RootDirectory; ?>student/index.php?StudentID=<?php echo $student['STUDENTID']; ?>">Click here to return to the menu</a>
 </div>
 <?php include "../../include/footer.php"; ?>

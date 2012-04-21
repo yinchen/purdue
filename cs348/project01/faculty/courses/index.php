@@ -6,7 +6,7 @@
 	$faculty = oci_fetch_array($result);
 
 ?>
-<p>Hello <?php echo $faculty['Name']; ?> (Faculty). Below is the list of your courses:<p>
+<p>Hello <?php echo $faculty['NAME']; ?> (Faculty). Below is the list of your courses:<p>
 <table cellpadding="0" cellspacing="0">
 	<tr>
 		<th>Name</th>
@@ -18,27 +18,27 @@
 	</tr>
 	<?php
 
-		$result = oci_parse($con, "SELECT * FROM Courses C WHERE C.FacultyID = '" . $faculty['FacultyID'] . "' ORDER BY C.CourseName");
+		$result = oci_parse($con, "SELECT * FROM Courses C WHERE C.FacultyID = '" . $faculty['FACULTYID'] . "' ORDER BY C.CourseName");
 
 		while($row = oci_fetch_array($result))
 		{
 			echo "<tr>\n";
-			echo "<td>" . $row['CourseName'] . "</td>\n";
-			echo "<td>" . $row['Semester'] . "</td>\n";
-			echo "<td>" . $row['Year'] . "</td>\n";
-			echo "<td>" . $row['Meets_At'] . "</td>\n";
-			echo "<td>" . $row['Room'] . "</td>\n";
-			echo "<td><a href=\"edit.php?FacultyID=" . $faculty['FacultyID'] . "&id=" . $row['CourseID'] . "\">Edit</a>
-			          <a href=\"delete.php?FacultyID=" . $faculty['FacultyID'] . "&id=" . $row['CourseID'] . "\">Delete</a></td>\n";
+			echo "<td>" . $row['COURSENAME'] . "</td>\n";
+			echo "<td>" . $row['SEMESTER'] . "</td>\n";
+			echo "<td>" . $row['YEAR'] . "</td>\n";
+			echo "<td>" . $row['MEETS_AT'] . "</td>\n";
+			echo "<td>" . $row['ROOM'] . "</td>\n";
+			echo "<td><a href=\"edit.php?FacultyID=" . $faculty['FACULTYID'] . "&id=" . $row['COURSEID'] . "\">Edit</a>
+			          <a href=\"delete.php?FacultyID=" . $faculty['FACULTYID'] . "&id=" . $row['COURSEID'] . "\">Delete</a></td>\n";
 			echo "</tr>\n";
 		}
 
 	?>
 </table>
 <br />
-<input type="button" value="Create Course" onClick="location.href='create.php?FacultyID=<?php echo $faculty['FacultyID']; ?>';" />
+<input type="button" value="Create Course" onClick="location.href='create.php?FacultyID=<?php echo $faculty['FACULTYID']; ?>';" />
 <br />
 <div class="home">
-	<a href="<?php echo $RootDirectory; ?>faculty/index.php?FacultyID=<?php echo $faculty['FacultyID']; ?>">Click here to return to the menu</a>
+	<a href="<?php echo $RootDirectory; ?>faculty/index.php?FacultyID=<?php echo $faculty['FACULTYID']; ?>">Click here to return to the menu</a>
 </div>
 <?php include "../../include/footer.php"; ?>

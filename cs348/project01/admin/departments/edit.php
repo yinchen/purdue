@@ -4,7 +4,7 @@
 
 	if (empty($_POST) == false)
 	{
-		$result = oci_parse($con, "UPDATE Departments SET DepartmentID='" . $_POST['DepartmentID'] . "', Name='" . $_POST['Name'] . "', HeadName='" . $_POST['HeadName'] . "' WHERE DepartmentID='" . $_GET['id'] . "'");
+		$result = oci_parse($con, "UPDATE Departments SET Name='" . $_POST['Name'] . "', HeadName='" . $_POST['HeadName'] . "' WHERE DepartmentID='" . $_GET['id'] . "'");
 		oci_execute($result);
 
 		header("Location: index.php");
@@ -19,10 +19,6 @@
 <p>Hello Administrator. You are currently editing a department:<p>
 <form action="edit.php?id=<?php echo $row['DEPARTMENTID']; ?>" method="post">
 	<table cellpadding="0" cellspacing="0">
-		<tr>
-			<td><b>ID: </b></td>
-			<td><input name="DepartmentID" type="text" value="<?php echo $row['DEPARTMENTID']; ?>" /></td>
-		</tr>
 		<tr>
 			<td><b>Name: </b></td>
 			<td><input name="Name" type="text" value="<?php echo $row['NAME']; ?>" /></td>

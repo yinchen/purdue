@@ -8,7 +8,7 @@
 	$result = oci_parse($con, "DELETE FROM CourseStudents WHERE CourseID='" . $_GET['courseid'] . "' AND StudentID='" . $_GET['studentid'] . "'");
 	oci_execute($result);
 
-	header("Location: index.php?FacultyID=" . $faculty['FacultyID']);
+	header("Location: index.php?FacultyID=" . $faculty['FACULTYID']);
 	exit;
 
 ?>

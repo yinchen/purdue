@@ -11,7 +11,7 @@
 		$result = oci_parse($con, "UPDATE EvaluationGrades SET EvaluationID='" . $_POST['EvaluationID'] . "', StudentID='" . $_POST['StudentID'] . "', Grade='" . $_POST['Grade'] . "' WHERE EvaluationID='" . $_GET['evaluationid'] . "' AND StudentID='" . $_GET['studentid'] . "'");
 		oci_execute($result);
 
-		header("Location: index.php?FacultyID=" . $faculty['FacultyID']);
+		header("Location: index.php?FacultyID=" . $faculty['FACULTYID']);
 		exit;
 	}
 
@@ -19,7 +19,7 @@
 	oci_execute($result);
 	$row = oci_fetch_array($result);
 
-	$result2 = oci_parse($con, "SELECT * FROM Courses WHERE FacultyID='" . $faculty['FacultyID'] . "' ORDER BY CourseName ASC");
+	$result2 = oci_parse($con, "SELECT * FROM Courses WHERE FacultyID='" . $faculty['FACULTYID'] . "' ORDER BY CourseName ASC");
 	oci_execute($result2);
 	while($row2 = oci_fetch_array($result2))
 	{
@@ -29,7 +29,7 @@
 		oci_execute($result3);
 		while($row3 = oci_fetch_array($result3))
 		{
-			if ($row3['EvaluationID'] == $row['EvaluationID'])
+			if ($row3['EvaluationID'] == $row['EVALUATIONID'])
 				$EvaluationID .= "<option value='" . $row3['EvaluationID'] . "' selected='true'>" . $row3['EvaluationName'] . "</option>\n";
 			else
 				$EvaluationID .= "<option value='" . $row3['EvaluationID'] . "'>" . $row3['EvaluationName'] . "</option>\n";
@@ -42,15 +42,15 @@
 	oci_execute($result2);
 	while($row2 = oci_fetch_array($result2))
 	{
-		if ($row2['StudentID'] == $row['StudentID'])
+		if ($row2['StudentID'] == $row['STUDENTID'])
 			$StudentID .= "<option value='" . $row2['StudentID'] . "' selected='true'>" . $row2['Name'] . "</option>\n";
 		else
 			$StudentID .= "<option value='" . $row2['StudentID'] . "'>" . $row2['Name'] . "</option>\n";
 	}
 
 ?>
-<p>Hello <?php echo $faculty['Name']; ?> (Faculty). You are currently editing a grade:<p>
-<form action="edit.php?FacultyID=<?php echo $faculty['FacultyID']; ?>&studentid=<?php echo $row['StudentID']; ?>&evaluationid=<?php echo $row['EvaluationID']; ?>" method="post">
+<p>Hello <?php echo $faculty['NAME']; ?> (Faculty). You are currently editing a grade:<p>
+<form action="edit.php?FacultyID=<?php echo $faculty['FACULTYID']; ?>&studentid=<?php echo $row['STUDENTID']; ?>&evaluationid=<?php echo $row['EVALUATIONID']; ?>" method="post">
 	<table cellpadding="0" cellspacing="0">
 		<tr>
 			<td><b>Evaluation: </b></td>
@@ -62,13 +62,13 @@
 		</tr>
 		<tr>
 			<td><b>Grade: </b></td>
-			<td><input name="Grade" type="text" value="<?php echo $row['Grade']; ?>" /></td>
+			<td><input name="Grade" type="text" value="<?php echo $row['GRADE']; ?>" /></td>
 		</tr>
 	</table>
 	<br />
 	<input type="submit" value="Edit Grade" />
 </form>
 <div class="home">
-	<a href="<?php echo $RootDirectory; ?>faculty/index.php?FacultyID=<?php echo $faculty['FacultyID']; ?>">Click here to return to the menu</a>
+	<a href="<?php echo $RootDirectory; ?>faculty/index.php?FacultyID=<?php echo $faculty['FACULTYID']; ?>">Click here to return to the menu</a>
 </div>
 <?php include "../../include/footer.php"; ?>

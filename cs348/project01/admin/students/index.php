@@ -15,10 +15,10 @@
 		while($row = oci_fetch_array($result))
 		{
 			echo "<tr>\n";
-			echo "<td>" . $row['StudentID'] . "</td>\n";
-			echo "<td>" . $row['Name'] . "</td>\n";
-			echo "<td><a href=\"" . $RootDirectory . "admin/students/edit.php?id=" . $row['StudentID'] . "\">Edit</a>
-			          <a href=\"" . $RootDirectory . "admin/students/delete.php?id=" . $row['StudentID'] . "\">Delete</a></td>\n";
+			echo "<td>" . $row['STUDENTID'] . "</td>\n";
+			echo "<td>" . $row['NAME'] . "</td>\n";
+			echo "<td><a href=\"" . $RootDirectory . "admin/students/edit.php?id=" . $row['STUDENTID'] . "\">Edit</a>
+			          <a href=\"" . $RootDirectory . "admin/students/delete.php?id=" . $row['STUDENTID'] . "\">Delete</a></td>\n";
 			echo "</tr>\n";
 		}
 

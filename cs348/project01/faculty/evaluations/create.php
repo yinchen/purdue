@@ -11,20 +11,20 @@
 		$result = oci_parse($con, "INSERT INTO CourseEvaluations (CourseID, EvaluationName, Type, Weightage, DeadlineDate, MeetingRoom) VALUES ('" . $_POST['CourseID'] . "', '" . $_POST['EvaluationName'] . "', '" . $_POST['Type'] . "', '" . $_POST['Weightage'] . "', '" . $_POST['DeadlineDate'] . "', '" . $_POST['MeetingRoom'] . "')");
 		oci_execute($result);
 
-		header("Location: index.php?FacultyID=" . $faculty['FacultyID']);
+		header("Location: index.php?FacultyID=" . $faculty['FACULTYID']);
 		exit;
 	}
 
-	$result = oci_parse($con, "SELECT * FROM Courses WHERE FacultyID='" . $faculty['FacultyID'] . "'");
+	$result = oci_parse($con, "SELECT * FROM Courses WHERE FacultyID='" . $faculty['FACULTYID'] . "'");
 	oci_execute($result);
 	while($row = oci_fetch_array($result))
 	{
-		$CourseID .= "<option value='" . $row['CourseID'] . "'>" . $row['CourseName'] . "</option>\n";
+		$CourseID .= "<option value='" . $row['COURSEID'] . "'>" . $row['COURSENAME'] . "</option>\n";
 	}
 
 ?>
-<p>Hello <?php echo $faculty['Name']; ?> (Faculty). You are currently creating a course evaluation:<p>
-<form action="create.php?FacultyID=<?php echo $faculty['FacultyID']; ?>" method="post">
+<p>Hello <?php echo $faculty['NAME']; ?> (Faculty). You are currently creating a course evaluation:<p>
+<form action="create.php?FacultyID=<?php echo $faculty['FACULTYID']; ?>" method="post">
 	<table cellpadding="0" cellspacing="0">
 		<tr>
 			<td><b>Course: </b></td>
@@ -60,6 +60,6 @@
 	<input type="submit" value="Create Evaluation" />
 </form>
 <div class="home">
-	<a href="<?php echo $RootDirectory; ?>faculty/index.php?FacultyID=<?php echo $faculty['FacultyID']; ?>">Click here to return to the menu</a>
+	<a href="<?php echo $RootDirectory; ?>faculty/index.php?FacultyID=<?php echo $faculty['FACULTYID']; ?>">Click here to return to the menu</a>
 </div>
 <?php include "../../include/footer.php"; ?>

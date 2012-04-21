@@ -7,7 +7,7 @@
 		$result = oci_parse($con, "SELECT * FROM Students ORDER BY Name ASC");
 		while($row = oci_fetch_array($result))
 		{
-			$StudentID .= "<option value='" . $row['StudentID'] . "'>" . $row['Name'] . "</option>\n";
+			$StudentID .= "<option value='" . $row['STUDENTID'] . "'>" . $row['NAME'] . "</option>\n";
 		}
 
 ?>
@@ -34,16 +34,16 @@
 		$student = oci_fetch_array($result);
 
 ?>
-<p>Hello <?php echo $student['Name']; ?> (Student). You can view any of the following reports:<p>
+<p>Hello <?php echo $student['NAME']; ?> (Student). You can view any of the following reports:<p>
 <div class="list">
 	<div class="item">
-		<a href="evaluations/report.php?StudentID=<?php echo $student['StudentID']; ?>">Calendar of Evaluations</a>
+		<a href="evaluations/report.php?StudentID=<?php echo $student['STUDENTID']; ?>">Calendar of Evaluations</a>
 	</div>
 	<div class="item">
-		<a href="courses/report.php?StudentID=<?php echo $student['StudentID']; ?>">My Courses</a>
+		<a href="courses/report.php?StudentID=<?php echo $student['STUDENTID']; ?>">My Courses</a>
 	</div>
 	<div class="item">
-		<a href="grades/report.php?StudentID=<?php echo $student['StudentID']; ?>">My Grades</a>
+		<a href="grades/report.php?StudentID=<?php echo $student['STUDENTID']; ?>">My Grades</a>
 	</div>
 </div>
 <div class="home">

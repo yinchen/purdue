@@ -8,16 +8,16 @@
 
 	if (empty($_POST) == false)
 	{
-		$result = oci_parse($con, "INSERT INTO Courses (CourseName, Semester, Year, Meets_At, Room, FacultyID) VALUES ('" . $_POST['CourseName'] . "', '" . $_POST['Semester'] . "', '" . $_POST['Year'] . "', '" . $_POST['Meets_At'] . "', '" . $_POST['Room'] . "', '" . $faculty['FacultyID'] . "')");
+		$result = oci_parse($con, "INSERT INTO Courses (CourseName, Semester, Year, Meets_At, Room, FacultyID) VALUES ('" . $_POST['CourseName'] . "', '" . $_POST['Semester'] . "', '" . $_POST['Year'] . "', '" . $_POST['Meets_At'] . "', '" . $_POST['Room'] . "', '" . $faculty['FACULTYID'] . "')");
 		oci_execute($result);
 
-		header("Location: index.php?FacultyID=" . $faculty['FacultyID']);
+		header("Location: index.php?FacultyID=" . $faculty['FACULTYID']);
 		exit;
 	}
 
 ?>
-<p>Hello <?php echo $faculty['Name']; ?> (Faculty). You are currently creating a course:<p>
-<form action="create.php?FacultyID=<?php echo $faculty['FacultyID']; ?>" method="post">
+<p>Hello <?php echo $faculty['NAME']; ?> (Faculty). You are currently creating a course:<p>
+<form action="create.php?FacultyID=<?php echo $faculty['FACULTYID']; ?>" method="post">
 	<table cellpadding="0" cellspacing="0">
 		<tr>
 			<td><b>Course Name: </b></td>
@@ -44,6 +44,6 @@
 	<input type="submit" value="Create Course" />
 </form>
 <div class="home">
-	<a href="<?php echo $RootDirectory; ?>faculty/index.php?FacultyID=<?php echo $faculty['FacultyID']; ?>">Click here to return to the menu</a>
+	<a href="<?php echo $RootDirectory; ?>faculty/index.php?FacultyID=<?php echo $faculty['FACULTYID']; ?>">Click here to return to the menu</a>
 </div>
 <?php include "../../include/footer.php"; ?>

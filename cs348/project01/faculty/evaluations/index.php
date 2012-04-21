@@ -7,7 +7,7 @@
 	$faculty = oci_fetch_array($result);
 
 ?>
-<p>Hello <?php echo $faculty['Name']; ?> (Faculty). Below is the list of your course evaluations:<p>
+<p>Hello <?php echo $faculty['NAME']; ?> (Faculty). Below is the list of your course evaluations:<p>
 <table cellpadding="0" cellspacing="0">
 	<tr>
 		<th>Course</th>
@@ -20,36 +20,36 @@
 	</tr>
 	<?php
 
-		$result = oci_parse($con, "SELECT * FROM CourseEvaluations E LEFT OUTER JOIN Courses AS C ON E.CourseID = C.CourseID WHERE C.FacultyID = '" . $faculty['FacultyID'] . "' ORDER BY E.DeadlineDate ASC");
+		$result = oci_parse($con, "SELECT * FROM CourseEvaluations E LEFT OUTER JOIN Courses AS C ON E.CourseID = C.CourseID WHERE C.FacultyID = '" . $faculty['FACULTYID'] . "' ORDER BY E.DeadlineDate ASC");
 		oci_execute($result);
 
 		while($row = oci_fetch_array($result))
 		{
 			echo "<tr>\n";
-			echo "<td>" . $row['CourseName'] . "</td>\n";
-			echo "<td>" . $row['EvaluationName'] . "</td>\n";
-			echo "<td>" . $row['Weightage'] . "</td>\n";
-			if ($row['Type'] == 0)
+			echo "<td>" . $row['COURSENAME'] . "</td>\n";
+			echo "<td>" . $row['EVALUATIONNAME'] . "</td>\n";
+			echo "<td>" . $row['WEIGHTAGE'] . "</td>\n";
+			if ($row['TYPE'] == 0)
 				echo "<td>Homework</td>\n";
-			else if ($row['Type'] == 1)
+			else if ($row['TYPE'] == 1)
 				echo "<td>Midterm</td>\n";
-			else if ($row['Type'] == 2)
+			else if ($row['TYPE'] == 2)
 				echo "<td>Final Exam</td>\n";
-			else if ($row['Type'] == 3)
+			else if ($row['TYPE'] == 3)
 				echo "<td>Project</td>\n";
-			echo "<td>" . date("F j, Y, g:i a", strtotime($row['DeadlineDate'])) . "</td>\n";
-			echo "<td>" . $row['MeetingRoom'] . "</td>\n";
-			echo "<td><a href=\"edit.php?FacultyID=" . $faculty['FacultyID'] . "&id=" . $row['EvaluationID'] . "\">Edit</a>
-			          <a href=\"delete.php?FacultyID=" . $faculty['FacultyID'] . "&id=" . $row['EvaluationID'] . "\">Delete</a></td>\n";
+			echo "<td>" . date("F j, Y, g:i a", strtotime($row['DEADLINEDATE'])) . "</td>\n";
+			echo "<td>" . $row['MEETINGROOM'] . "</td>\n";
+			echo "<td><a href=\"edit.php?FacultyID=" . $faculty['FACULTYID'] . "&id=" . $row['EVALUATIONID'] . "\">Edit</a>
+			          <a href=\"delete.php?FacultyID=" . $faculty['FACULTYID'] . "&id=" . $row['EVALUATIONID'] . "\">Delete</a></td>\n";
 			echo "</tr>\n";
 		}
 
 	?>
 </table>
 <br />
-<input type="button" value="Create Evaluation" onClick="location.href='create.php?FacultyID=<?php echo $faculty['FacultyID']; ?>';" />
+<input type="button" value="Create Evaluation" onClick="location.href='create.php?FacultyID=<?php echo $faculty['FACULTYID']; ?>';" />
 <br />
 <div class="home">
-	<a href="<?php echo $RootDirectory; ?>faculty/index.php?FacultyID=<?php echo $faculty['FacultyID']; ?>">Click here to return to the menu</a>
+	<a href="<?php echo $RootDirectory; ?>faculty/index.php?FacultyID=<?php echo $faculty['FACULTYID']; ?>">Click here to return to the menu</a>
 </div>
 <?php include "../../include/footer.php"; ?>

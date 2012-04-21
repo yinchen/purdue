@@ -15,7 +15,7 @@
 	oci_execute($result);
 	while($row = oci_fetch_array($result))
 	{
-		$DepartmentID .= "<option value='" . $row['DepartmentID'] . "'>" . $row['Name'] . "</option>\n";
+		$DepartmentID .= "<option value='" . $row['DEPARTMENTID'] . "'>" . $row['NAME'] . "</option>\n";
 	}
 
 ?>

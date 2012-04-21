@@ -8,7 +8,7 @@
 		oci_execute($result);
 		while($row = oci_fetch_array($result))
 		{
-			$FacultyID .= "<option value='" . $row['FacultyID'] . "'>" . $row['Name'] . "</option>\n";
+			$FacultyID .= "<option value='" . $row['FacultyID'] . "'>" . $row['NAME'] . "</option>\n";
 		}
 
 ?>
@@ -36,29 +36,29 @@
 		$faculty = oci_fetch_array($result);
 
 ?>
-<p>Hello <?php echo $faculty['Name']; ?> (Faculty). Please select an action from the list below:<p>
+<p>Hello <?php echo $faculty['NAME']; ?> (Faculty). Please select an action from the list below:<p>
 <div class="list">
 	<div class="item">
-		<a href="courses/index.php?FacultyID=<?php echo $faculty['FacultyID']; ?>">Manage Courses</a>
+		<a href="courses/index.php?FacultyID=<?php echo $faculty['FACULTYID']; ?>">Manage Courses</a>
 	</div>
 	<div class="item">
-		<a href="evaluations/index.php?FacultyID=<?php echo $faculty['FacultyID']; ?>">Manage Evaluations</a>
+		<a href="evaluations/index.php?FacultyID=<?php echo $faculty['FACULTYID']; ?>">Manage Evaluations</a>
 	</div>
 	<div class="item">
-		<a href="students/index.php?FacultyID=<?php echo $faculty['FacultyID']; ?>">Manage Student Assignments</a>
+		<a href="students/index.php?FacultyID=<?php echo $faculty['FACULTYID']; ?>">Manage Student Assignments</a>
 	</div>
 	<div class="item">
-		<a href="grades/index.php?FacultyID=<?php echo $faculty['FacultyID']; ?>">Manage Grades</a>
+		<a href="grades/index.php?FacultyID=<?php echo $faculty['FACULTYID']; ?>">Manage Grades</a>
 	</div>
 </div>
 <br />
 <p>You can also view any of the following reports:<p>
 <div class="list">
 	<div class="item">
-		<a href="courses/report.php?FacultyID=<?php echo $faculty['FacultyID']; ?>">Report of Courses</a>
+		<a href="courses/report.php?FacultyID=<?php echo $faculty['FACULTYID']; ?>">Report of Courses</a>
 	</div>
 	<div class="item">
-		<a href="grades/report.php?FacultyID=<?php echo $faculty['FacultyID']; ?>">Report of Students and Grades</a>
+		<a href="grades/report.php?FacultyID=<?php echo $faculty['FACULTYID']; ?>">Report of Students and Grades</a>
 	</div>
 </div>
 <div class="home">
