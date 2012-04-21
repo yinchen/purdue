@@ -23,16 +23,16 @@
 	oci_execute($result2);
 	while($row2 = oci_fetch_array($result2))
 	{
-		$EvaluationID .= "<optgroup label='" . $row2['CourseName'] . "'>\n";
+		$EvaluationID .= "<optgroup label='" . $row2['COURSENAME'] . "'>\n";
 
-		$result3 = oci_parse($con, "SELECT * FROM CourseEvaluations WHERE CourseID='" . $row2['CourseID'] . "' ORDER BY EvaluationName ASC");
+		$result3 = oci_parse($con, "SELECT * FROM CourseEvaluations WHERE CourseID='" . $row2['COURSEID'] . "' ORDER BY EvaluationName ASC");
 		oci_execute($result3);
 		while($row3 = oci_fetch_array($result3))
 		{
-			if ($row3['EvaluationID'] == $row['EVALUATIONID'])
-				$EvaluationID .= "<option value='" . $row3['EvaluationID'] . "' selected='true'>" . $row3['EvaluationName'] . "</option>\n";
+			if ($row3['EVALUATIONID'] == $row['EVALUATIONID'])
+				$EvaluationID .= "<option value='" . $row3['EVALUATIONID'] . "' selected='true'>" . $row3['EVALUATIONNAME'] . "</option>\n";
 			else
-				$EvaluationID .= "<option value='" . $row3['EvaluationID'] . "'>" . $row3['EvaluationName'] . "</option>\n";
+				$EvaluationID .= "<option value='" . $row3['EVALUATIONID'] . "'>" . $row3['EVALUATIONNAME'] . "</option>\n";
 		}
 
 		$EvaluationID .= "</optgroup>\n";
@@ -42,10 +42,10 @@
 	oci_execute($result2);
 	while($row2 = oci_fetch_array($result2))
 	{
-		if ($row2['StudentID'] == $row['STUDENTID'])
-			$StudentID .= "<option value='" . $row2['StudentID'] . "' selected='true'>" . $row2['Name'] . "</option>\n";
+		if ($row2['STUDENTID'] == $row['STUDENTID'])
+			$StudentID .= "<option value='" . $row2['STUDENTID'] . "' selected='true'>" . $row2['NAME'] . "</option>\n";
 		else
-			$StudentID .= "<option value='" . $row2['StudentID'] . "'>" . $row2['Name'] . "</option>\n";
+			$StudentID .= "<option value='" . $row2['STUDENTID'] . "'>" . $row2['NAME'] . "</option>\n";
 	}
 
 ?>

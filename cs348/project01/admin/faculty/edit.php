@@ -19,10 +19,10 @@
 	oci_execute($result2);
 	while($row2 = oci_fetch_array($result2))
 	{
-		if ($row['DEPARTMENTID'] == $row2['DepartmentID'])
-			$DepartmentID .= "<option value='" . $row2['DepartmentID'] . "' selected='true'>" . $row2['Name'] . "</option>\n";
+		if ($row['DEPARTMENTID'] == $row2['DEPARTMENTID'])
+			$DepartmentID .= "<option value='" . $row2['DEPARTMENTID'] . "' selected='true'>" . $row2['NAME'] . "</option>\n";
 		else
-			$DepartmentID .= "<option value='" . $row2['DepartmentID'] . "'>" . $row2['Name'] . "</option>\n";
+			$DepartmentID .= "<option value='" . $row2['DEPARTMENTID'] . "'>" . $row2['NAME'] . "</option>\n";
 	}
 
 ?>

@@ -25,7 +25,7 @@
 		oci_execute($result2);
 		while($row2 = oci_fetch_array($result2))
 		{
-			$EvaluationID .= "<option value='" . $row2['EvaluationID'] . "'>" . $row2['EvaluationName'] . "</option>\n";
+			$EvaluationID .= "<option value='" . $row2['EVALUATION'] . "'>" . $row2['EVALUATIONNAME'] . "</option>\n";
 		}
 
 		$EvaluationID .= "</optgroup>\n";
