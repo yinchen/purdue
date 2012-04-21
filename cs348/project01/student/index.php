@@ -16,7 +16,7 @@
 	<table cellpadding="0" cellspacing="0">
 		<tr>
 			<td><b>Name: </b></td>
-			<td><select name="StudentID"><?php echo $studentID; ?></select></td>
+			<td><select name="StudentID"><?php echo $StudentID; ?></select></td>
 		</tr>
 	</table>
 	<br />

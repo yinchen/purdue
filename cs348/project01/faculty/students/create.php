@@ -39,7 +39,7 @@
 		</tr>
 		<tr>
 			<td><b>Student: </b></td>
-			<td><select name="StudentID"><?php echo $studentID; ?></select></td>
+			<td><select name="StudentID"><?php echo $StudentID; ?></select></td>
 		</tr>
 	</table>
 	<br />
