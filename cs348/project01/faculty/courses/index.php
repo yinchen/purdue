@@ -20,6 +20,7 @@
 	<?php
 
 		$result = oci_parse($con, "SELECT * FROM Courses C WHERE C.FacultyID = '" . $faculty['FACULTYID'] . "' ORDER BY C.CourseName");
+		oci_execute($result);
 
 		while($row = oci_fetch_array($result))
 		{
