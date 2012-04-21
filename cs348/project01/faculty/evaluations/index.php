@@ -20,7 +20,7 @@
 	</tr>
 	<?php
 
-		$result = oci_parse($con, "SELECT * FROM CourseEvaluations E LEFT OUTER JOIN Courses AS C ON E.CourseID = C.CourseID WHERE C.FacultyID = '" . $faculty['FACULTYID'] . "' ORDER BY E.DeadlineDate ASC");
+		$result = oci_parse($con, "SELECT * FROM CourseEvaluations E LEFT OUTER JOIN Courses ON E.CourseID = Courses.CourseID WHERE Courses.FacultyID = '" . $faculty['FACULTYID'] . "' ORDER BY E.DeadlineDate ASC");
 		oci_execute($result);
 
 		while($row = oci_fetch_array($result))
