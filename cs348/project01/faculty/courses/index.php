@@ -3,6 +3,7 @@
 <?php
 
 	$result = oci_parse($con, "SELECT * FROM Faculties WHERE FacultyID='" . $_GET['FacultyID'] . "'");
+	oci_execute($result);
 	$faculty = oci_fetch_array($result);
 
 ?>
