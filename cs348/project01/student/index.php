@@ -5,6 +5,7 @@
 	if (empty($_GET['StudentID']))
 	{	
 		$result = oci_parse($con, "SELECT * FROM Students ORDER BY Name ASC");
+		oci_execute($result);
 		while($row = oci_fetch_array($result))
 		{
 			$StudentID .= "<option value='" . $row['STUDENTID'] . "'>" . $row['NAME'] . "</option>\n";
@@ -31,6 +32,7 @@
 	else
 	{
 		$result = oci_parse($con, "SELECT * FROM Students WHERE StudentID='" . $_GET['StudentID'] . "'");
+		oci_execute($result);
 		$student = oci_fetch_array($result);
 
 ?>
