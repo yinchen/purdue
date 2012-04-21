@@ -17,19 +17,19 @@
 
 ?>
 <p>Hello Administrator. You are currently editing a department:<p>
-<form action="edit.php?id=<?php echo $row['DepartmentID']; ?>" method="post">
+<form action="edit.php?id=<?php echo $row['DEPARTMENTID']; ?>" method="post">
 	<table cellpadding="0" cellspacing="0">
 		<tr>
 			<td><b>ID: </b></td>
-			<td><input name="DepartmentID" type="text" value="<?php echo $row['DepartmentID']; ?>" /></td>
+			<td><input name="DepartmentID" type="text" value="<?php echo $row['DEPARTMENTID']; ?>" /></td>
 		</tr>
 		<tr>
 			<td><b>Name: </b></td>
-			<td><input name="Name" type="text" value="<?php echo $row['Name']; ?>" /></td>
+			<td><input name="Name" type="text" value="<?php echo $row['NAME']; ?>" /></td>
 		</tr>
 		<tr>
 			<td><b>Head Name: </b></td>
-			<td><input name="HeadName" type="text" value="<?php echo $row['HeadName']; ?>" /></td>
+			<td><input name="HeadName" type="text" value="<?php echo $row['HEADNAME']; ?>" /></td>
 		</tr>
 	</table>
 	<br />

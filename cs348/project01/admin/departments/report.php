@@ -14,8 +14,8 @@
 		while($row = oci_fetch_array($result))
 		{
 			echo "<tr>\n";
-			echo "<td>" . $row['Name'] . "</td>\n";
-			echo "<td>" . $row['HeadName'] . "</td>\n";
+			echo "<td>" . $row['NAME'] . "</td>\n";
+			echo "<td>" . $row['HEADNAME'] . "</td>\n";
 			echo "</tr>\n";
 		}
 
