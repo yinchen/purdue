@@ -24,7 +24,7 @@
 	<input type="submit" value="Continue" />
 </form>
 <div class="home">
-	<a href="<?php echo $RootDirectory; ?>/index.php">Click here to return home</a>
+	<a href="<?php echo $RootDirectory; ?>index.php">Click here to return home</a>
 </div>
 <?php
 
@@ -62,7 +62,7 @@
 	</div>
 </div>
 <div class="home">
-	<a href="<?php echo $RootDirectory; ?>/index.php">Click here to return home</a>
+	<a href="<?php echo $RootDirectory; ?>index.php">Click here to return home</a>
 </div>
 <?php
 
