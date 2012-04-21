@@ -1,0 +1,14 @@
+Matt McCormick
+mbmccorm@cs.purdue.edu
+
+CS 348 - Project 1
+
+http://www-cgi.cs.purdue.edu/cgi-bin/mbmccorm/348/index.php
+
+This project was written in PHP and can be found at http://www-cgi.cs.purdue.edu/cgi-bin/mbmccorm/348/index.php. To run this application on your own account, you will need to set up your www-cgi.cs.purdue.edu share. Once that is complete, simply copy these files to your www-cgi share at /p/www-cgi/cgi-bin/YOUR_USERNAME/ and modify the include/config.php file with your database connection information and the RootDirectory.
+
+You do not need to compile this application, the server will compile this code at runtime. Just copy this to your www-cgi share and visit the site on your web browser. You can also just access it from my share.
+
+If you run into any problems, please send me an email.
+
+The SQL scripts to drop, create, and populate the database are in the db folder. The ERD for the database is also in this folder.
