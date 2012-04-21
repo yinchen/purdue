@@ -56,7 +56,7 @@
 		</tr>
 		<tr>
 			<td><b>Deadline Date: </b></td>
-			<td><input name="DeadlineDate" type="text" value="<?php echo $row['DEADLINEDATE']; ?>" /> Format is "YYYY-MM-DD HH:MM:SS"</td>
+			<td><input name="DeadlineDate" type="text" value="<?php echo $row['DEADLINEDATE']; ?>" /> Format is "DD-MON-YY"</td>
 		</tr>
 		<tr>
 			<td><b>Meeting Room: </b></td>

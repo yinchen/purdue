@@ -53,7 +53,7 @@
 		</tr>
 		<tr>
 			<td><b>Deadline Date: </b></td>
-			<td><input name="DeadlineDate" type="text" /></td>
+			<td><input name="DeadlineDate" type="text" /> Format is "DD-MON-YY"</td>
 		</tr>
 		<tr>
 			<td><b>Meeting Room: </b></td>
