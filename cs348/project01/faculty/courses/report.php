@@ -18,7 +18,7 @@
 	</tr>
 	<?php
 
-		$result = oci_parse($con, "SELECT C.CourseID, C.CourseName, C.Meets_At, C.Room, (SELECT COUNT(*) FROM CourseStudents S WHERE S.CourseID = C.CourseID) AS NumStudents, (SELECT COUNT(*) FROM CourseEvaluations E WHERE E.CourseID = C.CourseID) AS NumEvaluations FROM Courses C WHERE C.FacultyID = '" . $faculty['FACULTYID'] . "' ORDER BY C.CourseName");
+		$result = oci_parse($con, "SELECT C.CourseID, C.CourseName, C.Meets_At, C.Room, (SELECT COUNT(*) FROM CourseStudents S WHERE S.CourseID = C.CourseID) AS NUMSTUDENTS, (SELECT COUNT(*) FROM CourseEvaluations E WHERE E.CourseID = C.CourseID) AS NUMEVALUATIONS FROM Courses C WHERE C.FacultyID = '" . $faculty['FACULTYID'] . "' ORDER BY C.CourseName");
 		oci_execute($result);
 
 		while($row = oci_fetch_array($result))
@@ -27,8 +27,8 @@
 			echo "<td>" . $row['COURSENAME'] . "</td>\n";
 			echo "<td>" . $row['MEETS_AT'] . "</td>\n";
 			echo "<td>" . $row['ROOM'] . "</td>\n";
-			echo "<td>" . $row['NumStudents'] . "</td>\n";
-			echo "<td>" . $row['NumEvaluations'] . "</td>\n";
+			echo "<td>" . $row['NUMSTUDENTS'] . "</td>\n";
+			echo "<td>" . $row['NUMEVALUATIONS'] . "</td>\n";
 			echo "</tr>\n";
 		}
 

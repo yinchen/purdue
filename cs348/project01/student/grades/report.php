@@ -50,7 +50,7 @@
 	</tr>
 	<?php
 
-		$result = oci_parse($con, "SELECT C.CourseName, C.Semester, C.Year, S2.Name, (SELECT SUM(G.Grade * E.Weightage) FROM CourseEvaluations E RIGHT OUTER JOIN EvaluationGrades AS G ON G.EvaluationID = E.EvaluationID WHERE E.CourseID = C.CourseID AND G.StudentID = S1.StudentID) AS CurrentGrade FROM CourseStudents S1 JOIN Students AS S2 ON S2.StudentID = S1.StudentID JOIN Courses AS C ON C.CourseID = S1.CourseID WHERE S1.StudentID = '" . $student['STUDENTID'] . "' ORDER BY C.CourseName");
+		$result = oci_parse($con, "SELECT Courses.CourseName, Courses.Semester, Courses.Year, Students.Name, (SELECT SUM(EvaluationGrades.Grade * E.Weightage) FROM CourseEvaluations E RIGHT OUTER JOIN EvaluationGrades ON EvaluationGrades.EvaluationID = E.EvaluationID WHERE E.CourseID = Courses.CourseID AND EvaluationGrades.StudentID = S1.StudentID) AS CurrentGrade FROM CourseStudents S1 JOIN Students ON Students.StudentID = S1.StudentID JOIN Courses ON Courses.CourseID = S1.CourseID WHERE S1.StudentID = '" . $student['STUDENTID'] . "' ORDER BY Courses.CourseName");
 		oci_execute($result);
 		
 		while($row = oci_fetch_array($result))
@@ -59,7 +59,7 @@
 			echo "<td>" . $row['COURSENAME'] . "</td>\n";
 			echo "<td>" . $row['SEMESTER'] . "</td>\n";
 			echo "<td>" . $row['YEAR'] . "</td>\n";
-			echo "<td>" . $row['CurrentGrade'] . "</td>\n";
+			echo "<td>" . $row['CURRENTGRADE'] . "</td>\n";
 			echo "</tr>\n";
 		}
 

@@ -3,7 +3,6 @@
 <p>Hello Administrator. Below is the list of students:<p>
 <table cellpadding="0" cellspacing="0">
 	<tr>
-		<th>ID</th>
 		<th>Name</th>
 		<th>Actions</th>
 	</tr>
@@ -15,7 +14,6 @@
 		while($row = oci_fetch_array($result))
 		{
 			echo "<tr>\n";
-			echo "<td>" . $row['STUDENTID'] . "</td>\n";
 			echo "<td>" . $row['NAME'] . "</td>\n";
 			echo "<td><a href=\"" . $RootDirectory . "admin/students/edit.php?id=" . $row['STUDENTID'] . "\">Edit</a>
 			          <a href=\"" . $RootDirectory . "admin/students/delete.php?id=" . $row['STUDENTID'] . "\">Delete</a></td>\n";
