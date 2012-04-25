@@ -2,8 +2,8 @@
 
 #include <xinu.h>
 
-struct	lflcblk	lfltab[Nlfl+2];		/* control blocks. The last two  control blocks are used for directory operations */
-sid32 	lfDirCblkMutex;
+struct	lflcblk	lfltab[Nlfl];		/* control blocks */
+
 /*------------------------------------------------------------------------
  * lflInit  -  initialize control blocks for local file pseudo-devices
  *------------------------------------------------------------------------
@@ -22,7 +22,7 @@ devcall	lflInit (
 	lfptr->lfstate = LF_FREE;	/* Device is currently unused	*/
 	lfptr->lfdev = devptr->dvnum;	/* Set device ID		*/
 	lfptr->lfmutex = semcreate(1);
-	//lfptr->lfdirptr = (struct  ldentry *) NULL;
+	lfptr->lfdirptr = (struct  ldentry *) NULL;
 	lfptr->lfpos = 0;
 	for (i=0; i<LF_NAME_LEN; i++) {
 		lfptr->lfname[i] = NULLCH;
@@ -31,10 +31,6 @@ devcall	lflInit (
 	memset((char *) &lfptr->lfiblock, NULLCH, sizeof(struct lfiblk));
 	lfptr->lfdnum = 0;
 	memset((char *) &lfptr->lfdblock, NULLCH, LF_BLKSIZ);
-
-	lfptr->fileSize = 0;
-	lfptr->firstIbId = LF_INULL;	
-
 	lfptr->lfbyte = &lfptr->lfdblock[LF_BLKSIZ]; /* beyond lfdblock	*/
 	lfptr->lfibdirty = lfptr->lfdbdirty = FALSE;
 	return OK;

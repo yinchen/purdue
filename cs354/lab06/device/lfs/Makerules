@@ -9,9 +9,7 @@ C_FILES =	lfibclear.c lfibget.c lfibput.c				\
 		lfiballoc.c lflClose.c lflGetc.c lflInit.c lflPutc.c	\
 		lflRead.c lflSeek.c lflWrite.c lfsInit.c lfsOpen.c	\
 		lflControl.c lfsetup.c lftruncate.c lfdbfree.c		\
-		lfscreate.c lfsckfmt.c lfsControl.c moveToDir.c 	\
-		string.c createDirEntry.c tokenize.c mkDir.c isFileOpen.c\
-		rmFile.c rmDir.c
+		lfscreate.c lfsckfmt.c
 
 S_FILES =
 

@@ -30,7 +30,7 @@ dbid32	lfdballoc (
 	/* Unlink d-block from in-memory directory */
 
 	Lf_data.lf_dir.lfd_dfree = dbuff->lf_nextdb;
-	write(Lf_data.lf_dskdev, (char *)&Lf_data.lf_dir, LF_AREA_ROOT);
+	write(Lf_data.lf_dskdev, (char *)&Lf_data.lf_dir, LF_AREA_DIR);
 	Lf_data.lf_dirdirty = FALSE;
 
 	/* Fill data block to erase old data */

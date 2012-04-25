@@ -36,9 +36,6 @@ extern	syscall	control(did32, int32, int32, int32);
 /* in file create.c */
 extern	pid32	create(void *, uint32, pri16, char *, uint32, ...);
 
-/* in file createDirEntry.c*/
-extern status createDirEntry(char*,byte ,struct ldentry*,bool8);
-
 /* in file ctxsw.S */
 extern	void	ctxsw(void *, void *);
 
@@ -47,7 +44,7 @@ extern	uint32	dot2ip(char *, uint32 *);
 
 /* in file queue.c */
 extern	pid32	enqueue(pid32, qid16);
-extern 	pid32 	dequeue(qid16);
+
 /* in file intutils.S */
 extern	intmask	disable(void);
 
@@ -148,9 +145,6 @@ extern	devcall	ionull(void);
 /* in file netin.c */
 extern	uint16	ipcksum(struct netpacket *);
 
-/* in file isFileOpen.c */
-extern bool8 isFileOpen(char pathTokens[][LF_NAME_LEN],int ,int*);
-
 /* in file kill.c */
 extern	syscall	kill(pid32);
 
@@ -205,12 +199,6 @@ extern	devcall	lflSeek(struct dentry *, uint32);
 /* in file lflWrite.c */
 extern	devcall	lflWrite(struct dentry *, char *, int32);
 
-/* in file lfsckfmt.c*/
-extern status	lfsckfmt (did32 );
-
-/* in file lfsControl.c */
-extern	devcall	lfsControl(struct dentry *, int32, int32, int32);
-
 /* in file lfscreate.c */
 extern  status  lfscreate(did32, ibid32, uint32);
 
@@ -256,12 +244,6 @@ extern  void    *memset(void *, const int, int32);
 /* in file mkbufpool.c */
 extern	bpid32	mkbufpool(int32, int32);
 
-/* in file mkDir.c 	*/
-extern status mkDir(char *path);
-
-/* in file moveToDir.c */
-extern status moveToDir(char pathTokens[][LF_NAME_LEN],int fileDepth);
-
 /* in file mount.c */
 extern	syscall	mount(char *, char *, did32);
 extern	int32	namlen(char *, int32);
@@ -288,9 +270,6 @@ extern	syscall	open(did32, char *, char *);
 
 /* in file panic.c */
 extern	void	panic(char *);
-
-/* in file putc.c */
-extern	syscall	putc(did32, char);
 
 /* in file pdump.c */
 extern	void	pdump(struct netpacket *);
@@ -319,17 +298,8 @@ extern	syscall	ptreset(int32, int32);
 /* in file ptsend.c */
 extern	syscall	ptsend(int32, umsg32);
 
-/* in file ramdopen.c */
-extern	devcall	ramdopen(struct dentry*,char*,char*);
-
-/* in file ramdread.c */
-extern	devcall	ramdread(struct dentry*,char*,uint32);
-
-/* in file ramdwrite.c */
-extern	devcall	ramdwrite(struct dentry*,char*,uint32);
-
-/* in file ramdclose.c */
-extern	devcall	ramdclose(struct dentry*);
+/* in file putc.c */
+extern	syscall	putc(did32, char);
 
 /* in file rdsClose.c */
 extern	devcall	rdsClose(struct dentry *);
@@ -383,14 +353,32 @@ extern	void	restore(intmask);
 /* in file resume.c */
 extern	pri16	resume(pid32);
 
-/* in file moveToDir.c */
-extern void resetLflCblk(struct lflcblk*);
+/* in file rdsClose.c */
+extern	devcall	rdsClose(struct dentry *);
 
-/* in file rmFile.c */
-extern status rmFile(char*);
+/* in file rdsControl.c */
+extern	devcall	rdsControl(struct dentry *, int32, int32, int32);
 
-/*in file rmDir.c */
-extern status rmDir(char *);
+/* in file rdsInit.c */
+extern	devcall	rdsInit(struct dentry *);
+
+/* in file rdsOpen.c */
+extern	devcall	rdsOpen(struct dentry *, char *, char *);
+
+/* in file rdsRead.c */
+extern	devcall	rdsRead(struct dentry *, char *, int32);
+
+/* in file rdsWrite.c */
+extern	devcall	rdsWrite(struct dentry *, char *, int32);
+
+/* in file rdsbufalloc.c */
+extern	struct	rdbuff * rdsbufalloc(struct rdscblk *);
+
+/* in file rdscomm.c */
+extern	status	rdscomm(struct rd_msg_hdr *, int32, struct rd_msg_hdr *, int32, struct rdscblk *);
+
+/* in file rdsprocess.c */
+extern	void	rdsprocess(struct rdscblk *);
 
 /* in file sched_cntl.c */
 extern	status	sched_cntl(int32);
@@ -413,6 +401,9 @@ extern	syscall	semreset(sid32, int32);
 /* in file send.c */
 extern	syscall	send(pid32, umsg32);
 
+/* in file shell.c */
+extern 	process shell(did32);
+
 /* in file signal.c */
 extern	syscall	signal(sid32);
 
@@ -423,20 +414,8 @@ extern	syscall	signaln(sid32, int32);
 extern	syscall	sleepms(uint32);
 extern	syscall	sleep(uint32);
 
-/* in file shell.c */
-extern process shell(did32);
-
-/* in file string.c */
-extern bool8 strcmp(char*,char*);
-
-/* in file string.c */
-extern void strcpy(char*,char*);
-
 /* in file suspend.c */
 extern	syscall	suspend(pid32);
-
-/* in file tokenize.c */
-extern int tokenize(char *name,char tokens[][LF_NAME_LEN]);
 
 /* in file ttyControl.c */
 extern	devcall	ttyControl(struct dentry *, int32, int32, int32);

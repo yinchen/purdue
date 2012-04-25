@@ -12,7 +12,7 @@ devcall	lflPutc (
 	)
 {
 	struct	lflcblk	*lfptr;		/* ptr to open file table entry	*/
-	//struct	ldentry	*ldptr;		/* ptr to file's entry in the	*/
+	struct	ldentry	*ldptr;		/* ptr to file's entry in the	*/
 					/*  in-memory directory		*/
 
 	/* Obtain exclusive use of the file */
@@ -30,8 +30,8 @@ devcall	lflPutc (
 	/* Return SYSERR for an attempt to skip bytes beyond the */
 	/* 	current end of the file				 */
 
-	//ldptr = lfptr->lfdirptr;
-	if (lfptr->lfpos > lfptr->fileSize) {
+	ldptr = lfptr->lfdirptr;
+	if (lfptr->lfpos > ldptr->ld_size) {
 		signal(lfptr->lfmutex);
 		return SYSERR;
 	}
@@ -47,8 +47,8 @@ devcall	lflPutc (
 	/* If appending a byte to the file, increment the file size.	*/
 	/* Note: comparison might be equal, but should not be greater.	*/
 
-	if (lfptr->lfpos >= lfptr->fileSize ) {
-		lfptr->fileSize++;
+	if (lfptr->lfpos >= ldptr->ld_size) {
+		ldptr->ld_size++;
 	}
 
 	/* Place byte in buffer and mark buffer "dirty" */

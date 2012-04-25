@@ -22,13 +22,12 @@ status	lfsckfmt (
 
 	/* Read directory */
 
-	retval = read(disk,(char *)&dir, LF_AREA_ROOT);
+	retval = read(disk,(char *)&dir, LF_AREA_DIR);
 	if (retval == SYSERR) {
 		panic("cannot read directory");
 	}
-	
-	kprintf("Have read directory from disk device %d\n\r",disk);
-
+	kprintf("Have read directory from disk device %d\n\r",
+		disk);
 
 	/* Follow index block list */
 

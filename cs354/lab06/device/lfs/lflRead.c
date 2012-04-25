@@ -12,43 +12,26 @@ devcall	lflRead (
 	  int32	count			/* max bytes to read		*/
 	)
 {
-	int32	numread;		/* number of bytes read		*/
+	uint32	numread;		/* number of bytes read		*/
+	int32	nxtbyte;		/* character or SYSERR/EOF	*/
 
 	if (count < 0) {
 		return SYSERR;
 	}
 
-	struct	lflcblk	*lfptr;		/* ptr to open file table entry	*/
-	lfptr = &lfltab[devptr->dvminor];
-	wait(lfptr->lfmutex);
-
-	/* If file is not open, return an error */
-
-	if (lfptr->lfstate != LF_USED) {
-		signal(lfptr->lfmutex);
-		return SYSERR;
-	}
-
-	/* Return EOF for any attempt to read beyond the end-of-file */
-
-	if (lfptr->lfpos >= lfptr->fileSize) {
-		signal(lfptr->lfmutex);
-		return EOF;
-	}
-
-	numread = 0;
-	do
-	{
-		/* If byte pointer is beyond the current data block, */
-		/*	set up a new data block			     */
-		if (lfptr->lfbyte >= &lfptr->lfdblock[LF_BLKSIZ]) 
-		{
-			lfsetup(lfptr);
+	for (numread=0 ; numread < count ; numread++) {
+		nxtbyte = lflGetc(devptr);
+		if (nxtbyte == SYSERR) {
+			return SYSERR;
+		} else if (nxtbyte == EOF) {	/* EOF before finished */
+		    if (numread == 0) {
+			return EOF;
+		    } else {
+			return numread;
+		    }
+		} else {
+			*buff++ = (char) (0xff & nxtbyte);
 		}
-		*buff++ = (char)(0XFF & *lfptr->lfbyte++);
-		lfptr->lfpos++;
-	}while(++numread < count && lfptr->lfpos < lfptr->fileSize);
-
-	signal(lfptr->lfmutex);
-	return (numread == 0 ?EOF:numread);
+	}
+	return numread;
 }

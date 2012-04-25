@@ -2,34 +2,40 @@
 
 #include <xinu.h>
 
-status lfsOpenHelper(char *fileName,struct ldentry *dirEntry,int32 modeBits);
-
 /*------------------------------------------------------------------------
  * lfsOpen - open a file and allocate a local file pseudo-device
  *------------------------------------------------------------------------
  */
 devcall	lfsOpen (
 	 struct	dentry	*devptr,	/* entry in device switch table	*/
-	 char	*path,			/* complete path of file to open		*/
+	 char	*name,			/* name of file to open		*/
 	 char	*mode			/* mode chars: 'r' 'w' 'o' 'n'	*/
 	)
 {
+	struct	lfdir	*dirptr;	/* ptr to in-memory directory	*/
+	char		*from, *to;	/* ptrs used during copy	*/
+	char		*nam, *cmp;	/* ptrs used during comparison	*/
+	int32		i;		/* general loop index		*/
 	did32		lfnext;		/* minor number of an unused	*/
 					/*    file pseudo-device	*/
+	struct	ldentry	*ldptr;		/* ptr to an entry in directory	*/
 	struct	lflcblk	*lfptr;		/* ptr to open file table entry	*/
+	bool8		found;		/* was the name found?		*/
+	int32	retval;			/* value returned from function	*/
 	int32	mbits;			/* mode bits			*/
 
+	/* Check length of name file (leaving space for NULLCH */
 
-	char pathTokens[LF_PATH_DEPTH][LF_NAME_LEN];  
-	int pathDepth = tokenize(path,pathTokens);
-	if(pathDepth == SYSERR)
-	{
+	from = name;
+	for (i=0; i< LF_NAME_LEN; i++) {
+		if (*from++ == NULLCH) {
+			break;
+		}
+	}
+	if (i >= LF_NAME_LEN) {		/* name is too long */
 		return SYSERR;
 	}
-	if(1 == pathDepth && PATH_SEPARATOR==pathTokens[0][0])
-	{
-		return SYSERR;
-	}
+
 	/* Parse mode argument and convert to binary */
 
 	mbits = lfgetmode(mode);
@@ -40,48 +46,121 @@ devcall	lfsOpen (
 	/* If named file is already open, return SYSERR */
 
 	lfnext = SYSERR;
-	wait(lfDirCblkMutex);
-	if(isFileOpen(pathTokens,pathDepth,&lfnext))
-	{
-		signal(lfDirCblkMutex);
-		return SYSERR;
+	for (i=0; i<Nlfl; i++) {	/* search file pseudo-devices	*/
+		lfptr = &lfltab[i];
+		if (lfptr->lfstate == LF_FREE) {
+			if (lfnext == SYSERR) {
+				lfnext = i; /* record index */
+			}
+			continue;
+		}
+
+		/* Compare requested name to name of open file */
+
+		nam = name;
+		cmp = lfptr->lfname;
+		while(*nam != NULLCH) {
+			if (*nam != *cmp) {
+				break;
+			}
+			nam++;
+			cmp++;
+		}
+
+		/* See if comparison succeeded */
+
+		if ( (*nam==NULLCH) && (*cmp == NULLCH) ) {
+			return SYSERR;
+		}
 	}
 	if (lfnext == SYSERR) {	/* no slave file devices are available	*/
-		signal(lfDirCblkMutex);
 		return SYSERR;
 	}
 
-	struct ldentry fileInfo;
-	/*
-	 * Initialize lfltab[Nlfl+1] and lfltab[Nlfl]
-	 * to parent and grandparent of the file we
-	 * want to open.
-	 * e.g. to /a/b and to /a/ if we want to open
-	 * /a/b/c.
-	 */
- 	if(moveToDir(pathTokens,pathDepth-1) == SYSERR)
-	{
-		signal(lfDirCblkMutex);
+	/* Obtain copy of directory if not already present in memory	*/
+
+	dirptr = &Lf_data.lf_dir;
+	wait(Lf_data.lf_mutex);
+	if (! Lf_data.lf_dirpresent) {
+	    retval = read(Lf_data.lf_dskdev, (char *)dirptr,LF_AREA_DIR);
+	    if (retval == SYSERR ) {
+		signal(Lf_data.lf_mutex);
 		return SYSERR;
-	}	
-	/*
-	 * Either create a  new file or open an already existing file.
-	 */
-	if(lfsOpenHelper(pathTokens[pathDepth-1],&fileInfo,mbits) == SYSERR)
-	{
-		signal(lfDirCblkMutex);
-		return SYSERR;
+	    }
+	    Lf_data.lf_dirpresent = TRUE;
 	}
-	
+
+	/* Search directory to see if file exists */
+
+	found = FALSE;
+	for (i=0; i<dirptr->lfd_nfiles; i++) {
+		ldptr = &dirptr->lfd_files[i];
+		nam = name;
+		cmp = ldptr->ld_name;
+		while(*nam != NULLCH) {
+			if (*nam != *cmp) {
+				break;
+			}
+			nam++;
+			cmp++;
+		}
+		if ( (*nam==NULLCH) && (*cmp==NULLCH) ) { /* name found	*/
+			found = TRUE;
+			break;
+		}
+	}
+
+	/* Case #1 - file is not in directory (i.e., does not exist)	*/
+
+	if (! found) {
+		if (mbits & LF_MODE_O) {	/* file *must* exist	*/
+			signal(Lf_data.lf_mutex);
+			return SYSERR;
+		}
+
+		/* Take steps to create new file and add to directory	*/
+
+		/* Verify that space remains in the directory */
+
+		if (dirptr->lfd_nfiles >= LF_NUM_DIR_ENT) {
+			signal(Lf_data.lf_mutex);
+			return SYSERR;
+		}
+
+		/* Allocate next dir. entry & initialize to empty file	*/
+
+		ldptr = &dirptr->lfd_files[dirptr->lfd_nfiles++];
+		ldptr->ld_size = 0;
+		from = name;
+		to = ldptr->ld_name;
+		while ( (*to++ = *from++) != NULLCH ) {
+			;
+		}
+		ldptr->ld_ilist = LF_INULL;
+
+	/* Case #2 - file is in directory (i.e., already exists)	*/
+
+	} else if (mbits & LF_MODE_N) {		/* file must not exist	*/
+			signal(Lf_data.lf_mutex);
+			return SYSERR;
+	}
 
 	/* Initialize the local file pseudo-device */
+
 	lfptr = &lfltab[lfnext];
 	lfptr->lfstate = LF_USED;
+	lfptr->lfdirptr = ldptr;	/* point to directory entry	*/
 	lfptr->lfmode = mbits & LF_MODE_RW;
 
 	/* File starts at position 0 */
 
 	lfptr->lfpos     = 0;
+
+	to = lfptr->lfname;
+	from = name;
+	while ( (*to = *from++) != NULLCH ) {
+		;
+	}
 
 	/* Neither index block nor data block are initially valid	*/
 
@@ -95,102 +174,7 @@ devcall	lfsOpen (
 	lfptr->lfibdirty = FALSE;
 	lfptr->lfdbdirty = FALSE;
 
-	lfptr->fileSize = fileInfo.ld_size;
-	lfptr->firstIbId = fileInfo.ld_ilist;
-	memcpy(lfptr->path,pathTokens,LF_NAME_LEN * LF_PATH_DEPTH);
-	lfptr->depth = pathDepth;
+	signal(Lf_data.lf_mutex);
 
-	signal(lfDirCblkMutex);
 	return lfptr->lfdev;
 }
-/*
- * Assumes that parent and grandparent are already initialized
- * and fileName points to the name of the file.
- * dirEntry is initialized ot the entry of the file in the 
- * parent directory.
- */
-status lfsOpenHelper(char *fileName,struct ldentry *dirEntry,int32 mbits)
-{
-	struct lflcblk * dirCblk = &lfltab[Nlfl+1];	/*last entry is used for modifying the directory in which file is getting created.*/
-	struct lflcblk* parentDirCblk = &lfltab[Nlfl];	/*second last entry is used for parent of the directory in which file is getting created*/
-	struct dentry devPtr;
-	struct dentry parentDevPtr;
-	devPtr.dvminor=Nlfl+1;	
-	parentDevPtr.dvminor=Nlfl;	
-	uint32 replacePos = 0;
-	bool8 isRPosInitialized = 0;
-	
-	while(lflRead(&devPtr,(char*)dirEntry,sizeof(struct ldentry)) == sizeof(struct ldentry))
-	{
-		if(!dirEntry->isUsed)
-		{
-			if(!isRPosInitialized)
-			{
-				replacePos = dirCblk->lfpos - sizeof(struct ldentry);
-				isRPosInitialized = 1;
-			}
-			continue;
-		}
-		/*
-		 * We found a match.
-		 */
-		if(strcmp(dirEntry->ld_name,fileName) && dirEntry->isUsed)
-		{
-			if( LF_TYPE_DIR == dirEntry->type)
-			{	
-				/*Trying to open a directory	*/
-				dirCblk->lfstate = LF_FREE;
-				parentDirCblk->lfstate = LF_FREE;
-				return SYSERR;
-			}
-			if (mbits & LF_MODE_N) 
-			{	/* file must not exist	*/
-				dirCblk->lfstate = LF_FREE;
-				parentDirCblk->lfstate = LF_FREE;
-				return SYSERR;
-			}
-			dirCblk->lfstate = LF_FREE;
-			parentDirCblk->lfstate = LF_FREE;
-			return OK;
-		}
-	}
-	//File Not Found
-	/*
-	 * If we are opening a file and file doesn't exist
-	 * then return error.
-	 */
-	if(mbits & LF_MODE_O)
-	{
-		dirCblk->lfstate = LF_FREE;
-		parentDirCblk->lfstate = LF_FREE;
-		return SYSERR;
-	}
-	/*
-	 * If the file doesn't exist and mode bits have
-	 * LF_MODE_N set then create the file.
-	 */
-	if(isRPosInitialized)
-	{
-		/*
-		 * We can reuse an existing directory entry to create
-		 * new file.
-		 */
-		lflSeek(&devPtr,replacePos);
-	}
-	/*
-	 * Create the file
-	 */
-	if(SYSERR == createDirEntry(fileName,LF_TYPE_FILE,dirEntry,isRPosInitialized))
-	{
-		dirCblk->lfstate = LF_FREE;
-		parentDirCblk->lfstate = LF_FREE;
-		return SYSERR;
-	}
-	return OK;
-}
-
-
-
-
-
-

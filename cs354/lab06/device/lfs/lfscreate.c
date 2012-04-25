@@ -39,13 +39,11 @@ status	lfscreate (
 	/* Create an initial directory */
 
 	memset((char *)&dir, NULLCH, sizeof(struct lfdir));
+	dir.lfd_nfiles = 0;
 	dbindex= (dbid32)(ibsectors + 1);
 	dir.lfd_dfree = dbindex;
-	dir.lfd_ifree = 1; /*first i-block is allocated to root directory*/ 
-	dir.lfd_ifirst = 0;
-	dir.lfd_size = 0;
 	dblks = sectors - ibsectors - 1;
-	retval = write(disk,(char *)&dir, LF_AREA_ROOT);
+	retval = write(disk,(char *)&dir, LF_AREA_DIR);
 	if (retval == SYSERR) {
 		return SYSERR;
 	}
@@ -53,17 +51,13 @@ status	lfscreate (
 	/* Create list of free i-blocks on disk */
 
 	lfibclear(&iblock, 0);
-	/* Allocate the first free iblock to the root directory*/
-	iblock.ib_next = LF_INULL;
-	lfibput(disk, 0, &iblock);
-	/*Put rest of the i-blocks in free list*/
-	for (i=1; i<lfiblks-1; i++) {
+	for (i=0; i<lfiblks-1; i++) {
 		iblock.ib_next = (ibid32)(i + 1);
 		lfibput(disk, i, &iblock);
 	}
 	iblock.ib_next = LF_INULL;
 	lfibput(disk, i, &iblock);
-   		
+
 	/* Create list of free data blocks on disk */
 
 	memset((char*)&dblock, NULLCH, LF_BLKSIZ);
@@ -74,7 +68,6 @@ status	lfscreate (
 	}
 	dblock.lf_nextdb = LF_DNULL;
 	write(disk, (char *)&dblock, dbindex);
-	//close(disk);
-
+	close(disk);
 	return OK;
 }
