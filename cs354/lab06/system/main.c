@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 	        return SYSERR;
 	}
 	
-	close(file);
+	// close(file);
         
         /* write file #2 to disk */
         file = open(LFILESYS, "BBB", "rw");
@@ -63,7 +63,7 @@ int main(int argc, char **argv)
 	        return SYSERR;
 	}
 	
-	close(file);
+	// close(file);
 	
 	/* write file #3 to disk */
         file = open(LFILESYS, "CCC", "rw");
@@ -72,7 +72,7 @@ int main(int argc, char **argv)
 	        return SYSERR;
 	}
 	
-	close(file);
+	// close(file);
 	
 	/* write file #4 to disk */
         file = open(LFILESYS, "DDD", "rw");
@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 	        return SYSERR;
 	}
 	
-	close(file);
+	// close(file);
         
         lflistdir(LFILESYS);
 
