@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 	        return SYSERR;
 	}
 	
-	if (write(file, "MATT\0", 5) == SYSERR) {
+	if (write(file, "DEF\0", 4) == SYSERR) {
 	        kprintf("Write failed for AAA\r\n");
 	        close(file);
 	        return SYSERR;
@@ -69,7 +69,7 @@ int main(int argc, char **argv)
 	        return SYSERR;
 	}
 	
-	if (write(file, "MATT\0", 5) == SYSERR) {
+	if (write(file, "DEF\0", 4) == SYSERR) {
 	        kprintf("Write failed for AAA\r\n");
 	        close(file);
 	        return SYSERR;
@@ -84,7 +84,7 @@ int main(int argc, char **argv)
 	        return SYSERR;
 	}
 	
-	if (write(file, "MATT\0", 5) == SYSERR) {
+	if (write(file, "DEF\0", 4) == SYSERR) {
 	        kprintf("Write failed for AAA\r\n");
 	        close(file);
 	        return SYSERR;
@@ -99,7 +99,7 @@ int main(int argc, char **argv)
 	        return SYSERR;
 	}
 	
-	if (write(file, "MATT\0", 5) == SYSERR) {
+	if (write(file, "DEF\0", 4) == SYSERR) {
 	        kprintf("Write failed for AAA\r\n");
 	        close(file);
 	        return SYSERR;
