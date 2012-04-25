@@ -28,16 +28,39 @@ int main(int argc, char **argv)
 
 	kprintf("\n\r**********************************************************\n\r");
 
-	/* Creating a shell process */
+	/* Testing lflistdir */
 
-	resume(create(shell, 4096, 1, "shell", 1, CONSOLE));
+	for (i = 0; i < Nlfl; i++) {
+        	if (lfltab[i].lfstate == LF_USED) {
+             		kprintf("Files open on this system, cannot format\r\n");
+                    	return SYSERR;
+             	}
+        }                        
 
-	retval = recvclr();
-	while (TRUE) {
-		retval = receive();
-		kprintf("\n\n\rMain process recreating shell\n\n\r");
-		resume(create(shell, 4096, 1, "shell", 1, CONSOLE));
-	}
+        if (lfscreate(Lf_data.lf_dskdev, 100, 500*512) == SYSERR){
+        	kprintf("Creating the filesystem failed\r\n");
+                return SYSERR;
+        }
+        
+        lflistdir(LFILESYS);
+
+        file = open(LFILESYS, "AAA", "rw");
+        write(file, "MATT\0", 5);
+        close(file);
+        
+        file = open(LFILESYS, "BBB", "rw");
+        write(file, "MATT\0", 5);
+        close(file);
+        
+        file = open(LFILESYS, "CCC", "rw");
+        write(file, "MATT\0", 5);
+        close(file);
+        
+        file = open(LFILESYS, "DDD", "rw");
+        write(file, "MATT\0", 5);
+        close(file);
+        
+        lflistdir(LFILESYS);
 
 	return OK;
 }
