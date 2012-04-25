@@ -54,7 +54,7 @@ syscall	lflistdir(
 	for (i = 0; i < dirptr->lfd_nfiles; i++)
 	{
 		ldptr = &dirptr->lfd_files[i];
-		kprintf(ldptr->ld_name + "\r\n");
+		kprintf("%s\r\n", ldptr->ld_name);
 	}
 
 	return OK;
