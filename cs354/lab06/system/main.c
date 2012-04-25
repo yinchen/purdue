@@ -44,23 +44,68 @@ int main(int argc, char **argv)
                 return SYSERR;
         }
         
+        /* print initial directory listing */
         lflistdir(LFILESYS);
 
+	/* write file #1 to disk */
         file = open(LFILESYS, "AAA", "rw");
-        write(file, "MATT\0", 5);
-        close(file);
+        if (file == SYSERR) {
+	        kprintf("File open failed for AAA\r\n");
+	        return SYSERR;
+	}
+	
+	if (write(file, "MATT\0", 5) == SYSERR) {
+	        kprintf("Write failed for AAA\r\n");
+	        close(file);
+	        return SYSERR;
+	}
+	
+	close(file);
         
+        /* write file #2 to disk */
         file = open(LFILESYS, "BBB", "rw");
-        write(file, "MATT\0", 5);
-        close(file);
-        
+        if (file == SYSERR) {
+	        kprintf("File open failed for AAA\r\n");
+	        return SYSERR;
+	}
+	
+	if (write(file, "MATT\0", 5) == SYSERR) {
+	        kprintf("Write failed for AAA\r\n");
+	        close(file);
+	        return SYSERR;
+	}
+	
+	close(file);
+	
+	/* write file #3 to disk */
         file = open(LFILESYS, "CCC", "rw");
-        write(file, "MATT\0", 5);
-        close(file);
-        
+        if (file == SYSERR) {
+	        kprintf("File open failed for AAA\r\n");
+	        return SYSERR;
+	}
+	
+	if (write(file, "MATT\0", 5) == SYSERR) {
+	        kprintf("Write failed for AAA\r\n");
+	        close(file);
+	        return SYSERR;
+	}
+	
+	close(file);
+	
+	/* write file #4 to disk */
         file = open(LFILESYS, "DDD", "rw");
-        write(file, "MATT\0", 5);
-        close(file);
+        if (file == SYSERR) {
+	        kprintf("File open failed for AAA\r\n");
+	        return SYSERR;
+	}
+	
+	if (write(file, "MATT\0", 5) == SYSERR) {
+	        kprintf("Write failed for AAA\r\n");
+	        close(file);
+	        return SYSERR;
+	}
+	
+	close(file);
         
         lflistdir(LFILESYS);
 
