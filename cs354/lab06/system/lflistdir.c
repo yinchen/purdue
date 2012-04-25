@@ -46,7 +46,6 @@ syscall	lflistdir(
 	if (dirptr->lfd_nfiles == 0)
 	{
 		kprintf("No files\r\n");
-		return OK;
 	}
 
 	int32		i;		/* general loop index		*/
@@ -57,6 +56,8 @@ syscall	lflistdir(
 		ldptr = &dirptr->lfd_files[i];
 		kprintf("%s\r\n", ldptr->ld_name);
 	}
+	
+	signal(Lf_data.lf_mutex);
 
 	return OK;
 }
