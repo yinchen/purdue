@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 	        return SYSERR;
 	}
 	
-	// close(file);
+	close(file);
         
         /* write file #2 to disk */
         file = open(LFILESYS, "BBB", "rw");
