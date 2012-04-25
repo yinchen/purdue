@@ -11,7 +11,7 @@ status	lftruncate (
 	  struct lflcblk *lfptr		/* ptr to file's cntl blk entry	*/
 	)
 {
-	struct	ldentry	*ldptr;		/* pointer to file's dir. entry	*/
+	//struct	ldentry	*ldptr;		/* pointer to file's dir. entry	*/
 	struct	lfiblk	iblock;		/* buffer for one index block	*/
 	ibid32	ifree;			/* start of index blk free list	*/
 	ibid32	firstib;		/* first index blk of the file	*/
@@ -21,8 +21,8 @@ status	lftruncate (
 	int32	i;			/* moves through data blocks in	*/
 					/*   a given index block	*/
 
-	ldptr = lfptr->lfdirptr;	/* Get pointer to dir. entry	*/
-	if (ldptr->ld_size == 0) {	/* file is already empty */
+	//ldptr = lfptr->lfdirptr;	/* Get pointer to dir. entry	*/
+	if (lfptr->fileSize == 0) {	/* file is already empty */
 		return OK;
 	}
 
@@ -42,9 +42,9 @@ status	lftruncate (
 
 	/* Record file's first i-block and clear directory entry */
 
-	firstib = ldptr->ld_ilist;
-	ldptr->ld_ilist = LF_INULL;
-	ldptr->ld_size = 0;
+	firstib = lfptr->firstIbId;
+	lfptr->firstIbId= LF_INULL;
+	lfptr->fileSize = 0;
 	Lf_data.lf_dirdirty = TRUE;
 
 	/* Walk along index block list, disposing of each data block	*/

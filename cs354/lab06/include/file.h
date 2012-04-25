@@ -18,3 +18,4 @@
 #define	F_CTL_MKDIR	3		/* make a directory		*/
 #define	F_CTL_RMDIR	4		/* remove a directory		*/
 #define F_CTL_SIZE	5		/* Obtain the size of a file	*/
+#define F_CTL_FORMAT 	6		/* Formats the file system	*/

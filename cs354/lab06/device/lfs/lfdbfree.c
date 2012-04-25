@@ -19,7 +19,7 @@ status	lfdbfree(
 	buf.lf_nextdb = dirptr->lfd_dfree;
 	dirptr->lfd_dfree = dnum;
 	write(diskdev, (char *)&buf,   dnum);
-	write(diskdev, (char *)dirptr, LF_AREA_DIR);
+	write(diskdev, (char *)dirptr, LF_AREA_ROOT);
 
 	return OK;
 }

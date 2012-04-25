@@ -24,9 +24,9 @@ ibid32	lfiballoc (void)
 
 	Lf_data.lf_dir.lfd_ifree = iblock.ib_next;
 
-	/* Write a copy of the directory to disk after the change */
+	/* Write a copy of the root directory to disk after the change */
 
-	write(Lf_data.lf_dskdev, (char *) &Lf_data.lf_dir, LF_AREA_DIR);
+	write(Lf_data.lf_dskdev, (char *) &Lf_data.lf_dir, LF_AREA_ROOT);
 	Lf_data.lf_dirdirty = FALSE;
 
 	return ibnum;

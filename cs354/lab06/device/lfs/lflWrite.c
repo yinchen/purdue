@@ -17,10 +17,50 @@ devcall	lflWrite (
 	if (count < 0) {
 		return SYSERR;
 	}
-	for (i=0; i<count; i++) {
-		if (lflPutc(devptr, *buff++) == SYSERR) {
-			return SYSERR;
-		}
+	struct	lflcblk	*lfptr;		/* ptr to open file table entry	*/
+
+	/* Obtain exclusive use of the file */
+
+	lfptr = &lfltab[devptr->dvminor];
+	wait(lfptr->lfmutex);
+
+	/* If file is not open, return an error */
+
+	if (lfptr->lfstate != LF_USED) {
+		signal(lfptr->lfmutex);
+		return SYSERR;
 	}
+
+	/* Return SYSERR for an attempt to skip bytes beyond the */
+	/* 	current end of the file				 */
+
+	if (lfptr->lfpos > lfptr->fileSize) {
+		signal(lfptr->lfmutex);
+		return SYSERR;
+	}
+	i =0 ;
+	do
+	{
+		if (lfptr->lfbyte >= &lfptr->lfdblock[LF_BLKSIZ]) 
+		{
+		/* Set up block for current file position */
+			lfsetup(lfptr);
+		}
+		/* If appending a byte to the file, increment the file size.	*/
+		/* Note: comparison might be equal, but should not be greater.	*/
+
+		if (lfptr->lfpos >= lfptr->fileSize ) {
+			lfptr->fileSize++;
+		}
+
+		/* Place byte in buffer and mark buffer "dirty" */
+
+		*lfptr->lfbyte++ = *buff++;
+		lfptr->lfpos++;
+		lfptr->lfdbdirty = TRUE;
+
+	}while(++i < count);
+	
+	signal(lfptr->lfmutex);
 	return count;
 }

@@ -11,7 +11,7 @@ devcall	lflGetc (
 	)
 {
 	struct	lflcblk	*lfptr;		/* ptr to open file table entry	*/
-	struct	ldentry	*ldptr;		/* ptr to file's entry in the	*/
+	//struct	ldentry	*ldptr;		/* ptr to file's entry in the	*/
 					/*  in-memory directory		*/
 	int32	onebyte;		/* next data byte in the file	*/
 
@@ -29,8 +29,8 @@ devcall	lflGetc (
 
 	/* Return EOF for any attempt to read beyond the end-of-file */
 
-	ldptr = lfptr->lfdirptr;
-	if (lfptr->lfpos >= ldptr->ld_size) {
+	//ldptr = lfptr->lfdirptr;
+	if (lfptr->lfpos >= lfptr->fileSize) {
 		signal(lfptr->lfmutex);
 		return EOF;
 	}

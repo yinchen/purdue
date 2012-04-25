@@ -13,7 +13,7 @@ status	lfsetup (
 {
 	dbid32	dnum;			/* data block to fetch		*/
 	ibid32	ibnum;			/* i-block number during search	*/
-	struct	ldentry	*ldptr;		/* ptr to file entry in dir.	*/
+	//struct	ldentry	*ldptr;		/* ptr to file entry in dir.	*/
 	struct	lfiblk	*ibptr;		/* ptr to in-memory index block	*/
 	uint32	newoffset;		/* computed data offset for	*/
 					/*  next index block		*/
@@ -21,14 +21,13 @@ status	lfsetup (
 					/*  block			*/
 
 
-	/* Obtain exclusive access to the directory */
+	/* Obtain exclusive access to the root directory */
 
 	wait(Lf_data.lf_mutex);
 
 	/* Get pointers to in-memory directory, file's entry in the	*/
 	/*	directory, and the in-memory index block		*/
 
-	ldptr = lfptr->lfdirptr;
 	ibptr = &lfptr->lfiblock;
 
 	/* If existing index block or data block changed, write to disk	*/
@@ -46,11 +45,11 @@ status	lfsetup (
 
 		/* Check directory entry to see if index block exists	*/
 
-		ibnum = ldptr->ld_ilist;
+		ibnum = lfptr->firstIbId;
 		if (ibnum == LF_INULL) { /* empty file - get new i-block*/
 			ibnum = lfiballoc();
 			lfibclear(ibptr, 0);
-			ldptr->ld_ilist = ibnum;
+			lfptr->firstIbId = ibnum;
 			lfptr->lfibdirty = TRUE;
 		} else {		/* nonempty - read first i-block*/
 	 		lfibget(Lf_data.lf_dskdev, ibnum, ibptr);
@@ -66,7 +65,7 @@ status	lfsetup (
 		/* Load initial index block for the file (we know that	*/
 		/*	at least one index block exists)		*/
 	
-		ibnum = ldptr->ld_ilist;
+		ibnum = lfptr->firstIbId;
 		lfibget(Lf_data.lf_dskdev, ibnum, ibptr);
 		lfptr->lfinum = ibnum;
 	}

@@ -179,6 +179,16 @@ static	void	sysinit(void)
 			(devptr->dvinit) (devptr);
 		}
 	}
+	/**
+	 * Initialize the last two entries in lflcblk used for
+	 * directory manipulation.
+	 */
+	struct dentry dircblk;
+	dircblk.dvminor = Nlfl;
+	lflInit(&dircblk);
+	dircblk.dvminor = Nlfl+1;
+	lflInit(&dircblk);
+	lfDirCblkMutex = semcreate(1);
 
 	open(ETHER0,NULL, NULL);
 
