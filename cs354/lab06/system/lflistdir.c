@@ -48,6 +48,7 @@ syscall	lflistdir(
 		kprintf("No files\r\n");
 	}
 
+	int32		i;		/* general loop index		*/
 	struct	ldentry	*ldptr;		/* ptr to an entry in directory	*/
 
 	for (i = 0; i < dirptr->lfd_nfiles; i++)
