@@ -477,6 +477,11 @@ extern	void	xdone(void);
 /* in file yield.c */
 extern	syscall	yield(void);
 
+
+/* in file lflistdir.c */
+extern	syscall	lflistdir(did32);
+
+
 /* NETWORK BYTE ORDER CONVERSION NOT NEEDED ON A BIG-ENDIAN COMPUTER */
 #define	htons(x)	(x)
 #define	htonl(x)	(x)

@@ -12,6 +12,9 @@ C_FILES = initialize.c queue.c panic.c
 # Configuration file
 C_FILES += conf.c
 
+# File System files
+C_FILES += lflistdir.c
+
 # Files for process control
 S_FILES += ctxsw.S
 C_FILES += create.c kill.c ready.c resched.c resume.c suspend.c chprio.c getprio.c \
@@ -39,7 +42,8 @@ C_FILES += kprintf.c debug.c
 
 # Files for time and date manipulation
 C_FILES += ascdate.c gettime.c getutime.c
-
+\
+\
 # Main program
 C_FILES += main.c
 
