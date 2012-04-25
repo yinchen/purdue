@@ -22,10 +22,6 @@ devcall	lflClose (
 
 	if (lfptr->lfstate != LF_USED) {
 		signal(lfptr->lfmutex);
-		if(DEBUG_1)
-		{
-			kprintf("lflClose fiel is not open\r\n");
-		}
 		return SYSERR;
 	}
 
@@ -40,20 +36,12 @@ devcall	lflClose (
 
 	if(moveToDir(lfptr->path,lfptr->depth-1) == SYSERR)
 	{
-		if(DEBUG_1)
-		{
-			kprintf("lflClose: Unable to move to the directory\r\n");
-		}
 		signal(lfDirCblkMutex);
 		signal(lfptr->lfmutex);
 		return SYSERR;
 	}
 	if(lflCloseHelper(lfptr->path[lfptr->depth-1],lfptr) == SYSERR)
 	{
-		if(DEBUG_1)
-		{
-			kprintf("lflClose: Unable to update the parent directory\r\n");
-		}
 		signal(lfDirCblkMutex);
 		signal(lfptr->lfmutex);
 		return SYSERR;
@@ -86,11 +74,6 @@ static status lflCloseHelper(char *fileName,struct lflcblk* lfptr)
 	}
 	if(!found)
 	{
-		if(DEBUG_1)
-		{
-			kprintf("lflCloseHleper :file %s not found\r\n",fileName); 
-		}
-
 		dirCblk->lfstate = LF_FREE;
 		parentDirCblk->lfstate = LF_FREE;
 		return SYSERR;
@@ -100,52 +83,19 @@ static status lflCloseHelper(char *fileName,struct lflcblk* lfptr)
 	dirEntry->ld_size = lfptr->fileSize;
 	
 	uint32 writePos = dirCblk->lfpos - sizeof(struct ldentry);
-	/*if(DEBUG_1)
-	{
-		kprintf("lflCloseHelper :ld_ilist %d\r\n",dirEntry->ld_ilist);	
-		kprintf("lflCloseHelper: fileSize %u\r\n",dirEntry->ld_size);	
-		kprintf("lflcloseHelper: writePos %u\r\n",writePos);
-		kprintf("lflcloseHelper: dirCblk->firstIbid %u\r\n",dirCblk->firstIbId);
-		kprintf("lflcloseHelper: dirCblk->fileSize %u\r\n",dirCblk->fileSize);
-	}*/
-	if(lflSeek(&devPtr,writePos) == SYSERR)
-	{
-		if(DEBUG_1)
-		{
-			kprintf("LflCloseHelper: lflSeekfalied\r\n");
-		}
-	}
-	/*if(DEBUG_1)
-	{
-		kprintf("After Seeking\r\n");
-		kprintf("lflcloseHelper: dirCblk->filePos %u\r\n",dirCblk->lfpos);
-		kprintf("lflcloseHelper: dirCblk->lfbyte %u\r\n",dirCblk->lfbyte - dirCblk->lfdblock);
-	}*/
+	
+	lflSeek(&devPtr,writePos);
+
 	if(lflWrite(&devPtr,(char*)dirEntry,sizeof(struct ldentry)) == SYSERR)
 	{
-		if(DEBUG_1)
-		{
-			kprintf("LFSCLOSE: Error in updating  directory's entry");
-		}
 		dirCblk->lfstate = LF_FREE;
 		parentDirCblk->lfstate = LF_FREE;
 		return SYSERR;
 	}
-	/*if(DEBUG_1)
-	{
-		kprintf("After Writing\r\n");
-		kprintf("lflcloseHelper: dirCblk->filePos %u\r\n",dirCblk->lfpos);
-		kprintf("lflcloseHelper: dirCblk->lfbyte %u\r\n",dirCblk->lfbyte - dirCblk->lfdblock);
-		kprintf("lflcloseHelper: dirCblk->ibdirty %u\r\n",dirCblk->lfibdirty);
-		kprintf("lflcloseHelper: dirCblk->dbdirty %u\r\n",dirCblk->lfdbdirty);
-	}*/
+	
 	/*Close the directory*/
 	if(lfflush(dirCblk) == SYSERR)
 	{
-		if(DEBUG_1)
-		{
-			kprintf("lfsClose: flushing the directory after file closing failed\r\n");
-		}
 		dirCblk->lfstate = LF_FREE;
 		parentDirCblk->lfstate = LF_FREE;
 		

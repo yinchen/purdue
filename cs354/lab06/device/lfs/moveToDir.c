@@ -1,19 +1,5 @@
 #include<xinu.h>
 
-/*
- * When a file/directory gets created we need to modify
- * not only its immediate parent directory but also its
- * grandparent.
- * e.g. if we are creating 'c' with full path /a/b/c
- * then we need to add/replace an entry in /a/b  and
- * might need to update 'b's entry in /a.
- * So moveToDir initializes lfltab[Nlfl+1] and lfltab
- * [Nlfl] to /a/b/ and to /a/ respectively.
- * It accepts the depth and tokenized
- * path upto immediate parent.
- * e.g. it should be passed 'a','b' and 2 in case we are creating
- * /a/b/c
- */
 status moveToDir(char pathTokens[][LF_NAME_LEN],int fileDepth)
 {
 	struct lflcblk * dirCblk = &lfltab[Nlfl+1];	/*last entry is used for modifying the directory in which file is getting created.*/
@@ -28,16 +14,8 @@ status moveToDir(char pathTokens[][LF_NAME_LEN],int fileDepth)
 		/*Cache the root directory*/
 		/*This should get executed only once*/
 		struct  lfdir rootInfo;
-		if(DEBUG_1)
-		{
-			kprintf("moveToDir : loading root directory\r\n");
-		}
 		if(read(Lf_data.lf_dskdev,(char*)&rootInfo,LF_AREA_ROOT) == SYSERR)
 		{
-			if(DEBUG_1)
-			{
-				kprintf("moveToDir:Unable to read root block id %d\r\n",LF_AREA_ROOT);
-			}
 			signal(Lf_data.lf_mutex);
 			return SYSERR;
 		}
@@ -75,10 +53,6 @@ status moveToDir(char pathTokens[][LF_NAME_LEN],int fileDepth)
 			 */
 			if(dirEntry->type != LF_TYPE_DIR)
 			{
-				if(DEBUG_1)
-				{
-					kprintf("moveToDir: looking for dir %s but it is a file\r\n",pathTokens[currentDepth-1]);
-				}
 				return SYSERR;
 			}
 			/*
@@ -96,18 +70,9 @@ status moveToDir(char pathTokens[][LF_NAME_LEN],int fileDepth)
 	}
 	if(fileDepth != currentDepth)
 	{
-		/*One of the required parent directory doesn;t exist*/
-		if(DEBUG_1)
-		{
-			kprintf("moveToDir: One of the required parent directory doesn;t exist fileDepth is %d and currentDepth is %d\r\n",fileDepth,currentDepth);
-		}	
 		return SYSERR;
 	}
-	if(DEBUG_1)
-	{
-		kprintf("moveToDir: returning from depth  %d with dir name %s and dirCblk->IbId %d and fileSize %d %u %s\r\n",currentDepth,dirEntry->ld_name,dirCblk->firstIbId,dirCblk->fileSize,dirEntry->ld_size,dirEntry->ld_name);
-	}
-
+	
 	return OK;
 }
 void resetLflCblk(struct lflcblk*dirCblk )

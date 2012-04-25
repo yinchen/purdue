@@ -57,11 +57,6 @@ devcall	lflPutc (
 	lfptr->lfpos++;
 	lfptr->lfdbdirty = TRUE;
 
-	if(DEBUG_1)
-	{
-//		kprintf("lflPutc Writing Character %c\r\n",ch);
-//		kprintf("lflPutc Writing Character %d\r\n",ch);
-	}
 	signal(lfptr->lfmutex);
 	return OK;
 }

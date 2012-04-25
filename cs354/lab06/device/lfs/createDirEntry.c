@@ -29,10 +29,6 @@ status createDirEntry(char*name,byte type,struct ldentry*dirEntry,bool8 isReplac
 
 	if(lflWrite(&devPtr,(char*)dirEntry,sizeof(struct ldentry)) == SYSERR)
 	{
-		if(DEBUG_1)
-		{
-			kprintf("createDirEntry: writing to directory during file creation failed\r\n");
-		}
 		dirCblk->lfstate = LF_FREE;
 		parentDirCblk->lfstate = LF_FREE;
 		return SYSERR;
@@ -40,10 +36,6 @@ status createDirEntry(char*name,byte type,struct ldentry*dirEntry,bool8 isReplac
 	/*Close the current directory*/
 	if(lfflush(dirCblk) == SYSERR)
 	{
-		if(DEBUG_1)
-		{
-			kprintf("createDirEntry: flushing the directory after file creation failed\r\n");
-		}
 		dirCblk->lfstate = LF_FREE;
 		parentDirCblk->lfstate = LF_FREE;
 		return SYSERR;
@@ -90,10 +82,6 @@ status createDirEntry(char*name,byte type,struct ldentry*dirEntry,bool8 isReplac
 	lflSeek(&parentDevPtr,parentDirCblk->lfpos - sizeof(struct ldentry));
 	if(lflRead(&parentDevPtr,(char*)&parentDirEntry,sizeof(struct ldentry)) ==SYSERR)
 	{
-		if(DEBUG_1)
-		{
-			kprintf("LFSOPEN: Error in reading parent directory's entry");
-		}
 		dirCblk->lfstate = LF_FREE;
 		parentDirCblk->lfstate = LF_FREE;
 		return SYSERR;
@@ -103,34 +91,18 @@ status createDirEntry(char*name,byte type,struct ldentry*dirEntry,bool8 isReplac
 	 */
 	parentDirEntry.ld_size += sizeof(struct ldentry);
 	parentDirEntry.ld_ilist = dirCblk->firstIbId;
-	if(DEBUG_1)
-	{
-		kprintf("CreateDIREntry parentFirstIbId: %d  dirCblkFirstIbId %d parentLfPos %u\r\n",parentDirCblk->firstIbId,dirCblk->firstIbId,parentDirCblk->lfpos);
-		kprintf("ParentSize %u\r\n",parentDirCblk->fileSize);
-		kprintf("Size %u\r\n",sizeof(struct ldentry));
-		kprintf("fileSize %u\r\n",parentDirEntry.ld_size);
-		kprintf("name %s\r\n",parentDirEntry.ld_name);
-	}
+	
 	/* 
 	 * As we have just read that entry move back again so that 
 	 * we can overwrite it.
 	 */
 	lflSeek(&parentDevPtr,parentDirCblk->lfpos - sizeof(struct ldentry));
-	if(DEBUG_1)
-	{
-		kprintf("Writing to parentFilePos %u\r\n",parentDirCblk->lfpos);
-		kprintf("currntIBlokcNum %u\r\n",parentDirCblk->lfinum);
-		kprintf("firstIbId %d\r\n",parentDirCblk->firstIbId);
-	}
+	
 	/*
 	 * Write to the grandparent.
 	 */
 	if(lflWrite(&parentDevPtr,(char*)&parentDirEntry,sizeof(struct ldentry)) == SYSERR)
 	{
-		if(DEBUG_1)
-		{
-			kprintf("LFSOPEN: Error in writing parent directory's entry");
-		}
 		dirCblk->lfstate = LF_FREE;
 		parentDirCblk->lfstate = LF_FREE;
 		return SYSERR;
@@ -138,10 +110,6 @@ status createDirEntry(char*name,byte type,struct ldentry*dirEntry,bool8 isReplac
 	/*Close the parent directory*/
 	if(lfflush(parentDirCblk) == SYSERR)
 	{
-		if(DEBUG_1)
-		{
-			kprintf("createDirEntry: flushing the parent directory after file creation failed\r\n");
-		}
 		dirCblk->lfstate = LF_FREE;
 		parentDirCblk->lfstate = LF_FREE;
 		

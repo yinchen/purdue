@@ -24,18 +24,10 @@ devcall	lfsOpen (
 	int pathDepth = tokenize(path,pathTokens);
 	if(pathDepth == SYSERR)
 	{
-		if(DEBUG_1)
-		{
-			kprintf("lfsOpen Unable to tokenize the path %s\r\n",path);
-		}
 		return SYSERR;
 	}
 	if(1 == pathDepth && PATH_SEPARATOR==pathTokens[0][0])
 	{
-		if(DEBUG_1)
-		{
-			kprintf("lfsOpne: Can't open  root directory\r\n");
-		}
 		return SYSERR;
 	}
 	/* Parse mode argument and convert to binary */
@@ -55,10 +47,6 @@ devcall	lfsOpen (
 		return SYSERR;
 	}
 	if (lfnext == SYSERR) {	/* no slave file devices are available	*/
-		if(DEBUG_1)
-		{
-			kprintf("lfsOpen no slave devices are available\r\n");
-		}
 		signal(lfDirCblkMutex);
 		return SYSERR;
 	}
@@ -73,10 +61,6 @@ devcall	lfsOpen (
 	 */
  	if(moveToDir(pathTokens,pathDepth-1) == SYSERR)
 	{
-		if(DEBUG_1)
-		{
-			kprintf("LfsOpen: failure in moving to the right directory \r\n");
-		}
 		signal(lfDirCblkMutex);
 		return SYSERR;
 	}	
@@ -85,10 +69,6 @@ devcall	lfsOpen (
 	 */
 	if(lfsOpenHelper(pathTokens[pathDepth-1],&fileInfo,mbits) == SYSERR)
 	{
-		if(DEBUG_1)
-		{
-			kprintf("LfsOpen: failure in reading/crating file \r\n");
-		}
 		signal(lfDirCblkMutex);
 		return SYSERR;
 	}
@@ -139,27 +119,9 @@ status lfsOpenHelper(char *fileName,struct ldentry *dirEntry,int32 mbits)
 	parentDevPtr.dvminor=Nlfl;	
 	uint32 replacePos = 0;
 	bool8 isRPosInitialized = 0;
-	if(DEBUG_1)
-	{
-		kprintf("lfsOpen: dirCblk->filePos %u\r\n",dirCblk->lfpos);
-		kprintf("llfsOpen: dirCblk->lfbyte %u\r\n",dirCblk->lfbyte - dirCblk->lfdblock);
-	}
-	/*
-	 * Keep on reding the entries in the parent directory unless you find a match
-	 */
+	
 	while(lflRead(&devPtr,(char*)dirEntry,sizeof(struct ldentry)) == sizeof(struct ldentry))
 	{
-		if(DEBUG_1)
-		{
-			kprintf("lfsOpne: rading name %s comaring with %s dirEntry->isUsed %d dirEntry->type %d\r\n",dirEntry->ld_name,fileName,dirEntry->isUsed,dirEntry->type);
-			kprintf("lfsOpen: dirCblk->filePos %u\r\n",dirCblk->lfpos);
-			kprintf("llfsOpen: dirCblk->lfbyte %u\r\n",dirCblk->lfbyte - dirCblk->lfdblock);
-
-		}	
-		/*
-		 * If we find a deleted entry we can reuse it 
-		 * in case we create a new file.
-		 */
 		if(!dirEntry->isUsed)
 		{
 			if(!isRPosInitialized)
@@ -174,10 +136,6 @@ status lfsOpenHelper(char *fileName,struct ldentry *dirEntry,int32 mbits)
 		 */
 		if(strcmp(dirEntry->ld_name,fileName) && dirEntry->isUsed)
 		{
-			if(DEBUG_1)
-			{
-				kprintf("TRUE\r\n");
-			}
 			if( LF_TYPE_DIR == dirEntry->type)
 			{	
 				/*Trying to open a directory	*/
@@ -190,10 +148,6 @@ status lfsOpenHelper(char *fileName,struct ldentry *dirEntry,int32 mbits)
 				dirCblk->lfstate = LF_FREE;
 				parentDirCblk->lfstate = LF_FREE;
 				return SYSERR;
-				if(DEBUG_1)
-				{
-					kprintf("lfsOpen File not found\r\n");	
-				}
 			}
 			dirCblk->lfstate = LF_FREE;
 			parentDirCblk->lfstate = LF_FREE;
@@ -209,10 +163,6 @@ status lfsOpenHelper(char *fileName,struct ldentry *dirEntry,int32 mbits)
 	{
 		dirCblk->lfstate = LF_FREE;
 		parentDirCblk->lfstate = LF_FREE;
-		if(DEBUG_1)
-		{
-			kprintf("lfsOpen File not found\r\n");	
-		}
 		return SYSERR;
 	}
 	/*
@@ -225,27 +175,13 @@ status lfsOpenHelper(char *fileName,struct ldentry *dirEntry,int32 mbits)
 		 * We can reuse an existing directory entry to create
 		 * new file.
 		 */
-		if(DEBUG_1)
-		{
-			kprintf("lfsOpen: Moving to position replacePos\r\n");
-		}
-		if(lflSeek(&devPtr,replacePos) == SYSERR)
-		{
-			if(DEBUG_1)
-			{
-				kprintf("lfsOpne: Seek Failed");
-			}
-		}
+		lflSeek(&devPtr,replacePos);
 	}
 	/*
 	 * Create the file
 	 */
 	if(SYSERR == createDirEntry(fileName,LF_TYPE_FILE,dirEntry,isRPosInitialized))
 	{
-		if(DEBUG_1)
-		{
-			kprintf("lfsOpen : call to createdirEntry failed\r\n");
-		}
 		dirCblk->lfstate = LF_FREE;
 		parentDirCblk->lfstate = LF_FREE;
 		return SYSERR;

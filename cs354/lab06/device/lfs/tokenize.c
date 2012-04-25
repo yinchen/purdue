@@ -1,10 +1,5 @@
 #include<xinu.h>
 
-/* Returns number of tokens
- * and initializes tokens array to name of files/directories.
- * e.g. if path points to "/a/b/c" then tokens 
- * would have 'a','b','c' and 3 would be returned.
- * */
 int tokenize(char *path,char tokens[][LF_NAME_LEN])
 {
 	/* If name represents a single '/' return it*/
@@ -33,17 +28,9 @@ int tokenize(char *path,char tokens[][LF_NAME_LEN])
 		{
 			if(i >= LF_NAME_LEN-1)
 			{
-				if(DEBUG_1)
-				{
-					kprintf("lsOpen: file name %s is larger than limit %d\r\n",path,LF_NAME_LEN);
-				}
 				return SYSERR;
 			}
 			tokens[tokenCount][i] = '\0';
-			if(DEBUG_1)
-			{
-				kprintf("Found token %s\r\n",tokens[tokenCount]);
-			}
 			++tokenCount;
 			
 		}

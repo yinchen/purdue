@@ -25,10 +25,6 @@ bool8 isFileOpen(char pathTokens[][LF_NAME_LEN],int pathDepth,int*firstFreeSlot)
 			/* Compare requested name to name of open file */
 			if(isEqualFilePath(lfptr->path,lfptr->depth,pathTokens,pathDepth))
 			{
-				if(DEBUG_1)
-				{
-					kprintf("isFileOpen:file is already opnen\r\n");
-				}
 				signal(lfDirCblkMutex);
 				return 1;
 			}

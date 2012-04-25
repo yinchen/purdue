@@ -35,11 +35,6 @@ status	lfsckfmt (
 	lfiblks = 0;
 	nextib = dir.lfd_ifree;
 	kprintf("initial index block is %d\n\r", nextib);
-	if(DEBUG_1)
-	{
-		kprintf("initial index block reserved for root is  %d\n\r", dir.lfd_ifirst);
-		kprintf("initial size of the root is   %u\n\r", dir.lfd_size);
-	}
 	while (nextib != LF_INULL) {
 		lfiblks++;
 		lfibget(disk, nextib, &iblock);

@@ -16,18 +16,10 @@ status mkDir(char *path)
 	int pathDepth = tokenize(path,pathTokens);
 	if(pathDepth == SYSERR)
 	{
-		if(DEBUG_1)
-		{
-			kprintf("mkDir Unable to tokenize the path %s\r\n",path);
-		}
 		return SYSERR;
 	}
 	if(1 == pathDepth && PATH_SEPARATOR==pathTokens[0][0])
 	{
-		if(DEBUG_1)
-		{
-			kprintf("mkdir: Can't create  root directory\r\n");
-		}
 		return SYSERR;
 	}
 	wait(lfDirCblkMutex);
@@ -37,10 +29,6 @@ status mkDir(char *path)
 	 */
 	if(moveToDir(pathTokens,pathDepth-1) == SYSERR)
 	{
-		if(DEBUG_1)
-		{
-			kprintf("mkdir: failure in moving to the right directory \r\n");
-		}
 		signal(lfDirCblkMutex);
 		return SYSERR;
 	}	
@@ -61,14 +49,6 @@ status mkDir(char *path)
 	 */
 	while(lflRead(&devPtr,(char*)dirEntry,sizeof(struct ldentry)) == sizeof(struct ldentry))
 	{
-		if(DEBUG_1)
-		{
-			kprintf("mvDir :ld_name %s\r\n",dirEntry->ld_name);
-		}
-		/* 
-		 * An existing unused entry will be replaced.
-		 * Record its posion.
-		 */
 		if(!dirEntry->isUsed)
 		{
 			if(!isRPosInitialized)
@@ -80,23 +60,6 @@ status mkDir(char *path)
 		}
 		if(strcmp(dirEntry->ld_name,dirName) && dirEntry->isUsed)
 		{
-			if( LF_TYPE_DIR == dirEntry->type)
-			{	
-				/*directory already exists	*/
-				if(DEBUG_1)
-				{
-					kprintf("MKDIR:directory already exists\r\n");
-				}
-			}
-			else
-			{
-				/*A file with the same path name as directory already exists*/
-				if(DEBUG_1)
-				{
-					kprintf("MKDIR:file of name as directory already exists\r\n");
-				}
-
-			}
 			dirCblk->lfstate = LF_FREE;
 			parentDirCblk->lfstate = LF_FREE;
 			signal(lfDirCblkMutex);
@@ -108,27 +71,13 @@ status mkDir(char *path)
 	 */
 	if(isRPosInitialized)
 	{
-		if(DEBUG_1)
-		{
-			kprintf("mkdir: Moving to position replacePos\r\n");
-		}
-		if(lflSeek(&devPtr,replacePos) == SYSERR)
-		{
-			if(DEBUG_1)
-			{
-				kprintf("mkDir: Seek Failed");
-			}
-		}
+		lflSeek(&devPtr,replacePos);
 	}
 	/*
 	 * Create a new dir entry
 	 */
 	if(SYSERR == createDirEntry(dirName,LF_TYPE_DIR,dirEntry,isRPosInitialized))
 	{
-		if(DEBUG_1)
-		{
-			kprintf("mkDir : call to createdirEntry failed\r\n");
-		}
 		signal(lfDirCblkMutex);
 		return SYSERR;
 	}

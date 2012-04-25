@@ -33,10 +33,6 @@ status	lfscreate (
 	ibsectors = (lfiblks+(ibpersector-1)) / ibpersector; /* round up*/
 	lfiblks = ibsectors * ibpersector;
 	if (ibsectors > sectors/2) {	/* invalid arguments */
-		if(DEBUG_1)
-		{
-			kprintf("lfsCreate: iblocks %u and sectors  FAILED %u\r\n",ibsectors,sectors);
-		}
 		return SYSERR;
 	}
 
@@ -51,10 +47,6 @@ status	lfscreate (
 	dblks = sectors - ibsectors - 1;
 	retval = write(disk,(char *)&dir, LF_AREA_ROOT);
 	if (retval == SYSERR) {
-		if(DEBUG_1)
-		{
-			kprintf("lfsCreate:Write to disk failed\r\n" );
-		}
 		return SYSERR;
 	}
 

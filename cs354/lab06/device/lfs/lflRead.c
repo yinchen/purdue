@@ -46,17 +46,9 @@ devcall	lflRead (
 			lfsetup(lfptr);
 		}
 		*buff++ = (char)(0XFF & *lfptr->lfbyte++);
-		/*if(DEBUG_1)
-		{
-			kprintf("Read %c\r\n",*(buff-1));
-		}*/
 		lfptr->lfpos++;
 	}while(++numread < count && lfptr->lfpos < lfptr->fileSize);
 
 	signal(lfptr->lfmutex);
-	/*if(DEBUG_1)
-	{
-		kprintf("Returning numread %d\r\n",numread);
-	}*/
 	return (numread == 0 ?EOF:numread);
 }
