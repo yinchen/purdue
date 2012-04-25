@@ -30,60 +30,60 @@ int main(int argc, char **argv)
 
 	kprintf("\n\r**********************************************************\n\r");
 
-	for(i=0; i<Nlfl; i++){
-		if(lfltab[i].lfstate == LF_USED){
-			kprintf("Files open on this system, cannot format\r\n");
-			return SYSERR;
-		}
-	}                        
+	/* Testing lflistdir */
 
-	if(lfscreate(Lf_data.lf_dskdev, 100, 500*512) == SYSERR){
-		kprintf("Creating the filesystem failed\r\n");
-		return SYSERR;
-	}
+	for (i = 0; i < Nlfl; i++) {
+        	if (lfltab[i].lfstate == LF_USED) {
+             		kprintf("Files open on this system, cannot format\r\n");
+                    	return SYSERR;
+             	}
+        }                        
 
-	/**
-	 * CALL LS WITH NO FILES CREATED
-	 */
-	if (lflistdir(4) == SYSERR) {
-		kprintf("SYSERR handled.\n\r");
+        if (lfscreate(Lf_data.lf_dskdev, 100, 500*512) == SYSERR){
+        	kprintf("Creating the filesystem failed\r\n");
+                return SYSERR;
+        }
+        
+        /* print initial directory listing */
+        lflistdir(LFILESYS);
+
+	/* write file #1 to disk */
+	file = open(LFILESYS, "AAA", "rw");
+        if (file == SYSERR) {
+	        kprintf("File open failed for AAA\r\n");
+	        return SYSERR;
 	}
 	
-	kprintf("\n\r");
-
-	/**
-	 * CREATE FOUR FILES
-	 */
-	file = open(LFILESYS, "I", "rw");
-	if(file == SYSERR){
-		kprintf("File open failed for /%d\r\n", i);
-		return SYSERR;
+	close(file);
+        
+        /* write file #2 to disk */
+        file = open(LFILESYS, "BBB", "rw");
+        if (file == SYSERR) {
+	        kprintf("File open failed for AAA\r\n");
+	        return SYSERR;
 	}
-
-	file = open(LFILESYS, "LOVE", "rw");
-	if(file == SYSERR){
-		kprintf("File open failed for /%d\r\n", i);
-		return SYSERR;
+	
+	close(file);
+	
+	/* write file #3 to disk */
+	file = open(LFILESYS, "CCC", "rw");
+        if (file == SYSERR) {
+	        kprintf("File open failed for AAA\r\n");
+	        return SYSERR;
 	}
-
-	file = open(LFILESYS, "CS 354", "rw");
-	if(file == SYSERR){
-		kprintf("File open failed for /%d\r\n", i);
-		return SYSERR;
+	
+	close(file);
+	
+	/* write file #4 to disk */
+	file = open(LFILESYS, "DDD", "rw");
+        if (file == SYSERR) {
+	        kprintf("File open failed for AAA\r\n");
+	        return SYSERR;
 	}
-
-	file = open(LFILESYS, "LABS", "rw");
-	if(file == SYSERR){
-		kprintf("File open failed for /%d\r\n", i);
-		return SYSERR;
-	}
-
-	/**
-	 * CALL LS AGAIN
-	 */
-	if (lflistdir(4) == SYSERR) {
-		kprintf("SYSERR handled.\n\r");
-	}
+	
+	close(file);
+        
+        lflistdir(LFILESYS);
 
 	return OK;
 }
