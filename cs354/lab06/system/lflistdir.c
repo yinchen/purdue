@@ -46,6 +46,7 @@ syscall	lflistdir(
 	if (dirptr->lfd_nfiles == 0)
 	{
 		kprintf("No files\r\n");
+		return OK;
 	}
 
 	int32		i;		/* general loop index		*/
