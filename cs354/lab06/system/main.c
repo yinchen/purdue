@@ -54,24 +54,12 @@ int main(int argc, char **argv)
 	        return SYSERR;
 	}
 	
-	if (write(file, "DEF\0", 4) == SYSERR) {
-	        kprintf("Write failed for AAA\r\n");
-	        close(file);
-	        return SYSERR;
-	}
-	
 	close(file);
         
         /* write file #2 to disk */
         file = open(LFILESYS, "BBB", "rw");
         if (file == SYSERR) {
 	        kprintf("File open failed for AAA\r\n");
-	        return SYSERR;
-	}
-	
-	if (write(file, "DEF\0", 4) == SYSERR) {
-	        kprintf("Write failed for AAA\r\n");
-	        close(file);
 	        return SYSERR;
 	}
 	
@@ -84,24 +72,12 @@ int main(int argc, char **argv)
 	        return SYSERR;
 	}
 	
-	if (write(file, "DEF\0", 4) == SYSERR) {
-	        kprintf("Write failed for AAA\r\n");
-	        close(file);
-	        return SYSERR;
-	}
-	
 	close(file);
 	
 	/* write file #4 to disk */
         file = open(LFILESYS, "DDD", "rw");
         if (file == SYSERR) {
 	        kprintf("File open failed for AAA\r\n");
-	        return SYSERR;
-	}
-	
-	if (write(file, "DEF\0", 4) == SYSERR) {
-	        kprintf("Write failed for AAA\r\n");
-	        close(file);
 	        return SYSERR;
 	}
 	
