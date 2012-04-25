@@ -48,6 +48,8 @@ int main(int argc, char **argv)
         lflistdir(LFILESYS);
 
 	/* write file #1 to disk */
+	kprintf("Writing to AAA...\r\n");
+	
         file = open(LFILESYS, "AAA", "rw");
         if (file == SYSERR) {
 	        kprintf("File open failed for AAA\r\n");
@@ -57,6 +59,8 @@ int main(int argc, char **argv)
 	// close(file);
         
         /* write file #2 to disk */
+        kprintf("Writing to BBB...\r\n");
+        
         file = open(LFILESYS, "BBB", "rw");
         if (file == SYSERR) {
 	        kprintf("File open failed for AAA\r\n");
@@ -66,6 +70,8 @@ int main(int argc, char **argv)
 	// close(file);
 	
 	/* write file #3 to disk */
+	kprintf("Writing to CCC...\r\n");
+	
         file = open(LFILESYS, "CCC", "rw");
         if (file == SYSERR) {
 	        kprintf("File open failed for AAA\r\n");
@@ -75,6 +81,8 @@ int main(int argc, char **argv)
 	// close(file);
 	
 	/* write file #4 to disk */
+	kprintf("Writing to DDD...\r\n");
+	
         file = open(LFILESYS, "DDD", "rw");
         if (file == SYSERR) {
 	        kprintf("File open failed for AAA\r\n");
