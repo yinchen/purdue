@@ -12,6 +12,8 @@
 int main(int argc, char **argv)
 {
 	int32	retval;
+	int i; 
+	did32 file = 0;
 
 	/* Obtain network configuration from DHCP server */
 
