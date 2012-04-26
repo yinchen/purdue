@@ -35,6 +35,8 @@ syscall	lflistdir(
 	    if (retval == SYSERR )
 	    {
 			signal(Lf_data.lf_mutex);
+
+			restore(mask);
 			return SYSERR;
 	    }
 	    
@@ -59,5 +61,6 @@ syscall	lflistdir(
 	
 	signal(Lf_data.lf_mutex);
 
+	restore(mask);
 	return OK;
 }
