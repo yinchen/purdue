@@ -31,7 +31,7 @@ devcall	lflPutc (
 	/* 	current end of the file				 */
 
 	//ldptr = lfptr->lfdirptr;
-	if (lfptr->lfpos > lfptr->fileSize) {
+	if (lfptr->lfpos > lfptr->lfsize) {
 		signal(lfptr->lfmutex);
 		return SYSERR;
 	}
@@ -47,8 +47,8 @@ devcall	lflPutc (
 	/* If appending a byte to the file, increment the file size.	*/
 	/* Note: comparison might be equal, but should not be greater.	*/
 
-	if (lfptr->lfpos >= lfptr->fileSize ) {
-		lfptr->fileSize++;
+	if (lfptr->lfpos >= lfptr->lfsize ) {
+		lfptr->lfsize++;
 	}
 
 	/* Place byte in buffer and mark buffer "dirty" */

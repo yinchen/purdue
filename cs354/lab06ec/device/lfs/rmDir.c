@@ -32,22 +32,22 @@ status rmDir(char *path)
 	struct ldentry *dirEntry = &tempEntry;
 	devPtr.dvminor=Nlfl+1;	
 	parentDevPtr.dvminor=Nlfl;	
-	bool8 isRemaining = (bool8)0;	
+	bool8 isRemaining = false;	
 	/*
 	 * Find out the entry of the directory in the parent directory.
 	 */
 	while(lflRead(&devPtr,(char*)dirEntry,sizeof(struct ldentry)) == sizeof(struct ldentry))
 	{
-		if(!dirEntry->isUsed )
+		if(!dirEntry->ld_used )
 		{
 			continue;
 		}
-		if( LF_TYPE_DIR == dirEntry->type )
+		if( LF_TYPE_DIR == dirEntry->ld_type )
 		{	
 			/*Trying to delete directory	*/
 			if(dirEntry->ld_size > 0)
 			{
-				isRemaining = (bool8)1;
+				isRemaining = true;
 			}
 			continue;
 		}
@@ -58,20 +58,20 @@ status rmDir(char *path)
 		 */
 		if(isFileOpen(pathTokens,pathDepth+1,&lfnext))
 		{
-			isRemaining = (bool8)1;
+			isRemaining = true;
 			continue;
 		}
 		//Truncate the file
 		resetLflCblk(fileCblk);
 		fileCblk->lfstate = LF_USED;
-		fileCblk->firstIbId = dirEntry->ld_ilist;
-		fileCblk->fileSize = dirEntry->ld_size;
+		fileCblk->lffirstib = dirEntry->ld_ilist;
+		fileCblk->lfsize = dirEntry->ld_size;
 		wait(Lf_data.lf_mutex);
 		lftruncate(fileCblk);
 		fileCblk->lfstate = LF_FREE;
 		signal(Lf_data.lf_mutex);
 		memset(dirEntry->ld_name,NULLCH,LF_NAME_LEN);
-		dirEntry->isUsed = (bool8)0;
+		dirEntry->ld_used = false;
 		dirEntry->ld_ilist = LF_INULL;
 		dirEntry->ld_size = 0;
 		
@@ -129,7 +129,7 @@ status rmDir(char *path)
 	{		
 		struct ldentry parentDirEntry;
 		memset(dirEntry->ld_name,NULLCH,LF_NAME_LEN);
-		parentDirEntry.isUsed = (bool8)0;
+		parentDirEntry.ld_used = false;
 		parentDirEntry.ld_ilist = LF_INULL;
 		parentDirEntry.ld_size = 0;
 	

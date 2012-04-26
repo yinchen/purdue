@@ -23,7 +23,7 @@ bool8 isFileOpen(char pathTokens[][LF_NAME_LEN],int pathDepth,int*firstFreeSlot)
 		else
 		{
 			/* Compare requested name to name of open file */
-			if(isEqualFilePath(lfptr->path,lfptr->depth,pathTokens,pathDepth))
+			if(isEqualFilePath(lfptr->lfpath,lfptr->lfdepth,pathTokens,pathDepth))
 			{
 				signal(lfDirCblkMutex);
 				return 1;

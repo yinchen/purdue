@@ -22,7 +22,7 @@ status	lftruncate (
 					/*   a given index block	*/
 
 	//ldptr = lfptr->lfdirptr;	/* Get pointer to dir. entry	*/
-	if (lfptr->fileSize == 0) {	/* file is already empty */
+	if (lfptr->lfsize == 0) {	/* file is already empty */
 		return OK;
 	}
 
@@ -42,9 +42,9 @@ status	lftruncate (
 
 	/* Record file's first i-block and clear directory entry */
 
-	firstib = lfptr->firstIbId;
-	lfptr->firstIbId= LF_INULL;
-	lfptr->fileSize = 0;
+	firstib = lfptr->lffirstib;
+	lfptr->lffirstib= LF_INULL;
+	lfptr->lfsize = 0;
 	Lf_data.lf_dirdirty = TRUE;
 
 	/* Walk along index block list, disposing of each data block	*/

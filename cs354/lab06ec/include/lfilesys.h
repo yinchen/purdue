@@ -29,7 +29,7 @@
 /************************************************************************/
 
 #ifndef	Nlfl
-#define	Nlfl	6
+#define	Nlfl	8
 #endif
 
 /* Use the remote disk device if no disk is defined (file system  */
@@ -48,7 +48,6 @@
 #define	LF_BLKSIZ	512		/* assumes 512-byte disk blocks	*/
 #define	LF_NAME_LEN	16		/* length of name plus null	*/
 #define LF_PATH_DEPTH	20		/* how deep a file can be relative to root directory*/
-//#define	LF_NUM_DIR_ENT	20		/* num. of files in a directory	*/
 
 #define	LF_FREE		0		/* slave device is available	*/
 #define	LF_USED		1		/* slave device is in use	*/
@@ -67,12 +66,12 @@
 #define	LF_AREA_IB	1		/* first sector of i-blocks	*/
 #define	LF_AREA_ROOT	0		/* first sector that stores information about the root directory*/
 
-#define LF_TYPE_FILE	0		/* File type file */
-#define LF_TYPE_DIR	1		/* File type directory */
-#define PATH_SEPARATOR  '/'
+#define LF_TYPE_FILE	0		/* flag for file entries 	*/
+#define LF_TYPE_DIR	1		/* flag for directory entries 	*/
+#define PATH_SEPARATOR  '/'		/* name separator for paths 	*/
 
-#define LF_FILE_OPEN	0
-#define LF_FILE_CLOSE	1
+#define LF_FILE_OPEN	0 		/* flag for open files 		*/
+#define LF_FILE_CLOSE	1 		/* flag for closed files 	*/
 
 /* Structure of an index block on disk */
 
@@ -94,16 +93,15 @@ struct	lfiblk		{		/* format of index block	*/
 
 #define	ib2disp(ib)	(((ib)%7)*sizeof(struct lfiblk))
 
-
 /* Structure used in each directory entry for the local file system */
 
 struct	ldentry	{			/* description of entry for one	*/
-					/*  file in the directory	*/
+					/*   file in the directory	*/
 	uint32	ld_size;		/* curr. size of file in bytes	*/
 	ibid32	ld_ilist;		/* ID of first i-block for file	*/
 					/*   or IB_NULL for empty file	*/
-	bool8 	type;			/* is it a normal file or directory*/
-	bool8	isUsed;			/*is the entry currently allocated or free*/
+	bool8 	ld_type;		/* flag for file or directory 	*/
+	bool8	ld_used;		/* flag for allocation	 	*/
 	char	ld_name[LF_NAME_LEN];	/* null-terminated file name	*/
 };
 
@@ -145,8 +143,6 @@ struct	lflcblk	{			/* Local file control block	*/
 	byte	lfstate;		/* Is entry free or used	*/
 	did32	lfdev;			/* device ID of this device	*/
 	sid32	lfmutex;		/* Mutex for this file		*/
-	//struct	ldentry	*lfdirptr;	/* Ptr to file's entry in the	*/
-					/*  in-memory directory		*/
 	int32	lfmode;			/* mode (read/write/both)	*/
 	uint32	lfpos;			/* Byte position of next byte	*/
 					/*   to read or write		*/
@@ -165,10 +161,10 @@ struct	lflcblk	{			/* Local file control block	*/
 					/*   outside lfdblock		*/
 	bool8	lfibdirty;		/* Has lfiblock changed?	*/
 	bool8	lfdbdirty;		/* Has lfdblock changed?	*/
-	uint32 	fileSize;		/*current size of the file*/
-	ibid32 	firstIbId;		/* i-block number of the first i-block of this file.*/
-	char 	path[LF_PATH_DEPTH][LF_NAME_LEN];  
-	uint32 	depth;			/* nesting depth relative to the root directory*/
+	ibid32 	lffirstib;		/* first iblock for this file 	*/
+	uint32 	lfsize;			/* size of this file 		*/
+	char 	lfpath[LF_PATH_DEPTH][LF_NAME_LEN];	/* file path 	*/
+	uint32 	lfdepth;		/* depth from root directory 	*/
 };
 
 extern	struct	lfdata	Lf_data;
@@ -181,5 +177,5 @@ extern 	sid32 	lfDirCblkMutex;
 #define	LF_CTL_TRUNC	F_CTL_TRUNC	/* Truncate a file		*/
 #define LF_CTL_SIZE	F_CTL_SIZE	/* Obtain the size of a file	*/
 #define LF_CTL_FORMAT 	F_CTL_FORMAT	/* Format the file system	*/
-#define LF_CTL_MKDIR 	F_CTL_MKDIR 	/* Creates new directory	*/
-#define LF_CTL_RMDIR 	F_CTL_RMDIR 	/* Deletes an existing directory	*/
+#define LF_CTL_MKDIR 	F_CTL_MKDIR 	/* create new directory		*/
+#define LF_CTL_RMDIR 	F_CTL_RMDIR 	/* delete existing directory	*/

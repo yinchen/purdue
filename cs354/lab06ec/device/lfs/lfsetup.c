@@ -45,11 +45,11 @@ status	lfsetup (
 
 		/* Check directory entry to see if index block exists	*/
 
-		ibnum = lfptr->firstIbId;
+		ibnum = lfptr->lffirstib;
 		if (ibnum == LF_INULL) { /* empty file - get new i-block*/
 			ibnum = lfiballoc();
 			lfibclear(ibptr, 0);
-			lfptr->firstIbId = ibnum;
+			lfptr->lffirstib = ibnum;
 			lfptr->lfibdirty = TRUE;
 		} else {		/* nonempty - read first i-block*/
 	 		lfibget(Lf_data.lf_dskdev, ibnum, ibptr);
@@ -65,7 +65,7 @@ status	lfsetup (
 		/* Load initial index block for the file (we know that	*/
 		/*	at least one index block exists)		*/
 	
-		ibnum = lfptr->firstIbId;
+		ibnum = lfptr->lffirstib;
 		lfibget(Lf_data.lf_dskdev, ibnum, ibptr);
 		lfptr->lfinum = ibnum;
 	}

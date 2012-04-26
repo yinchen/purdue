@@ -23,8 +23,8 @@ status createDirEntry(char*name,byte type,struct ldentry*dirEntry,bool8 isReplac
 	 */
 	dirEntry->ld_size = 0;
 	dirEntry->ld_ilist = LF_INULL;
-	dirEntry->type = type;
-	dirEntry->isUsed = (bool8)1;
+	dirEntry->ld_type = type;
+	dirEntry->ld_used = true;
 	strcpy(dirEntry->ld_name,name);
 
 	if(lflWrite(&devPtr,(char*)dirEntry,sizeof(struct ldentry)) == SYSERR)
@@ -90,7 +90,7 @@ status createDirEntry(char*name,byte type,struct ldentry*dirEntry,bool8 isReplac
 	 * Update that entry.
 	 */
 	parentDirEntry.ld_size += sizeof(struct ldentry);
-	parentDirEntry.ld_ilist = dirCblk->firstIbId;
+	parentDirEntry.ld_ilist = dirCblk->lffirstib;
 	
 	/* 
 	 * As we have just read that entry move back again so that 

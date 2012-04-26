@@ -52,9 +52,9 @@ status rmFile(char *path)
 	 */
 	while(lflRead(&devPtr,(char*)dirEntry,sizeof(struct ldentry)) == sizeof(struct ldentry))
 	{
-		if(strcmp(dirEntry->ld_name,fileName) && dirEntry->isUsed)
+		if(strcmp(dirEntry->ld_name,fileName) && dirEntry->ld_used)
 		{
-			if( LF_TYPE_DIR == dirEntry->type)
+			if( LF_TYPE_DIR == dirEntry->ld_type)
 			{	
 				dirCblk->lfstate = LF_FREE;
 				fileCblk->lfstate = LF_FREE;
@@ -65,13 +65,13 @@ status rmFile(char *path)
 			//Truncate the file
 			resetLflCblk(fileCblk);
 			fileCblk->lfstate = LF_USED;
-			fileCblk->firstIbId = dirEntry->ld_ilist;
-			fileCblk->fileSize = dirEntry->ld_size;
+			fileCblk->lffirstib = dirEntry->ld_ilist;
+			fileCblk->lfsize = dirEntry->ld_size;
 			wait(Lf_data.lf_mutex);
 			lftruncate(fileCblk);
 			fileCblk->lfstate = LF_FREE;
 			signal(Lf_data.lf_mutex);
-			dirEntry->isUsed = (bool8)0;
+			dirEntry->ld_used = false;
 			dirEntry->ld_ilist = LF_INULL;
 			dirEntry->ld_size = 0;
 			memset(dirEntry->ld_name,NULLCH,LF_NAME_LEN);

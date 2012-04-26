@@ -31,7 +31,7 @@ devcall	lflRead (
 
 	/* Return EOF for any attempt to read beyond the end-of-file */
 
-	if (lfptr->lfpos >= lfptr->fileSize) {
+	if (lfptr->lfpos >= lfptr->lfsize) {
 		signal(lfptr->lfmutex);
 		return EOF;
 	}
@@ -47,7 +47,7 @@ devcall	lflRead (
 		}
 		*buff++ = (char)(0XFF & *lfptr->lfbyte++);
 		lfptr->lfpos++;
-	}while(++numread < count && lfptr->lfpos < lfptr->fileSize);
+	}while(++numread < count && lfptr->lfpos < lfptr->lfsize);
 
 	signal(lfptr->lfmutex);
 	return (numread == 0 ?EOF:numread);

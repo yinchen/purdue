@@ -34,7 +34,7 @@ devcall	lflWrite (
 	/* Return SYSERR for an attempt to skip bytes beyond the */
 	/* 	current end of the file				 */
 
-	if (lfptr->lfpos > lfptr->fileSize) {
+	if (lfptr->lfpos > lfptr->lfsize) {
 		signal(lfptr->lfmutex);
 		return SYSERR;
 	}
@@ -49,8 +49,8 @@ devcall	lflWrite (
 		/* If appending a byte to the file, increment the file size.	*/
 		/* Note: comparison might be equal, but should not be greater.	*/
 
-		if (lfptr->lfpos >= lfptr->fileSize ) {
-			lfptr->fileSize++;
+		if (lfptr->lfpos >= lfptr->lfsize ) {
+			lfptr->lfsize++;
 		}
 
 		/* Place byte in buffer and mark buffer "dirty" */

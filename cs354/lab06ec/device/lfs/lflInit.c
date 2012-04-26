@@ -32,8 +32,8 @@ devcall	lflInit (
 	lfptr->lfdnum = 0;
 	memset((char *) &lfptr->lfdblock, NULLCH, LF_BLKSIZ);
 
-	lfptr->fileSize = 0;
-	lfptr->firstIbId = LF_INULL;	
+	lfptr->lfsize = 0;
+	lfptr->lffirstib = LF_INULL;	
 
 	lfptr->lfbyte = &lfptr->lfdblock[LF_BLKSIZ]; /* beyond lfdblock	*/
 	lfptr->lfibdirty = lfptr->lfdbdirty = FALSE;

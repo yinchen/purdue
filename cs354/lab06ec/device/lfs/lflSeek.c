@@ -24,7 +24,7 @@ devcall	lflSeek (
 
 	/* Verify offset is within current file size */
 
-	if (offset > lfptr->fileSize) {
+	if (offset > lfptr->lfsize) {
 		signal(lfptr->lfmutex);
 		return SYSERR;
 	}

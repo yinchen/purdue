@@ -30,7 +30,7 @@ devcall	lflGetc (
 	/* Return EOF for any attempt to read beyond the end-of-file */
 
 	//ldptr = lfptr->lfdirptr;
-	if (lfptr->lfpos >= lfptr->fileSize) {
+	if (lfptr->lfpos >= lfptr->lfsize) {
 		signal(lfptr->lfmutex);
 		return EOF;
 	}

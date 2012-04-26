@@ -49,7 +49,7 @@ status mkDir(char *path)
 	 */
 	while(lflRead(&devPtr,(char*)dirEntry,sizeof(struct ldentry)) == sizeof(struct ldentry))
 	{
-		if(!dirEntry->isUsed)
+		if(!dirEntry->ld_used)
 		{
 			if(!isRPosInitialized)
 			{
@@ -58,7 +58,7 @@ status mkDir(char *path)
 			}
 			continue;
 		}
-		if(strcmp(dirEntry->ld_name,dirName) && dirEntry->isUsed)
+		if(strcmp(dirEntry->ld_name,dirName) && dirEntry->ld_used)
 		{
 			dirCblk->lfstate = LF_FREE;
 			parentDirCblk->lfstate = LF_FREE;

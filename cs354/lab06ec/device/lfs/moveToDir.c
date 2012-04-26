@@ -32,8 +32,8 @@ status moveToDir(char pathTokens[][LF_NAME_LEN],int fileDepth)
 	resetLflCblk(dirCblk);
 	resetLflCblk(parentDirCblk);
 	dirCblk->lfstate = LF_USED;
-	dirCblk->fileSize = Lf_data.lf_dir.lfd_size;
-	dirCblk->firstIbId = Lf_data.lf_dir.lfd_ifirst;
+	dirCblk->lfsize = Lf_data.lf_dir.lfd_size;
+	dirCblk->lffirstib = Lf_data.lf_dir.lfd_ifirst;
 	
 	int currentDepth =0;		/*Root directory has a depth of zero. */
 	struct ldentry currentDirEntry;
@@ -45,13 +45,13 @@ status moveToDir(char pathTokens[][LF_NAME_LEN],int fileDepth)
 	 */
 	while(currentDepth < fileDepth && lflRead(&devPtr,(char*)dirEntry,sizeof(struct ldentry)) == sizeof(struct ldentry))
 	{
-		if(strcmp(dirEntry->ld_name,pathTokens[currentDepth])&& dirEntry->isUsed)
+		if(strcmp(dirEntry->ld_name,pathTokens[currentDepth])&& dirEntry->ld_used)
 		{
 			/*
 			 * Return error if something in the path
 			 * is directory instead of a file.
 			 */
-			if(dirEntry->type != LF_TYPE_DIR)
+			if(dirEntry->ld_type != LF_TYPE_DIR)
 			{
 				return SYSERR;
 			}
@@ -63,8 +63,8 @@ status moveToDir(char pathTokens[][LF_NAME_LEN],int fileDepth)
 			/*Read this directory*/
 			resetLflCblk(dirCblk);
 			dirCblk->lfstate = LF_USED;
-			dirCblk->fileSize = dirEntry->ld_size;
-			dirCblk->firstIbId = dirEntry->ld_ilist;
+			dirCblk->lfsize = dirEntry->ld_size;
+			dirCblk->lffirstib = dirEntry->ld_ilist;
 			++currentDepth;
 		}
 	}
@@ -84,8 +84,8 @@ void resetLflCblk(struct lflcblk*dirCblk )
 	dirCblk->lfbyte =   &dirCblk->lfdblock[LF_BLKSIZ];
 	dirCblk->lfibdirty = FALSE;
 	dirCblk->lfdbdirty = FALSE;
-	dirCblk->fileSize = -1;
-	dirCblk->firstIbId = LF_INULL;
-	memset((char*)dirCblk->path,NULLCH,LF_PATH_DEPTH*LF_NAME_LEN);
-	dirCblk->depth = -1;
+	dirCblk->lfsize = -1;
+	dirCblk->lffirstib = LF_INULL;
+	memset((char*)dirCblk->lfpath,NULLCH,LF_PATH_DEPTH*LF_NAME_LEN);
+	dirCblk->lfdepth = -1;
 }

@@ -95,10 +95,10 @@ devcall	lfsOpen (
 	lfptr->lfibdirty = FALSE;
 	lfptr->lfdbdirty = FALSE;
 
-	lfptr->fileSize = fileInfo.ld_size;
-	lfptr->firstIbId = fileInfo.ld_ilist;
-	memcpy(lfptr->path,pathTokens,LF_NAME_LEN * LF_PATH_DEPTH);
-	lfptr->depth = pathDepth;
+	lfptr->lfsize = fileInfo.ld_size;
+	lfptr->lffirstib = fileInfo.ld_ilist;
+	memcpy(lfptr->lfpath,pathTokens,LF_NAME_LEN * LF_PATH_DEPTH);
+	lfptr->lfdepth = pathDepth;
 
 	signal(lfDirCblkMutex);
 	return lfptr->lfdev;
@@ -122,7 +122,7 @@ status lfsOpenHelper(char *fileName,struct ldentry *dirEntry,int32 mbits)
 	
 	while(lflRead(&devPtr,(char*)dirEntry,sizeof(struct ldentry)) == sizeof(struct ldentry))
 	{
-		if(!dirEntry->isUsed)
+		if(!dirEntry->ld_used)
 		{
 			if(!isRPosInitialized)
 			{
@@ -134,9 +134,9 @@ status lfsOpenHelper(char *fileName,struct ldentry *dirEntry,int32 mbits)
 		/*
 		 * We found a match.
 		 */
-		if(strcmp(dirEntry->ld_name,fileName) && dirEntry->isUsed)
+		if(strcmp(dirEntry->ld_name,fileName) && dirEntry->ld_used)
 		{
-			if( LF_TYPE_DIR == dirEntry->type)
+			if( LF_TYPE_DIR == dirEntry->ld_type)
 			{	
 				/*Trying to open a directory	*/
 				dirCblk->lfstate = LF_FREE;

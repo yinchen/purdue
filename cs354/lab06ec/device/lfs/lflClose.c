@@ -34,13 +34,13 @@ devcall	lflClose (
 	/*Update the file entry in parent directory*/
 	wait(lfDirCblkMutex);
 
-	if(moveToDir(lfptr->path,lfptr->depth-1) == SYSERR)
+	if(moveToDir(lfptr->lfpath,lfptr->lfdepth-1) == SYSERR)
 	{
 		signal(lfDirCblkMutex);
 		signal(lfptr->lfmutex);
 		return SYSERR;
 	}
-	if(lflCloseHelper(lfptr->path[lfptr->depth-1],lfptr) == SYSERR)
+	if(lflCloseHelper(lfptr->lfpath[lfptr->lfdepth-1],lfptr) == SYSERR)
 	{
 		signal(lfDirCblkMutex);
 		signal(lfptr->lfmutex);
@@ -66,7 +66,7 @@ static status lflCloseHelper(char *fileName,struct lflcblk* lfptr)
 	bool8 found = 0;
 	while(lflRead(&devPtr,(char*)dirEntry,sizeof(struct ldentry)) == sizeof(struct ldentry))
 	{
-		if(strcmp(dirEntry->ld_name,fileName) && dirEntry->isUsed)
+		if(strcmp(dirEntry->ld_name,fileName) && dirEntry->ld_used)
 		{
 			found = 1;
 			break;
@@ -79,8 +79,8 @@ static status lflCloseHelper(char *fileName,struct lflcblk* lfptr)
 		return SYSERR;
 	}
 	
-	dirEntry->ld_ilist = lfptr->firstIbId;
-	dirEntry->ld_size = lfptr->fileSize;
+	dirEntry->ld_ilist = lfptr->lffirstib;
+	dirEntry->ld_size = lfptr->lfsize;
 	
 	uint32 writePos = dirCblk->lfpos - sizeof(struct ldentry);
 	
