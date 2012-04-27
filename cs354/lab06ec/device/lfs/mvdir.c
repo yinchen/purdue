@@ -1,6 +1,6 @@
 #include<xinu.h>
 
-status moveToDir(char pathTokens[][LF_NAME_LEN],int fileDepth)
+status mvdir(char pathTokens[][LF_NAME_LEN],int fileDepth)
 {
 	struct lflcblk * dirCblk = &lfltab[Nlfl+1];	/*last entry is used for modifying the directory in which file is getting created.*/
 	struct lflcblk* parentDirCblk = &lfltab[Nlfl];	/*second last entry is used for parent of the directory in which file is getting created*/
@@ -9,12 +9,12 @@ status moveToDir(char pathTokens[][LF_NAME_LEN],int fileDepth)
 	/*first read the  0th data block to find out 
 	 * size of the root directory and first index block*/
 	wait(Lf_data.lf_mutex);
-	if(Lf_data.lf_dirpresent == FALSE)
+	if (Lf_data.lf_dirpresent == FALSE)
 	{
 		/*Cache the root directory*/
 		/*This should get executed only once*/
 		struct  lfdir rootInfo;
-		if(read(Lf_data.lf_dskdev,(char*)&rootInfo,LF_AREA_ROOT) == SYSERR)
+		if (read(Lf_data.lf_dskdev,(char*)&rootInfo,LF_AREA_ROOT) == SYSERR)
 		{
 			signal(Lf_data.lf_mutex);
 			return SYSERR;
@@ -45,13 +45,13 @@ status moveToDir(char pathTokens[][LF_NAME_LEN],int fileDepth)
 	 */
 	while(currentDepth < fileDepth && lflRead(&devPtr,(char*)dirEntry,sizeof(struct ldentry)) == sizeof(struct ldentry))
 	{
-		if(strcmp(dirEntry->ld_name,pathTokens[currentDepth])&& dirEntry->ld_used)
+		if (strcmp(dirEntry->ld_name,pathTokens[currentDepth])&& dirEntry->ld_used)
 		{
 			/*
 			 * Return error if something in the path
 			 * is directory instead of a file.
 			 */
-			if(dirEntry->ld_type != LF_TYPE_DIR)
+			if (dirEntry->ld_type != LF_TYPE_DIR)
 			{
 				return SYSERR;
 			}
@@ -68,7 +68,7 @@ status moveToDir(char pathTokens[][LF_NAME_LEN],int fileDepth)
 			++currentDepth;
 		}
 	}
-	if(fileDepth != currentDepth)
+	if (fileDepth != currentDepth)
 	{
 		return SYSERR;
 	}

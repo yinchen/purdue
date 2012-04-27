@@ -36,9 +36,6 @@ extern	syscall	control(did32, int32, int32, int32);
 /* in file create.c */
 extern	pid32	create(void *, uint32, pri16, char *, uint32, ...);
 
-/* in file createDirEntry.c*/
-extern status createDirEntry(char*,byte ,struct ldentry*,bool8);
-
 /* in file ctxsw.S */
 extern	void	ctxsw(void *, void *);
 
@@ -47,7 +44,7 @@ extern	uint32	dot2ip(char *, uint32 *);
 
 /* in file queue.c */
 extern	pid32	enqueue(pid32, qid16);
-extern 	pid32 	dequeue(qid16);
+
 /* in file intutils.S */
 extern	intmask	disable(void);
 
@@ -147,9 +144,6 @@ extern	devcall	ionull(void);
 
 /* in file netin.c */
 extern	uint16	ipcksum(struct netpacket *);
-
-/* in file isFileOpen.c */
-extern bool8 isFileOpen(char pathTokens[][LF_NAME_LEN],int ,int*);
 
 /* in file kill.c */
 extern	syscall	kill(pid32);
@@ -255,12 +249,6 @@ extern  void    *memset(void *, const int, int32);
 
 /* in file mkbufpool.c */
 extern	bpid32	mkbufpool(int32, int32);
-
-/* in file mkDir.c 	*/
-extern status mkDir(char *path);
-
-/* in file moveToDir.c */
-extern status moveToDir(char pathTokens[][LF_NAME_LEN],int fileDepth);
 
 /* in file mount.c */
 extern	syscall	mount(char *, char *, did32);
@@ -383,14 +371,8 @@ extern	void	restore(intmask);
 /* in file resume.c */
 extern	pri16	resume(pid32);
 
-/* in file moveToDir.c */
+/* in file mvdir.c */
 extern void resetLflCblk(struct lflcblk*);
-
-/* in file rmFile.c */
-extern status rmFile(char*);
-
-/*in file rmDir.c */
-extern status rmDir(char *);
 
 /* in file sched_cntl.c */
 extern	status	sched_cntl(int32);
@@ -426,17 +408,8 @@ extern	syscall	sleep(uint32);
 /* in file shell.c */
 extern process shell(did32);
 
-/* in file string.c */
-extern bool8 strcmp(char*,char*);
-
-/* in file string.c */
-extern void strcpy(char*,char*);
-
 /* in file suspend.c */
 extern	syscall	suspend(pid32);
-
-/* in file tokenize.c */
-extern int tokenize(char *name,char tokens[][LF_NAME_LEN]);
 
 /* in file ttyControl.c */
 extern	devcall	ttyControl(struct dentry *, int32, int32, int32);
@@ -497,6 +470,33 @@ extern	void	xdone(void);
 
 /* in file yield.c */
 extern	syscall	yield(void);
+
+/* in file touchdir.c*/
+extern status touchdir(char*,byte ,struct ldentry*,bool8);
+
+/* in file isopenfile.c */
+extern bool8 isopenfile(char pathTokens[][LF_NAME_LEN],int ,int*);
+
+/* in file mkdir.c 	*/
+extern status mkdir(char *path);
+
+/* in file mvdir.c */
+extern status mvdir(char pathTokens[][LF_NAME_LEN],int fileDepth);
+
+/* in file rmfile.c */
+extern status rmfile(char*);
+
+/*in file rmdir.c */
+extern status rmdir(char *);
+
+/* in file tokenize.c */
+extern int tokenize(char *name,char tokens[][LF_NAME_LEN]);
+
+/* in file string.c */
+extern bool8 strcmp(char*,char*);
+
+/* in file string.c */
+extern void strcpy(char*,char*);
 
 /* NETWORK BYTE ORDER CONVERSION NOT NEEDED ON A BIG-ENDIAN COMPUTER */
 #define	htons(x)	(x)

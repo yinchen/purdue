@@ -22,11 +22,11 @@ devcall	lfsOpen (
 
 	char pathTokens[LF_PATH_DEPTH][LF_NAME_LEN];  
 	int pathDepth = tokenize(path,pathTokens);
-	if(pathDepth == SYSERR)
+	if (pathDepth == SYSERR)
 	{
 		return SYSERR;
 	}
-	if(1 == pathDepth && PATH_SEPARATOR==pathTokens[0][0])
+	if (1 == pathDepth && PATH_SEPARATOR==pathTokens[0][0])
 	{
 		return SYSERR;
 	}
@@ -41,7 +41,7 @@ devcall	lfsOpen (
 
 	lfnext = SYSERR;
 	wait(lfDirCblkMutex);
-	if(isFileOpen(pathTokens,pathDepth,&lfnext))
+	if (isopenfile(pathTokens,pathDepth,&lfnext))
 	{
 		signal(lfDirCblkMutex);
 		return SYSERR;
@@ -59,7 +59,7 @@ devcall	lfsOpen (
 	 * e.g. to /a/b and to /a/ if we want to open
 	 * /a/b/c.
 	 */
- 	if(moveToDir(pathTokens,pathDepth-1) == SYSERR)
+ 	if (mvdir(pathTokens,pathDepth-1) == SYSERR)
 	{
 		signal(lfDirCblkMutex);
 		return SYSERR;
@@ -67,7 +67,7 @@ devcall	lfsOpen (
 	/*
 	 * Either create a  new file or open an already existing file.
 	 */
-	if(lfsOpenHelper(pathTokens[pathDepth-1],&fileInfo,mbits) == SYSERR)
+	if (lfsOpenHelper(pathTokens[pathDepth-1],&fileInfo,mbits) == SYSERR)
 	{
 		signal(lfDirCblkMutex);
 		return SYSERR;
@@ -122,9 +122,9 @@ status lfsOpenHelper(char *fileName,struct ldentry *dirEntry,int32 mbits)
 	
 	while(lflRead(&devPtr,(char*)dirEntry,sizeof(struct ldentry)) == sizeof(struct ldentry))
 	{
-		if(!dirEntry->ld_used)
+		if (!dirEntry->ld_used)
 		{
-			if(!isRPosInitialized)
+			if (!isRPosInitialized)
 			{
 				replacePos = dirCblk->lfpos - sizeof(struct ldentry);
 				isRPosInitialized = 1;
@@ -134,9 +134,9 @@ status lfsOpenHelper(char *fileName,struct ldentry *dirEntry,int32 mbits)
 		/*
 		 * We found a match.
 		 */
-		if(strcmp(dirEntry->ld_name,fileName) && dirEntry->ld_used)
+		if (strcmp(dirEntry->ld_name,fileName) && dirEntry->ld_used)
 		{
-			if( LF_TYPE_DIR == dirEntry->ld_type)
+			if ( LF_TYPE_DIR == dirEntry->ld_type)
 			{	
 				/*Trying to open a directory	*/
 				dirCblk->lfstate = LF_FREE;
@@ -159,7 +159,7 @@ status lfsOpenHelper(char *fileName,struct ldentry *dirEntry,int32 mbits)
 	 * If we are opening a file and file doesn't exist
 	 * then return error.
 	 */
-	if(mbits & LF_MODE_O)
+	if (mbits & LF_MODE_O)
 	{
 		dirCblk->lfstate = LF_FREE;
 		parentDirCblk->lfstate = LF_FREE;
@@ -169,7 +169,7 @@ status lfsOpenHelper(char *fileName,struct ldentry *dirEntry,int32 mbits)
 	 * If the file doesn't exist and mode bits have
 	 * LF_MODE_N set then create the file.
 	 */
-	if(isRPosInitialized)
+	if (isRPosInitialized)
 	{
 		/*
 		 * We can reuse an existing directory entry to create
@@ -180,7 +180,7 @@ status lfsOpenHelper(char *fileName,struct ldentry *dirEntry,int32 mbits)
 	/*
 	 * Create the file
 	 */
-	if(SYSERR == createDirEntry(fileName,LF_TYPE_FILE,dirEntry,isRPosInitialized))
+	if (SYSERR == touchdir(fileName,LF_TYPE_FILE,dirEntry,isRPosInitialized))
 	{
 		dirCblk->lfstate = LF_FREE;
 		parentDirCblk->lfstate = LF_FREE;

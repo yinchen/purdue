@@ -34,13 +34,13 @@ devcall	lflClose (
 	/*Update the file entry in parent directory*/
 	wait(lfDirCblkMutex);
 
-	if(moveToDir(lfptr->lfpath,lfptr->lfdepth-1) == SYSERR)
+	if (mvdir(lfptr->lfpath,lfptr->lfdepth-1) == SYSERR)
 	{
 		signal(lfDirCblkMutex);
 		signal(lfptr->lfmutex);
 		return SYSERR;
 	}
-	if(lflCloseHelper(lfptr->lfpath[lfptr->lfdepth-1],lfptr) == SYSERR)
+	if (lflCloseHelper(lfptr->lfpath[lfptr->lfdepth-1],lfptr) == SYSERR)
 	{
 		signal(lfDirCblkMutex);
 		signal(lfptr->lfmutex);
@@ -66,13 +66,13 @@ static status lflCloseHelper(char *fileName,struct lflcblk* lfptr)
 	bool8 found = 0;
 	while(lflRead(&devPtr,(char*)dirEntry,sizeof(struct ldentry)) == sizeof(struct ldentry))
 	{
-		if(strcmp(dirEntry->ld_name,fileName) && dirEntry->ld_used)
+		if (strcmp(dirEntry->ld_name,fileName) && dirEntry->ld_used)
 		{
 			found = 1;
 			break;
 		}
 	}
-	if(!found)
+	if (!found)
 	{
 		dirCblk->lfstate = LF_FREE;
 		parentDirCblk->lfstate = LF_FREE;
@@ -86,7 +86,7 @@ static status lflCloseHelper(char *fileName,struct lflcblk* lfptr)
 	
 	lflSeek(&devPtr,writePos);
 
-	if(lflWrite(&devPtr,(char*)dirEntry,sizeof(struct ldentry)) == SYSERR)
+	if (lflWrite(&devPtr,(char*)dirEntry,sizeof(struct ldentry)) == SYSERR)
 	{
 		dirCblk->lfstate = LF_FREE;
 		parentDirCblk->lfstate = LF_FREE;
@@ -94,7 +94,7 @@ static status lflCloseHelper(char *fileName,struct lflcblk* lfptr)
 	}
 	
 	/*Close the directory*/
-	if(lfflush(dirCblk) == SYSERR)
+	if (lfflush(dirCblk) == SYSERR)
 	{
 		dirCblk->lfstate = LF_FREE;
 		parentDirCblk->lfstate = LF_FREE;

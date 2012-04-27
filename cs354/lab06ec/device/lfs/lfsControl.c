@@ -24,17 +24,17 @@ devcall	lfsControl (
 			}
 		case LF_CTL_MKDIR:
 			{
-				retval = mkDir((char*)arg1);
+				retval = mkdir((char*)arg1);
 				return retval;
 			}
 		case LF_CTL_RMDIR:
 			{
-				retval = rmDir((char*)arg1);
+				retval = rmdir((char*)arg1);
 				return retval;
 			}
 		case LF_CTL_DEL:
 			{
-				retval = rmFile((char*)arg1);
+				retval = rmfile((char*)arg1);
 				return retval;
 			}
 		default:

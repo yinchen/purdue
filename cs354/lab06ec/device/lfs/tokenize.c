@@ -5,7 +5,7 @@ int tokenize(char *path,char tokens[][LF_NAME_LEN])
 	/* If name represents a single '/' return it*/
 	int i = 0;
 	int tokenCount = 0;
-	if(path[i] == PATH_SEPARATOR && path[i+1] == '\0')
+	if (path[i] == PATH_SEPARATOR && path[i+1] == '\0')
 	{
 		tokens[0][0] = '/';
 		tokens[0][1] = '\0';
@@ -15,7 +15,7 @@ int tokenize(char *path,char tokens[][LF_NAME_LEN])
 	
 	while(tokenCount < LF_PATH_DEPTH)
 	{
-		if(path[index] == PATH_SEPARATOR)
+		if (path[index] == PATH_SEPARATOR)
 		{
 			++index;
 		}
@@ -24,9 +24,9 @@ int tokenize(char *path,char tokens[][LF_NAME_LEN])
 			tokens[tokenCount][i]=path[index];	
 			++index;
 		}
-		if(i)
+		if (i)
 		{
-			if(i >= LF_NAME_LEN-1)
+			if (i >= LF_NAME_LEN-1)
 			{
 				return SYSERR;
 			}
@@ -34,7 +34,7 @@ int tokenize(char *path,char tokens[][LF_NAME_LEN])
 			++tokenCount;
 			
 		}
-		if(path[index] == NULLCH || (path[index] == PATH_SEPARATOR && path[index+1] == NULLCH))
+		if (path[index] == NULLCH || (path[index] == PATH_SEPARATOR && path[index+1] == NULLCH))
 		{
 			break;
 		}

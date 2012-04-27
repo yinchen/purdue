@@ -1,22 +1,22 @@
 #include<xinu.h>
 
-status rmDir(char *path)
+status rmdir(char *path)
 {
 	char pathTokens[LF_PATH_DEPTH][LF_NAME_LEN];  
 	int pathDepth = tokenize(path,pathTokens);
 	int lfnext = SYSERR;
-	if(pathDepth == SYSERR)
+	if (pathDepth == SYSERR)
 	{
 		return SYSERR;
 	}
-	if(1 == pathDepth && PATH_SEPARATOR==pathTokens[0][0])
+	if (1 == pathDepth && PATH_SEPARATOR==pathTokens[0][0])
 	{
 		return SYSERR;
 	}
 	wait(lfDirCblkMutex);
 	
 	
-	if(moveToDir(pathTokens,pathDepth) == SYSERR)
+	if (mvdir(pathTokens,pathDepth) == SYSERR)
 	{
 		signal(lfDirCblkMutex);
 		return SYSERR;
@@ -38,14 +38,14 @@ status rmDir(char *path)
 	 */
 	while(lflRead(&devPtr,(char*)dirEntry,sizeof(struct ldentry)) == sizeof(struct ldentry))
 	{
-		if(!dirEntry->ld_used )
+		if (!dirEntry->ld_used )
 		{
 			continue;
 		}
-		if( LF_TYPE_DIR == dirEntry->ld_type )
+		if ( LF_TYPE_DIR == dirEntry->ld_type )
 		{	
 			/*Trying to delete directory	*/
-			if(dirEntry->ld_size > 0)
+			if (dirEntry->ld_size > 0)
 			{
 				isRemaining = true;
 			}
@@ -56,7 +56,7 @@ status rmDir(char *path)
 		/*Don't delete a directory if some of the children files
 		 * are still open
 		 */
-		if(isFileOpen(pathTokens,pathDepth+1,&lfnext))
+		if (isopenfile(pathTokens,pathDepth+1,&lfnext))
 		{
 			isRemaining = true;
 			continue;
@@ -78,7 +78,7 @@ status rmDir(char *path)
 		/*
 		 * Update the entry in the parent directory.
 		 */
-		if(lflSeek(&devPtr,dirCblk->lfpos - sizeof(struct ldentry)) == SYSERR)
+		if (lflSeek(&devPtr,dirCblk->lfpos - sizeof(struct ldentry)) == SYSERR)
 		{
 			dirCblk->lfstate = LF_FREE;
 			fileCblk->lfstate = LF_FREE;
@@ -86,7 +86,7 @@ status rmDir(char *path)
 			signal(lfDirCblkMutex);
 			return SYSERR;
 		}
-		if(lflWrite(&devPtr,(char*)dirEntry,sizeof(struct ldentry)) == SYSERR)
+		if (lflWrite(&devPtr,(char*)dirEntry,sizeof(struct ldentry)) == SYSERR)
 		{
 			dirCblk->lfstate = LF_FREE;
 			fileCblk->lfstate = LF_FREE;
@@ -95,7 +95,7 @@ status rmDir(char *path)
 			return SYSERR;
 		}
 	}	
-	if(lfflush(dirCblk) == SYSERR)
+	if (lfflush(dirCblk) == SYSERR)
 	{
 		dirCblk->lfstate = LF_FREE;
 		parentDirCblk->lfstate = LF_FREE;
@@ -107,7 +107,7 @@ status rmDir(char *path)
 	 * couldn't get deleted.
 	 */
 
-	if(isRemaining)
+	if (isRemaining)
 	{
 		dirCblk->lfstate = LF_FREE;
 		parentDirCblk->lfstate = LF_FREE;
@@ -125,7 +125,7 @@ status rmDir(char *path)
 
 	dirCblk->lfstate = LF_FREE;
 	/*Modify this directory's entry in its parent directory*/
-	if(LF_FREE != parentDirCblk->lfstate)
+	if (LF_FREE != parentDirCblk->lfstate)
 	{		
 		struct ldentry parentDirEntry;
 		memset(dirEntry->ld_name,NULLCH,LF_NAME_LEN);
@@ -133,20 +133,20 @@ status rmDir(char *path)
 		parentDirEntry.ld_ilist = LF_INULL;
 		parentDirEntry.ld_size = 0;
 	
-		if(SYSERR == lflSeek(&parentDevPtr, parentDirCblk->lfpos- sizeof(struct ldentry)))
+		if (SYSERR == lflSeek(&parentDevPtr, parentDirCblk->lfpos- sizeof(struct ldentry)))
 		{
 			parentDirCblk->lfstate = LF_FREE;
 			signal(lfDirCblkMutex);
 			return SYSERR;
 		}
-		if(SYSERR == lflWrite(&parentDevPtr,(char*)&parentDirEntry,sizeof(struct ldentry)))
+		if (SYSERR == lflWrite(&parentDevPtr,(char*)&parentDirEntry,sizeof(struct ldentry)))
 		{
 			parentDirCblk->lfstate = LF_FREE;
 			signal(lfDirCblkMutex);
 			return SYSERR;
 
 		}
-		if(SYSERR == lfflush(parentDirCblk))
+		if (SYSERR == lfflush(parentDirCblk))
 		{
 			parentDirCblk->lfstate = LF_FREE;
 			signal(lfDirCblkMutex);

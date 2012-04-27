@@ -34,13 +34,13 @@ int main(int argc, char **argv)
 	/* Creating a shell process */
 	
 	for(i=0; i<Nlfl; i++){
-             if(lfltab[i].lfstate == LF_USED){
+             if (lfltab[i].lfstate == LF_USED){
                    kprintf("Files open on this system, cannot format\r\n");
                     return SYSERR;
              }
         }                        
 
-        if(lfscreate(Lf_data.lf_dskdev, 100, 500*512) == SYSERR){
+        if (lfscreate(Lf_data.lf_dskdev, 100, 500*512) == SYSERR){
                                kprintf("Creating the filesystem failed\r\n");
                                 return SYSERR;
                         }
@@ -48,18 +48,18 @@ int main(int argc, char **argv)
           /************ EXAMPLE *****************/              
                         
 	  file = open(LFILESYS, "ABC", "rw");
-                if(file == SYSERR){
+                if (file == SYSERR){
                         kprintf("File open failed for /%d\r\n", i);
                         return SYSERR;
                 }
                 
-                if(write(file, "DEF\0", 4) == SYSERR){
+                if (write(file, "DEF\0", 4) == SYSERR){
                         kprintf("Write failed for /abcdef%d\r\n", i);
                         close(file);
                         return SYSERR;
                 }
                 seek(file, 0);
-                if(read(file, buf, 4) == SYSERR){
+                if (read(file, buf, 4) == SYSERR){
                         kprintf("Read failed for /abcdef%d\r\n", i);
                         close(file);
                         return SYSERR;

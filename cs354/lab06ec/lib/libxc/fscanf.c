@@ -46,7 +46,7 @@ static int getch(int dev, int abuf)
     {
         *buf = getc(dev);
     }
-/* 	if( *buf != EOF ) */
+/* 	if ( *buf != EOF ) */
 /* 	{ *buf = control(dev, TTY_IOC_NEXTC, 0, 0); } */
     return (*buf);
 }

@@ -1,18 +1,18 @@
 #include<xinu.h>
 
-status rmFile(char *path)
+status rmfile(char *path)
 {
 	char pathTokens[LF_PATH_DEPTH][LF_NAME_LEN];  
 	int pathDepth = tokenize(path,pathTokens);
 	int lfnext = SYSERR;
-	if(pathDepth == SYSERR)
+	if (pathDepth == SYSERR)
 	{
 		return SYSERR;
 	}
 	/*
 	 * Don't delete the root directory.
 	 */
-	if(1 == pathDepth && PATH_SEPARATOR==pathTokens[0][0])
+	if (1 == pathDepth && PATH_SEPARATOR==pathTokens[0][0])
 	{
 		return SYSERR;
 	}
@@ -20,7 +20,7 @@ status rmFile(char *path)
 	/*
 	 * Don't delete an open file.
 	 */
-	if(isFileOpen(pathTokens,pathDepth,&lfnext))
+	if (isopenfile(pathTokens,pathDepth,&lfnext))
 	{
 		signal(lfDirCblkMutex);
 		return SYSERR;
@@ -31,7 +31,7 @@ status rmFile(char *path)
 	 * to parent and grandparent of the file to 
 	 * be deleted.
 	 */
-	if(moveToDir(pathTokens,pathDepth-1) == SYSERR)
+	if (mvdir(pathTokens,pathDepth-1) == SYSERR)
 	{
 		signal(lfDirCblkMutex);
 		return SYSERR;
@@ -52,9 +52,9 @@ status rmFile(char *path)
 	 */
 	while(lflRead(&devPtr,(char*)dirEntry,sizeof(struct ldentry)) == sizeof(struct ldentry))
 	{
-		if(strcmp(dirEntry->ld_name,fileName) && dirEntry->ld_used)
+		if (strcmp(dirEntry->ld_name,fileName) && dirEntry->ld_used)
 		{
-			if( LF_TYPE_DIR == dirEntry->ld_type)
+			if ( LF_TYPE_DIR == dirEntry->ld_type)
 			{	
 				dirCblk->lfstate = LF_FREE;
 				fileCblk->lfstate = LF_FREE;
@@ -78,7 +78,7 @@ status rmFile(char *path)
 			break;
 		}	
 	}	
-	if(!found)
+	if (!found)
 	{
 		dirCblk->lfstate = LF_FREE;
 		fileCblk->lfstate = LF_FREE;
@@ -90,7 +90,7 @@ status rmFile(char *path)
 	 * lfpos points to the position just after the entry of the
 	 * deleted file.
 	 */
-	if(lflSeek(&devPtr,dirCblk->lfpos - sizeof(struct ldentry)) == SYSERR)
+	if (lflSeek(&devPtr,dirCblk->lfpos - sizeof(struct ldentry)) == SYSERR)
 	{
 		dirCblk->lfstate = LF_FREE;
 		fileCblk->lfstate = LF_FREE;
@@ -100,7 +100,7 @@ status rmFile(char *path)
 	/*
 	* Overwrite the entry for the deleted file .
 	*/
-	if(lflWrite(&devPtr,(char*)dirEntry,sizeof(struct ldentry)) == SYSERR)
+	if (lflWrite(&devPtr,(char*)dirEntry,sizeof(struct ldentry)) == SYSERR)
 	{
 		dirCblk->lfstate = LF_FREE;
 		fileCblk->lfstate = LF_FREE;
@@ -110,7 +110,7 @@ status rmFile(char *path)
 	/*
 	 * Write to disk.
 	 */
-	if(lfflush(dirCblk) == SYSERR)
+	if (lfflush(dirCblk) == SYSERR)
 	{
 		dirCblk->lfstate = LF_FREE;
 		fileCblk->lfstate = LF_FREE;

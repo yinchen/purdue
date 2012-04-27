@@ -8,7 +8,7 @@
  * creating a file or directory and isReplace tells us whether we are updating
  * an existing unused entry or adding a new entry
  */
-status createDirEntry(char*name,byte type,struct ldentry*dirEntry,bool8 isReplace)
+status touchdir(char*name,byte type,struct ldentry*dirEntry,bool8 isReplace)
 {
 	struct lflcblk * dirCblk = &lfltab[Nlfl+1];	/*last entry is used for modifying the directory in which file is getting created.*/
 	struct lflcblk* parentDirCblk = &lfltab[Nlfl];	/*second last entry is used for parent of the directory in which file is getting created*/
@@ -27,14 +27,14 @@ status createDirEntry(char*name,byte type,struct ldentry*dirEntry,bool8 isReplac
 	dirEntry->ld_used = true;
 	strcpy(dirEntry->ld_name,name);
 
-	if(lflWrite(&devPtr,(char*)dirEntry,sizeof(struct ldentry)) == SYSERR)
+	if (lflWrite(&devPtr,(char*)dirEntry,sizeof(struct ldentry)) == SYSERR)
 	{
 		dirCblk->lfstate = LF_FREE;
 		parentDirCblk->lfstate = LF_FREE;
 		return SYSERR;
 	}
 	/*Close the current directory*/
-	if(lfflush(dirCblk) == SYSERR)
+	if (lfflush(dirCblk) == SYSERR)
 	{
 		dirCblk->lfstate = LF_FREE;
 		parentDirCblk->lfstate = LF_FREE;
@@ -43,7 +43,7 @@ status createDirEntry(char*name,byte type,struct ldentry*dirEntry,bool8 isReplac
 	/*
 	 * If we reused an existing entry then we are done.
 	 */
-	if(isReplace)
+	if (isReplace)
 	{
 		dirCblk->lfstate = LF_FREE;
 		parentDirCblk->lfstate = LF_FREE;
@@ -56,7 +56,7 @@ status createDirEntry(char*name,byte type,struct ldentry*dirEntry,bool8 isReplac
 	 * entry got added in the root directory so there is no
 	 * grandparent.
 	 */
-	if(LF_FREE == parentDirCblk->lfstate)
+	if (LF_FREE == parentDirCblk->lfstate)
 	{
 		/*One entry got added to the root directory*/
 		dirCblk->lfstate = LF_FREE;
@@ -80,7 +80,7 @@ status createDirEntry(char*name,byte type,struct ldentry*dirEntry,bool8 isReplac
 	 * begins.
 	 */
 	lflSeek(&parentDevPtr,parentDirCblk->lfpos - sizeof(struct ldentry));
-	if(lflRead(&parentDevPtr,(char*)&parentDirEntry,sizeof(struct ldentry)) ==SYSERR)
+	if (lflRead(&parentDevPtr,(char*)&parentDirEntry,sizeof(struct ldentry)) ==SYSERR)
 	{
 		dirCblk->lfstate = LF_FREE;
 		parentDirCblk->lfstate = LF_FREE;
@@ -101,14 +101,14 @@ status createDirEntry(char*name,byte type,struct ldentry*dirEntry,bool8 isReplac
 	/*
 	 * Write to the grandparent.
 	 */
-	if(lflWrite(&parentDevPtr,(char*)&parentDirEntry,sizeof(struct ldentry)) == SYSERR)
+	if (lflWrite(&parentDevPtr,(char*)&parentDirEntry,sizeof(struct ldentry)) == SYSERR)
 	{
 		dirCblk->lfstate = LF_FREE;
 		parentDirCblk->lfstate = LF_FREE;
 		return SYSERR;
 	}
 	/*Close the parent directory*/
-	if(lfflush(parentDirCblk) == SYSERR)
+	if (lfflush(parentDirCblk) == SYSERR)
 	{
 		dirCblk->lfstate = LF_FREE;
 		parentDirCblk->lfstate = LF_FREE;

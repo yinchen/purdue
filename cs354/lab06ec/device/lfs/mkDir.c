@@ -3,22 +3,22 @@
 /*
 * Given a full path of  a directory ,creates that directory
 * assumes all the parent directories already exist 
-* e.g. if call is like mkDir("/a/b/c)" then /a/b should
+* e.g. if call is like mkdir("/a/b/c)" then /a/b should
 * already exist. If it doesn't exist or 'c' already exists
 * then return SYSERR.
 */
-status mkDir(char *path)
+status mkdir(char *path)
 {
 	char pathTokens[LF_PATH_DEPTH][LF_NAME_LEN];  
 	/*Find out how deeply the directory is nested
 	 * e.g. /a/b/c is at depht 3.
 	 */
 	int pathDepth = tokenize(path,pathTokens);
-	if(pathDepth == SYSERR)
+	if (pathDepth == SYSERR)
 	{
 		return SYSERR;
 	}
-	if(1 == pathDepth && PATH_SEPARATOR==pathTokens[0][0])
+	if (1 == pathDepth && PATH_SEPARATOR==pathTokens[0][0])
 	{
 		return SYSERR;
 	}
@@ -27,7 +27,7 @@ status mkDir(char *path)
 	 * initialize lfltabl[Nlfl+1] and lfltab[Nlfl] to 
 	 * parent directory and to parent's parent directory
 	 */
-	if(moveToDir(pathTokens,pathDepth-1) == SYSERR)
+	if (mvdir(pathTokens,pathDepth-1) == SYSERR)
 	{
 		signal(lfDirCblkMutex);
 		return SYSERR;
@@ -49,16 +49,16 @@ status mkDir(char *path)
 	 */
 	while(lflRead(&devPtr,(char*)dirEntry,sizeof(struct ldentry)) == sizeof(struct ldentry))
 	{
-		if(!dirEntry->ld_used)
+		if (!dirEntry->ld_used)
 		{
-			if(!isRPosInitialized)
+			if (!isRPosInitialized)
 			{
 				replacePos = dirCblk->lfpos - sizeof(struct ldentry);
 				isRPosInitialized = 1;
 			}
 			continue;
 		}
-		if(strcmp(dirEntry->ld_name,dirName) && dirEntry->ld_used)
+		if (strcmp(dirEntry->ld_name,dirName) && dirEntry->ld_used)
 		{
 			dirCblk->lfstate = LF_FREE;
 			parentDirCblk->lfstate = LF_FREE;
@@ -69,14 +69,14 @@ status mkDir(char *path)
 	/*
 	 * Replace an existing unused  directory entry
 	 */
-	if(isRPosInitialized)
+	if (isRPosInitialized)
 	{
 		lflSeek(&devPtr,replacePos);
 	}
 	/*
 	 * Create a new dir entry
 	 */
-	if(SYSERR == createDirEntry(dirName,LF_TYPE_DIR,dirEntry,isRPosInitialized))
+	if (SYSERR == touchdir(dirName,LF_TYPE_DIR,dirEntry,isRPosInitialized))
 	{
 		signal(lfDirCblkMutex);
 		return SYSERR;
