@@ -7,10 +7,8 @@ using System.IO;
 
 namespace SpecExplorer1
 {
-    public class TFTPclientAdaptor
+    public class TFTPClientAdapter
     {
-        #region Declarations
-
         /// <summary>
         /// The current states of the TFTP client implementation. 
         /// </summary>
@@ -54,14 +52,29 @@ namespace SpecExplorer1
             Error = 4,
         }
 
-        #endregion
-
-        #region Methods
-
         /// <summary>
         /// Initialze the TFTP client. Set the state to be INIT
         /// </summary>
         public static void initialize()
+        {
+        }
+
+        /// <summary>
+        /// Gets the specified remote file. This is a coarse wrapper of the whole downloading track. INIT --> ... -->  EXIT.
+        /// </summary>
+        /// <param name="remoteFile">The remote file, e.g. @"rm-1.txt".</param>
+        /// <param name="localFile">The path to the local file, e.g. @"D:\clientDir\loc-1.txt".</param>
+        public void Get(string remoteFile, string localFile)
+        {
+        }
+
+        /// <summary>
+        /// Gets the specified remote file. This is a fine grained wrapper of the downloading track. RRQ_SENT --> ... --> EXIT.
+        /// </summary>
+        /// <param name="remoteFile">The remote file.</param>
+        /// <param name="localFile">The local file.</param>
+        /// <param name="tftpMode">The TFTP mode: NetAscii, Octet, Mail..</param>
+        public void Get(string remoteFile, string localFile, Modes tftpMode)
         {
         }
 
@@ -104,6 +117,25 @@ namespace SpecExplorer1
         public static bool canGetExit()
         {
             return false;
+        }
+
+        /// <summary>
+        /// Upload the specified remote file. This is a coarse wrapper of the whole uploading track. INIT --> ... --> EXIT.
+        /// </summary>
+        /// <param name="remoteFile">The remote file, e.g. @"rm-1.txt".</param>
+        /// <param name="localFile">The path to the local file, e.g. @"D:\clientDir\loc-1.txt".</param>
+        public static void Put(string remoteFile, string localFile)
+        {
+        }
+
+        /// <summary>
+        /// Uploading the specified local file to be the remote file in the server side. This is a detail wrapper of the whole uploading track. WRQ_SENT --> EXIT.
+        /// </summary>
+        /// <param name="remoteFile">The name of the remote file, e.g. @"rm-1.txt".</param>
+        /// <param name="localFile">The path to the local file, e.g. @"D:\clientDir\loc-1.txt".</param>
+        /// <param name="tftpMode">The TFTP mode: NetAscii, Octet, Mail.</param>
+        public static void Put(string remoteFile, string localFile, Modes tftpMode)
+        {
         }
 
         /// <summary>
@@ -157,7 +189,5 @@ namespace SpecExplorer1
         {
             return false;
         }
-
-        #endregion
     }
 }

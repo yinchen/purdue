@@ -6,4 +6,17 @@
 config Main 
 {
     switch GeneratedTestPath = "..\\SpecExplorer1.TestSuite";
+    action void TFTPClientNameSpace.TFTPClient.Get(string remoteFile, string localFile, TFTPClientNameSpace.TFTPClient.Modes tftpMode);
+    action void TFTPClientNameSpace.TFTPClient.Get(string remoteFile, string localFile);
+    action void TFTPClientNameSpace.TFTPClient.Put(string remoteFile, string localFile, TFTPClientNameSpace.TFTPClient.Modes tftpMode);
+    action void TFTPClientNameSpace.TFTPClient.Put(string remoteFile, string localFile);
+    action TFTPClientNameSpace.TFTPClient(string server, int port);
+    action TFTPClientNameSpace.TFTPClient(string server);
+    action bool TFTPClientNameSpace.TFTPClient.canGetExit(int len);
+    action bool TFTPClientNameSpace.TFTPClient.canPutExit(int len);
+    action void TFTPClientNameSpace.TFTPClient.initialize();
+    action void TFTPClientNameSpace.TFTPClient.sendACK();
+    action void TFTPClientNameSpace.TFTPClient.sendReadRequest(string remoteFile, string localFile, TFTPClientNameSpace.TFTPClient.Modes tftpMode);
+    action TFTPClientNameSpace.TFTPClient.TFTPException(int errCode, string errMsg);
+    action string TFTPClientNameSpace.TFTPClient.TFTPException.ToString();
 }

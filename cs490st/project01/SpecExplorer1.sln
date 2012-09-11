@@ -24,6 +24,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(SpecExplorer.ActivityCompletionStatus) = preSolution
-		SpecExplorer.ActivityCompletionStatus = TestExisting: ;ModelFromScratch: 
+		SpecExplorer.ActivityCompletionStatus = TestExisting: ImportActions;ModelFromScratch: 
 	EndGlobalSection
 EndGlobal
