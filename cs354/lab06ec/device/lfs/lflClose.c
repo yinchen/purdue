@@ -2,7 +2,8 @@
 
 #include <xinu.h>
 
-static status lflCloseHelper(char *fileName,struct lflcblk* lfptr);
+static status lflCloseHelper(char *fileName, struct lflcblk* lfptr);
+
 /*------------------------------------------------------------------------
  * lflClose  --  close a file by flushing output and freeing device entry
  *------------------------------------------------------------------------
@@ -31,7 +32,6 @@ devcall	lflClose (
 		lfflush(lfptr);
 	}
 
-	/*Update the file entry in parent directory*/
 	wait(lfDirCblkMutex);
 
 	if (mvdir(lfptr->lfpath,lfptr->lfdepth-1) == SYSERR)
@@ -46,6 +46,7 @@ devcall	lflClose (
 		signal(lfptr->lfmutex);
 		return SYSERR;
 	}
+	
 	/* Set device state to FREE and return to caller */
 
 	lfptr->lfstate = LF_FREE;
@@ -53,6 +54,7 @@ devcall	lflClose (
 	signal(lfptr->lfmutex);
 	return OK;
 }
+
 static status lflCloseHelper(char *fileName,struct lflcblk* lfptr)
 {
 	struct lflcblk * dirCblk = &lfltab[Nlfl+1];	/*last entry is used for modifying the directory in which file is getting created.*/

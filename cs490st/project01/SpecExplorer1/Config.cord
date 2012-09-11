@@ -1,0 +1,9 @@
+﻿// This is a Spec Explorer coordination script (Cord version 1.0).
+// Here you define configurations and machines describing the
+// exploration task you want to perform.
+
+/// Contains actions of the model, bounds, and switches.
+config Main 
+{
+    switch GeneratedTestPath = "..\\SpecExplorer1.TestSuite";
+}
