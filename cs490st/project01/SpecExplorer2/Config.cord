@@ -1,0 +1,27 @@
+﻿using TFTPClientNameSpace;
+
+config Main
+{
+    switch GeneratedTestPath = "..\\SpecExplorer2.TestSuite";
+
+    action TFTPClient(string server);
+    action TFTPClient(string server, int port);
+
+    action void TFTPClient.initialize();
+    action void TFTPClient.Get(string remoteFile, string localFile);
+    action void TFTPClient.Get(string remoteFile, string localFile, TFTPClient.Modes tftpMode);
+    action void TFTPClient.Put(string remoteFile, string localFile);
+    action void TFTPClient.Put(string remoteFile, string localFile, TFTPClient.Modes tftpMode);
+    action bool TFTPClient.canGetExit(int len);
+    action bool TFTPClient.canPutExit(int len);
+    action void TFTPClient.sendACK();
+    action int TFTPClient.receiveACK(out byte[] rcvBuffer);
+    action void TFTPClient.sendReadRequest(string remoteFile, string localFile, TFTPClient.Modes tftpMode);
+    action void TFTPClient.sendWriteRequest(string remoteFile, string localFile, TFTPClient.Modes tftpMode, out byte[] sndBuffer);
+    action int TFTPClient.receiveDataBlock(out byte[] rcvBuffer);
+    action void TFTPClient.sendDataBlock(System.IO.BinaryReader fileStream, out byte[] sndBuffer);
+    
+    action TFTPClient.TFTPException(int errCode, string errMsg);
+    action string TFTPClient.TFTPException.ToString();
+}
+

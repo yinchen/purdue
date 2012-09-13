@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpecExplorer2.TestSuite", "SpecExplorer2.TestSuite\SpecExplorer2.TestSuite.csproj", "{B133AF55-B6E9-4798-B39B-503DFDFC5127}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpecExplorer2", "SpecExplorer2\SpecExplorer2.csproj", "{1191D58D-4D20-4DC2-A593-18A989D51D61}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B133AF55-B6E9-4798-B39B-503DFDFC5127}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B133AF55-B6E9-4798-B39B-503DFDFC5127}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B133AF55-B6E9-4798-B39B-503DFDFC5127}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B133AF55-B6E9-4798-B39B-503DFDFC5127}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1191D58D-4D20-4DC2-A593-18A989D51D61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1191D58D-4D20-4DC2-A593-18A989D51D61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1191D58D-4D20-4DC2-A593-18A989D51D61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1191D58D-4D20-4DC2-A593-18A989D51D61}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(SpecExplorer.ActivityCompletionStatus) = preSolution
+		SpecExplorer.ActivityCompletionStatus = TestExisting: WriteRules ImportActions;ModelFromScratch: 
+	EndGlobalSection
+EndGlobal

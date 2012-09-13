@@ -1,9 +1,4 @@
-﻿// This is a Spec Explorer coordination script (Cord version 1.0).
-// Here you define configurations and machines describing the
-// exploration task you want to perform.
-
-/// Contains actions of the model, bounds, and switches.
-config Main 
+﻿config Main 
 {
     switch GeneratedTestPath = "..\\SpecExplorer1.TestSuite";
     action void TFTPClientNameSpace.TFTPClient.Get(string remoteFile, string localFile, TFTPClientNameSpace.TFTPClient.Modes tftpMode);
@@ -17,6 +12,37 @@ config Main
     action void TFTPClientNameSpace.TFTPClient.initialize();
     action void TFTPClientNameSpace.TFTPClient.sendACK();
     action void TFTPClientNameSpace.TFTPClient.sendReadRequest(string remoteFile, string localFile, TFTPClientNameSpace.TFTPClient.Modes tftpMode);
+    
     action TFTPClientNameSpace.TFTPClient.TFTPException(int errCode, string errMsg);
     action string TFTPClientNameSpace.TFTPClient.TFTPException.ToString();
 }
+
+machine Program() : Main
+{
+    construct model program from Main
+}
+
+config ParameterCombinationConfig : Main
+{
+    action bool TFTPClientNameSpace.TFTPClient.canGetExit(int len)
+    where {. Condition.In(len, 511, 521); .};
+
+    action bool TFTPClientNameSpace.TFTPClient.canPutExit(int len)
+    where {. Condition.In(len, 511, 521); .};
+}
+
+machine ModelProgram() : Main
+{
+    construct model program from ParameterCombinationConfig
+}
+
+machine SlicedModelProgram() : Main
+{
+    (initialize;(Get|Put)*) || ModelProgram
+}
+
+machine TestSuite() : Main where TestEnabled = true
+{
+    construct test cases for SlicedModelProgram
+}
+
