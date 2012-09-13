@@ -10,60 +10,70 @@ namespace SpecExplorer2
     [TypeBinding("TFTPClientNameSpace.TFTPClient")]
     public class ModelProgram
     {
-        static TFTPClient.FSM_Modes state = TFTPClient.FSM_Modes.INIT;
+        static TFTPClientAdapter.FSM_Modes state = TFTPClientAdapter.FSM_Modes.INIT;
 
         [Rule(Action = "initialize()")]
         static void initialize()
         {
-            state = TFTPClient.FSM_Modes.INIT;
+            state = TFTPClientAdapter.FSM_Modes.INIT;
         }
 
         [Rule(Action = "canGetExit(len)")]
         static void canGetExit(int len)
         {
-            throw new NotImplementedException();
+            if (len < 516)
+                state = TFTPClientAdapter.FSM_Modes.EXIT;
         }
 
         [Rule(Action = "canPutExit(len)")]
         static void canPutExit(int len)
         {
-            throw new NotImplementedException();
+            if (len < 516)
+                state = TFTPClientAdapter.FSM_Modes.EXIT;
         }
 
         [Rule(Action = "sendACK()")]
         static void sendACK()
         {
-            throw new NotImplementedException();
+            if (state == TFTPClientAdapter.FSM_Modes.DATA_RECEIVED)
+                state = TFTPClientAdapter.FSM_Modes.ACK_SENT;
         }
 
         [Rule(Action = "receiveACK()")]
         static void receiveACK()
         {
-            throw new NotImplementedException();
+            if (state == TFTPClientAdapter.FSM_Modes.WRQ_SENT ||
+                state == TFTPClientAdapter.FSM_Modes.DATA_SENT)
+                state = TFTPClientAdapter.FSM_Modes.ACK_RECEIVED;
         }
 
         [Rule(Action = "sendReadRequest()")]
         static void sendReadRequest()
         {
-            throw new NotImplementedException();
+            if (state == TFTPClientAdapter.FSM_Modes.INIT)
+                state = TFTPClientAdapter.FSM_Modes.RRQ_SENT;
         }
 
         [Rule(Action = "sendWriteRequest()")]
         static void sendWriteRequest()
         {
-            throw new NotImplementedException();
+            if (state == TFTPClientAdapter.FSM_Modes.INIT)
+                state = TFTPClientAdapter.FSM_Modes.WRQ_SENT;
         }
 
         [Rule(Action = "receiveDataBlock()")]
         static void receiveDataBlock()
         {
-            throw new NotImplementedException();
+            if (state == TFTPClientAdapter.FSM_Modes.RRQ_SENT ||
+                state == TFTPClientAdapter.FSM_Modes.ACK_SENT)
+                state = TFTPClientAdapter.FSM_Modes.DATA_RECEIVED;
         }
 
         [Rule(Action = "sendDataBlock()")]
         static void sendDataBlock()
         {
-            throw new NotImplementedException();
+            if (state == TFTPClientAdapter.FSM_Modes.ACK_RECEIVED)
+                state = TFTPClientAdapter.FSM_Modes.DATA_SENT;
         }
     }
 }

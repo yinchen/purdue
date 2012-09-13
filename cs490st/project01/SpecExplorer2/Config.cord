@@ -25,3 +25,21 @@ config Main
     action string TFTPClient.TFTPException.ToString();
 }
 
+config ParameterCombinationConfig : Main
+{
+    action bool TFTPClient.canGetExit(int len)
+    where {. Condition.In(len, 511, 521); .};
+
+    action bool TFTPClient.canPutExit(int len)
+    where {. Condition.In(len, 511, 521); .};
+}
+
+machine GetMachine() : ParameterCombinationConfig
+{
+    initialize; sendReadRequest; (receiveDataBlock; sendACK; canGetExit)*
+}
+
+machine PutMachine() : ParameterCombinationConfig
+{
+    initialize; sendWriteRequest; (receiveACK; sendDataBlock; canPutExit)*
+}
