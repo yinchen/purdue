@@ -35,45 +35,45 @@ namespace SpecExplorer2
         [Rule(Action = "sendACK()")]
         static void sendACK()
         {
-            if (state == TFTPClientAdapter.FSM_Modes.DATA_RECEIVED)
-                state = TFTPClientAdapter.FSM_Modes.ACK_SENT;
+            Condition.IsTrue(state == TFTPClientAdapter.FSM_Modes.DATA_RECEIVED);
+            state = TFTPClientAdapter.FSM_Modes.ACK_SENT;
         }
 
         [Rule(Action = "receiveACK()")]
         static void receiveACK()
         {
-            if (state == TFTPClientAdapter.FSM_Modes.WRQ_SENT ||
-                state == TFTPClientAdapter.FSM_Modes.DATA_SENT)
-                state = TFTPClientAdapter.FSM_Modes.ACK_RECEIVED;
+            Condition.IsTrue(state == TFTPClientAdapter.FSM_Modes.WRQ_SENT ||
+                             state == TFTPClientAdapter.FSM_Modes.DATA_SENT);
+            state = TFTPClientAdapter.FSM_Modes.ACK_RECEIVED;
         }
 
         [Rule(Action = "sendReadRequest()")]
         static void sendReadRequest()
         {
-            if (state == TFTPClientAdapter.FSM_Modes.INIT)
-                state = TFTPClientAdapter.FSM_Modes.RRQ_SENT;
+            Condition.IsTrue(state == TFTPClientAdapter.FSM_Modes.INIT);
+            state = TFTPClientAdapter.FSM_Modes.RRQ_SENT;
         }
 
         [Rule(Action = "sendWriteRequest()")]
         static void sendWriteRequest()
         {
-            if (state == TFTPClientAdapter.FSM_Modes.INIT)
-                state = TFTPClientAdapter.FSM_Modes.WRQ_SENT;
+            Condition.IsTrue(state == TFTPClientAdapter.FSM_Modes.INIT);
+            state = TFTPClientAdapter.FSM_Modes.WRQ_SENT;
         }
 
         [Rule(Action = "receiveDataBlock()")]
         static void receiveDataBlock()
         {
-            if (state == TFTPClientAdapter.FSM_Modes.RRQ_SENT ||
-                state == TFTPClientAdapter.FSM_Modes.ACK_SENT)
-                state = TFTPClientAdapter.FSM_Modes.DATA_RECEIVED;
+            Condition.IsTrue(state == TFTPClientAdapter.FSM_Modes.RRQ_SENT ||
+                             state == TFTPClientAdapter.FSM_Modes.ACK_SENT);
+            state = TFTPClientAdapter.FSM_Modes.DATA_RECEIVED;
         }
 
         [Rule(Action = "sendDataBlock()")]
         static void sendDataBlock()
         {
-            if (state == TFTPClientAdapter.FSM_Modes.ACK_RECEIVED)
-                state = TFTPClientAdapter.FSM_Modes.DATA_SENT;
+            Condition.IsTrue(state == TFTPClientAdapter.FSM_Modes.ACK_RECEIVED);
+            state = TFTPClientAdapter.FSM_Modes.DATA_SENT;
         }
     }
 }
