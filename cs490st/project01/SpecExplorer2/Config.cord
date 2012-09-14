@@ -32,7 +32,7 @@ config ParameterCombinationConfig : Main
     where {. Condition.In(len, 511, 521); .};
 }
 
-machine GetMachine() : Main
+machine GetMachine() : ParameterCombinationConfig
 {
     initialize; sendReadRequest; (receiveDataBlock; sendACK; canGetExit)* || (construct model program from ParameterCombinationConfig)
 }
