@@ -73,7 +73,9 @@ double computeRawTFIDFWeight(int docID,
 		     Index *ind)
 {
   //implementation of raw TF and IDF weighting scheme
-  return docTermFreq*computeLogTFIDFWeight(docID,termID,docTermFreq,qryTermWeight,ind)*qryTermWeight;
+  int totalNumDocs=ind->docCount();
+  int numDocsContain=ind->docCount(termID);
+  return docTermFreq*log((double)totalNumDocs/((double)numDocsContain+1))*qryTermWeight;
 }
 
 
