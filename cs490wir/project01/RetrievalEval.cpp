@@ -89,7 +89,7 @@ double computeLogTFIDFWeight(int docID,
   //implementation of log TF and IDF weighting scheme
   int totalNumDocs=ind->docCount();
   int numDocsContain=ind->docCount(termID);
-  return log((double)totalNumDocs/((double)numDocsContain+1));
+  return log(docTermFreq)*log((double)totalNumDocs/((double)numDocsContain+1))*qryTermWeight;
 }
 
 // compute the weight of a matched term
