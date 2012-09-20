@@ -43,8 +43,8 @@ namespace GeneratedTests {
         public void GetTestSuiteS0() {
             this.Manager.BeginTest("GetTestSuiteS0");
             this.Manager.Comment("reaching state \'S0\'");
-            this.Manager.Comment("executing step \'call checker(0)\'");
-            SpecExplorer2.TFTPClientAdapter.checker(0);
+            this.Manager.Comment("executing step \'call checker(INIT)\'");
+            SpecExplorer2.TFTPClientAdapter.checker(((TFTPClientNameSpace.TFTPClient.FSM_Modes)(0)));
             this.Manager.Comment("reaching state \'S1\'");
             this.Manager.Comment("checking step \'return checker\'");
             this.Manager.Comment("reaching state \'S4\'");
@@ -53,8 +53,8 @@ namespace GeneratedTests {
             this.Manager.Comment("reaching state \'S6\'");
             this.Manager.Comment("checking step \'return initialize\'");
             this.Manager.Comment("reaching state \'S8\'");
-            this.Manager.Comment("executing step \'call checker(0)\'");
-            SpecExplorer2.TFTPClientAdapter.checker(0);
+            this.Manager.Comment("executing step \'call checker(INIT)\'");
+            SpecExplorer2.TFTPClientAdapter.checker(((TFTPClientNameSpace.TFTPClient.FSM_Modes)(0)));
             this.Manager.Comment("reaching state \'S10\'");
             this.Manager.Comment("checking step \'return checker\'");
             this.Manager.Comment("reaching state \'S12\'");
@@ -63,8 +63,8 @@ namespace GeneratedTests {
             this.Manager.Comment("reaching state \'S14\'");
             this.Manager.Comment("checking step \'return sendReadRequest\'");
             this.Manager.Comment("reaching state \'S16\'");
-            this.Manager.Comment("executing step \'call checker(3)\'");
-            SpecExplorer2.TFTPClientAdapter.checker(3);
+            this.Manager.Comment("executing step \'call checker(RRQ_SENT)\'");
+            SpecExplorer2.TFTPClientAdapter.checker(TFTPClientNameSpace.TFTPClient.FSM_Modes.RRQ_SENT);
             this.Manager.Comment("reaching state \'S18\'");
             this.Manager.Comment("checking step \'return checker\'");
             this.Manager.Comment("reaching state \'S20\'");
@@ -73,8 +73,8 @@ namespace GeneratedTests {
             this.Manager.Comment("reaching state \'S22\'");
             this.Manager.Comment("checking step \'return receiveDataBlock\'");
             this.Manager.Comment("reaching state \'S24\'");
-            this.Manager.Comment("executing step \'call checker(4)\'");
-            SpecExplorer2.TFTPClientAdapter.checker(4);
+            this.Manager.Comment("executing step \'call checker(DATA_RECEIVED)\'");
+            SpecExplorer2.TFTPClientAdapter.checker(TFTPClientNameSpace.TFTPClient.FSM_Modes.DATA_RECEIVED);
             this.Manager.Comment("reaching state \'S26\'");
             this.Manager.Comment("checking step \'return checker\'");
             this.Manager.Comment("reaching state \'S28\'");
@@ -83,8 +83,8 @@ namespace GeneratedTests {
             this.Manager.Comment("reaching state \'S30\'");
             this.Manager.Comment("checking step \'return sendACK\'");
             this.Manager.Comment("reaching state \'S32\'");
-            this.Manager.Comment("executing step \'call checker(5)\'");
-            SpecExplorer2.TFTPClientAdapter.checker(5);
+            this.Manager.Comment("executing step \'call checker(ACK_SENT)\'");
+            SpecExplorer2.TFTPClientAdapter.checker(TFTPClientNameSpace.TFTPClient.FSM_Modes.ACK_SENT);
             this.Manager.Comment("reaching state \'S34\'");
             this.Manager.Comment("checking step \'return checker\'");
             this.Manager.Comment("reaching state \'S36\'");
@@ -93,8 +93,8 @@ namespace GeneratedTests {
             this.Manager.Comment("reaching state \'S38\'");
             this.Manager.Comment("checking step \'return canGetExit\'");
             this.Manager.Comment("reaching state \'S40\'");
-            this.Manager.Comment("executing step \'call checker(5)\'");
-            SpecExplorer2.TFTPClientAdapter.checker(5);
+            this.Manager.Comment("executing step \'call checker(ACK_SENT)\'");
+            SpecExplorer2.TFTPClientAdapter.checker(TFTPClientNameSpace.TFTPClient.FSM_Modes.ACK_SENT);
             this.Manager.Comment("reaching state \'S42\'");
             this.Manager.Comment("checking step \'return checker\'");
             this.Manager.Comment("reaching state \'S44\'");
@@ -103,8 +103,8 @@ namespace GeneratedTests {
             this.Manager.Comment("reaching state \'S46\'");
             this.Manager.Comment("checking step \'return receiveDataBlock\'");
             this.Manager.Comment("reaching state \'S47\'");
-            this.Manager.Comment("executing step \'call checker(4)\'");
-            SpecExplorer2.TFTPClientAdapter.checker(4);
+            this.Manager.Comment("executing step \'call checker(DATA_RECEIVED)\'");
+            SpecExplorer2.TFTPClientAdapter.checker(TFTPClientNameSpace.TFTPClient.FSM_Modes.DATA_RECEIVED);
             this.Manager.Comment("reaching state \'S48\'");
             this.Manager.Comment("checking step \'return checker\'");
             this.Manager.Comment("reaching state \'S49\'");
@@ -113,8 +113,8 @@ namespace GeneratedTests {
             this.Manager.Comment("reaching state \'S50\'");
             this.Manager.Comment("checking step \'return sendACK\'");
             this.Manager.Comment("reaching state \'S51\'");
-            this.Manager.Comment("executing step \'call checker(5)\'");
-            SpecExplorer2.TFTPClientAdapter.checker(5);
+            this.Manager.Comment("executing step \'call checker(ACK_SENT)\'");
+            SpecExplorer2.TFTPClientAdapter.checker(TFTPClientNameSpace.TFTPClient.FSM_Modes.ACK_SENT);
             this.Manager.Comment("reaching state \'S52\'");
             this.Manager.Comment("checking step \'return checker\'");
             this.Manager.Comment("reaching state \'S53\'");
@@ -134,8 +134,8 @@ namespace GeneratedTests {
         public void GetTestSuiteS2() {
             this.Manager.BeginTest("GetTestSuiteS2");
             this.Manager.Comment("reaching state \'S2\'");
-            this.Manager.Comment("executing step \'call checker(0)\'");
-            SpecExplorer2.TFTPClientAdapter.checker(0);
+            this.Manager.Comment("executing step \'call checker(INIT)\'");
+            SpecExplorer2.TFTPClientAdapter.checker(((TFTPClientNameSpace.TFTPClient.FSM_Modes)(0)));
             this.Manager.Comment("reaching state \'S3\'");
             this.Manager.Comment("checking step \'return checker\'");
             this.Manager.Comment("reaching state \'S5\'");
@@ -144,8 +144,8 @@ namespace GeneratedTests {
             this.Manager.Comment("reaching state \'S7\'");
             this.Manager.Comment("checking step \'return initialize\'");
             this.Manager.Comment("reaching state \'S9\'");
-            this.Manager.Comment("executing step \'call checker(0)\'");
-            SpecExplorer2.TFTPClientAdapter.checker(0);
+            this.Manager.Comment("executing step \'call checker(INIT)\'");
+            SpecExplorer2.TFTPClientAdapter.checker(((TFTPClientNameSpace.TFTPClient.FSM_Modes)(0)));
             this.Manager.Comment("reaching state \'S11\'");
             this.Manager.Comment("checking step \'return checker\'");
             this.Manager.Comment("reaching state \'S13\'");
@@ -154,8 +154,8 @@ namespace GeneratedTests {
             this.Manager.Comment("reaching state \'S15\'");
             this.Manager.Comment("checking step \'return sendReadRequest\'");
             this.Manager.Comment("reaching state \'S17\'");
-            this.Manager.Comment("executing step \'call checker(3)\'");
-            SpecExplorer2.TFTPClientAdapter.checker(3);
+            this.Manager.Comment("executing step \'call checker(RRQ_SENT)\'");
+            SpecExplorer2.TFTPClientAdapter.checker(TFTPClientNameSpace.TFTPClient.FSM_Modes.RRQ_SENT);
             this.Manager.Comment("reaching state \'S19\'");
             this.Manager.Comment("checking step \'return checker\'");
             this.Manager.Comment("reaching state \'S21\'");
@@ -164,8 +164,8 @@ namespace GeneratedTests {
             this.Manager.Comment("reaching state \'S23\'");
             this.Manager.Comment("checking step \'return receiveDataBlock\'");
             this.Manager.Comment("reaching state \'S25\'");
-            this.Manager.Comment("executing step \'call checker(4)\'");
-            SpecExplorer2.TFTPClientAdapter.checker(4);
+            this.Manager.Comment("executing step \'call checker(DATA_RECEIVED)\'");
+            SpecExplorer2.TFTPClientAdapter.checker(TFTPClientNameSpace.TFTPClient.FSM_Modes.DATA_RECEIVED);
             this.Manager.Comment("reaching state \'S27\'");
             this.Manager.Comment("checking step \'return checker\'");
             this.Manager.Comment("reaching state \'S29\'");
@@ -174,8 +174,8 @@ namespace GeneratedTests {
             this.Manager.Comment("reaching state \'S31\'");
             this.Manager.Comment("checking step \'return sendACK\'");
             this.Manager.Comment("reaching state \'S33\'");
-            this.Manager.Comment("executing step \'call checker(5)\'");
-            SpecExplorer2.TFTPClientAdapter.checker(5);
+            this.Manager.Comment("executing step \'call checker(ACK_SENT)\'");
+            SpecExplorer2.TFTPClientAdapter.checker(TFTPClientNameSpace.TFTPClient.FSM_Modes.ACK_SENT);
             this.Manager.Comment("reaching state \'S35\'");
             this.Manager.Comment("checking step \'return checker\'");
             this.Manager.Comment("reaching state \'S37\'");
@@ -184,8 +184,8 @@ namespace GeneratedTests {
             this.Manager.Comment("reaching state \'S39\'");
             this.Manager.Comment("checking step \'return canGetExit\'");
             this.Manager.Comment("reaching state \'S41\'");
-            this.Manager.Comment("executing step \'call checker(1)\'");
-            SpecExplorer2.TFTPClientAdapter.checker(1);
+            this.Manager.Comment("executing step \'call checker(EXIT)\'");
+            SpecExplorer2.TFTPClientAdapter.checker(((TFTPClientNameSpace.TFTPClient.FSM_Modes)(1)));
             this.Manager.Comment("reaching state \'S43\'");
             this.Manager.Comment("checking step \'return checker\'");
             this.Manager.Comment("reaching state \'S45\'");

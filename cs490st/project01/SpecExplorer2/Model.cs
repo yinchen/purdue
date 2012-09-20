@@ -77,9 +77,9 @@ namespace SpecExplorer2
         }
 
         [Rule]
-        static void checker(int tftpMode)
+        static void checker(TFTPClient.FSM_Modes tftpMode)
         {
-            Condition.IsTrue((int)state == tftpMode);
+            Condition.IsTrue(state == tftpMode);
         }
     }
 }

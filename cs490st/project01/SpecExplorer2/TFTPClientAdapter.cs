@@ -14,9 +14,15 @@ namespace SpecExplorer2
         public static TFTPClient.FSM_Modes state;
         public static TFTPClient client = new TFTPClient("127.0.0.1");
 
-        public static void checker(int tftpClientState)
+        public static void checker(TFTPClient.FSM_Modes tftpMode)
         {
-            Assert.AreEqual((int)state, tftpClientState, "State mismatch: Model vs Implementation");
+            if (tftpMode != state)
+            {
+                TFTPClient.FSM_Modes stateCopy = state;
+                state = TFTPClient.FSM_Modes.INIT;
+
+                Assert.AreEqual(tftpMode, stateCopy, "State mismatch: Model vs Implementation");
+            }
         }
 
         /// <summary>
@@ -90,7 +96,7 @@ namespace SpecExplorer2
         /// <param name="sndBuffer">The returned sending buffer.</param>
         public static void sendWriteRequest()
         {
-            string localFile = "local.txt";
+            string localFile = "C:\\Users\\Matt McCormick\\Documents\\Schoolwork\\cs490st\\project01\\SpecExplorer2\\local.txt";
             BinaryReader fileStream = new BinaryReader(new FileStream(localFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
 
             byte[] sndBuffer;
@@ -106,7 +112,7 @@ namespace SpecExplorer2
         /// <param name="sndBuffer">The returned sending buffer.</param>
         public static void sendDataBlock()
         {
-            string localFile = "local.txt";
+            string localFile = "C:\\Users\\Matt McCormick\\Documents\\Schoolwork\\cs490st\\project01\\SpecExplorer2\\local.txt";
             BinaryReader fileStream = new BinaryReader(new FileStream(localFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
 
             byte[] sndBuffer;

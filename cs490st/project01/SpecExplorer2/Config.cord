@@ -14,7 +14,7 @@ config Main
     action abstract static void TFTPClientAdapter.receiveDataBlock();
     action abstract static void TFTPClientAdapter.sendDataBlock();
 
-    action abstract static void TFTPClientAdapter.checker(int tftpClientState);
+    action abstract static void TFTPClientAdapter.checker(TFTPClientNameSpace.TFTPClient.FSM_Modes tftpMode);
 }
 
 config ParameterCombinationConfig : Main
