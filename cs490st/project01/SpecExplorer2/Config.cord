@@ -42,12 +42,14 @@ machine GetMachine() : Main
     GetMachineWithCheckers || BaseMachine
 }
 
-
-
+machine PutMachineWithCheckers() : Main
+{
+    initialize; sendWriteRequest; (receiveACK; sendDataBlock; TFTPClientAdapter.canPutExit;)* ||| checker*
+}
 
 machine PutMachine() : ParameterCombinationConfig
 {
-    initialize; sendWriteRequest; (receiveACK; sendDataBlock; TFTPClientAdapter.canPutExit;)*
+    PutMachineWithCheckers || BaseMachine
 }
 
 machine GetTestSuite() : Main where ForExploration = true, TestEnabled = true

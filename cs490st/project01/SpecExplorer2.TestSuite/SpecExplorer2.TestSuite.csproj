@@ -58,7 +58,6 @@
   <ItemGroup>
     <Compile Include="GetTestSuite.cs" />
     <Compile Include="PutTestSuite.cs" />
-    <Compile Include="TestSuite.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SpecExplorer.Runtime, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35,&#xD;&#xA; processorArchitecture=MSIL">
