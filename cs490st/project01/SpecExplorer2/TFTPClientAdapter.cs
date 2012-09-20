@@ -5,51 +5,18 @@ using System.Text;
 using TFTPClientNameSpace;
 using System.IO;
 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 namespace SpecExplorer2
 {
     public class TFTPClientAdapter
     {
-        /// <summary>
-        /// The current states of the TFTP client implementation. 
-        /// </summary>
-        public FSM_Modes tftpClientMode;
+        public static TFTPClient.FSM_Modes state;
+        public static TFTPClient client = new TFTPClient("127.0.0.1");
 
-        /// <summary>
-        /// The 9 states of the TFTP client implementation. They define the state space of the finite state machine mode of the TFTP client.
-        /// </summary>
-        public enum FSM_Modes
+        public static void checker(int tftpClientState)
         {
-            INIT = 0,
-            EXIT = 1,
-            ERROR = 2,
-            RRQ_SENT = 3,
-            DATA_RECEIVED = 4,
-            ACK_SENT = 5,
-            WRQ_SENT = 6,
-            ACK_RECEIVED = 7,
-            DATA_SENT = 8,
-        }
-
-        /// <summary>
-        /// Three different modes in transfering files. This type is one of the parameters of Get, sendReadRequest, Put, sendWriteRequest.
-        /// </summary>
-        public enum Modes
-        {
-            NetAscii = 0,
-            Octet = 1,
-            Mail = 2,
-        }
-
-        /// <summary>
-        /// The operation codes used for assemblying packets.
-        /// </summary>
-        public enum Opcodes
-        {
-            Read = 0,
-            Write = 1,
-            Data = 2,
-            Ack = 3,
-            Error = 4,
+            Assert.AreEqual((int)state, tftpClientState, "State mismatch: Model vs Implementation");
         }
 
         /// <summary>
@@ -57,25 +24,9 @@ namespace SpecExplorer2
         /// </summary>
         public static void initialize()
         {
-        }
+            client.initialize();
 
-        /// <summary>
-        /// Gets the specified remote file. This is a coarse wrapper of the whole downloading track. INIT --> ... -->  EXIT.
-        /// </summary>
-        /// <param name="remoteFile">The remote file, e.g. @"rm-1.txt".</param>
-        /// <param name="localFile">The path to the local file, e.g. @"D:\clientDir\loc-1.txt".</param>
-        public static void Get(string remoteFile, string localFile)
-        {
-        }
-
-        /// <summary>
-        /// Gets the specified remote file. This is a fine grained wrapper of the downloading track. RRQ_SENT --> ... --> EXIT.
-        /// </summary>
-        /// <param name="remoteFile">The remote file.</param>
-        /// <param name="localFile">The local file.</param>
-        /// <param name="tftpMode">The TFTP mode: NetAscii, Octet, Mail..</param>
-        public static void Get(string remoteFile, string localFile, Modes tftpMode)
-        {
+            state = client.tftpClientMode;
         }
 
         /// <summary>
@@ -86,6 +37,9 @@ namespace SpecExplorer2
         /// <param name="tftpMode">The TFTP mode, NetAscii, Octet, Mail.</param>
         public static void sendReadRequest()
         {
+            client.sendReadRequest("remote.txt", "local.txt", TFTPClient.Modes.NetAscii);
+
+            state = client.tftpClientMode;
         }
 
         /// <summary>
@@ -95,9 +49,12 @@ namespace SpecExplorer2
         /// <returns>
         /// A int variable that tell the length of the receiving buffer. 
         /// </returns>
-        public static int receiveDataBlock()
+        public static void receiveDataBlock()
         {
-            return -1;
+            byte[] rcvBuffer;
+            client.receiveDataBlock(out rcvBuffer);
+
+            state = client.tftpClientMode;
         }
 
         /// <summary>
@@ -105,6 +62,9 @@ namespace SpecExplorer2
         /// </summary>
         public static void sendACK()
         {
+            client.sendACK();
+
+            state = client.tftpClientMode;
         }
 
         /// <summary>
@@ -114,28 +74,11 @@ namespace SpecExplorer2
         /// <returns>
         /// A bool variable indicating whether it is time to successfully exit. It is TRUE for successfully exit, FALSE for staying in the loop and continuing the file transfer. 
         /// </returns>
-        public static bool canGetExit()
+        public static void canGetExit(int len)
         {
-            return false;
-        }
+            client.canGetExit(len);
 
-        /// <summary>
-        /// Upload the specified remote file. This is a coarse wrapper of the whole uploading track. INIT --> ... --> EXIT.
-        /// </summary>
-        /// <param name="remoteFile">The remote file, e.g. @"rm-1.txt".</param>
-        /// <param name="localFile">The path to the local file, e.g. @"D:\clientDir\loc-1.txt".</param>
-        public static void Put(string remoteFile, string localFile)
-        {
-        }
-
-        /// <summary>
-        /// Uploading the specified local file to be the remote file in the server side. This is a detail wrapper of the whole uploading track. WRQ_SENT --> EXIT.
-        /// </summary>
-        /// <param name="remoteFile">The name of the remote file, e.g. @"rm-1.txt".</param>
-        /// <param name="localFile">The path to the local file, e.g. @"D:\clientDir\loc-1.txt".</param>
-        /// <param name="tftpMode">The TFTP mode: NetAscii, Octet, Mail.</param>
-        public static void Put(string remoteFile, string localFile, Modes tftpMode)
-        {
+            state = client.tftpClientMode;
         }
 
         /// <summary>
@@ -147,6 +90,13 @@ namespace SpecExplorer2
         /// <param name="sndBuffer">The returned sending buffer.</param>
         public static void sendWriteRequest()
         {
+            string localFile = "local.txt";
+            BinaryReader fileStream = new BinaryReader(new FileStream(localFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
+
+            byte[] sndBuffer;
+            client.sendWriteRequest("remote.txt", "local.txt", TFTPClient.Modes.NetAscii, out sndBuffer);
+
+            state = client.tftpClientMode;
         }
 
         /// <summary>
@@ -156,14 +106,13 @@ namespace SpecExplorer2
         /// <param name="sndBuffer">The returned sending buffer.</param>
         public static void sendDataBlock()
         {
-            // initialize FTP client
-            TFTPClient client = new TFTPClient("127.0.0.1");
-
-            string localFile = "sample.txt";
+            string localFile = "local.txt";
             BinaryReader fileStream = new BinaryReader(new FileStream(localFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
 
             byte[] sndBuffer;
             client.sendDataBlock(fileStream, out sndBuffer);
+
+            state = client.tftpClientMode;
         }
 
         /// <summary>
@@ -173,9 +122,12 @@ namespace SpecExplorer2
         /// <returns>
         /// A int variable that tell the length of the receiving buffer. 
         /// </returns>
-        public static int receiveACK()
+        public static void receiveACK()
         {
-            return -1;
+            byte[] rcvBuffer;
+            client.receiveACK(out rcvBuffer);
+
+            state = client.tftpClientMode;
         }
 
         /// <summary>
@@ -185,9 +137,11 @@ namespace SpecExplorer2
         /// <returns>
         /// A bool variable indicating whether it is time to successfully exit. It is TRUE for successfully exit, FALSE for staying in the loop and continuing the file transfer. 
         /// </returns>
-        public static bool canPutExit()
+        public static void canPutExit(int len)
         {
-            return false;
+            client.canPutExit(len);
+
+            state = client.tftpClientMode;
         }
     }
 }

@@ -1,43 +1,61 @@
-﻿using TFTPClientNameSpace;
+﻿using SpecExplorer2;
 
 config Main
 {
     switch GeneratedTestPath = "..\\SpecExplorer2.TestSuite";
 
-    action TFTPClient(string server);
-    action TFTPClient(string server, int port);
+    action abstract static void TFTPClientAdapter.initialize();
+    action abstract static void TFTPClientAdapter.canGetExit(int len);
+    action abstract static void TFTPClientAdapter.canPutExit(int len);
+    action abstract static void TFTPClientAdapter.sendACK();
+    action abstract static void TFTPClientAdapter.receiveACK();
+    action abstract static void TFTPClientAdapter.sendReadRequest();
+    action abstract static void TFTPClientAdapter.sendWriteRequest();
+    action abstract static void TFTPClientAdapter.receiveDataBlock();
+    action abstract static void TFTPClientAdapter.sendDataBlock();
 
-    action abstract static void TFTPClient.initialize();
-    action abstract static void TFTPClient.Get();
-    action abstract static void TFTPClient.Put();
-    action abstract static bool TFTPClient.canGetExit(int len);
-    action abstract static bool TFTPClient.canPutExit(int len);
-    action abstract static void TFTPClient.sendACK();
-    action abstract static int TFTPClient.receiveACK();
-    action abstract static void TFTPClient.sendReadRequest();
-    action abstract static void TFTPClient.sendWriteRequest();
-    action abstract static int TFTPClient.receiveDataBlock();
-    action abstract static void TFTPClient.sendDataBlock();
-    
-    action TFTPClient.TFTPException(int errCode, string errMsg);
-    action string TFTPClient.TFTPException.ToString();
+    action abstract static void TFTPClientAdapter.checker(int tftpClientState);
 }
 
 config ParameterCombinationConfig : Main
 {
-    action abstract static bool TFTPClient.canGetExit(int len)
+    action abstract static void TFTPClientAdapter.canGetExit(int len)
     where {. Condition.In(len, 511, 521); .};
 
-    action abstract static bool TFTPClient.canPutExit(int len)
+    action abstract static void TFTPClientAdapter.canPutExit(int len)
     where {. Condition.In(len, 511, 521); .};
 }
 
-machine GetMachine() : ParameterCombinationConfig
+machine BaseMachine() : Main
 {
-    initialize; sendReadRequest; (receiveDataBlock; sendACK; canGetExit)* || (construct model program from ParameterCombinationConfig)
+    construct model program from ParameterCombinationConfig
+    where scope = "SpecExplorer2.ModelProgram"
 }
+
+machine GetMachineWithCheckers() : Main
+{
+    initialize; sendReadRequest; (receiveDataBlock; sendACK; TFTPClientAdapter.canGetExit;)* ||| checker*
+}
+
+machine GetMachine() : Main
+{
+    GetMachineWithCheckers || BaseMachine
+}
+
+
+
 
 machine PutMachine() : ParameterCombinationConfig
 {
-    initialize; sendWriteRequest; (receiveACK; sendDataBlock; canPutExit)* || (construct model program from ParameterCombinationConfig)
+    initialize; sendWriteRequest; (receiveACK; sendDataBlock; TFTPClientAdapter.canPutExit;)*
+}
+
+machine GetTestSuite() : Main where ForExploration = true, TestEnabled = true
+{
+    construct test cases where Strategy = "ShortTests" for GetMachine()
+}
+
+machine PutTestSuite() : Main where ForExploration = true, TestEnabled = true
+{
+    construct test cases where Strategy = "ShortTests" for PutMachine()
 }
