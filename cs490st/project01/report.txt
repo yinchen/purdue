@@ -1,0 +1,12 @@
+CS 490 - Software Testing
+
+Matt McCormick
+mbmccorm@purdue.edu
+
+
+
+Project 1
+
+There is a problem with the sendACK() method in the state transition. After calling the sendACK() method, the machine should transition to the ACK_SENT state, but it does not. It instead transitions to the DATA_SENT state. This can be found by running the tests in the GetTestSuite.cs file.
+
+There is a problem with the receiveACK() method in the state transition. After calling the receiveACK() method, the machine should transition to the ACK_RECEIVED state, but it does not. It instead transitions to the DATA_RECEIVED state. This can be found by running the tests in the PutTestSuite.cs file.
