@@ -89,7 +89,7 @@ double computeLogTFIDFWeight(int docID,
   //implementation of log TF and IDF weighting scheme
   int totalNumDocs=ind->docCount();
   int numDocsContain=ind->docCount(termID);
-  return log(docTermFreq)*log((double)totalNumDocs/((double)numDocsContain+1))*qryTermWeight;
+  return log((double)totalNumDocs/((double)numDocsContain+1));
 }
 
 // compute the weight of a matched term
@@ -114,7 +114,12 @@ double computeCustomWeight(int docID,
 		     double qryTermWeight,
 		     Index *ind)
 {
-  /*!!!!! Implement customized weighting scheme !!!!!*/  
+  //implementation of Glasgow weighting scheme
+  int len=ind->docLength(docID);
+  int avgDocLen=ind->docLengthAvg();
+  int totalNumDocs=ind->docCount();
+  int numDocsContain=ind->docCount(termID);
+  return (log((double)docTermFreq + 1)/log((double)len))*(log((double)totalNumDocs/(double)numDocsContain));
 }
 
 
@@ -134,8 +139,8 @@ double computeCustomAdjustedScore(double origScore, // the score from the accumu
 			    int docID, // doc ID
 			    Index *ind) // index
 {
-  /*!!!!! Implement customized method for adjusting score !!!!!*/
-  return origScore;
+  //implementation of Cross-Entropy scoring algorithm
+  return origScore*(ind->termCountUnique()/ind->docLengthAvg());
 }
 
 
