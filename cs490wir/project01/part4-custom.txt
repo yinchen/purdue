@@ -1,0 +1,33 @@
+sslab01 % ../trec_eval qrel result_custom_stemmed_nostopw
+
+Queryid (Num):       30
+Total number of documents over all queries
+    Retrieved:     3000
+    Relevant:       442
+    Rel_ret:        280
+Interpolated Recall - Precision Averages:
+    at 0.00       0.8178
+    at 0.10       0.7262
+    at 0.20       0.5978
+    at 0.30       0.5288
+    at 0.40       0.4396
+    at 0.50       0.3422
+    at 0.60       0.2586
+    at 0.70       0.1471
+    at 0.80       0.1050
+    at 0.90       0.0435
+    at 1.00       0.0313
+Average precision (non-interpolated) for all rel docs(averaged over queries)
+                  0.3484
+Precision:
+  At    5 docs:   0.5000
+  At   10 docs:   0.4000
+  At   15 docs:   0.3222
+  At   20 docs:   0.2700
+  At   30 docs:   0.2133
+  At  100 docs:   0.0933
+  At  200 docs:   0.0467
+  At  500 docs:   0.0187
+  At 1000 docs:   0.0093
+R-Precision (precision after R (= num_rel for a query) docs retrieved):
+    Exact:        0.3766

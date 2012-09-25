@@ -1,4 +1,4 @@
-$ ../trec_eval qrel result_rawtfidf_stemmed_nostopw
+sslab01 % ../trec_eval qrel result_rawtfidf_stemmed_nostopw
 
 Queryid (Num):       30
 Total number of documents over all queries
