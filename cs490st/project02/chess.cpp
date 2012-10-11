@@ -17,6 +17,7 @@ int (*original_pthread_mutex_unlock)(pthread_mutex_t*) = NULL;
 
 
 int firstRun = 1;
+int doExit = 0;
 
 pthread_mutex_t GL;
 
@@ -32,6 +33,7 @@ map<int, ThreadStruct*> threads;
 map<pthread_mutex_t*, ThreadStruct*> mutexes;
 map<pthread_t*, int> threadids;
 
+int mainThreadId = 0;
 
 static void initialize_original_functions();
 
@@ -43,17 +45,21 @@ struct Thread_Arg {
 static
 void* thread_main(void *arg)
 {
-    ThreadStruct *ts = new ThreadStruct();
-    ts->id = (int)pthread_self();
-    ts->locked = 0;
-    ts->status = 1; // running
-    
-    threads[(int)pthread_self()] = ts;
-    
     struct Thread_Arg thread_arg = *(struct Thread_Arg*)arg;
     free(arg);
 
-    return thread_arg.start_routine(thread_arg.arg);
+    original_pthread_mutex_lock(&GL);
+
+    void* ret = thread_arg.start_routine(thread_arg.arg);
+
+    original_pthread_mutex_unlock(&GL);
+
+    puts("end of thread_main");
+    doExit = 1;
+
+    currentThread = mainThreadId;
+
+    return ret;
 }
 
 extern "C"
@@ -70,6 +76,8 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
         original_pthread_mutex_lock(&GL);
         
         currentThread = (int)pthread_self();
+
+        mainThreadId = currentThread;
     }
 
     struct Thread_Arg *thread_arg = (struct Thread_Arg*)malloc(sizeof(struct Thread_Arg));
@@ -79,16 +87,25 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
     int ret = original_pthread_create(thread, attr, thread_main, thread_arg);
 
     // TODO
-    original_pthread_mutex_lock(&GL);
-    
-    threadids[thread] = (int)pthread_self();
-    
     ThreadStruct *ts = new ThreadStruct();
     ts->id = (int)pthread_self();
     ts->locked = 0;
     ts->status = 1; // running
     
     threads[(int)pthread_self()] = ts;
+    
+    //original_pthread_mutex_lock(&GL);
+    
+    // threadids[thread] = (int)pthread_self();
+    
+    ts = new ThreadStruct();
+    ts->id = (int)*thread;
+    ts->locked = 0;
+    ts->status = 1; // running
+    
+    threads[(int)*thread] = ts;
+
+    threadids[thread] = (int)*thread;
 
     return ret;
 }
@@ -102,17 +119,18 @@ int pthread_join(pthread_t joinee, void **retval)
 
     // TODO
     int ret = 0;
-    while ((ret = pthread_kill(joinee, 0)) != 0)
+    while ((ret = pthread_kill(joinee, 0)) == 0 &&
+           doExit == 0)
     {
-        original_pthread_mutex_unlock(&GL);        
+        //original_pthread_mutex_unlock(&GL);        
         sched_yield();
-        original_pthread_mutex_lock(&GL);
+        //original_pthread_mutex_lock(&GL);
     }
     
     int tid = threadids[&joinee];
     
-    ThreadStruct *ts = threads[tid];
-    ts->status = 0; // terminated
+    //yThreadStruct *ts = threads[tid];
+    //ts->status = 0; // terminated
 
     return ret; // return original_pthread_join(joinee, retval);
 }
@@ -131,9 +149,9 @@ int pthread_mutex_lock(pthread_mutex_t *mutex)
         ThreadStruct *ts = threads[(int)pthread_self()];
         ts->status = 2; // waiting
     
-        original_pthread_mutex_unlock(&GL);        
+        //original_pthread_mutex_unlock(&GL);        
         sched_yield();
-        original_pthread_mutex_lock(&GL);
+        //original_pthread_mutex_lock(&GL);
     }
     
     ThreadStruct *ts = threads[(int)pthread_self()];
@@ -155,6 +173,7 @@ int pthread_mutex_unlock(pthread_mutex_t *mutex)
 
     // TODO
     ThreadStruct *ts = mutexes[mutex];
+    ts->status = 1; // running
     ts->locked = 0;
 
     return original_pthread_mutex_unlock(mutex);
@@ -180,7 +199,9 @@ int sched_yield(void)
             currentThread = curr->id;
             curr->status = 1; // running
             
-            puts("context switch");
+            // puts("context switch");
+            fprintf (stderr, "context switch to %d\n", curr->id);
+
             
             break;
         }
