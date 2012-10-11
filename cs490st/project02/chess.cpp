@@ -109,7 +109,9 @@ int pthread_join(pthread_t joinee, void **retval)
         original_pthread_mutex_lock(&GL);
     }
     
-    ThreadStruct *ts = threads[threadids[&joinee]];
+    int tid = threadids[&joinee];
+    
+    ThreadStruct *ts = threads[tid];
     ts->status = 0; // terminated
 
     return ret; // return original_pthread_join(joinee, retval);
@@ -126,12 +128,17 @@ int pthread_mutex_lock(pthread_mutex_t *mutex)
     int ret = 0;
     while ((ret = pthread_mutex_trylock(mutex)) != 0)
     {
+        ThreadStruct *ts = threads[(int)pthread_self()];
+        ts->status = 2; // waiting
+    
         original_pthread_mutex_unlock(&GL);        
         sched_yield();
         original_pthread_mutex_lock(&GL);
     }
     
     ThreadStruct *ts = threads[(int)pthread_self()];
+    ts->status = 1; // running
+
     ts->locked = 1;
     
     mutexes[mutex] = ts;
@@ -163,27 +170,20 @@ int sched_yield(void)
     // TODO
     original_pthread_mutex_unlock(&GL);
     
-    int originalCurrentThread = currentThread;
-    
-    ThreadStruct *ts = threads[(int)pthread_self()];
-    ts->status = 2; // waiting
-    
     map<int, ThreadStruct*>::iterator iter;
     for (iter = threads.begin(); iter != threads.end(); ++iter)
     {
         ThreadStruct* curr = iter->second;
         if (curr->id != currentThread &&
-            curr->status == 1 && // running
-            curr->locked == 0)
+            curr->status >= 1) // running
         {
             currentThread = curr->id;
             curr->status = 1; // running
+            
+            puts("context switch");
+            
+            break;
         }
-    }
-    
-    if (originalCurrentThread == currentThread)
-    {
-        ts->status = 1; // running
     }
     
     while (currentThread != (int)pthread_self())
@@ -192,7 +192,7 @@ int sched_yield(void)
     }
     
     original_pthread_mutex_lock(&GL);
-
+    
     return 0;
 }
 
