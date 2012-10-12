@@ -138,34 +138,34 @@ void Retrieval(double *qryArr, IndexedRealVector &results, Index *ind){
       // iterate over all individual documents 
       docList->startIteration();
       while (docList->hasMore()) {
-  DocInfo *matchInfo = docList->nextEntry();
-  // for each matched term, calculated the evidence
+        DocInfo *matchInfo = docList->nextEntry();
+        // for each matched term, calculated the evidence
 
-  double wt;
+        double wt;
 
-  if (strcmp(LocalParameter::weightScheme.c_str(),"RawTF")==0) {
-    wt = computeRawTFWeight(matchInfo->docID(),  // doc ID
-          t, // term ID
-          matchInfo->termCount(), // freq of term t in this doc
-          qryArr[t], // freq of term t in the query
-          ind);    
-  }else if (strcmp(LocalParameter::weightScheme.c_str(),"RawTFIDF")==0) {
-    wt = computeRawTFIDFWeight(matchInfo->docID(),  // doc ID
-          t, // term ID
-          matchInfo->termCount(), // freq of term t in this doc
-          qryArr[t], // freq of term t in the query
-          ind);    
-  }else if (strcmp(LocalParameter::weightScheme.c_str(),"Okapi")==0) {
-    wt = computeOkapiWeight(matchInfo->docID(),  // doc ID
-          t, // term ID
-          matchInfo->termCount(), // freq of term t in this doc
-          qryArr[t], // freq of term t in the query
-          ind);    
-  }else{
-    cerr<<"The weighting scheme of "<<LocalParameter::weightScheme.c_str()<<" is not supported"<<endl;
-          exit(1);
-  }
-  scoreAccumulator.incScore(matchInfo->docID(),wt);  
+        if (strcmp(LocalParameter::weightScheme.c_str(),"RawTF")==0) {
+          wt = computeRawTFWeight(matchInfo->docID(),  // doc ID
+                t, // term ID
+                matchInfo->termCount(), // freq of term t in this doc
+                qryArr[t], // freq of term t in the query
+                ind);    
+        }else if (strcmp(LocalParameter::weightScheme.c_str(),"RawTFIDF")==0) {
+          wt = computeRawTFIDFWeight(matchInfo->docID(),  // doc ID
+                t, // term ID
+                matchInfo->termCount(), // freq of term t in this doc
+                qryArr[t], // freq of term t in the query
+                ind);    
+        }else if (strcmp(LocalParameter::weightScheme.c_str(),"Okapi")==0) {
+          wt = computeOkapiWeight(matchInfo->docID(),  // doc ID
+                t, // term ID
+                matchInfo->termCount(), // freq of term t in this doc
+                qryArr[t], // freq of term t in the query
+                ind);    
+        }else{
+          cerr<<"The weighting scheme of "<<LocalParameter::weightScheme.c_str()<<" is not supported"<<endl;
+                exit(1);
+        }
+        scoreAccumulator.incScore(matchInfo->docID(),wt);  
       }
       delete docList;
     }
@@ -305,7 +305,7 @@ int AppMain(int argc, char *argv[]) {
     results.Sort();
     resultFile.writeResults(queryID, &results, LocalParameter::resultCount);
 
-  delete queryArr;
+    delete queryArr;
   }
   result.close();
   delete ind;
