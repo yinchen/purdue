@@ -48,7 +48,7 @@ namespace LocalParameter{
     classResultFile  = ParamGetString("classResultFile");
     weightScheme     = ParamGetString("weightScheme","RawTF");
     resultCount      = ParamGetInt("resultCount", 200);
-    kNN	     = ParamGetInt("kNN", 100);
+    kNN       = ParamGetInt("kNN", 100);
   }    
 };
 
@@ -59,10 +59,10 @@ void GetAppParam()
 
 // compute the weight of a matched term
 double computeRawTFWeight(int docID,
-		     int termID, 
-		     int docTermFreq, 
-		     double qryTermWeight,
-		     Index *ind)
+         int termID, 
+         int docTermFreq, 
+         double qryTermWeight,
+         Index *ind)
 {
   //implementation of raw TF weighting scheme
   return docTermFreq*qryTermWeight;
@@ -71,10 +71,10 @@ double computeRawTFWeight(int docID,
 
 // compute the weight of a matched term
 double computeRawTFIDFWeight(int docID,
-		     int termID, 
-		     int docTermFreq, 
-		     double qryTermWeight,
-		     Index *ind)
+         int termID, 
+         int docTermFreq, 
+         double qryTermWeight,
+         Index *ind)
 {
   //implementation of raw TF and IDF weighting scheme
   int totalNumDocs=ind->docCount();
@@ -85,10 +85,10 @@ double computeRawTFIDFWeight(int docID,
 
 // compute the weight of a matched term
 double computeOkapiWeight(int docID,
-		     int termID, 
-		     int docTermFreq, 
-		     double qryTermWeight,
-		     Index *ind)
+         int termID, 
+         int docTermFreq, 
+         double qryTermWeight,
+         Index *ind)
 {
   //implementation of Okapi weighting scheme
   int len=ind->docLength(docID);
@@ -102,8 +102,8 @@ double computeOkapiWeight(int docID,
 
 // compute the adjusted score
 double computeAdjustedScore(double origScore, // the score from the accumulator
-			    int docID, // doc ID
-			    Index *ind) // index
+          int docID, // doc ID
+          Index *ind) // index
 {
   //Do nothing now
   return origScore;
@@ -138,34 +138,34 @@ void Retrieval(double *qryArr, IndexedRealVector &results, Index *ind){
       // iterate over all individual documents 
       docList->startIteration();
       while (docList->hasMore()) {
-	DocInfo *matchInfo = docList->nextEntry();
-	// for each matched term, calculated the evidence
+  DocInfo *matchInfo = docList->nextEntry();
+  // for each matched term, calculated the evidence
 
-	double wt;
+  double wt;
 
-	if (strcmp(LocalParameter::weightScheme.c_str(),"RawTF")==0) {
-	  wt = computeRawTFWeight(matchInfo->docID(),  // doc ID
-				  t, // term ID
-				  matchInfo->termCount(), // freq of term t in this doc
-				  qryArr[t], // freq of term t in the query
-				  ind);	  
-	}else if (strcmp(LocalParameter::weightScheme.c_str(),"RawTFIDF")==0) {
-	  wt = computeRawTFIDFWeight(matchInfo->docID(),  // doc ID
-				  t, // term ID
-				  matchInfo->termCount(), // freq of term t in this doc
-				  qryArr[t], // freq of term t in the query
-				  ind);	  
-	}else if (strcmp(LocalParameter::weightScheme.c_str(),"Okapi")==0) {
-	  wt = computeOkapiWeight(matchInfo->docID(),  // doc ID
-				  t, // term ID
-				  matchInfo->termCount(), // freq of term t in this doc
-				  qryArr[t], // freq of term t in the query
-				  ind);	  
-	}else{
-	  cerr<<"The weighting scheme of "<<LocalParameter::weightScheme.c_str()<<" is not supported"<<endl;
+  if (strcmp(LocalParameter::weightScheme.c_str(),"RawTF")==0) {
+    wt = computeRawTFWeight(matchInfo->docID(),  // doc ID
+          t, // term ID
+          matchInfo->termCount(), // freq of term t in this doc
+          qryArr[t], // freq of term t in the query
+          ind);    
+  }else if (strcmp(LocalParameter::weightScheme.c_str(),"RawTFIDF")==0) {
+    wt = computeRawTFIDFWeight(matchInfo->docID(),  // doc ID
+          t, // term ID
+          matchInfo->termCount(), // freq of term t in this doc
+          qryArr[t], // freq of term t in the query
+          ind);    
+  }else if (strcmp(LocalParameter::weightScheme.c_str(),"Okapi")==0) {
+    wt = computeOkapiWeight(matchInfo->docID(),  // doc ID
+          t, // term ID
+          matchInfo->termCount(), // freq of term t in this doc
+          qryArr[t], // freq of term t in the query
+          ind);    
+  }else{
+    cerr<<"The weighting scheme of "<<LocalParameter::weightScheme.c_str()<<" is not supported"<<endl;
           exit(1);
-	}
-	scoreAccumulator.incScore(matchInfo->docID(),wt);  
+  }
+  scoreAccumulator.incScore(matchInfo->docID(),wt);  
       }
       delete docList;
     }
@@ -182,16 +182,16 @@ void Retrieval(double *qryArr, IndexedRealVector &results, Index *ind){
 
     if (strcmp(LocalParameter::weightScheme.c_str(),"RawTF")==0) {
       results.PushValue(d, computeAdjustedScore(s, // the score from the accumulator
-						d, // doc ID
-						ind)); // index
+            d, // doc ID
+            ind)); // index
     }else if (strcmp(LocalParameter::weightScheme.c_str(),"RawTFIDF")==0) {
       results.PushValue(d, computeAdjustedScore(s, // the score from the accumulator
-						d, // doc ID
-						ind)); // index
+            d, // doc ID
+            ind)); // index
     }else if (strcmp(LocalParameter::weightScheme.c_str(),"Okapi")==0) {
       results.PushValue(d, computeAdjustedScore(s, // the score from the accumulator
-						d, // doc ID
-						ind)); // index
+            d, // doc ID
+            ind)); // index
     }else{
       cerr<<"The weighting scheme of "<<LocalParameter::weightScheme.c_str()<<" is not supported"<<endl;
       exit(1);
@@ -202,54 +202,54 @@ void Retrieval(double *qryArr, IndexedRealVector &results, Index *ind){
 // perform the K nearest neighbor Email spam categorization
 void performKNNCategorization(string res_file_name, string classification_res_file_name)
 {
-	// use the retrieval results for categorization
-	ifstream result_file(&res_file_name[0]);
-	ofstream cat_result_file(&classification_res_file_name[0]); // categorization output file
+  // use the retrieval results for categorization
+  ifstream result_file(&res_file_name[0]);
+  ofstream cat_result_file(&classification_res_file_name[0]); // categorization output file
 
-	// for each query document, assign a class value and write it to the result file
-	for (int j=0; j < 200 ; j++ )
-	{
-		// the format of the result file is this, parse it line by line	    
-		string query_id, temp, doc_name, temp2, score, temp3;
+  // for each query document, assign a class value and write it to the result file
+  for (int j=0; j < 200 ; j++ )
+  {
+    // the format of the result file is this, parse it line by line      
+    string query_id, temp, doc_name, temp2, score, temp3;
 
-		int numOfRegular = 0;
-		int numOfSpam = 0;
+    int numOfRegular = 0;
+    int numOfSpam = 0;
 
-		// set the k of the k-NN parameter
-		int k = LocalParameter::kNN;
+    // set the k of the k-NN parameter
+    int k = LocalParameter::kNN;
 
-		for (int i=0; (!result_file.eof()) && (i < LocalParameter::resultCount); i++)
-		{
-			result_file >> query_id >> temp >> doc_name >> temp2 >> score >> temp3;
-	
-			// only consider the nearest k docs for categorization
-			if (i < k)
-			{
-				if (doc_name.substr(0,2) == "r_") // have seen a regular email, name beginning with 'r_' indicates a regular email
-				{				  
-					numOfRegular++; // increment the number of regular emails
-				}
-				else if (doc_name.substr(0,2) == "s_") // have seen a regular email, name beginning with 's_' indicates a spam email
-				{
-					numOfSpam++; // increment the number of spam emails
-				}
-			}
-		}
-				
-		// assign the class 
-		string class_of_query_doc = "";	
-		
+    for (int i=0; (!result_file.eof()) && (i < LocalParameter::resultCount); i++)
+    {
+      result_file >> query_id >> temp >> doc_name >> temp2 >> score >> temp3;
+  
+      // only consider the nearest k docs for categorization
+      if (i < k)
+      {
+        if (doc_name.substr(0,2) == "r_") // have seen a regular email, name beginning with 'r_' indicates a regular email
+        {          
+          numOfRegular++; // increment the number of regular emails
+        }
+        else if (doc_name.substr(0,2) == "s_") // have seen a regular email, name beginning with 's_' indicates a spam email
+        {
+          numOfSpam++; // increment the number of spam emails
+        }
+      }
+    }
+        
+    // assign the class 
+    string class_of_query_doc = "";  
+    
     // assign the appropriate class value for the current query
-		if (numOfRegular > numOfSpam)
-			class_of_query_doc = "r"; // r for regular email
-		else
-			class_of_query_doc = "s"; // s for spam email
+    if (numOfRegular > numOfSpam)
+      class_of_query_doc = "r"; // r for regular email
+    else
+      class_of_query_doc = "s"; // s for spam email
 
-		cout << "#regular:" << numOfRegular << " - #spam:" << numOfSpam << " => class :" << class_of_query_doc << endl;
-		cat_result_file << query_id << " " << class_of_query_doc << endl;
-	}
-	cat_result_file.close();
-	result_file.close();
+    cout << "#regular:" << numOfRegular << " - #spam:" << numOfSpam << " => class :" << class_of_query_doc << endl;
+    cat_result_file << query_id << " " << class_of_query_doc << endl;
+  }
+  cat_result_file.close();
+  result_file.close();
 }
 
 
@@ -299,13 +299,13 @@ int AppMain(int argc, char *argv[]) {
     IndexedRealVector results(ind->docCount());
     results.clear();
 
-	  // DO THE RETRIEVAL
+    // DO THE RETRIEVAL
     Retrieval(queryArr,results,ind);
 
     results.Sort();
     resultFile.writeResults(queryID, &results, LocalParameter::resultCount);
 
-	delete queryArr;
+  delete queryArr;
   }
   result.close();
   delete ind;
