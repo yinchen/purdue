@@ -9,4 +9,3 @@ The value of True Positive is 99
 The value of True Negative is 31 
 The value of False Postive is 69 
 The value of False Negative is 1 
-
