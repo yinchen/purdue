@@ -1,0 +1,71 @@
+moore05 13 % perl TC_eval.pl class_Result_File_RawTF_kNN1
+Total Number of regular emails are 100
+The value of True Positive is 23
+The value of True Negative is 97
+The value of False Postive is 3
+The value of False Negative is 77
+Total Number of spam emails are 100
+The value of True Positive is 97
+The value of True Negative is 23
+The value of False Postive is 77
+The value of False Negative is 3
+
+moore05 15 % perl TC_eval.pl class_Result_File_RawTF_kNN3
+Total Number of regular emails are 100
+The value of True Positive is 21
+The value of True Negative is 100
+The value of False Postive is 0
+The value of False Negative is 79
+Total Number of spam emails are 100
+The value of True Positive is 100
+The value of True Negative is 21
+The value of False Postive is 79
+The value of False Negative is 0
+
+moore05 17 % perl TC_eval.pl class_Result_File_RawTF_kNN5
+Total Number of regular emails are 100
+The value of True Positive is 24
+The value of True Negative is 98
+The value of False Postive is 2
+The value of False Negative is 76
+Total Number of spam emails are 100
+The value of True Positive is 98
+The value of True Negative is 24
+The value of False Postive is 76
+The value of False Negative is 2
+
+moore05 19 % perl TC_eval.pl class_Result_File_RawTF_kNN10
+Total Number of regular emails are 100
+The value of True Positive is 40
+The value of True Negative is 100
+The value of False Postive is 0
+The value of False Negative is 60
+Total Number of spam emails are 100
+The value of True Positive is 100
+The value of True Negative is 40
+The value of False Postive is 60
+The value of False Negative is 0
+
+moore05 21 % perl TC_eval.pl class_Result_File_RawTF_kNN20
+Total Number of regular emails are 100
+The value of True Positive is 87
+The value of True Negative is 98
+The value of False Postive is 2
+The value of False Negative is 13
+Total Number of spam emails are 100
+The value of True Positive is 98
+The value of True Negative is 87
+The value of False Postive is 13
+The value of False Negative is 2
+
+moore05 23 % perl TC_eval.pl class_Result_File_RawTF_kNN80
+Total Number of regular emails are 100
+The value of True Positive is 100
+The value of True Negative is 13
+The value of False Postive is 87
+The value of False Negative is 0
+Total Number of spam emails are 100
+The value of True Positive is 13
+The value of True Negative is 100
+The value of False Postive is 0
+The value of False Negative is 87
