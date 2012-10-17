@@ -60,17 +60,17 @@ void* thread_main(void *arg)
 
     original_pthread_mutex_unlock(&GL);
 
-    currentThread = mainThreadId;
-    doExit = 1;
-
     #ifdef SHOW_DEBUG
     fprintf (stderr, "synchronization points: %d\n", synchronizationPoints);
     #endif
 
     char cmd[1024];
-    sprintf(cmd, "echo %d >> max.txt", synchronizationPoints);
-    
+    sprintf(cmd, "echo %d > max.txt", synchronizationPoints);
+    system("touch max.txt");
     system(cmd);
+
+    currentThread = mainThreadId;
+    doExit = 1;
 
     return ret;
 }

@@ -13,4 +13,4 @@ chess_runner: chess_runner.c
 	gcc -o chess_runner -lpthread -lrt chess_runner.c
 
 clean:
-	rm chess.so sample1 sample2 core
+	rm chess.so sample1 sample2 core *.txt

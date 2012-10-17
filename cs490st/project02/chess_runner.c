@@ -5,15 +5,20 @@ int main()
 {
     puts("Exploring...");
 
-    system("run.sh sample1");
+    system("./run.sh ./sample1");
 
     int max = 0;
 
-    FILE *data = fopen("max.txt", "r");
+    FILE *data1 = fopen("max.txt", "r");
     char line[1024];
-    fgets(line, 1024, data);
+    fgets(line, 1024, data1);
+    fclose(data1);
 
     max = atoi(line);
+
+    FILE *data2 = fopen("curr.txt", "w");
+    fputs("0\n", data2);
+    fclose(data2);
 
     int i = 1;
     while (i <= max)
