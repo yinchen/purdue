@@ -7,6 +7,8 @@
 #include <signal.h>
 #include <stdio.h>
 
+#include <sstream>
+
 using namespace std;
 
 int (*original_pthread_create)(pthread_t*, const pthread_attr_t*, void* (*)(void*), void*) = NULL;
@@ -37,6 +39,8 @@ map<pthread_t*, int> threadids;
 
 int mainThreadId = 0;
 
+int synchronizationPoints = 0;
+
 static void initialize_original_functions();
 
 struct Thread_Arg {
@@ -59,6 +63,15 @@ void* thread_main(void *arg)
     currentThread = mainThreadId;
     doExit = 1;
 
+    #ifdef SHOW_DEBUG
+    fprintf (stderr, "synchronization points: %d\n", synchronizationPoints);
+    #endif
+
+    char cmd[1024];
+    sprintf(cmd, "echo %d >> max.txt", synchronizationPoints);
+    
+    system(cmd);
+
     return ret;
 }
 
@@ -69,6 +82,8 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
     #ifdef SHOW_DEBUG
     puts("pthread_create()");
     #endif
+
+    synchronizationPoints++;
     
     initialize_original_functions();
 
@@ -134,6 +149,8 @@ int pthread_mutex_lock(pthread_mutex_t *mutex)
     #ifdef SHOW_DEBUG
     puts("pthread_mutex_lock()");
     #endif
+
+    synchronizationPoints++;
     
     initialize_original_functions();
 
@@ -163,6 +180,8 @@ int pthread_mutex_unlock(pthread_mutex_t *mutex)
     #ifdef SHOW_DEBUG
     puts("pthread_mutex_unlock()");
     #endif
+
+    synchronizationPoints++;
     
     initialize_original_functions();
 
