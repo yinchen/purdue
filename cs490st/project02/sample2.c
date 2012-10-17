@@ -13,11 +13,12 @@ struct QueueEntry {
 #define Q_SIZE 3
 struct QueueEntry Q[Q_SIZE];
 pthread_mutex_t Q_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t signal_mutex = PTHREAD_MUTEX_INITIALIZER;
 int g_timestamp = 0;
 
 void Q_init();
+void Q_clear();
 void Q_add(const char*);
-char* Q_remove();
 void* thread1(void* arg);
 void* thread2(void* arg);
 
@@ -40,6 +41,9 @@ void* thread1(void* arg)
     Q_add("data 2");
     Q_add("data 3");
     Q_add("data 4");
+    Q_clear();
+
+    return NULL;
 }
 
 void* thread2(void* arg)
@@ -49,6 +53,9 @@ void* thread2(void* arg)
     Q_add("data 7");
     Q_add("data 8");
     Q_add("data 9");
+    Q_clear();
+
+    return NULL;
 }
 
 void Q_init()
@@ -61,6 +68,11 @@ void Q_init()
     }
 }
 
+void Q_clear()
+{
+    Q_init();
+}
+
 int  Q_full()
 {
     pthread_mutex_lock(&Q_mutex);
@@ -68,17 +80,6 @@ int  Q_full()
     int ret = 1;
     for (idx = 0; idx < Q_SIZE; idx++)
         if (Q[idx].empty) ret = 0;
-    pthread_mutex_unlock(&Q_mutex);
-    return ret;
-}
-
-int  Q_empty()
-{
-    pthread_mutex_lock(&Q_mutex);
-    int idx;
-    int ret = 1;
-    for (idx = 0; idx < Q_SIZE; idx++)
-        if (!Q[idx].empty) ret = 0;
     pthread_mutex_unlock(&Q_mutex);
     return ret;
 }
@@ -112,9 +113,8 @@ void Q_discard_oldest()
 
 void Q_add(const char* s)
 {
-    if (Q_full()) {
+    if (Q_full())
         Q_discard_oldest();
-    }
 
     pthread_mutex_lock(&Q_mutex);
     
