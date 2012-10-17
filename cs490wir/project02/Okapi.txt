@@ -1,0 +1,71 @@
+moore05 71 % perl TC_eval.pl class_Result_File_Okapi_kNN1                    
+Total Number of regular emails are 100 
+The value of True Positive is 85 
+The value of True Negative is 98 
+The value of False Postive is 2 
+The value of False Negative is 15 
+Total Number of spam emails are 100 
+The value of True Positive is 98 
+The value of True Negative is 85 
+The value of False Postive is 15 
+The value of False Negative is 2
+
+moore05 75 % perl TC_eval.pl class_Result_File_Okapi_kNN3
+Total Number of regular emails are 100 
+The value of True Positive is 84 
+The value of True Negative is 100 
+The value of False Postive is 0 
+The value of False Negative is 16 
+Total Number of spam emails are 100 
+The value of True Positive is 100 
+The value of True Negative is 84 
+The value of False Postive is 16 
+The value of False Negative is 0
+
+moore05 78 % perl TC_eval.pl class_Result_File_Okapi_kNN5
+Total Number of regular emails are 100 
+The value of True Positive is 87 
+The value of True Negative is 100 
+The value of False Postive is 0 
+The value of False Negative is 13 
+Total Number of spam emails are 100 
+The value of True Positive is 100 
+The value of True Negative is 87 
+The value of False Postive is 13 
+The value of False Negative is 0
+
+moore05 81 % perl TC_eval.pl class_Result_File_Okapi_kNN10
+Total Number of regular emails are 100 
+The value of True Positive is 88 
+The value of True Negative is 99 
+The value of False Postive is 1 
+The value of False Negative is 12 
+Total Number of spam emails are 100 
+The value of True Positive is 99 
+The value of True Negative is 88 
+The value of False Postive is 12 
+The value of False Negative is 1
+
+moore05 87 % perl TC_eval.pl class_Result_File_Okapi_kNN20
+Total Number of regular emails are 100 
+The value of True Positive is 97 
+The value of True Negative is 98 
+The value of False Postive is 2 
+The value of False Negative is 3 
+Total Number of spam emails are 100 
+The value of True Positive is 98 
+The value of True Negative is 97 
+The value of False Postive is 3 
+The value of False Negative is 2
+
+moore05 90 % perl TC_eval.pl class_Result_File_Okapi_kNN80
+Total Number of regular emails are 100 
+The value of True Positive is 100 
+The value of True Negative is 26 
+The value of False Postive is 74 
+The value of False Negative is 0 
+Total Number of spam emails are 100 
+The value of True Positive is 26 
+The value of True Negative is 100 
+The value of False Postive is 0 
+The value of False Negative is 74 

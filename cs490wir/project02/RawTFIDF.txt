@@ -1,0 +1,71 @@
+moore05 68 % perl TC_eval.pl class_Result_File_RawTFIDF_kNN1
+Total Number of regular emails are 100 
+The value of True Positive is 31 
+The value of True Negative is 99 
+The value of False Postive is 1 
+The value of False Negative is 69 
+Total Number of spam emails are 100 
+The value of True Positive is 99 
+The value of True Negative is 31 
+The value of False Postive is 69 
+The value of False Negative is 1 
+
+moore05 27 % perl TC_eval.pl class_Result_File_RawTFIDF_kNN3
+Total Number of regular emails are 100
+The value of True Positive is 20
+The value of True Negative is 100
+The value of False Postive is 0
+The value of False Negative is 80
+Total Number of spam emails are 100
+The value of True Positive is 100
+The value of True Negative is 20
+The value of False Postive is 80
+The value of False Negative is 0
+
+moore05 29 % perl TC_eval.pl class_Result_File_RawTFIDF_kNN5
+Total Number of regular emails are 100
+The value of True Positive is 22
+The value of True Negative is 100
+The value of False Postive is 0
+The value of False Negative is 78
+Total Number of spam emails are 100
+The value of True Positive is 100
+The value of True Negative is 22
+The value of False Postive is 78
+The value of False Negative is 0
+
+moore05 31 % perl TC_eval.pl class_Result_File_RawTFIDF_kNN10
+Total Number of regular emails are 100
+The value of True Positive is 41
+The value of True Negative is 100
+The value of False Postive is 0
+The value of False Negative is 59
+Total Number of spam emails are 100
+The value of True Positive is 100
+The value of True Negative is 41
+The value of False Postive is 59
+The value of False Negative is 0
+
+moore05 33 % perl TC_eval.pl class_Result_File_RawTFIDF_kNN20
+Total Number of regular emails are 100
+The value of True Positive is 87
+The value of True Negative is 100
+The value of False Postive is 0
+The value of False Negative is 13
+Total Number of spam emails are 100
+The value of True Positive is 100
+The value of True Negative is 87
+The value of False Postive is 13
+The value of False Negative is 0
+
+moore05 35 % perl TC_eval.pl class_Result_File_RawTFIDF_kNN80
+Total Number of regular emails are 100
+The value of True Positive is 100
+The value of True Negative is 28
+The value of False Postive is 72
+The value of False Negative is 0
+Total Number of spam emails are 100
+The value of True Positive is 28
+The value of True Negative is 100
+The value of False Postive is 0
+The value of False Negative is 72
