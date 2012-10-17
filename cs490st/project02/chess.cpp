@@ -43,6 +43,8 @@ int synchronizationPoints = 0;
 
 static void initialize_original_functions();
 
+static void check_synchronization_point();
+
 struct Thread_Arg {
     void* (*start_routine)(void*);
     void* arg;
@@ -84,6 +86,8 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
     #endif
 
     synchronizationPoints++;
+
+    check_synchronization_point();
     
     initialize_original_functions();
 
@@ -151,6 +155,8 @@ int pthread_mutex_lock(pthread_mutex_t *mutex)
     #endif
 
     synchronizationPoints++;
+
+    check_synchronization_point();
     
     initialize_original_functions();
 
@@ -182,6 +188,8 @@ int pthread_mutex_unlock(pthread_mutex_t *mutex)
     #endif
 
     synchronizationPoints++;
+
+    check_synchronization_point();
     
     initialize_original_functions();
 
@@ -231,6 +239,35 @@ int sched_yield(void)
     original_pthread_mutex_lock(&GL);
     
     return 0;
+}
+
+static
+void check_synchronization_point()
+{
+    int curr = -1;
+
+    FILE *data = fopen("curr.txt", "r");
+    if (data != NULL)
+    {
+        char line[1024];
+        fgets(line, 1024, data);
+        fclose(data);
+
+        curr = atoi(line);
+    }
+
+    #ifdef SHOW_DEBUG
+    fprintf (stderr, "current synchronization point: %d\n", curr);
+    #endif
+
+    if (synchronizationPoints == curr)
+    {
+        char cmd[1024];
+        sprintf(cmd, "echo %d > curr.txt", synchronizationPoints);
+        system(cmd);
+
+        sched_yield();
+    }
 }
 
 static

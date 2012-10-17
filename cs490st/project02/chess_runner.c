@@ -5,6 +5,10 @@ int main()
 {
     puts("Exploring...");
 
+    FILE *data0 = fopen("curr.txt", "w");
+    fputs("-1\n", data0);
+    fclose(data0);
+
     system("./run.sh ./sample1");
 
     int max = 0;
@@ -17,7 +21,7 @@ int main()
     max = atoi(line);
 
     FILE *data2 = fopen("curr.txt", "w");
-    fputs("0\n", data2);
+    fputs("1\n", data2);
     fclose(data2);
 
     int i = 1;
