@@ -8,6 +8,6 @@ To setup this program on your machine, run the `make` command. This will build t
 
 To run the first part of this project, run `./run.sh ./sample1` or `./run.sh ./sample2`. 
 
-To run the secound part of this project, run `chess_runner`. By default, this tests the sample1 file. You can change this by modifying the SAMPLE_NUMBER value in the chess_runner.c file. Don't forget to rebuild the project by running `make`.
+To run the secound part of this project, run `chess_runner`. By default, this tests the sample1 file. You can change this to sample2 by modifying the SAMPLE_NUMBER value in the chess_runner.c file. Don't forget to rebuild the project by running `make`.
 
-If necessary, you can unable debugging output by uncommenting the #define SHOW_DEBUG line in the chess.cpp file. Don't forget to rebuild the project by running `make`.
+If necessary, you can enable debugging output by uncommenting the #define SHOW_DEBUG line in the chess.cpp file. Don't forget to rebuild the project by running `make`.
