@@ -85,8 +85,6 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
     puts("\tpthread_create()");
     #endif
 
-    check_synchronization_point();
-
     initialize_original_functions();
 
     if (firstRun == 1)
@@ -121,6 +119,8 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
     threads[(int)*thread] = ts;
 
     threadids[thread] = (int)*thread;
+
+    check_synchronization_point();
     
     return ret;
 }
