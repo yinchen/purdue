@@ -63,7 +63,7 @@ void* thread_main(void *arg)
     original_pthread_mutex_unlock(&GL);
 
     #ifdef SHOW_DEBUG
-    fprintf (stderr, "synchronization points: %d\n", synchronizationPoints);
+    fprintf (stderr, "\tsynchronization points: %d\n", synchronizationPoints);
     #endif
 
     char cmd[1024];
@@ -82,13 +82,11 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
                    void *(*start_routine)(void*), void *arg)
 {
     #ifdef SHOW_DEBUG
-    puts("pthread_create()");
+    puts("\tpthread_create()");
     #endif
 
-    synchronizationPoints++;
-
     check_synchronization_point();
-    
+
     initialize_original_functions();
 
     if (firstRun == 1)
@@ -123,7 +121,7 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
     threads[(int)*thread] = ts;
 
     threadids[thread] = (int)*thread;
-
+    
     return ret;
 }
 
@@ -131,7 +129,7 @@ extern "C"
 int pthread_join(pthread_t joinee, void **retval)
 {
     #ifdef SHOW_DEBUG
-    puts("pthread_join()");
+    puts("\tpthread_join()");
     #endif
     
     initialize_original_functions();
@@ -151,13 +149,11 @@ extern "C"
 int pthread_mutex_lock(pthread_mutex_t *mutex)
 {
     #ifdef SHOW_DEBUG
-    puts("pthread_mutex_lock()");
+    puts("\tpthread_mutex_lock()");
     #endif
 
-    synchronizationPoints++;
-
     check_synchronization_point();
-    
+
     initialize_original_functions();
 
     // TODO
@@ -176,7 +172,7 @@ int pthread_mutex_lock(pthread_mutex_t *mutex)
     ts->locked = 1;
     
     mutexes[mutex] = ts;
-
+    
     return ret; // return original_pthread_mutex_lock(mutex);
 }
 
@@ -184,20 +180,18 @@ extern "C"
 int pthread_mutex_unlock(pthread_mutex_t *mutex)
 {
     #ifdef SHOW_DEBUG
-    puts("pthread_mutex_unlock()");
+    puts("\tpthread_mutex_unlock()");
     #endif
 
-    synchronizationPoints++;
-
     check_synchronization_point();
-    
+
     initialize_original_functions();
 
     // TODO
     ThreadStruct *ts = mutexes[mutex];
     ts->status = 1; // running
     ts->locked = 0;
-
+    
     return original_pthread_mutex_unlock(mutex);
 }
 
@@ -205,7 +199,7 @@ extern "C"
 int sched_yield(void)
 {
     #ifdef SHOW_DEBUG
-    puts("sched_yield()");
+    puts("\tsched_yield()");
     #endif
     
     initialize_original_functions();
@@ -224,7 +218,7 @@ int sched_yield(void)
             curr->status = 1; // running
             
             #ifdef SHOW_DEBUG
-            fprintf (stderr, "context switch to %d\n", curr->id);
+            fprintf (stderr, "\tcontext switch to %d\n", curr->id);
             #endif
             
             break;
@@ -244,6 +238,8 @@ int sched_yield(void)
 static
 void check_synchronization_point()
 {
+    synchronizationPoints++;
+
     int curr = -1;
 
     FILE *data = fopen("curr.txt", "r");
@@ -256,19 +252,15 @@ void check_synchronization_point()
         curr = atoi(line);
     }
 
-    #ifdef SHOW_DEBUG
     if (curr > 0)
     {
-        fprintf (stderr, "reached synchronization point: %d\n", curr);
+        #ifdef SHOW_DEBUG    
+        fprintf (stderr, "\treached synchronization point: %d of %d\n", synchronizationPoints, curr);
+        #endif
     }
-    #endif
 
-    if (synchronizationPoints == curr + 1)
+    if (curr == synchronizationPoints)
     {
-        char cmd[1024];
-        sprintf(cmd, "echo %d > curr.txt", synchronizationPoints);
-        system(cmd);
-
         sched_yield();
     }
 }
