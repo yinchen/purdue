@@ -18,7 +18,7 @@ int (*original_pthread_mutex_unlock)(pthread_mutex_t*) = NULL;
 
 
 
-#define SHOW_DEBUG 1
+// #define SHOW_DEBUG 1
 
 int firstRun = 1;
 int doExit = 0;
@@ -263,7 +263,7 @@ void check_synchronization_point()
     }
     #endif
 
-    if (synchronizationPoints == curr)
+    if (synchronizationPoints == curr + 1)
     {
         char cmd[1024];
         sprintf(cmd, "echo %d > curr.txt", synchronizationPoints);

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 // enter the sample number you would like to explore (i.e. 1 for sample1, 2 for sample2, etc.)
-#define SAMPLE_NUMBER 1
+#define SAMPLE_NUMBER 2
 
 int main()
 {
