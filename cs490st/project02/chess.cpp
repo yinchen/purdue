@@ -18,7 +18,7 @@ int (*original_pthread_mutex_unlock)(pthread_mutex_t*) = NULL;
 
 
 
-// #define SHOW_DEBUG 1
+#define SHOW_DEBUG 1
 
 int firstRun = 1;
 int doExit = 0;
@@ -257,7 +257,10 @@ void check_synchronization_point()
     }
 
     #ifdef SHOW_DEBUG
-    fprintf (stderr, "current synchronization point: %d\n", curr);
+    if (curr > 0)
+    {
+        fprintf (stderr, "reached synchronization point: %d\n", curr);
+    }
     #endif
 
     if (synchronizationPoints == curr)
