@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// enter the sample number you would like to explore (i.e. 1 for sample1, 2 for sample2, etc.)
+#define SAMPLE_NUMBER 1
+
 int main()
 {
     puts("Exploring...");
@@ -9,7 +12,12 @@ int main()
     fputs("-1\n", data0);
     fclose(data0);
 
-    system("./run.sh ./sample1");
+    if (SAMPLE_NUMBER == 1)
+        system("./run.sh ./sample1");
+    else if (SAMPLE_NUMBER == 2)
+        system("./run.sh ./sample2");
+    else
+        exit(-1);
 
     int max = 0;
 
@@ -28,7 +36,13 @@ int main()
     while (i <= max)
     {
         fprintf (stderr, "Executing step %d of %d\n", i, max);
-        system("./run.sh ./sample1");
+        
+        if (SAMPLE_NUMBER == 1)
+            system("./run.sh ./sample1");
+        else if (SAMPLE_NUMBER == 2)
+            system("./run.sh ./sample2");
+        else
+            exit(-1);
 
         i++;
     }
