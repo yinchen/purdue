@@ -152,9 +152,9 @@ int pthread_mutex_lock(pthread_mutex_t *mutex)
     puts("\tpthread_mutex_lock()");
     #endif
 
-    check_synchronization_point();
-
     initialize_original_functions();
+
+    check_synchronization_point();
 
     // TODO
     int ret = 0;
@@ -183,14 +183,14 @@ int pthread_mutex_unlock(pthread_mutex_t *mutex)
     puts("\tpthread_mutex_unlock()");
     #endif
 
-    check_synchronization_point();
-
     initialize_original_functions();
 
     // TODO
     ThreadStruct *ts = mutexes[mutex];
     ts->status = 1; // running
     ts->locked = 0;
+
+    check_synchronization_point();
     
     return original_pthread_mutex_unlock(mutex);
 }
