@@ -1,0 +1,60 @@
+sslab04 9 $ klee.cde p1.o
+KLEE: output directory = "klee-out-0"
+KLEE: WARNING: undefined reference to function: printf
+KLEE: WARNING: calling external: printf(33909552, 8)
+8
+7
+2
+1
+
+KLEE: done: total instructions = 89
+KLEE: done: completed paths = 4
+KLEE: done: generated tests = 4
+
+
+sslab04 11 $ klee.cde p1.o
+KLEE: output directory = "klee-out-1"
+KLEE: WARNING: undefined reference to function: printf
+KLEE: WARNING: calling external: printf(9464624, 8)
+8
+7
+
+KLEE: done: total instructions = 53
+KLEE: done: completed paths = 2
+KLEE: done: generated tests = 2
+
+
+sslab04 15 $ klee.cde p1.o
+KLEE: output directory = "klee-out-2"
+KLEE: WARNING: undefined reference to function: printf
+KLEE: WARNING: calling external: printf(4151266096, 8)
+8
+7
+
+KLEE: done: total instructions = 53
+KLEE: done: completed paths = 2
+KLEE: done: generated tests = 2
+
+
+sslab04 38 $ klee.cde p1.o
+KLEE: output directory = "klee-out-3"
+KLEE: WARNING: undefined reference to function: printf
+KLEE: WARNING: calling external: printf(19423576, 8)
+8
+7
+6
+5
+4
+0
+2
+1
+0
+
+KLEE: done: total instructions = 154
+KLEE: done: completed paths = 9
+KLEE: done: generated tests = 9
+
+
+
+Paths covered are 0, 1, 2, 4, 5, 6, 7, 8. Infeasible path is 3. 
+

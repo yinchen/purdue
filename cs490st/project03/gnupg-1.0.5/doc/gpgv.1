@@ -1,0 +1,141 @@
+.\" This -*- nroff -*- file has been generated from
+.\" DocBook SGML with docbook-to-man on Debian GNU/Linux.
+...\"
+...\"	transcript compatibility for postscript use.
+...\"
+...\"	synopsis:  .P! <file.ps>
+...\"
+.de P!
+\\&.
+.fl			\" force out current output buffer
+\\!%PB
+\\!/showpage{}def
+...\" the following is from Ken Flowers -- it prevents dictionary overflows
+\\!/tempdict 200 dict def tempdict begin
+.fl			\" prolog
+.sy cat \\$1\" bring in postscript file
+...\" the following line matches the tempdict above
+\\!end % tempdict %
+\\!PE
+\\!.
+.sp \\$2u	\" move below the image
+..
+.de pF
+.ie     \\*(f1 .ds f1 \\n(.f
+.el .ie \\*(f2 .ds f2 \\n(.f
+.el .ie \\*(f3 .ds f3 \\n(.f
+.el .ie \\*(f4 .ds f4 \\n(.f
+.el .tm ? font overflow
+.ft \\$1
+..
+.de fP
+.ie     !\\*(f4 \{\
+.	ft \\*(f4
+.	ds f4\"
+'	br \}
+.el .ie !\\*(f3 \{\
+.	ft \\*(f3
+.	ds f3\"
+'	br \}
+.el .ie !\\*(f2 \{\
+.	ft \\*(f2
+.	ds f2\"
+'	br \}
+.el .ie !\\*(f1 \{\
+.	ft \\*(f1
+.	ds f1\"
+'	br \}
+.el .tm ? font underflow
+..
+.ds f1\"
+.ds f2\"
+.ds f3\"
+.ds f4\"
+'\" t 
+.ta 8n 16n 24n 32n 40n 48n 56n 64n 72n  
+.TH "gpgv" "1" 
+.SH "NAME" 
+gpgv \(em signature verification tool 
+.SH "SYNOPSIS" 
+.PP 
+.nf 
+.ta 8n 16n 24n 32n 40n 48n 56n 64n 72n 
+\fBgpgv\fP  [\fBoptions\fR]  [\fBsigned files\fR]    
+.fi 
+.SH "DESCRIPTION" 
+.PP 
+\fBgpgv\fP is the OpenPGP signature checking tool. 
+ 
+.PP 
+This program is a stripped down version of \fBgpg\fP which is only 
+able 
+to check signatures.  It is somewhat smaller than the full blown 
+\fBgpg\fP and uses a different (and more simple way) to check that 
+the public keys used to made the signature are trustworth.  There is 
+no options files and only very few options are implemented. 
+.PP 
+\fBgpgv\fP assumes that all keys in the keyring are trustworty. 
+It uses by default a keyring named \fBtrustedkeys.gpg\fP which is 
+assumed to be in the home directory as defined by GnuPG or set by an 
+option or an environment variable.  An option may be used to specify 
+another keyring or even multiple keyrings. 
+.SH "OPTIONS" 
+.PP 
+\fBgpgv\fP recognizes these options: 
+.IP "-v, --verbose" 10 
+Give more information during processing. If used 
+twice, the input data is listed in detail. 
+.IP "-q, --quiet" 10 
+Try to be as quiet as possible. 
+.IP "--keyring \fBfile\fR" 10 
+Add \fBfile\fR to the list of keyrings. 
+If \fBfile\fR begins with a tilde and a slash, these 
+are replaced by the HOME directory. If the filename 
+does not contain a slash, it is assumed to be in the 
+home-directory ("~/.gnupg" if --homedir is not used). 
+The filename may be prefixed with a scheme: 
+.IP "" 10 
+"gnupg-ring:" is the default one. 
+.IP "" 10 
+"gnupg-gdbm:" may be used for a GDBM ring. Note that GDBM 
+is experimental and likely to be removed in future versions. 
+.IP "" 10 
+It might make sense to use it together with --no-default-keyring. 
+.IP "--homedir \fBdirectory\fR" 10 
+Set the name of the home directory to \fBdirectory\fR If this 
+option is not used it defaults to "~/.gnupg". It does 
+not make sense to use this in a options file. This 
+also overrides the environment variable "GNUPGHOME". 
+.IP "--status-fd \fBn\fR" 10 
+Write special status strings to the file descriptor \fBn\fR. 
+See the file DETAILS in the documentation for a listing of them. 
+.IP "--logger-fd \fBn\fR" 10 
+Write log output to file descriptor \fBn\fR and not to stderr. 
+.IP "--ignore-time-conflict" 10 
+GnuPG normally checks that the timestamps associated with keys and 
+signatures have plausible values.  However, sometimes a signature seems to 
+be older than the key due to clock problems.  This option makes these 
+checks just a warning. 
+.SH "RETURN VALUE" 
+.PP 
+The program returns 0 if everything was fine, 1 if at least 
+one signature was bad, and other error codes for fatal errors. 
+ 
+.SH "EXAMPLES" 
+.IP "gpgv \fBpgpfile\fR" 10 
+.IP "gpgv \fBsigfile\fR [\fBfiles\fR]" 10 
+Verify the signature of the file. The second form 
+is used for detached signatures, where \fBsigfile\fR is the detached 
+signature (either ASCII armored or binary) and [\fBfiles\fR] are the signed 
+data; if this is not given the name of the file holding the signed data is 
+constructed by cutting off the extension (".asc", ".sig" or ".sign") from 
+\fBsigfile\fR. 
+.SH "ENVIRONMENT" 
+.IP "HOME" 10 
+Used to locate the default home directory. 
+.IP "GNUPGHOME" 10 
+If set directory used instead of "~/.gnupg". 
+.SH "FILES" 
+.IP "~/.gnupg/trustedkeys.gpg" 10 
+The default keyring with the allowed keys 
+...\" created by instant / docbook-to-man, Sat 28 Apr 2001, 20:40 

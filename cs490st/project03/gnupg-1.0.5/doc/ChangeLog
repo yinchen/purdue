@@ -1,0 +1,170 @@
+2001-04-20  Werner Koch  <wk@gnupg.org>
+
+	* faq.raw (Maintained-by): Removed note that load-extension is not
+	available under Windoze.
+
+	* gpg.sgml: Add new --charset UTF-8.
+
+2001-04-19  Werner Koch  <wk@gnupg.org>
+
+	* faq.raw: Add a note about dates displayed as ????-??-??.
+
+2001-04-17  Werner Koch  <wk@gnupg.org>
+
+	* Makefile.am (%.texi): Add rules to create .texi from .sgml.
+	However we can't automate this because automake does not like
+	.texi files as BUILT_SOURCES.
+	(%.dvi,%.ps): Removed these rules, because they are not needed
+	and get in the way of automake's dvi target
+
+	* HACKING: Changed CVS description.
+
+2001-04-06  Werner Koch  <wk@gnupg.org>
+
+	* gpg.sgml: Small typo fixes by Florian Weimer.
+
+2001-03-27  Werner Koch  <wk@gnupg.org>
+
+	* gpg.sgml: Add --no-sig-cache and --no-sig-create-check.
+
+2001-03-23  Werner Koch  <wk@gnupg.org>
+
+	* DETAILS: New status UNEXPECTED.
+
+2001-03-13  Werner Koch  <wk@gnupg.org>
+
+	* gpg.sgml: Described --fixed-list-mode.
+
+2001-03-06  Werner Koch  <wk@gnupg.org>
+
+	* gpgv.sgml: Changed some gpg to gpgv. Thanks to John A. Murdie.
+
+2001-03-03  Werner Koch  <wk@gnupg.org>
+
+	* gpg.sgml: Tell something about the 0x12345678! key ID syntax.
+
+2001-01-18  Werner Koch  <wk@gnupg.org>
+
+	* README.W32: Changed building instructions for MinGW32/CPD 0.3 
+
+2001-01-09  Werner Koch  <wk@gnupg.org>
+
+	* DETAILS: Fixed docs for NEED_PASSPHRASE and added USERID_HINT.
+
+2000-11-30  Werner Koch  <wk@gnupg.org>
+
+	* gpg.sgml: Fixed the description of --verify.  Add a short note
+	the warnings sections.
+
+2000-10-19  Werner Koch  <wk@gnupg.org>
+
+	* gpg.sgml: Fixed doc for --allow-non-selfsigned-uid.
+	Add entry for --ignore-crc-error.
+
+2000-10-18  Werner Koch  <wk@gnupg.org>
+
+	* OpenPGP: Dropped the paragraph that RSA is not implemented.
+
+2000-10-14  Werner Koch  <wk@gnupg.org>
+
+	* faq.raw: Add an answer to the problem of multiple signatures.
+
+Wed Oct  4 15:50:18 CEST 2000  Werner Koch  <wk@openit.de>
+
+        * gpgv.sgml: New.
+        * Makefile.am: build it.
+
+Thu Sep 14 14:20:38 CEST 2000  Werner Koch  <wk@openit.de>
+
+        * faq.raw: New.
+        * Makefile.am: Support to build FAQs
+
+Wed Jul 12 13:32:06 CEST 2000  Werner Koch  <wk@>
+
+        * gpg.sgml: Add a note about the availability of the GPH.
+
+2000-07-03 13:59:24  Werner Koch  (wk@habibti.openit.de)
+
+        * DETAILS, FAQ: Typo fixes by Yosiaki IIDA.
+
+2000-05-12 10:57:21  Werner Koch  (wk@habibti.openit.de)
+
+	* gpg.sgml: Documented --no-tty.
+
+2000-03-09 15:01:51  Werner Koch  (wk@habibti.openit.de)
+
+	* DETAILS: Ad a short blurb about unattended key generation.
+
+Wed Feb  9 15:33:44 CET 2000  Werner Koch  <wk@gnupg.de>
+
+	* gpg.sgml: Describe --ignore-time-conflict.
+
+	* gpg.sgml: Fixed a few typos.	Thanks to Holger Trapp.
+
+Wed Jan  5 11:51:17 CET 2000  Werner Koch  <wk@gnupg.de>
+
+	* FAQ: Enhanced answer for the 3des-s2k bug.
+
+Sat Dec  4 12:30:28 CET 1999  Werner Koch  <wk@gnupg.de>
+
+	* gpg.sgml: Add section about the user ID
+
+Mon Nov 22 11:14:53 CET 1999  Werner Koch  <wk@gnupg.de>
+
+	* gph: Removed the directory from the dist becuase it will
+	go into it's own package.
+
+Thu Sep 23 09:52:58 CEST 1999  Werner Koch  <wk@isil.d.shuttle.de>
+
+	* README.W32: New.
+
+Mon Sep  6 19:59:08 CEST 1999  Werner Koch  <wk@isil.d.shuttle.de>
+
+
+	* Makefile.am (SUBDIRS): New subdir gph for the manual.
+
+Thu Jul 22 20:03:03 CEST 1999  Werner Koch  <wk@isil.d.shuttle.de>
+
+
+	* gpg.sgml (--always-trust): Added.
+
+Wed Jul 14 19:42:08 CEST 1999  Werner Koch  <wk@isil.d.shuttle.de>
+
+
+	* Makefile.am: Create a dummy man page if docbook-to-man is missing.
+
+Wed Jun 16 20:16:21 CEST 1999  Werner Koch  <wk@isil.d.shuttle.de>
+
+
+	* gpg1.pod: Removed.
+	* gpg.sgml: New. Replaces the pod file
+	* Makefile.am: Add rule to make a man file from sgml
+
+Tue Jun 15 12:21:08 CEST 1999  Werner Koch  <wk@isil.d.shuttle.de>
+
+
+	* Makefile.in.in: Use DESTDIR.
+
+Mon May 31 19:41:10 CEST 1999  Werner Koch  <wk@isil.d.shuttle.de>
+
+	* gpg.1pod: Enhanced the Bugs section (Michael).
+
+Wed Feb 10 17:15:39 CET 1999  Werner Koch  <wk@isil.d.shuttle.de>
+
+
+	* gpg.1pod: Spelling and grammar corrections (John A. Martin)
+	* FAQ: Ditto.
+	* DETAILS: Ditto.
+
+
+ Copyright 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
+
+ This file is free software; as a special exception the author gives
+ unlimited permission to copy and/or distribute it, with or without
+ modifications, as long as this notice is preserved.
+
+ This file is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
+ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+

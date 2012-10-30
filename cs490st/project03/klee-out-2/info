@@ -1,0 +1,18 @@
+/home/pgbovine/klee/Release+Asserts/bin/klee p1.o
+PID: 3558
+Started: 2012-10-30 11:40:50
+BEGIN searcher description
+DFSSearcher
+END searcher description
+Finished: 2012-10-30 11:40:50
+Elapsed: 00:00:00
+KLEE: done: explored paths = 2
+KLEE: done: avg. constructs per query = 8
+KLEE: done: total queries = 2
+KLEE: done: valid queries = 0
+KLEE: done: invalid queries = 2
+KLEE: done: query cex = 2
+
+KLEE: done: total instructions = 53
+KLEE: done: completed paths = 2
+KLEE: done: generated tests = 2

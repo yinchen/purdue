@@ -1,0 +1,9 @@
+#!/bin/sh
+lli=${LLVMINTERP-lli}
+exec $lli \
+    -load=/usr/X11R6/lib/libz.a \
+    -load=/usr/lib/libdl.so \
+    -load=/usr/lib/libnsl.so \
+    -load=/usr/lib/libgdbm.so \
+    -load=/usr/lib/libnsl.so \
+    gpgv.bc ${1+"$@"}

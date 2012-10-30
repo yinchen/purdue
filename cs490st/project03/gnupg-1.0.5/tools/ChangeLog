@@ -1,0 +1,63 @@
+2001-03-27  Werner Koch  <wk@gnupg.org>
+
+	* mail-signed-keys: Add option --dry-run.
+
+2001-03-21  Werner Koch  <wk@gnupg.org>
+
+	* shmtest.c: Add sys/types.h
+
+Fri Sep 15 18:40:36 CEST 2000  Werner Koch  <wk@openit.de>
+
+        * ring-a-party: An array start at offset 1 no 0.  Many thanks to Mike
+        for finding this bug.
+
+Thu Sep 14 14:20:38 CEST 2000  Werner Koch  <wk@openit.de>
+
+        * ring-a-party: Flush the last key.
+
+Wed Jul  5 13:28:45 CEST 2000  Werner Koch  <wk@>
+
+        * mail-signed-keys: New.
+
+Tue May 23 09:19:00 CEST 2000  Werner Koch  <wk@openit.de>
+
+	* ring-a-party: New.
+
+Thu Jul  8 16:21:27 CEST 1999  Werner Koch  <wk@isil.d.shuttle.de>
+
+	* lspgpot: New
+
+Wed Jul  7 13:08:40 CEST 1999  Werner Koch  <wk@isil.d.shuttle.de>
+
+	* Makefile.am: Support for libtool.
+
+Tue Jun  8 13:36:25 CEST 1999  Werner Koch  <wk@isil.d.shuttle.de>
+
+	* mpicalc.c (main): hex digits may now be lowercase
+	(do_mulm): new.
+
+Thu Dec 10 20:15:36 CET 1998  Werner Koch  <wk@isil.d.shuttle.de>
+
+	* mpicalc.c (main): Moved initialization out of definition.
+
+Mon May 18 15:39:22 1998  Werner Koch  (wk@isil.d.shuttle.de)
+
+	* mk-tdata.c: New.
+
+Tue Apr  7 19:50:41 1998  Werner Koch  (wk@isil.d.shuttle.de)
+
+	* bftest.c: Now supports all availabe ciphers.
+
+
+
+ Copyright 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
+
+ This file is free software; as a special exception the author gives
+ unlimited permission to copy and/or distribute it, with or without
+ modifications, as long as this notice is preserved.
+
+ This file is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
+ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+
