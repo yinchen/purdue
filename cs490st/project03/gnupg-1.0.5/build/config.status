@@ -434,9 +434,6 @@ CEOF
   mv conftest.out conftest.in
 
   cat > conftest.frag <<CEOF
-${ac_dA}HAVE_STPCPY${ac_dB}HAVE_STPCPY${ac_dC}1${ac_dD}
-${ac_uA}HAVE_STPCPY${ac_uB}HAVE_STPCPY${ac_uC}1${ac_uD}
-${ac_eA}HAVE_STPCPY${ac_eB}HAVE_STPCPY${ac_eC}1${ac_eD}
 ${ac_dA}HAVE_LC_MESSAGES${ac_dB}HAVE_LC_MESSAGES${ac_dC}1${ac_dD}
 ${ac_uA}HAVE_LC_MESSAGES${ac_uB}HAVE_LC_MESSAGES${ac_uC}1${ac_uD}
 ${ac_eA}HAVE_LC_MESSAGES${ac_eB}HAVE_LC_MESSAGES${ac_eC}1${ac_eD}
@@ -446,15 +443,15 @@ ${ac_eA}HAVE_GDBM_H${ac_eB}HAVE_GDBM_H${ac_eC}1${ac_eD}
 ${ac_dA}HAVE_LIBGDBM${ac_dB}HAVE_LIBGDBM${ac_dC}1${ac_dD}
 ${ac_uA}HAVE_LIBGDBM${ac_uB}HAVE_LIBGDBM${ac_uC}1${ac_uD}
 ${ac_eA}HAVE_LIBGDBM${ac_eB}HAVE_LIBGDBM${ac_eC}1${ac_eD}
+${ac_dA}HAVE_LIBNSL${ac_dB}HAVE_LIBNSL${ac_dC}1${ac_dD}
+${ac_uA}HAVE_LIBNSL${ac_uB}HAVE_LIBNSL${ac_uC}1${ac_uD}
+${ac_eA}HAVE_LIBNSL${ac_eB}HAVE_LIBNSL${ac_eC}1${ac_eD}
 CEOF
   sed -f conftest.frag conftest.in > conftest.out
   rm -f conftest.in
   mv conftest.out conftest.in
 
   cat > conftest.frag <<CEOF
-${ac_dA}HAVE_LIBNSL${ac_dB}HAVE_LIBNSL${ac_dC}1${ac_dD}
-${ac_uA}HAVE_LIBNSL${ac_uB}HAVE_LIBNSL${ac_uC}1${ac_uD}
-${ac_eA}HAVE_LIBNSL${ac_eB}HAVE_LIBNSL${ac_eC}1${ac_eD}
 ${ac_dA}STDC_HEADERS${ac_dB}STDC_HEADERS${ac_dC}1${ac_dD}
 ${ac_uA}STDC_HEADERS${ac_uB}STDC_HEADERS${ac_uC}1${ac_uD}
 ${ac_eA}STDC_HEADERS${ac_eB}STDC_HEADERS${ac_eC}1${ac_eD}
@@ -464,15 +461,15 @@ ${ac_eA}HAVE_UNISTD_H${ac_eB}HAVE_UNISTD_H${ac_eC}1${ac_eD}
 ${ac_dA}HAVE_LANGINFO_H${ac_dB}HAVE_LANGINFO_H${ac_dC}1${ac_dD}
 ${ac_uA}HAVE_LANGINFO_H${ac_uB}HAVE_LANGINFO_H${ac_uC}1${ac_uD}
 ${ac_eA}HAVE_LANGINFO_H${ac_eB}HAVE_LANGINFO_H${ac_eC}1${ac_eD}
+${ac_dA}HAVE_TERMIO_H${ac_dB}HAVE_TERMIO_H${ac_dC}1${ac_dD}
+${ac_uA}HAVE_TERMIO_H${ac_uB}HAVE_TERMIO_H${ac_uC}1${ac_uD}
+${ac_eA}HAVE_TERMIO_H${ac_eB}HAVE_TERMIO_H${ac_eC}1${ac_eD}
 CEOF
   sed -f conftest.frag conftest.in > conftest.out
   rm -f conftest.in
   mv conftest.out conftest.in
 
   cat > conftest.frag <<CEOF
-${ac_dA}HAVE_TERMIO_H${ac_dB}HAVE_TERMIO_H${ac_dC}1${ac_dD}
-${ac_uA}HAVE_TERMIO_H${ac_uB}HAVE_TERMIO_H${ac_uC}1${ac_uD}
-${ac_eA}HAVE_TERMIO_H${ac_eB}HAVE_TERMIO_H${ac_eC}1${ac_eD}
 ${ac_dA}RETSIGTYPE${ac_dB}RETSIGTYPE${ac_dC}void${ac_dD}
 ${ac_uA}RETSIGTYPE${ac_uB}RETSIGTYPE${ac_uC}void${ac_uD}
 ${ac_eA}RETSIGTYPE${ac_eB}RETSIGTYPE${ac_eC}void${ac_eD}
@@ -482,15 +479,15 @@ ${ac_eA}SYS_SIGLIST_DECLARED${ac_eB}SYS_SIGLIST_DECLARED${ac_eC}1${ac_eD}
 ${ac_dA}LITTLE_ENDIAN_HOST${ac_dB}LITTLE_ENDIAN_HOST${ac_dC}1${ac_dD}
 ${ac_uA}LITTLE_ENDIAN_HOST${ac_uB}LITTLE_ENDIAN_HOST${ac_uC}1${ac_uD}
 ${ac_eA}LITTLE_ENDIAN_HOST${ac_eB}LITTLE_ENDIAN_HOST${ac_eC}1${ac_eD}
+${ac_dA}HAVE_USHORT_TYPEDEF${ac_dB}HAVE_USHORT_TYPEDEF${ac_dC}1${ac_dD}
+${ac_uA}HAVE_USHORT_TYPEDEF${ac_uB}HAVE_USHORT_TYPEDEF${ac_uC}1${ac_uD}
+${ac_eA}HAVE_USHORT_TYPEDEF${ac_eB}HAVE_USHORT_TYPEDEF${ac_eC}1${ac_eD}
 CEOF
   sed -f conftest.frag conftest.in > conftest.out
   rm -f conftest.in
   mv conftest.out conftest.in
 
   cat > conftest.frag <<CEOF
-${ac_dA}HAVE_USHORT_TYPEDEF${ac_dB}HAVE_USHORT_TYPEDEF${ac_dC}1${ac_dD}
-${ac_uA}HAVE_USHORT_TYPEDEF${ac_uB}HAVE_USHORT_TYPEDEF${ac_uC}1${ac_uD}
-${ac_eA}HAVE_USHORT_TYPEDEF${ac_eB}HAVE_USHORT_TYPEDEF${ac_eC}1${ac_eD}
 ${ac_dA}HAVE_ULONG_TYPEDEF${ac_dB}HAVE_ULONG_TYPEDEF${ac_dC}1${ac_dD}
 ${ac_uA}HAVE_ULONG_TYPEDEF${ac_uB}HAVE_ULONG_TYPEDEF${ac_uC}1${ac_uD}
 ${ac_eA}HAVE_ULONG_TYPEDEF${ac_eB}HAVE_ULONG_TYPEDEF${ac_eC}1${ac_eD}
@@ -500,15 +497,15 @@ ${ac_eA}SIZEOF_UNSIGNED_SHORT${ac_eB}SIZEOF_UNSIGNED_SHORT${ac_eC}2${ac_eD}
 ${ac_dA}SIZEOF_UNSIGNED_INT${ac_dB}SIZEOF_UNSIGNED_INT${ac_dC}4${ac_dD}
 ${ac_uA}SIZEOF_UNSIGNED_INT${ac_uB}SIZEOF_UNSIGNED_INT${ac_uC}4${ac_uD}
 ${ac_eA}SIZEOF_UNSIGNED_INT${ac_eB}SIZEOF_UNSIGNED_INT${ac_eC}4${ac_eD}
+${ac_dA}SIZEOF_UNSIGNED_LONG${ac_dB}SIZEOF_UNSIGNED_LONG${ac_dC}8${ac_dD}
+${ac_uA}SIZEOF_UNSIGNED_LONG${ac_uB}SIZEOF_UNSIGNED_LONG${ac_uC}8${ac_uD}
+${ac_eA}SIZEOF_UNSIGNED_LONG${ac_eB}SIZEOF_UNSIGNED_LONG${ac_eC}8${ac_eD}
 CEOF
   sed -f conftest.frag conftest.in > conftest.out
   rm -f conftest.in
   mv conftest.out conftest.in
 
   cat > conftest.frag <<CEOF
-${ac_dA}SIZEOF_UNSIGNED_LONG${ac_dB}SIZEOF_UNSIGNED_LONG${ac_dC}8${ac_dD}
-${ac_uA}SIZEOF_UNSIGNED_LONG${ac_uB}SIZEOF_UNSIGNED_LONG${ac_uC}8${ac_uD}
-${ac_eA}SIZEOF_UNSIGNED_LONG${ac_eB}SIZEOF_UNSIGNED_LONG${ac_eC}8${ac_eD}
 ${ac_dA}SIZEOF_UNSIGNED_LONG_LONG${ac_dB}SIZEOF_UNSIGNED_LONG_LONG${ac_dC}8${ac_dD}
 ${ac_uA}SIZEOF_UNSIGNED_LONG_LONG${ac_uB}SIZEOF_UNSIGNED_LONG_LONG${ac_uC}8${ac_uD}
 ${ac_eA}SIZEOF_UNSIGNED_LONG_LONG${ac_eB}SIZEOF_UNSIGNED_LONG_LONG${ac_eC}8${ac_eD}
@@ -518,15 +515,15 @@ ${ac_eA}HAVE_VPRINTF${ac_eB}HAVE_VPRINTF${ac_eC}1${ac_eD}
 ${ac_dA}HAVE_STRERROR${ac_dB}HAVE_STRERROR${ac_dC}1${ac_dD}
 ${ac_uA}HAVE_STRERROR${ac_uB}HAVE_STRERROR${ac_uC}1${ac_uD}
 ${ac_eA}HAVE_STRERROR${ac_eB}HAVE_STRERROR${ac_eC}1${ac_eD}
+${ac_dA}HAVE_STPCPY${ac_dB}HAVE_STPCPY${ac_dC}1${ac_dD}
+${ac_uA}HAVE_STPCPY${ac_uB}HAVE_STPCPY${ac_uC}1${ac_uD}
+${ac_eA}HAVE_STPCPY${ac_eB}HAVE_STPCPY${ac_eC}1${ac_eD}
 CEOF
   sed -f conftest.frag conftest.in > conftest.out
   rm -f conftest.in
   mv conftest.out conftest.in
 
   cat > conftest.frag <<CEOF
-${ac_dA}HAVE_STPCPY${ac_dB}HAVE_STPCPY${ac_dC}1${ac_dD}
-${ac_uA}HAVE_STPCPY${ac_uB}HAVE_STPCPY${ac_uC}1${ac_uD}
-${ac_eA}HAVE_STPCPY${ac_eB}HAVE_STPCPY${ac_eC}1${ac_eD}
 ${ac_dA}HAVE_TCGETATTR${ac_dB}HAVE_TCGETATTR${ac_dC}1${ac_dD}
 ${ac_uA}HAVE_TCGETATTR${ac_uB}HAVE_TCGETATTR${ac_uC}1${ac_uD}
 ${ac_eA}HAVE_TCGETATTR${ac_eB}HAVE_TCGETATTR${ac_eC}1${ac_eD}
@@ -536,15 +533,15 @@ ${ac_eA}HAVE_RAND${ac_eB}HAVE_RAND${ac_eC}1${ac_eD}
 ${ac_dA}HAVE_STRTOUL${ac_dB}HAVE_STRTOUL${ac_dC}1${ac_dD}
 ${ac_uA}HAVE_STRTOUL${ac_uB}HAVE_STRTOUL${ac_uC}1${ac_uD}
 ${ac_eA}HAVE_STRTOUL${ac_eB}HAVE_STRTOUL${ac_eC}1${ac_eD}
+${ac_dA}HAVE_MMAP${ac_dB}HAVE_MMAP${ac_dC}1${ac_dD}
+${ac_uA}HAVE_MMAP${ac_uB}HAVE_MMAP${ac_uC}1${ac_uD}
+${ac_eA}HAVE_MMAP${ac_eB}HAVE_MMAP${ac_eC}1${ac_eD}
 CEOF
   sed -f conftest.frag conftest.in > conftest.out
   rm -f conftest.in
   mv conftest.out conftest.in
 
   cat > conftest.frag <<CEOF
-${ac_dA}HAVE_MMAP${ac_dB}HAVE_MMAP${ac_dC}1${ac_dD}
-${ac_uA}HAVE_MMAP${ac_uB}HAVE_MMAP${ac_uC}1${ac_uD}
-${ac_eA}HAVE_MMAP${ac_eB}HAVE_MMAP${ac_eC}1${ac_eD}
 ${ac_dA}HAVE_MEMMOVE${ac_dB}HAVE_MEMMOVE${ac_dC}1${ac_dD}
 ${ac_uA}HAVE_MEMMOVE${ac_uB}HAVE_MEMMOVE${ac_uC}1${ac_uD}
 ${ac_eA}HAVE_MEMMOVE${ac_eB}HAVE_MEMMOVE${ac_eC}1${ac_eD}
@@ -554,15 +551,15 @@ ${ac_eA}HAVE_GETTIMEOFDAY${ac_eB}HAVE_GETTIMEOFDAY${ac_eC}1${ac_eD}
 ${ac_dA}HAVE_GETRUSAGE${ac_dB}HAVE_GETRUSAGE${ac_dC}1${ac_dD}
 ${ac_uA}HAVE_GETRUSAGE${ac_uB}HAVE_GETRUSAGE${ac_uC}1${ac_uD}
 ${ac_eA}HAVE_GETRUSAGE${ac_eB}HAVE_GETRUSAGE${ac_eC}1${ac_eD}
+${ac_dA}HAVE_SETRLIMIT${ac_dB}HAVE_SETRLIMIT${ac_dC}1${ac_dD}
+${ac_uA}HAVE_SETRLIMIT${ac_uB}HAVE_SETRLIMIT${ac_uC}1${ac_uD}
+${ac_eA}HAVE_SETRLIMIT${ac_eB}HAVE_SETRLIMIT${ac_eC}1${ac_eD}
 CEOF
   sed -f conftest.frag conftest.in > conftest.out
   rm -f conftest.in
   mv conftest.out conftest.in
 
   cat > conftest.frag <<CEOF
-${ac_dA}HAVE_SETRLIMIT${ac_dB}HAVE_SETRLIMIT${ac_dC}1${ac_dD}
-${ac_uA}HAVE_SETRLIMIT${ac_uB}HAVE_SETRLIMIT${ac_uC}1${ac_uD}
-${ac_eA}HAVE_SETRLIMIT${ac_eB}HAVE_SETRLIMIT${ac_eC}1${ac_eD}
 ${ac_dA}HAVE_ATEXIT${ac_dB}HAVE_ATEXIT${ac_dC}1${ac_dD}
 ${ac_uA}HAVE_ATEXIT${ac_uB}HAVE_ATEXIT${ac_uC}1${ac_uD}
 ${ac_eA}HAVE_ATEXIT${ac_eB}HAVE_ATEXIT${ac_eC}1${ac_eD}
@@ -572,15 +569,15 @@ ${ac_eA}HAVE_RAISE${ac_eB}HAVE_RAISE${ac_eC}1${ac_eD}
 ${ac_dA}HAVE_GETPAGESIZE${ac_dB}HAVE_GETPAGESIZE${ac_dC}1${ac_dD}
 ${ac_uA}HAVE_GETPAGESIZE${ac_uB}HAVE_GETPAGESIZE${ac_uC}1${ac_uD}
 ${ac_eA}HAVE_GETPAGESIZE${ac_eB}HAVE_GETPAGESIZE${ac_eC}1${ac_eD}
+${ac_dA}HAVE_STRFTIME${ac_dB}HAVE_STRFTIME${ac_dC}1${ac_dD}
+${ac_uA}HAVE_STRFTIME${ac_uB}HAVE_STRFTIME${ac_uC}1${ac_uD}
+${ac_eA}HAVE_STRFTIME${ac_eB}HAVE_STRFTIME${ac_eC}1${ac_eD}
 CEOF
   sed -f conftest.frag conftest.in > conftest.out
   rm -f conftest.in
   mv conftest.out conftest.in
 
   cat > conftest.frag <<CEOF
-${ac_dA}HAVE_STRFTIME${ac_dB}HAVE_STRFTIME${ac_dC}1${ac_dD}
-${ac_uA}HAVE_STRFTIME${ac_uB}HAVE_STRFTIME${ac_uC}1${ac_uD}
-${ac_eA}HAVE_STRFTIME${ac_eB}HAVE_STRFTIME${ac_eC}1${ac_eD}
 ${ac_dA}HAVE_NL_LANGINFO${ac_dB}HAVE_NL_LANGINFO${ac_dC}1${ac_dD}
 ${ac_uA}HAVE_NL_LANGINFO${ac_uB}HAVE_NL_LANGINFO${ac_uC}1${ac_uD}
 ${ac_eA}HAVE_NL_LANGINFO${ac_eB}HAVE_NL_LANGINFO${ac_eC}1${ac_eD}
@@ -590,15 +587,15 @@ ${ac_eA}HAVE_WAITPID${ac_eB}HAVE_WAITPID${ac_eC}1${ac_eD}
 ${ac_dA}HAVE_WAIT4${ac_dB}HAVE_WAIT4${ac_dC}1${ac_dD}
 ${ac_uA}HAVE_WAIT4${ac_uB}HAVE_WAIT4${ac_uC}1${ac_uD}
 ${ac_eA}HAVE_WAIT4${ac_eB}HAVE_WAIT4${ac_eC}1${ac_eD}
+${ac_dA}HAVE_SIGACTION${ac_dB}HAVE_SIGACTION${ac_dC}1${ac_dD}
+${ac_uA}HAVE_SIGACTION${ac_uB}HAVE_SIGACTION${ac_uC}1${ac_uD}
+${ac_eA}HAVE_SIGACTION${ac_eB}HAVE_SIGACTION${ac_eC}1${ac_eD}
 CEOF
   sed -f conftest.frag conftest.in > conftest.out
   rm -f conftest.in
   mv conftest.out conftest.in
 
   cat > conftest.frag <<CEOF
-${ac_dA}HAVE_SIGACTION${ac_dB}HAVE_SIGACTION${ac_dC}1${ac_dD}
-${ac_uA}HAVE_SIGACTION${ac_uB}HAVE_SIGACTION${ac_uC}1${ac_uD}
-${ac_eA}HAVE_SIGACTION${ac_eB}HAVE_SIGACTION${ac_eC}1${ac_eD}
 ${ac_dA}HAVE_SIGPROCMASK${ac_dB}HAVE_SIGPROCMASK${ac_dC}1${ac_dD}
 ${ac_uA}HAVE_SIGPROCMASK${ac_uB}HAVE_SIGPROCMASK${ac_uC}1${ac_uD}
 ${ac_eA}HAVE_SIGPROCMASK${ac_eB}HAVE_SIGPROCMASK${ac_eC}1${ac_eD}
@@ -608,15 +605,15 @@ ${ac_eA}HAVE_FSEEKO${ac_eB}HAVE_FSEEKO${ac_eC}1${ac_eD}
 ${ac_dA}HAVE_MLOCK${ac_dB}HAVE_MLOCK${ac_dC}1${ac_dD}
 ${ac_uA}HAVE_MLOCK${ac_uB}HAVE_MLOCK${ac_uC}1${ac_uD}
 ${ac_eA}HAVE_MLOCK${ac_eB}HAVE_MLOCK${ac_eC}1${ac_eD}
+${ac_dA}HAVE_SYS_STAT_H${ac_dB}HAVE_SYS_STAT_H${ac_dC}1${ac_dD}
+${ac_uA}HAVE_SYS_STAT_H${ac_uB}HAVE_SYS_STAT_H${ac_uC}1${ac_uD}
+${ac_eA}HAVE_SYS_STAT_H${ac_eB}HAVE_SYS_STAT_H${ac_eC}1${ac_eD}
 CEOF
   sed -f conftest.frag conftest.in > conftest.out
   rm -f conftest.in
   mv conftest.out conftest.in
 
   cat > conftest.frag <<CEOF
-${ac_dA}HAVE_SYS_STAT_H${ac_dB}HAVE_SYS_STAT_H${ac_dC}1${ac_dD}
-${ac_uA}HAVE_SYS_STAT_H${ac_uB}HAVE_SYS_STAT_H${ac_uC}1${ac_uD}
-${ac_eA}HAVE_SYS_STAT_H${ac_eB}HAVE_SYS_STAT_H${ac_eC}1${ac_eD}
 ${ac_dA}HAVE_UNISTD_H${ac_dB}HAVE_UNISTD_H${ac_dC}1${ac_dD}
 ${ac_uA}HAVE_UNISTD_H${ac_uB}HAVE_UNISTD_H${ac_uC}1${ac_uD}
 ${ac_eA}HAVE_UNISTD_H${ac_eB}HAVE_UNISTD_H${ac_eC}1${ac_eD}
@@ -626,15 +623,15 @@ ${ac_eA}HAVE_SYS_IPC_H${ac_eB}HAVE_SYS_IPC_H${ac_eC}1${ac_eD}
 ${ac_dA}HAVE_SYS_SHM_H${ac_dB}HAVE_SYS_SHM_H${ac_dC}1${ac_dD}
 ${ac_uA}HAVE_SYS_SHM_H${ac_uB}HAVE_SYS_SHM_H${ac_uC}1${ac_uD}
 ${ac_eA}HAVE_SYS_SHM_H${ac_eB}HAVE_SYS_SHM_H${ac_eC}1${ac_eD}
+${ac_dA}IPC_RMID_DEFERRED_RELEASE${ac_dB}IPC_RMID_DEFERRED_RELEASE${ac_dC}1${ac_dD}
+${ac_uA}IPC_RMID_DEFERRED_RELEASE${ac_uB}IPC_RMID_DEFERRED_RELEASE${ac_uC}1${ac_uD}
+${ac_eA}IPC_RMID_DEFERRED_RELEASE${ac_eB}IPC_RMID_DEFERRED_RELEASE${ac_eC}1${ac_eD}
 CEOF
   sed -f conftest.frag conftest.in > conftest.out
   rm -f conftest.in
   mv conftest.out conftest.in
 
   cat > conftest.frag <<CEOF
-${ac_dA}IPC_RMID_DEFERRED_RELEASE${ac_dB}IPC_RMID_DEFERRED_RELEASE${ac_dC}1${ac_dD}
-${ac_uA}IPC_RMID_DEFERRED_RELEASE${ac_uB}IPC_RMID_DEFERRED_RELEASE${ac_uC}1${ac_uD}
-${ac_eA}IPC_RMID_DEFERRED_RELEASE${ac_eB}IPC_RMID_DEFERRED_RELEASE${ac_eC}1${ac_eD}
 ${ac_dA}IPC_HAVE_SHM_LOCK${ac_dB}IPC_HAVE_SHM_LOCK${ac_dC}1${ac_dD}
 ${ac_uA}IPC_HAVE_SHM_LOCK${ac_uB}IPC_HAVE_SHM_LOCK${ac_uC}1${ac_uD}
 ${ac_eA}IPC_HAVE_SHM_LOCK${ac_eB}IPC_HAVE_SHM_LOCK${ac_eC}1${ac_eD}
@@ -644,15 +641,15 @@ ${ac_eA}USE_SHM_COPROCESSING${ac_eB}USE_SHM_COPROCESSING${ac_eC}1${ac_eD}
 ${ac_dA}HAVE_DEV_RANDOM${ac_dB}HAVE_DEV_RANDOM${ac_dC}1${ac_dD}
 ${ac_uA}HAVE_DEV_RANDOM${ac_uB}HAVE_DEV_RANDOM${ac_uC}1${ac_uD}
 ${ac_eA}HAVE_DEV_RANDOM${ac_eB}HAVE_DEV_RANDOM${ac_eC}1${ac_eD}
+${ac_dA}HAVE_LINUX_RANDOM_H${ac_dB}HAVE_LINUX_RANDOM_H${ac_dC}1${ac_dD}
+${ac_uA}HAVE_LINUX_RANDOM_H${ac_uB}HAVE_LINUX_RANDOM_H${ac_uC}1${ac_uD}
+${ac_eA}HAVE_LINUX_RANDOM_H${ac_eB}HAVE_LINUX_RANDOM_H${ac_eC}1${ac_eD}
 CEOF
   sed -f conftest.frag conftest.in > conftest.out
   rm -f conftest.in
   mv conftest.out conftest.in
 
   cat > conftest.frag <<CEOF
-${ac_dA}HAVE_LINUX_RANDOM_H${ac_dB}HAVE_LINUX_RANDOM_H${ac_dC}1${ac_dD}
-${ac_uA}HAVE_LINUX_RANDOM_H${ac_uB}HAVE_LINUX_RANDOM_H${ac_uC}1${ac_uD}
-${ac_eA}HAVE_LINUX_RANDOM_H${ac_eB}HAVE_LINUX_RANDOM_H${ac_eC}1${ac_eD}
 ${ac_dA}HAVE_DEV_RANDOM_IOCTL${ac_dB}HAVE_DEV_RANDOM_IOCTL${ac_dC}1${ac_dD}
 ${ac_uA}HAVE_DEV_RANDOM_IOCTL${ac_uB}HAVE_DEV_RANDOM_IOCTL${ac_uC}1${ac_uD}
 ${ac_eA}HAVE_DEV_RANDOM_IOCTL${ac_eB}HAVE_DEV_RANDOM_IOCTL${ac_eC}1${ac_eD}

@@ -8,10 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-28 07:56+0800\n"
+"POT-Creation-Date: 2012-10-31 19:39-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -681,192 +682,192 @@ msgstr ""
 msgid "conflicting commands\n"
 msgstr ""
 
-#: g10/g10.c:737
+#: g10/g10.c:736
 #, c-format
 msgid "NOTE: no default option file `%s'\n"
 msgstr ""
 
-#: g10/g10.c:741
+#: g10/g10.c:740
 #, c-format
 msgid "option file `%s': %s\n"
 msgstr ""
 
-#: g10/g10.c:748
+#: g10/g10.c:747
 #, c-format
 msgid "reading options from `%s'\n"
 msgstr ""
 
-#: g10/g10.c:953
+#: g10/g10.c:952
 #, c-format
 msgid "%s is not a valid character set\n"
 msgstr ""
 
-#: g10/g10.c:1027
+#: g10/g10.c:1026
 msgid "WARNING: program may create a core file!\n"
 msgstr ""
 
-#: g10/g10.c:1031 g10/g10.c:1040
+#: g10/g10.c:1030 g10/g10.c:1039
 #, c-format
 msgid "NOTE: %s is not for normal use!\n"
 msgstr ""
 
-#: g10/g10.c:1033
+#: g10/g10.c:1032
 #, c-format
 msgid "%s not allowed with %s!\n"
 msgstr ""
 
-#: g10/g10.c:1036
+#: g10/g10.c:1035
 #, c-format
 msgid "%s makes no sense with %s!\n"
 msgstr ""
 
-#: g10/g10.c:1056 g10/g10.c:1068
+#: g10/g10.c:1055 g10/g10.c:1067
 msgid "selected cipher algorithm is invalid\n"
 msgstr ""
 
-#: g10/g10.c:1062 g10/g10.c:1074
+#: g10/g10.c:1061 g10/g10.c:1073
 msgid "selected digest algorithm is invalid\n"
 msgstr ""
 
-#: g10/g10.c:1078
+#: g10/g10.c:1077
 msgid "the given policy URL is invalid\n"
 msgstr ""
 
-#: g10/g10.c:1081
+#: g10/g10.c:1080
 #, c-format
 msgid "compress algorithm must be in range %d..%d\n"
 msgstr ""
 
-#: g10/g10.c:1083
+#: g10/g10.c:1082
 msgid "completes-needed must be greater than 0\n"
 msgstr ""
 
-#: g10/g10.c:1085
+#: g10/g10.c:1084
 msgid "marginals-needed must be greater than 1\n"
 msgstr ""
 
-#: g10/g10.c:1087
+#: g10/g10.c:1086
 msgid "max-cert-depth must be in range 1 to 255\n"
 msgstr ""
 
-#: g10/g10.c:1090
+#: g10/g10.c:1089
 msgid "NOTE: simple S2K mode (0) is strongly discouraged\n"
 msgstr ""
 
-#: g10/g10.c:1094
+#: g10/g10.c:1093
 msgid "invalid S2K mode; must be 0, 1 or 3\n"
 msgstr ""
 
-#: g10/g10.c:1179
+#: g10/g10.c:1178
 #, c-format
 msgid "failed to initialize the TrustDB: %s\n"
 msgstr ""
 
-#: g10/g10.c:1185
+#: g10/g10.c:1184
 msgid "--store [filename]"
 msgstr ""
 
-#: g10/g10.c:1192
+#: g10/g10.c:1191
 msgid "--symmetric [filename]"
 msgstr ""
 
-#: g10/g10.c:1200
+#: g10/g10.c:1199
 msgid "--encrypt [filename]"
 msgstr ""
 
-#: g10/g10.c:1213
+#: g10/g10.c:1212
 msgid "--sign [filename]"
 msgstr ""
 
-#: g10/g10.c:1226
+#: g10/g10.c:1225
 msgid "--sign --encrypt [filename]"
 msgstr ""
 
-#: g10/g10.c:1240
+#: g10/g10.c:1239
 msgid "--clearsign [filename]"
 msgstr ""
 
-#: g10/g10.c:1257
+#: g10/g10.c:1256
 msgid "--decrypt [filename]"
 msgstr ""
 
-#: g10/g10.c:1265
+#: g10/g10.c:1264
 msgid "--sign-key user-id"
 msgstr ""
 
-#: g10/g10.c:1273
+#: g10/g10.c:1272
 msgid "--lsign-key user-id"
 msgstr ""
 
-#: g10/g10.c:1281
+#: g10/g10.c:1280
 msgid "--edit-key user-id [commands]"
 msgstr ""
 
-#: g10/g10.c:1297
+#: g10/g10.c:1296
 msgid "--delete-secret-key user-id"
 msgstr ""
 
-#: g10/g10.c:1300
+#: g10/g10.c:1299
 msgid "--delete-key user-id"
 msgstr ""
 
-#: g10/g10.c:1308
+#: g10/g10.c:1307
 msgid "--delete-secret-and-public-key user-id"
 msgstr ""
 
-#: g10/g10.c:1345 g10/encode.c:268 g10/sign.c:410
+#: g10/g10.c:1344 g10/encode.c:268 g10/sign.c:410
 #, c-format
 msgid "can't open %s: %s\n"
 msgstr ""
 
-#: g10/g10.c:1360
+#: g10/g10.c:1359
 msgid "-k[v][v][v][c] [user-id] [keyring]"
 msgstr ""
 
-#: g10/g10.c:1426
+#: g10/g10.c:1425
 #, c-format
 msgid "dearmoring failed: %s\n"
 msgstr ""
 
-#: g10/g10.c:1434
+#: g10/g10.c:1433
 #, c-format
 msgid "enarmoring failed: %s\n"
 msgstr ""
 
-#: g10/g10.c:1505
+#: g10/g10.c:1504
 #, c-format
 msgid "invalid hash algorithm `%s'\n"
 msgstr ""
 
-#: g10/g10.c:1592
+#: g10/g10.c:1591
 msgid "[filename]"
 msgstr ""
 
-#: g10/g10.c:1596
+#: g10/g10.c:1595
 msgid "Go ahead and type your message ...\n"
 msgstr ""
 
-#: g10/g10.c:1599 g10/decrypt.c:59 g10/verify.c:94 g10/verify.c:139
+#: g10/g10.c:1598 g10/decrypt.c:59 g10/verify.c:94 g10/verify.c:139
 #, c-format
 msgid "can't open `%s'\n"
 msgstr ""
 
-#: g10/g10.c:1808
+#: g10/g10.c:1807
 msgid ""
 "the first character of a notation name must be a letter or an underscore\n"
 msgstr ""
 
-#: g10/g10.c:1814
+#: g10/g10.c:1813
 msgid ""
 "a notation name must have only letters, digits, dots or underscores and end "
 "with an '='\n"
 msgstr ""
 
-#: g10/g10.c:1820
+#: g10/g10.c:1819
 msgid "dots in a notation name must be surrounded by other characters\n"
 msgstr ""
 
-#: g10/g10.c:1828
+#: g10/g10.c:1827
 msgid "a notation value must not use any control characters\n"
 msgstr ""
 

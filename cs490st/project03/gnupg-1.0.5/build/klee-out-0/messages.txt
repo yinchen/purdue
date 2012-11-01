@@ -1,0 +1,34 @@
+KLEE: WARNING: function "transform" has inline asm
+KLEE: WARNING: function "encrypt_block1748" has inline asm
+KLEE: WARNING: function "decrypt_block1750" has inline asm
+KLEE: WARNING: function "transform1804" has inline asm
+KLEE: WARNING: function "gather_random" has inline asm
+KLEE: WARNING: function "transform1826" has inline asm
+KLEE: WARNING: function "__dns_lookup" has inline asm
+KLEE: WARNING: undefined reference to function: __syscall_ipc
+KLEE: WARNING: undefined reference to function: deflate
+KLEE: WARNING: undefined reference to function: deflateEnd
+KLEE: WARNING: undefined reference to function: deflateInit2_
+KLEE: WARNING: undefined reference to function: deflateInit_
+KLEE: WARNING: undefined reference to function: gdbm_exists
+KLEE: WARNING: undefined reference to function: gdbm_fetch
+KLEE: WARNING: undefined reference to function: gdbm_firstkey
+KLEE: WARNING: undefined reference to function: gdbm_nextkey
+KLEE: WARNING: undefined reference to function: gdbm_open
+KLEE: WARNING: undefined reference to function: gdbm_store
+KLEE: WARNING: undefined reference to function: getrusage
+KLEE: WARNING: undefined reference to function: inflate
+KLEE: WARNING: undefined reference to function: inflateEnd
+KLEE: WARNING: undefined reference to function: inflateInit2_
+KLEE: WARNING: undefined reference to function: inflateInit_
+KLEE: WARNING: undefined reference to function: klee_get_valuel
+KLEE: WARNING: undefined reference to function: sigsuspend
+KLEE: WARNING: executable has module level assembly (ignoring)
+KLEE: WARNING: calling external: syscall(54, 0, 21505, 4088749720)
+KLEE: WARNING: calling __user_main with extra arguments.
+KLEE: WARNING: calling external: getpagesize()
+KLEE: WARNING: mmap: ignoring (EPERM)
+KLEE: WARNING: calling external: getuid()
+KLEE: WARNING: mlock: ignoring (EPERM)
+KLEE: WARNING: calling external: geteuid()
+KLEE: WARNING: calling remove_lockfiles with extra arguments.
