@@ -1,0 +1,592 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - g10/encode.c</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">g10</a> - encode.c<span style="font-size: 80%;"> (source / <a href="encode.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">230</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2012-11-04</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /* encode.c - encode data</a>
+<span class="lineNum">       2 </span>            :  * Copyright (C) 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
+<span class="lineNum">       3 </span>            :  *
+<span class="lineNum">       4 </span>            :  * This file is part of GnuPG.
+<span class="lineNum">       5 </span>            :  *
+<span class="lineNum">       6 </span>            :  * GnuPG is free software; you can redistribute it and/or modify
+<span class="lineNum">       7 </span>            :  * it under the terms of the GNU General Public License as published by
+<span class="lineNum">       8 </span>            :  * the Free Software Foundation; either version 2 of the License, or
+<span class="lineNum">       9 </span>            :  * (at your option) any later version.
+<span class="lineNum">      10 </span>            :  *
+<span class="lineNum">      11 </span>            :  * GnuPG is distributed in the hope that it will be useful,
+<span class="lineNum">      12 </span>            :  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<span class="lineNum">      13 </span>            :  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<span class="lineNum">      14 </span>            :  * GNU General Public License for more details.
+<span class="lineNum">      15 </span>            :  *
+<span class="lineNum">      16 </span>            :  * You should have received a copy of the GNU General Public License
+<span class="lineNum">      17 </span>            :  * along with this program; if not, write to the Free Software
+<span class="lineNum">      18 </span>            :  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
+<span class="lineNum">      19 </span>            :  */
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : #include &lt;config.h&gt;
+<span class="lineNum">      22 </span>            : #include &lt;stdio.h&gt;
+<span class="lineNum">      23 </span>            : #include &lt;stdlib.h&gt;
+<span class="lineNum">      24 </span>            : #include &lt;string.h&gt;
+<span class="lineNum">      25 </span>            : #include &lt;errno.h&gt;
+<span class="lineNum">      26 </span>            : #include &lt;assert.h&gt;
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : #include &quot;options.h&quot;
+<span class="lineNum">      29 </span>            : #include &quot;packet.h&quot;
+<span class="lineNum">      30 </span>            : #include &quot;errors.h&quot;
+<span class="lineNum">      31 </span>            : #include &quot;iobuf.h&quot;
+<span class="lineNum">      32 </span>            : #include &quot;keydb.h&quot;
+<span class="lineNum">      33 </span>            : #include &quot;memory.h&quot;
+<span class="lineNum">      34 </span>            : #include &quot;util.h&quot;
+<span class="lineNum">      35 </span>            : #include &quot;main.h&quot;
+<span class="lineNum">      36 </span>            : #include &quot;filter.h&quot;
+<span class="lineNum">      37 </span>            : #include &quot;trustdb.h&quot;
+<span class="lineNum">      38 </span>            : #include &quot;i18n.h&quot;
+<span class="lineNum">      39 </span>            : #include &quot;status.h&quot;
+<span class="lineNum">      40 </span>            : 
+<span class="lineNum">      41 </span>            : static int encode_simple( const char *filename, int mode );
+<span class="lineNum">      42 </span>            : static int write_pubkey_enc_from_list( PK_LIST pk_list, DEK *dek, IOBUF out );
+<span class="lineNum">      43 </span>            : 
+<span class="lineNum">      44 </span>            : 
+<span class="lineNum">      45 </span>            : 
+<span class="lineNum">      46 </span>            : /****************
+<span class="lineNum">      47 </span>            :  * Encode FILENAME with only the symmetric cipher.  Take input from
+<span class="lineNum">      48 </span>            :  * stdin if FILENAME is NULL.
+<a name="49"><span class="lineNum">      49 </span>            :  */</a>
+<span class="lineNum">      50 </span>            : int
+<span class="lineNum">      51 </span><span class="lineNoCov">          0 : encode_symmetric( const char *filename )</span>
+<span class="lineNum">      52 </span>            : {
+<span class="lineNum">      53 </span><span class="lineNoCov">          0 :     return encode_simple( filename, 1 );</span>
+<span class="lineNum">      54 </span>            : }
+<span class="lineNum">      55 </span>            : 
+<span class="lineNum">      56 </span>            : /****************
+<span class="lineNum">      57 </span>            :  * Encode FILENAME as a literal data packet only. Take input from
+<span class="lineNum">      58 </span>            :  * stdin if FILENAME is NULL.
+<a name="59"><span class="lineNum">      59 </span>            :  */</a>
+<span class="lineNum">      60 </span>            : int
+<span class="lineNum">      61 </span><span class="lineNoCov">          0 : encode_store( const char *filename )</span>
+<span class="lineNum">      62 </span>            : {
+<span class="lineNum">      63 </span><span class="lineNoCov">          0 :     return encode_simple( filename, 0 );</span>
+<span class="lineNum">      64 </span>            : }
+<span class="lineNum">      65 </span>            : 
+<span class="lineNum">      66 </span>            : 
+<a name="67"><span class="lineNum">      67 </span>            : </a>
+<span class="lineNum">      68 </span>            : static int
+<span class="lineNum">      69 </span><span class="lineNoCov">          0 : encode_simple( const char *filename, int mode )</span>
+<span class="lineNum">      70 </span>            : {
+<span class="lineNum">      71 </span>            :     IOBUF inp, out;
+<span class="lineNum">      72 </span>            :     PACKET pkt;
+<span class="lineNum">      73 </span><span class="lineNoCov">          0 :     PKT_plaintext *pt = NULL;</span>
+<span class="lineNum">      74 </span><span class="lineNoCov">          0 :     STRING2KEY *s2k = NULL;</span>
+<span class="lineNum">      75 </span><span class="lineNoCov">          0 :     int rc = 0;</span>
+<span class="lineNum">      76 </span>            :     u32 filesize;
+<span class="lineNum">      77 </span>            :     cipher_filter_context_t cfx;
+<span class="lineNum">      78 </span>            :     armor_filter_context_t afx;
+<span class="lineNum">      79 </span>            :     compress_filter_context_t zfx;
+<span class="lineNum">      80 </span>            :     text_filter_context_t tfx;
+<span class="lineNum">      81 </span><span class="lineNoCov">          0 :     int do_compress = opt.compress &amp;&amp; !opt.rfc1991;</span>
+<span class="lineNum">      82 </span>            : 
+<span class="lineNum">      83 </span><span class="lineNoCov">          0 :     memset( &amp;cfx, 0, sizeof cfx);</span>
+<span class="lineNum">      84 </span><span class="lineNoCov">          0 :     memset( &amp;afx, 0, sizeof afx);</span>
+<span class="lineNum">      85 </span><span class="lineNoCov">          0 :     memset( &amp;zfx, 0, sizeof zfx);</span>
+<span class="lineNum">      86 </span><span class="lineNoCov">          0 :     memset( &amp;tfx, 0, sizeof tfx);</span>
+<span class="lineNum">      87 </span><span class="lineNoCov">          0 :     init_packet(&amp;pkt);</span>
+<span class="lineNum">      88 </span>            : 
+<span class="lineNum">      89 </span>            :     /* prepare iobufs */
+<span class="lineNum">      90 </span><span class="lineNoCov">          0 :     if( !(inp = iobuf_open(filename)) ) {</span>
+<span class="lineNum">      91 </span>            :         log_error(_(&quot;%s: can't open: %s\n&quot;), filename? filename: &quot;[stdin]&quot;,
+<span class="lineNum">      92 </span>            :                                         strerror(errno) );
+<span class="lineNum">      93 </span><span class="lineNoCov">          0 :         return G10ERR_OPEN_FILE;</span>
+<span class="lineNum">      94 </span>            :     }
+<span class="lineNum">      95 </span>            : 
+<span class="lineNum">      96 </span><span class="lineNoCov">          0 :     if( opt.textmode )</span>
+<span class="lineNum">      97 </span><span class="lineNoCov">          0 :         iobuf_push_filter( inp, text_filter, &amp;tfx );</span>
+<span class="lineNum">      98 </span>            : 
+<span class="lineNum">      99 </span><span class="lineNoCov">          0 :     cfx.dek = NULL;</span>
+<span class="lineNum">     100 </span><span class="lineNoCov">          0 :     if( mode ) {</span>
+<span class="lineNum">     101 </span><span class="lineNoCov">          0 :         s2k = m_alloc_clear( sizeof *s2k );</span>
+<span class="lineNum">     102 </span><span class="lineNoCov">          0 :         s2k-&gt;mode = opt.rfc1991? 0:opt.s2k_mode;</span>
+<span class="lineNum">     103 </span><span class="lineNoCov">          0 :         s2k-&gt;hash_algo = opt.def_digest_algo ? opt.def_digest_algo</span>
+<span class="lineNum">     104 </span><span class="lineNoCov">          0 :                                              : opt.s2k_digest_algo;</span>
+<span class="lineNum">     105 </span><span class="lineNoCov">          0 :         cfx.dek = passphrase_to_dek( NULL, 0,</span>
+<span class="lineNum">     106 </span><span class="lineNoCov">          0 :                        opt.def_cipher_algo ? opt.def_cipher_algo</span>
+<span class="lineNum">     107 </span>            :                                            : opt.s2k_cipher_algo , s2k, 2 );
+<span class="lineNum">     108 </span><span class="lineNoCov">          0 :         if( !cfx.dek || !cfx.dek-&gt;keylen ) {</span>
+<span class="lineNum">     109 </span><span class="lineNoCov">          0 :             rc = G10ERR_PASSPHRASE;</span>
+<span class="lineNum">     110 </span><span class="lineNoCov">          0 :             m_free(cfx.dek);</span>
+<span class="lineNum">     111 </span><span class="lineNoCov">          0 :             m_free(s2k);</span>
+<span class="lineNum">     112 </span><span class="lineNoCov">          0 :             iobuf_close(inp);</span>
+<span class="lineNum">     113 </span>            :             log_error(_(&quot;error creating passphrase: %s\n&quot;), g10_errstr(rc) );
+<span class="lineNum">     114 </span><span class="lineNoCov">          0 :             return rc;</span>
+<span class="lineNum">     115 </span>            :         }
+<span class="lineNum">     116 </span>            :     }
+<span class="lineNum">     117 </span>            : 
+<span class="lineNum">     118 </span><span class="lineNoCov">          0 :     if( (rc = open_outfile( filename, opt.armor? 1:0, &amp;out )) ) {</span>
+<span class="lineNum">     119 </span><span class="lineNoCov">          0 :         iobuf_cancel(inp);</span>
+<span class="lineNum">     120 </span><span class="lineNoCov">          0 :         m_free(cfx.dek);</span>
+<span class="lineNum">     121 </span><span class="lineNoCov">          0 :         m_free(s2k);</span>
+<span class="lineNum">     122 </span><span class="lineNoCov">          0 :         return rc;</span>
+<span class="lineNum">     123 </span>            :     }
+<span class="lineNum">     124 </span>            : 
+<span class="lineNum">     125 </span><span class="lineNoCov">          0 :     if( opt.armor )</span>
+<span class="lineNum">     126 </span><span class="lineNoCov">          0 :         iobuf_push_filter( out, armor_filter, &amp;afx );</span>
+<span class="lineNum">     127 </span>            :   #ifdef ENABLE_COMMENT_PACKETS
+<span class="lineNum">     128 </span>            :     else {
+<span class="lineNum">     129 </span>            :         write_comment( out, &quot;#created by GNUPG v&quot; VERSION &quot; (&quot;
+<span class="lineNum">     130 </span>            :                                             PRINTABLE_OS_NAME &quot;)&quot;);
+<span class="lineNum">     131 </span>            :         if( opt.comment_string )
+<span class="lineNum">     132 </span>            :             write_comment( out, opt.comment_string );
+<span class="lineNum">     133 </span>            :     }
+<span class="lineNum">     134 </span>            :   #endif
+<span class="lineNum">     135 </span><span class="lineNoCov">          0 :     if( s2k &amp;&amp; !opt.rfc1991 ) {</span>
+<span class="lineNum">     136 </span><span class="lineNoCov">          0 :         PKT_symkey_enc *enc = m_alloc_clear( sizeof *enc );</span>
+<span class="lineNum">     137 </span><span class="lineNoCov">          0 :         enc-&gt;version = 4;</span>
+<span class="lineNum">     138 </span><span class="lineNoCov">          0 :         enc-&gt;cipher_algo = cfx.dek-&gt;algo;</span>
+<span class="lineNum">     139 </span><span class="lineNoCov">          0 :         enc-&gt;s2k = *s2k;</span>
+<span class="lineNum">     140 </span><span class="lineNoCov">          0 :         pkt.pkttype = PKT_SYMKEY_ENC;</span>
+<span class="lineNum">     141 </span><span class="lineNoCov">          0 :         pkt.pkt.symkey_enc = enc;</span>
+<span class="lineNum">     142 </span><span class="lineNoCov">          0 :         if( (rc = build_packet( out, &amp;pkt )) )</span>
+<span class="lineNum">     143 </span>            :             log_error(&quot;build symkey packet failed: %s\n&quot;, g10_errstr(rc) );
+<span class="lineNum">     144 </span><span class="lineNoCov">          0 :         m_free(enc);</span>
+<span class="lineNum">     145 </span>            :     }
+<span class="lineNum">     146 </span>            : 
+<span class="lineNum">     147 </span><span class="lineNoCov">          0 :     if (!opt.no_literal) {</span>
+<span class="lineNum">     148 </span>            :         /* setup the inner packet */
+<span class="lineNum">     149 </span><span class="lineNoCov">          0 :         if( filename || opt.set_filename ) {</span>
+<span class="lineNum">     150 </span><span class="lineNoCov">          0 :             char *s = make_basename( opt.set_filename ? opt.set_filename</span>
+<span class="lineNum">     151 </span>            :                                                       : filename );
+<span class="lineNum">     152 </span><span class="lineNoCov">          0 :             pt = m_alloc( sizeof *pt + strlen(s) - 1 );</span>
+<span class="lineNum">     153 </span><span class="lineNoCov">          0 :             pt-&gt;namelen = strlen(s);</span>
+<span class="lineNum">     154 </span><span class="lineNoCov">          0 :             memcpy(pt-&gt;name, s, pt-&gt;namelen );</span>
+<span class="lineNum">     155 </span><span class="lineNoCov">          0 :             m_free(s);</span>
+<span class="lineNum">     156 </span>            :         }
+<span class="lineNum">     157 </span>            :         else { /* no filename */
+<span class="lineNum">     158 </span><span class="lineNoCov">          0 :             pt = m_alloc( sizeof *pt - 1 );</span>
+<span class="lineNum">     159 </span><span class="lineNoCov">          0 :             pt-&gt;namelen = 0;</span>
+<span class="lineNum">     160 </span>            :         }
+<span class="lineNum">     161 </span>            :     }
+<span class="lineNum">     162 </span>            : 
+<span class="lineNum">     163 </span>            :     /* pgp5 has problems to decrypt symmetrically encrypted data from
+<span class="lineNum">     164 </span>            :      * GnuPG if the filelength is in the inner packet.  It works
+<span class="lineNum">     165 </span>            :      * when only partial length headers are use.  Until we have
+<span class="lineNum">     166 </span>            :      * tracked this problem down. We use this temporary fix
+<span class="lineNum">     167 </span>            :      * (fixme: remove the &amp;&amp; !mode )
+<span class="lineNum">     168 </span>            :      */
+<span class="lineNum">     169 </span><span class="lineNoCov">          0 :     if( filename &amp;&amp; !opt.textmode &amp;&amp; !mode ) {</span>
+<span class="lineNum">     170 </span><span class="lineNoCov">          0 :         if( !(filesize = iobuf_get_filelength(inp)) )</span>
+<span class="lineNum">     171 </span>            :             log_info(_(&quot;%s: WARNING: empty file\n&quot;), filename );
+<span class="lineNum">     172 </span>            :         /* we can't yet encode the length of very large files,
+<span class="lineNum">     173 </span>            :          * so we switch to partial lengthn encoding in this case */
+<span class="lineNum">     174 </span><span class="lineNoCov">          0 :         if ( filesize &gt;= IOBUF_FILELENGTH_LIMIT )</span>
+<span class="lineNum">     175 </span><span class="lineNoCov">          0 :             filesize = 0;</span>
+<span class="lineNum">     176 </span>            : 
+<span class="lineNum">     177 </span>            :     }
+<span class="lineNum">     178 </span>            :     else
+<span class="lineNum">     179 </span><span class="lineNoCov">          0 :         filesize = opt.set_filesize ? opt.set_filesize : 0; /* stdin */</span>
+<span class="lineNum">     180 </span>            : 
+<span class="lineNum">     181 </span><span class="lineNoCov">          0 :     if (!opt.no_literal) {</span>
+<span class="lineNum">     182 </span><span class="lineNoCov">          0 :         pt-&gt;timestamp = make_timestamp();</span>
+<span class="lineNum">     183 </span><span class="lineNoCov">          0 :         pt-&gt;mode = opt.textmode? 't' : 'b';</span>
+<span class="lineNum">     184 </span><span class="lineNoCov">          0 :         pt-&gt;len = filesize;</span>
+<span class="lineNum">     185 </span><span class="lineNoCov">          0 :         pt-&gt;new_ctb = !pt-&gt;len &amp;&amp; !opt.rfc1991;</span>
+<span class="lineNum">     186 </span><span class="lineNoCov">          0 :         pt-&gt;buf = inp;</span>
+<span class="lineNum">     187 </span><span class="lineNoCov">          0 :         pkt.pkttype = PKT_PLAINTEXT;</span>
+<span class="lineNum">     188 </span><span class="lineNoCov">          0 :         pkt.pkt.plaintext = pt;</span>
+<span class="lineNum">     189 </span><span class="lineNoCov">          0 :         cfx.datalen = filesize &amp;&amp; !do_compress ? calc_packet_length( &amp;pkt ) : 0;</span>
+<span class="lineNum">     190 </span>            :     }
+<span class="lineNum">     191 </span>            :     else
+<span class="lineNum">     192 </span><span class="lineNoCov">          0 :         cfx.datalen = filesize &amp;&amp; !do_compress ? filesize : 0;</span>
+<span class="lineNum">     193 </span>            : 
+<span class="lineNum">     194 </span>            :     /* register the cipher filter */
+<span class="lineNum">     195 </span><span class="lineNoCov">          0 :     if( mode )</span>
+<span class="lineNum">     196 </span><span class="lineNoCov">          0 :         iobuf_push_filter( out, cipher_filter, &amp;cfx );</span>
+<span class="lineNum">     197 </span>            :     /* register the compress filter */
+<span class="lineNum">     198 </span><span class="lineNoCov">          0 :     if( do_compress )</span>
+<span class="lineNum">     199 </span><span class="lineNoCov">          0 :         iobuf_push_filter( out, compress_filter, &amp;zfx );</span>
+<span class="lineNum">     200 </span>            : 
+<span class="lineNum">     201 </span>            :     /* do the work */
+<span class="lineNum">     202 </span><span class="lineNoCov">          0 :     if (!opt.no_literal) {</span>
+<span class="lineNum">     203 </span><span class="lineNoCov">          0 :         if( (rc = build_packet( out, &amp;pkt )) )</span>
+<span class="lineNum">     204 </span>            :             log_error(&quot;build_packet failed: %s\n&quot;, g10_errstr(rc) );
+<span class="lineNum">     205 </span>            :     }
+<span class="lineNum">     206 </span>            :     else {
+<span class="lineNum">     207 </span>            :         /* user requested not to create a literal packet,
+<span class="lineNum">     208 </span>            :          * so we copy the plain data */
+<span class="lineNum">     209 </span>            :         byte copy_buffer[4096];
+<span class="lineNum">     210 </span>            :         int  bytes_copied;
+<span class="lineNum">     211 </span><span class="lineNoCov">          0 :         while ((bytes_copied = iobuf_read(inp, copy_buffer, 4096)) != -1)</span>
+<span class="lineNum">     212 </span><span class="lineNoCov">          0 :             if (iobuf_write(out, copy_buffer, bytes_copied) == -1) {</span>
+<span class="lineNum">     213 </span><span class="lineNoCov">          0 :                 rc = G10ERR_WRITE_FILE;</span>
+<span class="lineNum">     214 </span>            :                 log_error(&quot;copying input to output failed: %s\n&quot;, g10_errstr(rc) );
+<span class="lineNum">     215 </span><span class="lineNoCov">          0 :                 break;</span>
+<span class="lineNum">     216 </span>            :             }
+<span class="lineNum">     217 </span><span class="lineNoCov">          0 :         memset(copy_buffer, 0, 4096); /* burn buffer */</span>
+<span class="lineNum">     218 </span>            :     }
+<span class="lineNum">     219 </span>            : 
+<span class="lineNum">     220 </span>            :     /* finish the stuff */
+<span class="lineNum">     221 </span><span class="lineNoCov">          0 :     iobuf_close(inp);</span>
+<span class="lineNum">     222 </span><span class="lineNoCov">          0 :     if (rc)</span>
+<span class="lineNum">     223 </span><span class="lineNoCov">          0 :         iobuf_cancel(out);</span>
+<span class="lineNum">     224 </span>            :     else {
+<span class="lineNum">     225 </span><span class="lineNoCov">          0 :         iobuf_close(out); /* fixme: check returncode */</span>
+<span class="lineNum">     226 </span><span class="lineNoCov">          0 :         if (mode)</span>
+<span class="lineNum">     227 </span><span class="lineNoCov">          0 :             write_status( STATUS_END_ENCRYPTION );</span>
+<span class="lineNum">     228 </span>            :     }
+<span class="lineNum">     229 </span><span class="lineNoCov">          0 :     if (pt)</span>
+<span class="lineNum">     230 </span><span class="lineNoCov">          0 :         pt-&gt;buf = NULL;</span>
+<span class="lineNum">     231 </span><span class="lineNoCov">          0 :     free_packet(&amp;pkt);</span>
+<span class="lineNum">     232 </span><span class="lineNoCov">          0 :     m_free(cfx.dek);</span>
+<span class="lineNum">     233 </span><span class="lineNoCov">          0 :     m_free(s2k);</span>
+<span class="lineNum">     234 </span><span class="lineNoCov">          0 :     return rc;</span>
+<span class="lineNum">     235 </span>            : }
+<span class="lineNum">     236 </span>            : 
+<span class="lineNum">     237 </span>            : /****************
+<span class="lineNum">     238 </span>            :  * Encrypt the file with the given userids (or ask if none
+<span class="lineNum">     239 </span>            :  * is supplied).
+<a name="240"><span class="lineNum">     240 </span>            :  */</a>
+<span class="lineNum">     241 </span>            : int
+<span class="lineNum">     242 </span><span class="lineNoCov">          0 : encode_crypt( const char *filename, STRLIST remusr )</span>
+<span class="lineNum">     243 </span>            : {
+<span class="lineNum">     244 </span><span class="lineNoCov">          0 :     IOBUF inp = NULL, out = NULL;</span>
+<span class="lineNum">     245 </span>            :     PACKET pkt;
+<span class="lineNum">     246 </span><span class="lineNoCov">          0 :     PKT_plaintext *pt = NULL;</span>
+<span class="lineNum">     247 </span><span class="lineNoCov">          0 :     int rc = 0;</span>
+<span class="lineNum">     248 </span>            :     u32 filesize;
+<span class="lineNum">     249 </span>            :     cipher_filter_context_t cfx;
+<span class="lineNum">     250 </span>            :     armor_filter_context_t afx;
+<span class="lineNum">     251 </span>            :     compress_filter_context_t zfx;
+<span class="lineNum">     252 </span>            :     text_filter_context_t tfx;
+<span class="lineNum">     253 </span>            :     PK_LIST pk_list;
+<span class="lineNum">     254 </span><span class="lineNoCov">          0 :     int do_compress = opt.compress &amp;&amp; !opt.rfc1991;</span>
+<span class="lineNum">     255 </span>            : 
+<span class="lineNum">     256 </span>            : 
+<span class="lineNum">     257 </span><span class="lineNoCov">          0 :     memset( &amp;cfx, 0, sizeof cfx);</span>
+<span class="lineNum">     258 </span><span class="lineNoCov">          0 :     memset( &amp;afx, 0, sizeof afx);</span>
+<span class="lineNum">     259 </span><span class="lineNoCov">          0 :     memset( &amp;zfx, 0, sizeof zfx);</span>
+<span class="lineNum">     260 </span><span class="lineNoCov">          0 :     memset( &amp;tfx, 0, sizeof tfx);</span>
+<span class="lineNum">     261 </span><span class="lineNoCov">          0 :     init_packet(&amp;pkt);</span>
+<span class="lineNum">     262 </span>            : 
+<span class="lineNum">     263 </span><span class="lineNoCov">          0 :     if( (rc=build_pk_list( remusr, &amp;pk_list, PUBKEY_USAGE_ENC)) )</span>
+<span class="lineNum">     264 </span><span class="lineNoCov">          0 :         return rc;</span>
+<span class="lineNum">     265 </span>            : 
+<span class="lineNum">     266 </span>            :     /* prepare iobufs */
+<span class="lineNum">     267 </span><span class="lineNoCov">          0 :     if( !(inp = iobuf_open(filename)) ) {</span>
+<span class="lineNum">     268 </span>            :         log_error(_(&quot;can't open %s: %s\n&quot;), filename? filename: &quot;[stdin]&quot;,
+<span class="lineNum">     269 </span>            :                                         strerror(errno) );
+<span class="lineNum">     270 </span><span class="lineNoCov">          0 :         rc = G10ERR_OPEN_FILE;</span>
+<span class="lineNum">     271 </span><span class="lineNoCov">          0 :         goto leave;</span>
+<span class="lineNum">     272 </span>            :     }
+<span class="lineNum">     273 </span><span class="lineNoCov">          0 :     else if( opt.verbose )</span>
+<span class="lineNum">     274 </span>            :         log_info(_(&quot;reading from `%s'\n&quot;), filename? filename: &quot;[stdin]&quot;);
+<span class="lineNum">     275 </span>            : 
+<span class="lineNum">     276 </span><span class="lineNoCov">          0 :     if( opt.textmode )</span>
+<span class="lineNum">     277 </span><span class="lineNoCov">          0 :         iobuf_push_filter( inp, text_filter, &amp;tfx );</span>
+<span class="lineNum">     278 </span>            : 
+<span class="lineNum">     279 </span><span class="lineNoCov">          0 :     if( (rc = open_outfile( filename, opt.armor? 1:0, &amp;out )) )</span>
+<span class="lineNum">     280 </span><span class="lineNoCov">          0 :         goto leave;</span>
+<span class="lineNum">     281 </span>            : 
+<span class="lineNum">     282 </span>            : 
+<span class="lineNum">     283 </span><span class="lineNoCov">          0 :     if( opt.armor )</span>
+<span class="lineNum">     284 </span><span class="lineNoCov">          0 :         iobuf_push_filter( out, armor_filter, &amp;afx );</span>
+<span class="lineNum">     285 </span>            :   #ifdef ENABLE_COMMENT_PACKETS
+<span class="lineNum">     286 </span>            :     else {
+<span class="lineNum">     287 </span>            :         write_comment( out, &quot;#created by GNUPG v&quot; VERSION &quot; (&quot;
+<span class="lineNum">     288 </span>            :                                             PRINTABLE_OS_NAME &quot;)&quot;);
+<span class="lineNum">     289 </span>            :         if( opt.comment_string )
+<span class="lineNum">     290 </span>            :             write_comment( out, opt.comment_string );
+<span class="lineNum">     291 </span>            :     }
+<span class="lineNum">     292 </span>            :   #endif
+<span class="lineNum">     293 </span>            :     /* create a session key */
+<span class="lineNum">     294 </span><span class="lineNoCov">          0 :     cfx.dek = m_alloc_secure( sizeof *cfx.dek );</span>
+<span class="lineNum">     295 </span><span class="lineNoCov">          0 :     if( !opt.def_cipher_algo ) { /* try to get it from the prefs */</span>
+<span class="lineNum">     296 </span><span class="lineNoCov">          0 :         cfx.dek-&gt;algo = select_algo_from_prefs( pk_list, PREFTYPE_SYM );</span>
+<span class="lineNum">     297 </span><span class="lineNoCov">          0 :         if( cfx.dek-&gt;algo == -1 )</span>
+<span class="lineNum">     298 </span><span class="lineNoCov">          0 :             cfx.dek-&gt;algo = DEFAULT_CIPHER_ALGO;</span>
+<span class="lineNum">     299 </span>            :     }
+<span class="lineNum">     300 </span>            :     else
+<span class="lineNum">     301 </span><span class="lineNoCov">          0 :         cfx.dek-&gt;algo = opt.def_cipher_algo;</span>
+<span class="lineNum">     302 </span><span class="lineNoCov">          0 :     make_session_key( cfx.dek );</span>
+<span class="lineNum">     303 </span><span class="lineNoCov">          0 :     if( DBG_CIPHER )</span>
+<span class="lineNum">     304 </span><span class="lineNoCov">          0 :         log_hexdump(&quot;DEK is: &quot;, cfx.dek-&gt;key, cfx.dek-&gt;keylen );</span>
+<span class="lineNum">     305 </span>            : 
+<span class="lineNum">     306 </span><span class="lineNoCov">          0 :     rc = write_pubkey_enc_from_list( pk_list, cfx.dek, out );</span>
+<span class="lineNum">     307 </span><span class="lineNoCov">          0 :     if( rc  )</span>
+<span class="lineNum">     308 </span><span class="lineNoCov">          0 :         goto leave;</span>
+<span class="lineNum">     309 </span>            : 
+<span class="lineNum">     310 </span><span class="lineNoCov">          0 :     if (!opt.no_literal) {</span>
+<span class="lineNum">     311 </span>            :         /* setup the inner packet */
+<span class="lineNum">     312 </span><span class="lineNoCov">          0 :         if( filename || opt.set_filename ) {</span>
+<span class="lineNum">     313 </span><span class="lineNoCov">          0 :             char *s = make_basename( opt.set_filename ? opt.set_filename : filename );</span>
+<span class="lineNum">     314 </span><span class="lineNoCov">          0 :             pt = m_alloc( sizeof *pt + strlen(s) - 1 );</span>
+<span class="lineNum">     315 </span><span class="lineNoCov">          0 :             pt-&gt;namelen = strlen(s);</span>
+<span class="lineNum">     316 </span><span class="lineNoCov">          0 :             memcpy(pt-&gt;name, s, pt-&gt;namelen );</span>
+<span class="lineNum">     317 </span><span class="lineNoCov">          0 :             m_free(s);</span>
+<span class="lineNum">     318 </span>            :         }
+<span class="lineNum">     319 </span>            :         else { /* no filename */
+<span class="lineNum">     320 </span><span class="lineNoCov">          0 :             pt = m_alloc( sizeof *pt - 1 );</span>
+<span class="lineNum">     321 </span><span class="lineNoCov">          0 :             pt-&gt;namelen = 0;</span>
+<span class="lineNum">     322 </span>            :         }
+<span class="lineNum">     323 </span>            :     }
+<span class="lineNum">     324 </span>            : 
+<span class="lineNum">     325 </span><span class="lineNoCov">          0 :     if( filename &amp;&amp; !opt.textmode ) {</span>
+<span class="lineNum">     326 </span><span class="lineNoCov">          0 :         if( !(filesize = iobuf_get_filelength(inp)) )</span>
+<span class="lineNum">     327 </span>            :             log_info(_(&quot;%s: WARNING: empty file\n&quot;), filename );
+<span class="lineNum">     328 </span>            :         /* we can't yet encode the length of very large files,
+<span class="lineNum">     329 </span>            :          * so we switch to partial length encoding in this case */
+<span class="lineNum">     330 </span><span class="lineNoCov">          0 :         if ( filesize &gt;= IOBUF_FILELENGTH_LIMIT )</span>
+<span class="lineNum">     331 </span><span class="lineNoCov">          0 :             filesize = 0;</span>
+<span class="lineNum">     332 </span>            :     }
+<span class="lineNum">     333 </span>            :     else
+<span class="lineNum">     334 </span><span class="lineNoCov">          0 :         filesize = opt.set_filesize ? opt.set_filesize : 0; /* stdin */</span>
+<span class="lineNum">     335 </span>            : 
+<span class="lineNum">     336 </span><span class="lineNoCov">          0 :     if (!opt.no_literal) {</span>
+<span class="lineNum">     337 </span><span class="lineNoCov">          0 :         pt-&gt;timestamp = make_timestamp();</span>
+<span class="lineNum">     338 </span><span class="lineNoCov">          0 :         pt-&gt;mode = opt.textmode ? 't' : 'b';</span>
+<span class="lineNum">     339 </span><span class="lineNoCov">          0 :         pt-&gt;len = filesize;</span>
+<span class="lineNum">     340 </span><span class="lineNoCov">          0 :         pt-&gt;new_ctb = !pt-&gt;len &amp;&amp; !opt.rfc1991;</span>
+<span class="lineNum">     341 </span><span class="lineNoCov">          0 :         pt-&gt;buf = inp;</span>
+<span class="lineNum">     342 </span><span class="lineNoCov">          0 :         pkt.pkttype = PKT_PLAINTEXT;</span>
+<span class="lineNum">     343 </span><span class="lineNoCov">          0 :         pkt.pkt.plaintext = pt;</span>
+<span class="lineNum">     344 </span><span class="lineNoCov">          0 :         cfx.datalen = filesize &amp;&amp; !do_compress? calc_packet_length( &amp;pkt ) : 0;</span>
+<span class="lineNum">     345 </span>            :     }
+<span class="lineNum">     346 </span>            :     else
+<span class="lineNum">     347 </span><span class="lineNoCov">          0 :         cfx.datalen = filesize &amp;&amp; !do_compress ? filesize : 0;</span>
+<span class="lineNum">     348 </span>            : 
+<span class="lineNum">     349 </span>            :     /* register the cipher filter */
+<span class="lineNum">     350 </span><span class="lineNoCov">          0 :     iobuf_push_filter( out, cipher_filter, &amp;cfx );</span>
+<span class="lineNum">     351 </span>            : 
+<span class="lineNum">     352 </span>            :     /* register the compress filter */
+<span class="lineNum">     353 </span><span class="lineNoCov">          0 :     if( do_compress ) {</span>
+<span class="lineNum">     354 </span><span class="lineNoCov">          0 :         int compr_algo = select_algo_from_prefs( pk_list, PREFTYPE_COMPR );</span>
+<span class="lineNum">     355 </span><span class="lineNoCov">          0 :         if( !compr_algo )</span>
+<span class="lineNum">     356 </span>            :             ; /* don't use compression */
+<span class="lineNum">     357 </span>            :         else {
+<span class="lineNum">     358 </span><span class="lineNoCov">          0 :             if( compr_algo == 1 )</span>
+<span class="lineNum">     359 </span><span class="lineNoCov">          0 :                 zfx.algo = 1; /* default is 2 */</span>
+<span class="lineNum">     360 </span><span class="lineNoCov">          0 :             iobuf_push_filter( out, compress_filter, &amp;zfx );</span>
+<span class="lineNum">     361 </span>            :         }
+<span class="lineNum">     362 </span>            :     }
+<span class="lineNum">     363 </span>            : 
+<span class="lineNum">     364 </span>            :     /* do the work */
+<span class="lineNum">     365 </span><span class="lineNoCov">          0 :     if (!opt.no_literal) {</span>
+<span class="lineNum">     366 </span><span class="lineNoCov">          0 :         if( (rc = build_packet( out, &amp;pkt )) )</span>
+<span class="lineNum">     367 </span>            :             log_error(&quot;build_packet failed: %s\n&quot;, g10_errstr(rc) );
+<span class="lineNum">     368 </span>            :     }
+<span class="lineNum">     369 </span>            :     else {
+<span class="lineNum">     370 </span>            :         /* user requested not to create a literal packet, so we copy the plain data */
+<span class="lineNum">     371 </span>            :         byte copy_buffer[4096];
+<span class="lineNum">     372 </span>            :         int  bytes_copied;
+<span class="lineNum">     373 </span><span class="lineNoCov">          0 :         while ((bytes_copied = iobuf_read(inp, copy_buffer, 4096)) != -1)</span>
+<span class="lineNum">     374 </span><span class="lineNoCov">          0 :             if (iobuf_write(out, copy_buffer, bytes_copied) == -1) {</span>
+<span class="lineNum">     375 </span><span class="lineNoCov">          0 :                 rc = G10ERR_WRITE_FILE;</span>
+<span class="lineNum">     376 </span>            :                 log_error(&quot;copying input to output failed: %s\n&quot;, g10_errstr(rc) );
+<span class="lineNum">     377 </span><span class="lineNoCov">          0 :                 break;</span>
+<span class="lineNum">     378 </span>            :             }
+<span class="lineNum">     379 </span><span class="lineNoCov">          0 :         memset(copy_buffer, 0, 4096); /* burn buffer */</span>
+<span class="lineNum">     380 </span>            :     }
+<span class="lineNum">     381 </span>            : 
+<span class="lineNum">     382 </span>            :     /* finish the stuff */
+<span class="lineNum">     383 </span>            :   leave:
+<span class="lineNum">     384 </span><span class="lineNoCov">          0 :     iobuf_close(inp);</span>
+<span class="lineNum">     385 </span><span class="lineNoCov">          0 :     if( rc )</span>
+<span class="lineNum">     386 </span><span class="lineNoCov">          0 :         iobuf_cancel(out);</span>
+<span class="lineNum">     387 </span>            :     else {
+<span class="lineNum">     388 </span><span class="lineNoCov">          0 :         iobuf_close(out); /* fixme: check returncode */</span>
+<span class="lineNum">     389 </span><span class="lineNoCov">          0 :         write_status( STATUS_END_ENCRYPTION );</span>
+<span class="lineNum">     390 </span>            :     }
+<span class="lineNum">     391 </span><span class="lineNoCov">          0 :     if( pt )</span>
+<span class="lineNum">     392 </span><span class="lineNoCov">          0 :         pt-&gt;buf = NULL;</span>
+<span class="lineNum">     393 </span><span class="lineNoCov">          0 :     free_packet(&amp;pkt);</span>
+<span class="lineNum">     394 </span><span class="lineNoCov">          0 :     m_free(cfx.dek);</span>
+<span class="lineNum">     395 </span><span class="lineNoCov">          0 :     release_pk_list( pk_list );</span>
+<span class="lineNum">     396 </span><span class="lineNoCov">          0 :     return rc;</span>
+<span class="lineNum">     397 </span>            : }
+<span class="lineNum">     398 </span>            : 
+<span class="lineNum">     399 </span>            : 
+<span class="lineNum">     400 </span>            : 
+<span class="lineNum">     401 </span>            : 
+<span class="lineNum">     402 </span>            : /****************
+<span class="lineNum">     403 </span>            :  * Filter to do a complete public key encryption.
+<a name="404"><span class="lineNum">     404 </span>            :  */</a>
+<span class="lineNum">     405 </span>            : int
+<span class="lineNum">     406 </span><span class="lineNoCov">          0 : encrypt_filter( void *opaque, int control,</span>
+<span class="lineNum">     407 </span>            :                IOBUF a, byte *buf, size_t *ret_len)
+<span class="lineNum">     408 </span>            : {
+<span class="lineNum">     409 </span><span class="lineNoCov">          0 :     size_t size = *ret_len;</span>
+<span class="lineNum">     410 </span><span class="lineNoCov">          0 :     encrypt_filter_context_t *efx = opaque;</span>
+<span class="lineNum">     411 </span><span class="lineNoCov">          0 :     int rc=0;</span>
+<span class="lineNum">     412 </span>            : 
+<span class="lineNum">     413 </span><span class="lineNoCov">          0 :     if( control == IOBUFCTRL_UNDERFLOW ) { /* decrypt */</span>
+<span class="lineNum">     414 </span><span class="lineNoCov">          0 :         BUG(); /* not used */</span>
+<span class="lineNum">     415 </span>            :     }
+<span class="lineNum">     416 </span><span class="lineNoCov">          0 :     else if( control == IOBUFCTRL_FLUSH ) { /* encrypt */</span>
+<span class="lineNum">     417 </span><span class="lineNoCov">          0 :         if( !efx-&gt;header_okay ) {</span>
+<span class="lineNum">     418 </span><span class="lineNoCov">          0 :             efx-&gt;cfx.dek = m_alloc_secure( sizeof *efx-&gt;cfx.dek );</span>
+<span class="lineNum">     419 </span>            : 
+<span class="lineNum">     420 </span><span class="lineNoCov">          0 :             if( !opt.def_cipher_algo  ) { /* try to get it from the prefs */</span>
+<span class="lineNum">     421 </span><span class="lineNoCov">          0 :                 efx-&gt;cfx.dek-&gt;algo =</span>
+<span class="lineNum">     422 </span><span class="lineNoCov">          0 :                           select_algo_from_prefs( efx-&gt;pk_list, PREFTYPE_SYM );</span>
+<span class="lineNum">     423 </span><span class="lineNoCov">          0 :                 if( efx-&gt;cfx.dek-&gt;algo == -1 )</span>
+<span class="lineNum">     424 </span><span class="lineNoCov">          0 :                     efx-&gt;cfx.dek-&gt;algo = DEFAULT_CIPHER_ALGO;</span>
+<span class="lineNum">     425 </span>            :             }
+<span class="lineNum">     426 </span>            :             else
+<span class="lineNum">     427 </span><span class="lineNoCov">          0 :                 efx-&gt;cfx.dek-&gt;algo = opt.def_cipher_algo;</span>
+<span class="lineNum">     428 </span><span class="lineNoCov">          0 :             make_session_key( efx-&gt;cfx.dek );</span>
+<span class="lineNum">     429 </span><span class="lineNoCov">          0 :             if( DBG_CIPHER )</span>
+<span class="lineNum">     430 </span><span class="lineNoCov">          0 :                 log_hexdump(&quot;DEK is: &quot;,</span>
+<span class="lineNum">     431 </span><span class="lineNoCov">          0 :                              efx-&gt;cfx.dek-&gt;key, efx-&gt;cfx.dek-&gt;keylen );</span>
+<span class="lineNum">     432 </span>            : 
+<span class="lineNum">     433 </span><span class="lineNoCov">          0 :             rc = write_pubkey_enc_from_list( efx-&gt;pk_list, efx-&gt;cfx.dek, a );</span>
+<span class="lineNum">     434 </span><span class="lineNoCov">          0 :             if( rc )</span>
+<span class="lineNum">     435 </span><span class="lineNoCov">          0 :                 return rc;</span>
+<span class="lineNum">     436 </span>            : 
+<span class="lineNum">     437 </span><span class="lineNoCov">          0 :             iobuf_push_filter( a, cipher_filter, &amp;efx-&gt;cfx );</span>
+<span class="lineNum">     438 </span>            : 
+<span class="lineNum">     439 </span><span class="lineNoCov">          0 :             efx-&gt;header_okay = 1;</span>
+<span class="lineNum">     440 </span>            :         }
+<span class="lineNum">     441 </span><span class="lineNoCov">          0 :         rc = iobuf_write( a, buf, size );</span>
+<span class="lineNum">     442 </span>            : 
+<span class="lineNum">     443 </span>            :     }
+<span class="lineNum">     444 </span><span class="lineNoCov">          0 :     else if( control == IOBUFCTRL_FREE ) {</span>
+<span class="lineNum">     445 </span>            :     }
+<span class="lineNum">     446 </span><span class="lineNoCov">          0 :     else if( control == IOBUFCTRL_DESC ) {</span>
+<span class="lineNum">     447 </span><span class="lineNoCov">          0 :         *(char**)buf = &quot;encrypt_filter&quot;;</span>
+<span class="lineNum">     448 </span>            :     }
+<span class="lineNum">     449 </span><span class="lineNoCov">          0 :     return rc;</span>
+<span class="lineNum">     450 </span>            : }
+<span class="lineNum">     451 </span>            : 
+<span class="lineNum">     452 </span>            : 
+<span class="lineNum">     453 </span>            : /****************
+<span class="lineNum">     454 </span>            :  * Write pubkey-enc packets from the list of PKs to OUT.
+<a name="455"><span class="lineNum">     455 </span>            :  */</a>
+<span class="lineNum">     456 </span>            : static int
+<span class="lineNum">     457 </span><span class="lineNoCov">          0 : write_pubkey_enc_from_list( PK_LIST pk_list, DEK *dek, IOBUF out )</span>
+<span class="lineNum">     458 </span>            : {
+<span class="lineNum">     459 </span>            :     PACKET pkt;
+<span class="lineNum">     460 </span>            :     PKT_public_key *pk;
+<span class="lineNum">     461 </span>            :     PKT_pubkey_enc  *enc;
+<span class="lineNum">     462 </span>            :     int rc;
+<span class="lineNum">     463 </span>            : 
+<span class="lineNum">     464 </span><span class="lineNoCov">          0 :     for( ; pk_list; pk_list = pk_list-&gt;next ) {</span>
+<span class="lineNum">     465 </span>            :         MPI frame;
+<span class="lineNum">     466 </span>            : 
+<span class="lineNum">     467 </span><span class="lineNoCov">          0 :         pk = pk_list-&gt;pk;</span>
+<span class="lineNum">     468 </span>            : 
+<span class="lineNum">     469 </span><span class="lineNoCov">          0 :         print_pubkey_algo_note( pk-&gt;pubkey_algo );</span>
+<span class="lineNum">     470 </span><span class="lineNoCov">          0 :         enc = m_alloc_clear( sizeof *enc );</span>
+<span class="lineNum">     471 </span><span class="lineNoCov">          0 :         enc-&gt;pubkey_algo = pk-&gt;pubkey_algo;</span>
+<span class="lineNum">     472 </span><span class="lineNoCov">          0 :         keyid_from_pk( pk, enc-&gt;keyid );</span>
+<span class="lineNum">     473 </span><span class="lineNoCov">          0 :         enc-&gt;throw_keyid = opt.throw_keyid;</span>
+<span class="lineNum">     474 </span>            : 
+<span class="lineNum">     475 </span>            :         /* Okay, what's going on: We have the session key somewhere in
+<span class="lineNum">     476 </span>            :          * the structure DEK and want to encode this session key in
+<span class="lineNum">     477 </span>            :          * an integer value of n bits.  pubkey_nbits gives us the
+<span class="lineNum">     478 </span>            :          * number of bits we have to use.  We then encode the session
+<span class="lineNum">     479 </span>            :          * key in some way and we get it back in the big intger value
+<span class="lineNum">     480 </span>            :          * FRAME.  Then we use FRAME, the public key PK-&gt;PKEY and the
+<span class="lineNum">     481 </span>            :          * algorithm number PK-&gt;PUBKEY_ALGO and pass it to pubkey_encrypt
+<span class="lineNum">     482 </span>            :          * which returns the encrypted value in the array ENC-&gt;DATA.
+<span class="lineNum">     483 </span>            :          * This array has a size which depends on the used algorithm
+<span class="lineNum">     484 </span>            :          * (e.g. 2 for ElGamal).  We don't need frame anymore because we
+<span class="lineNum">     485 </span>            :          * have everything now in enc-&gt;data which is the passed to
+<span class="lineNum">     486 </span>            :          * build_packet()
+<span class="lineNum">     487 </span>            :          */
+<span class="lineNum">     488 </span><span class="lineNoCov">          0 :         frame = encode_session_key( dek, pubkey_nbits( pk-&gt;pubkey_algo,</span>
+<span class="lineNum">     489 </span>            :                                                           pk-&gt;pkey ) );
+<span class="lineNum">     490 </span><span class="lineNoCov">          0 :         rc = pubkey_encrypt( pk-&gt;pubkey_algo, enc-&gt;data, frame, pk-&gt;pkey );</span>
+<span class="lineNum">     491 </span><span class="lineNoCov">          0 :         mpi_free( frame );</span>
+<span class="lineNum">     492 </span><span class="lineNoCov">          0 :         if( rc )</span>
+<span class="lineNum">     493 </span>            :             log_error(&quot;pubkey_encrypt failed: %s\n&quot;, g10_errstr(rc) );
+<span class="lineNum">     494 </span>            :         else {
+<span class="lineNum">     495 </span><span class="lineNoCov">          0 :             if( opt.verbose ) {</span>
+<span class="lineNum">     496 </span><span class="lineNoCov">          0 :                 char *ustr = get_user_id_string_native( enc-&gt;keyid );</span>
+<span class="lineNum">     497 </span>            :                 log_info(_(&quot;%s/%s encrypted for: %s\n&quot;),
+<span class="lineNum">     498 </span>            :                     pubkey_algo_to_string(enc-&gt;pubkey_algo),
+<span class="lineNum">     499 </span>            :                     cipher_algo_to_string(dek-&gt;algo), ustr );
+<span class="lineNum">     500 </span><span class="lineNoCov">          0 :                 m_free(ustr);</span>
+<span class="lineNum">     501 </span>            :             }
+<span class="lineNum">     502 </span>            :             /* and write it */
+<span class="lineNum">     503 </span><span class="lineNoCov">          0 :             init_packet(&amp;pkt);</span>
+<span class="lineNum">     504 </span><span class="lineNoCov">          0 :             pkt.pkttype = PKT_PUBKEY_ENC;</span>
+<span class="lineNum">     505 </span><span class="lineNoCov">          0 :             pkt.pkt.pubkey_enc = enc;</span>
+<span class="lineNum">     506 </span><span class="lineNoCov">          0 :             rc = build_packet( out, &amp;pkt );</span>
+<span class="lineNum">     507 </span>            :             if( rc )
+<span class="lineNum">     508 </span>            :                log_error(&quot;build_packet(pubkey_enc) failed: %s\n&quot;, g10_errstr(rc));
+<span class="lineNum">     509 </span>            :         }
+<span class="lineNum">     510 </span><span class="lineNoCov">          0 :         free_pubkey_enc(enc);</span>
+<span class="lineNum">     511 </span><span class="lineNoCov">          0 :         if( rc )</span>
+<span class="lineNum">     512 </span><span class="lineNoCov">          0 :             return rc;</span>
+<span class="lineNum">     513 </span>            :     }
+<span class="lineNum">     514 </span><span class="lineNoCov">          0 :     return 0;</span>
+<span class="lineNum">     515 </span>            : }
+<span class="lineNum">     516 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

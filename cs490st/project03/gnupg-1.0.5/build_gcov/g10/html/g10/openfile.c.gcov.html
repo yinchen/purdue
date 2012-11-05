@@ -1,0 +1,435 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - g10/openfile.c</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">g10</a> - openfile.c<span style="font-size: 80%;"> (source / <a href="openfile.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">135</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2012-11-04</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /* openfile.c</a>
+<span class="lineNum">       2 </span>            :  * Copyright (C) 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
+<span class="lineNum">       3 </span>            :  *
+<span class="lineNum">       4 </span>            :  * This file is part of GnuPG.
+<span class="lineNum">       5 </span>            :  *
+<span class="lineNum">       6 </span>            :  * GnuPG is free software; you can redistribute it and/or modify
+<span class="lineNum">       7 </span>            :  * it under the terms of the GNU General Public License as published by
+<span class="lineNum">       8 </span>            :  * the Free Software Foundation; either version 2 of the License, or
+<span class="lineNum">       9 </span>            :  * (at your option) any later version.
+<span class="lineNum">      10 </span>            :  *
+<span class="lineNum">      11 </span>            :  * GnuPG is distributed in the hope that it will be useful,
+<span class="lineNum">      12 </span>            :  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<span class="lineNum">      13 </span>            :  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<span class="lineNum">      14 </span>            :  * GNU General Public License for more details.
+<span class="lineNum">      15 </span>            :  *
+<span class="lineNum">      16 </span>            :  * You should have received a copy of the GNU General Public License
+<span class="lineNum">      17 </span>            :  * along with this program; if not, write to the Free Software
+<span class="lineNum">      18 </span>            :  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
+<span class="lineNum">      19 </span>            :  */
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : #include &lt;config.h&gt;
+<span class="lineNum">      22 </span>            : #include &lt;stdio.h&gt;
+<span class="lineNum">      23 </span>            : #include &lt;stdlib.h&gt;
+<span class="lineNum">      24 </span>            : #include &lt;string.h&gt;
+<span class="lineNum">      25 </span>            : #include &lt;assert.h&gt;
+<span class="lineNum">      26 </span>            : #include &lt;errno.h&gt;
+<span class="lineNum">      27 </span>            : #include &lt;sys/types.h&gt;
+<span class="lineNum">      28 </span>            : #include &lt;sys/stat.h&gt;
+<span class="lineNum">      29 </span>            : #include &lt;fcntl.h&gt;
+<span class="lineNum">      30 </span>            : #include &lt;unistd.h&gt;
+<span class="lineNum">      31 </span>            : #include &quot;util.h&quot;
+<span class="lineNum">      32 </span>            : #include &quot;memory.h&quot;
+<span class="lineNum">      33 </span>            : #include &quot;ttyio.h&quot;
+<span class="lineNum">      34 </span>            : #include &quot;options.h&quot;
+<span class="lineNum">      35 </span>            : #include &quot;main.h&quot;
+<span class="lineNum">      36 </span>            : #include &quot;status.h&quot;
+<span class="lineNum">      37 </span>            : #include &quot;i18n.h&quot;
+<span class="lineNum">      38 </span>            : 
+<span class="lineNum">      39 </span>            : #ifdef USE_ONLY_8DOT3
+<span class="lineNum">      40 </span>            :   #define SKELEXT &quot;.skl&quot;
+<span class="lineNum">      41 </span>            : #else
+<span class="lineNum">      42 </span>            :   #define SKELEXT &quot;.skel&quot;
+<span class="lineNum">      43 </span>            : #endif
+<span class="lineNum">      44 </span>            : 
+<span class="lineNum">      45 </span>            : #ifdef HAVE_DRIVE_LETTERS
+<span class="lineNum">      46 </span>            :   #define CMP_FILENAME(a,b) stricmp( (a), (b) )
+<span class="lineNum">      47 </span>            : #else
+<span class="lineNum">      48 </span>            :   #define CMP_FILENAME(a,b) strcmp( (a), (b) )
+<span class="lineNum">      49 </span>            : #endif
+<span class="lineNum">      50 </span>            : 
+<span class="lineNum">      51 </span>            : #ifdef MKDIR_TAKES_ONE_ARG
+<span class="lineNum">      52 </span>            : # undef mkdir
+<span class="lineNum">      53 </span>            : # define mkdir(a,b) mkdir(a)
+<span class="lineNum">      54 </span>            : #endif
+<span class="lineNum">      55 </span>            : 
+<span class="lineNum">      56 </span>            : /* FIXME:  Implement opt.interactive. */
+<span class="lineNum">      57 </span>            : 
+<span class="lineNum">      58 </span>            : /****************
+<span class="lineNum">      59 </span>            :  * Check whether FNAME exists and ask if it's okay to overwrite an
+<span class="lineNum">      60 </span>            :  * existing one.
+<span class="lineNum">      61 </span>            :  * Returns: True: it's okay to overwrite or the file does not exist
+<span class="lineNum">      62 </span>            :  *          False: Do not overwrite
+<a name="63"><span class="lineNum">      63 </span>            :  */</a>
+<span class="lineNum">      64 </span>            : int
+<span class="lineNum">      65 </span><span class="lineNoCov">          0 : overwrite_filep( const char *fname )</span>
+<span class="lineNum">      66 </span>            : {
+<span class="lineNum">      67 </span><span class="lineNoCov">          0 :     if( !fname || (*fname == '-' &amp;&amp; !fname[1]) )</span>
+<span class="lineNum">      68 </span><span class="lineNoCov">          0 :         return 1; /* writing to stdout is always okay */</span>
+<span class="lineNum">      69 </span>            : 
+<span class="lineNum">      70 </span><span class="lineNoCov">          0 :     if( access( fname, F_OK ) )</span>
+<span class="lineNum">      71 </span><span class="lineNoCov">          0 :         return 1; /* does not exist */</span>
+<span class="lineNum">      72 </span>            : 
+<span class="lineNum">      73 </span>            : #ifndef HAVE_DOSISH_SYSTEM
+<span class="lineNum">      74 </span><span class="lineNoCov">          0 :     if ( !strcmp ( fname, &quot;/dev/null&quot; ) )</span>
+<span class="lineNum">      75 </span><span class="lineNoCov">          0 :         return 1; /* does not do any harm */</span>
+<span class="lineNum">      76 </span>            : #endif
+<span class="lineNum">      77 </span>            : 
+<span class="lineNum">      78 </span>            :     /* fixme: add some backup stuff in case of overwrite */
+<span class="lineNum">      79 </span><span class="lineNoCov">          0 :     if( opt.answer_yes )</span>
+<span class="lineNum">      80 </span><span class="lineNoCov">          0 :         return 1;</span>
+<span class="lineNum">      81 </span><span class="lineNoCov">          0 :     if( opt.answer_no || opt.batch )</span>
+<span class="lineNum">      82 </span><span class="lineNoCov">          0 :         return 0;  /* do not overwrite */</span>
+<span class="lineNum">      83 </span>            : 
+<span class="lineNum">      84 </span><span class="lineNoCov">          0 :     tty_printf(_(&quot;File `%s' exists. &quot;), fname);</span>
+<span class="lineNum">      85 </span><span class="lineNoCov">          0 :     if( cpr_get_answer_is_yes(&quot;openfile.overwrite.okay&quot;,</span>
+<span class="lineNum">      86 </span><span class="lineNoCov">          0 :                                _(&quot;Overwrite (y/N)? &quot;)) )</span>
+<span class="lineNum">      87 </span><span class="lineNoCov">          0 :         return 1;</span>
+<span class="lineNum">      88 </span><span class="lineNoCov">          0 :     return 0;</span>
+<span class="lineNum">      89 </span>            : }
+<span class="lineNum">      90 </span>            : 
+<span class="lineNum">      91 </span>            : 
+<span class="lineNum">      92 </span>            : /****************
+<span class="lineNum">      93 </span>            :  * Strip know extensions from iname and return a newly allocated
+<span class="lineNum">      94 </span>            :  * filename.  Return NULL if we can't do that.
+<a name="95"><span class="lineNum">      95 </span>            :  */</a>
+<span class="lineNum">      96 </span>            : char *
+<span class="lineNum">      97 </span><span class="lineNoCov">          0 : make_outfile_name( const char *iname )</span>
+<span class="lineNum">      98 </span>            : {
+<span class="lineNum">      99 </span>            :     size_t n;
+<span class="lineNum">     100 </span>            : 
+<span class="lineNum">     101 </span><span class="lineNoCov">          0 :     if( (!iname || (*iname=='-' &amp;&amp; !iname[1]) ))</span>
+<span class="lineNum">     102 </span><span class="lineNoCov">          0 :         return m_strdup(&quot;-&quot;);</span>
+<span class="lineNum">     103 </span>            : 
+<span class="lineNum">     104 </span><span class="lineNoCov">          0 :     n = strlen(iname);</span>
+<span class="lineNum">     105 </span><span class="lineNoCov">          0 :     if( n &gt; 4 &amp;&amp; (    !CMP_FILENAME(iname+n-4,&quot;.gpg&quot;)</span>
+<span class="lineNum">     106 </span><span class="lineNoCov">          0 :                    || !CMP_FILENAME(iname+n-4,&quot;.pgp&quot;)</span>
+<span class="lineNum">     107 </span><span class="lineNoCov">          0 :                    || !CMP_FILENAME(iname+n-4,&quot;.sig&quot;)</span>
+<span class="lineNum">     108 </span><span class="lineNoCov">          0 :                    || !CMP_FILENAME(iname+n-4,&quot;.asc&quot;) ) ) {</span>
+<span class="lineNum">     109 </span><span class="lineNoCov">          0 :         char *buf = m_strdup( iname );</span>
+<span class="lineNum">     110 </span><span class="lineNoCov">          0 :         buf[n-4] = 0;</span>
+<span class="lineNum">     111 </span><span class="lineNoCov">          0 :         return buf;</span>
+<span class="lineNum">     112 </span>            :     }
+<span class="lineNum">     113 </span><span class="lineNoCov">          0 :     else if( n &gt; 5 &amp;&amp; !CMP_FILENAME(iname+n-5,&quot;.sign&quot;) ) {</span>
+<span class="lineNum">     114 </span><span class="lineNoCov">          0 :         char *buf = m_strdup( iname );</span>
+<span class="lineNum">     115 </span><span class="lineNoCov">          0 :         buf[n-5] = 0;</span>
+<span class="lineNum">     116 </span><span class="lineNoCov">          0 :         return buf;</span>
+<span class="lineNum">     117 </span>            :     }
+<span class="lineNum">     118 </span>            : 
+<span class="lineNum">     119 </span>            :     log_info(_(&quot;%s: unknown suffix\n&quot;), iname );
+<span class="lineNum">     120 </span><span class="lineNoCov">          0 :     return NULL;</span>
+<span class="lineNum">     121 </span>            : }
+<span class="lineNum">     122 </span>            : 
+<span class="lineNum">     123 </span>            : 
+<span class="lineNum">     124 </span>            : /****************
+<span class="lineNum">     125 </span>            :  * Ask for a outputfilename and use the given one as default.
+<span class="lineNum">     126 </span>            :  * Return NULL if no file has been given or it is not possible to
+<span class="lineNum">     127 </span>            :  * ask the user.
+<a name="128"><span class="lineNum">     128 </span>            :  */</a>
+<span class="lineNum">     129 </span>            : char *
+<span class="lineNum">     130 </span><span class="lineNoCov">          0 : ask_outfile_name( const char *name, size_t namelen )</span>
+<span class="lineNum">     131 </span>            : {
+<span class="lineNum">     132 </span>            :     size_t n;
+<span class="lineNum">     133 </span>            :     const char *s;
+<span class="lineNum">     134 </span>            :     char *prompt;
+<span class="lineNum">     135 </span>            :     char *fname;
+<span class="lineNum">     136 </span>            :     char *defname;
+<span class="lineNum">     137 </span>            : 
+<span class="lineNum">     138 </span><span class="lineNoCov">          0 :     if( opt.batch )</span>
+<span class="lineNum">     139 </span><span class="lineNoCov">          0 :         return NULL;</span>
+<span class="lineNum">     140 </span>            : 
+<span class="lineNum">     141 </span><span class="lineNoCov">          0 :     s = _(&quot;Enter new filename&quot;);</span>
+<span class="lineNum">     142 </span>            : 
+<span class="lineNum">     143 </span><span class="lineNoCov">          0 :     n = strlen(s) + namelen + 10;</span>
+<span class="lineNum">     144 </span><span class="lineNoCov">          0 :     defname = name &amp;&amp; namelen? make_printable_string( name, namelen, 0): NULL;</span>
+<span class="lineNum">     145 </span><span class="lineNoCov">          0 :     prompt = m_alloc(n);</span>
+<span class="lineNum">     146 </span><span class="lineNoCov">          0 :     if( defname )</span>
+<span class="lineNum">     147 </span><span class="lineNoCov">          0 :         sprintf(prompt, &quot;%s [%s]: &quot;, s, defname );</span>
+<span class="lineNum">     148 </span>            :     else
+<span class="lineNum">     149 </span><span class="lineNoCov">          0 :         sprintf(prompt, &quot;%s: &quot;, s );</span>
+<span class="lineNum">     150 </span><span class="lineNoCov">          0 :     fname = cpr_get(&quot;openfile.askoutname&quot;, prompt );</span>
+<span class="lineNum">     151 </span><span class="lineNoCov">          0 :     cpr_kill_prompt();</span>
+<span class="lineNum">     152 </span><span class="lineNoCov">          0 :     m_free(prompt);</span>
+<span class="lineNum">     153 </span><span class="lineNoCov">          0 :     if( !*fname ) {</span>
+<span class="lineNum">     154 </span><span class="lineNoCov">          0 :         m_free( fname ); fname = NULL;</span>
+<span class="lineNum">     155 </span><span class="lineNoCov">          0 :         fname = defname; defname = NULL;</span>
+<span class="lineNum">     156 </span>            :     }
+<span class="lineNum">     157 </span><span class="lineNoCov">          0 :     m_free(defname);</span>
+<span class="lineNum">     158 </span><span class="lineNoCov">          0 :     if (fname)</span>
+<span class="lineNum">     159 </span><span class="lineNoCov">          0 :         trim_spaces (fname);</span>
+<span class="lineNum">     160 </span><span class="lineNoCov">          0 :     return fname;</span>
+<span class="lineNum">     161 </span>            : }
+<span class="lineNum">     162 </span>            : 
+<span class="lineNum">     163 </span>            : 
+<span class="lineNum">     164 </span>            : 
+<span class="lineNum">     165 </span>            : /****************
+<span class="lineNum">     166 </span>            :  * Make an output filename for the inputfile INAME.
+<span class="lineNum">     167 </span>            :  * Returns an IOBUF and an errorcode
+<span class="lineNum">     168 </span>            :  * Mode 0 = use &quot;.gpg&quot;
+<span class="lineNum">     169 </span>            :  *      1 = use &quot;.asc&quot;
+<span class="lineNum">     170 </span>            :  *      2 = use &quot;.sig&quot;
+<a name="171"><span class="lineNum">     171 </span>            :  */</a>
+<span class="lineNum">     172 </span>            : int
+<span class="lineNum">     173 </span><span class="lineNoCov">          0 : open_outfile( const char *iname, int mode, IOBUF *a )</span>
+<span class="lineNum">     174 </span>            : {
+<span class="lineNum">     175 </span><span class="lineNoCov">          0 :     int rc = 0;</span>
+<span class="lineNum">     176 </span>            : 
+<span class="lineNum">     177 </span><span class="lineNoCov">          0 :     *a = NULL;</span>
+<span class="lineNum">     178 </span><span class="lineNoCov">          0 :     if( (!iname || (*iname=='-' &amp;&amp; !iname[1])) &amp;&amp; !opt.outfile ) {</span>
+<span class="lineNum">     179 </span><span class="lineNoCov">          0 :         if( !(*a = iobuf_create(NULL)) ) {</span>
+<span class="lineNum">     180 </span>            :             log_error(_(&quot;%s: can't open: %s\n&quot;), &quot;[stdout]&quot;, strerror(errno) );
+<span class="lineNum">     181 </span><span class="lineNoCov">          0 :             rc = G10ERR_CREATE_FILE;</span>
+<span class="lineNum">     182 </span>            :         }
+<span class="lineNum">     183 </span><span class="lineNoCov">          0 :         else if( opt.verbose )</span>
+<span class="lineNum">     184 </span>            :             log_info(_(&quot;writing to stdout\n&quot;));
+<span class="lineNum">     185 </span>            :     }
+<span class="lineNum">     186 </span>            :     else {
+<span class="lineNum">     187 </span><span class="lineNoCov">          0 :         char *buf=NULL;</span>
+<span class="lineNum">     188 </span>            :         const char *name;
+<span class="lineNum">     189 </span>            : 
+<span class="lineNum">     190 </span><span class="lineNoCov">          0 :         if( opt.dry_run )</span>
+<span class="lineNum">     191 </span><span class="lineNoCov">          0 :             name = &quot;/dev/null&quot;;</span>
+<span class="lineNum">     192 </span><span class="lineNoCov">          0 :         else if( opt.outfile )</span>
+<span class="lineNum">     193 </span><span class="lineNoCov">          0 :             name = opt.outfile;</span>
+<span class="lineNum">     194 </span>            :         else {
+<span class="lineNum">     195 </span>            :           #ifdef USE_ONLY_8DOT3
+<span class="lineNum">     196 </span>            :             /* It is quite common DOS system to have only one dot in a
+<span class="lineNum">     197 </span>            :              * a filename So if we have something like this, we simple
+<span class="lineNum">     198 </span>            :              * replace the suffix execpt in cases where the suffix is
+<span class="lineNum">     199 </span>            :              * larger than 3 characters and not the same as.
+<span class="lineNum">     200 </span>            :              * We should really map the filenames to 8.3 but this tends to
+<span class="lineNum">     201 </span>            :              * be more complicated and is probaly a duty of the filesystem
+<span class="lineNum">     202 </span>            :              */
+<span class="lineNum">     203 </span>            :             char *dot;
+<span class="lineNum">     204 </span>            :             const char *newsfx = mode==1 ? &quot;.asc&quot; :
+<span class="lineNum">     205 </span>            :                                  mode==2 ? &quot;.sig&quot; : &quot;.gpg&quot;;
+<span class="lineNum">     206 </span>            : 
+<span class="lineNum">     207 </span>            :             buf = m_alloc(strlen(iname)+4+1);
+<span class="lineNum">     208 </span>            :             strcpy(buf,iname);
+<span class="lineNum">     209 </span>            :             dot = strchr(buf, '.' );
+<span class="lineNum">     210 </span>            :             if( dot &amp;&amp; dot &gt; buf &amp;&amp; dot[1] &amp;&amp; strlen(dot) &lt;= 4
+<span class="lineNum">     211 </span>            :                                            &amp;&amp; CMP_FILENAME(newsfx, dot) ) {
+<span class="lineNum">     212 </span>            :                 strcpy(dot, newsfx );
+<span class="lineNum">     213 </span>            :             }
+<span class="lineNum">     214 </span>            :             else if( dot &amp;&amp; !dot[1] ) /* don't duplicate a dot */
+<span class="lineNum">     215 </span>            :                 strcpy( dot, newsfx+1 );
+<span class="lineNum">     216 </span>            :             else
+<span class="lineNum">     217 </span>            :                 strcat( buf, newsfx );
+<span class="lineNum">     218 </span>            :           #else
+<span class="lineNum">     219 </span><span class="lineNoCov">          0 :             buf = m_alloc(strlen(iname)+4+1);</span>
+<span class="lineNum">     220 </span><span class="lineNoCov">          0 :             strcpy(stpcpy(buf,iname), mode==1 ? &quot;.asc&quot; :</span>
+<span class="lineNum">     221 </span>            :                                       mode==2 ? &quot;.sig&quot; : &quot;.gpg&quot;);
+<span class="lineNum">     222 </span>            :           #endif
+<span class="lineNum">     223 </span><span class="lineNoCov">          0 :             name = buf;</span>
+<span class="lineNum">     224 </span>            :         }
+<span class="lineNum">     225 </span>            : 
+<span class="lineNum">     226 </span><span class="lineNoCov">          0 :         rc = 0;</span>
+<span class="lineNum">     227 </span><span class="lineNoCov">          0 :         while( !overwrite_filep (name) ) {</span>
+<span class="lineNum">     228 </span><span class="lineNoCov">          0 :             char *tmp = ask_outfile_name (NULL, 0);</span>
+<span class="lineNum">     229 </span><span class="lineNoCov">          0 :             if ( !tmp || !*tmp ) {</span>
+<span class="lineNum">     230 </span><span class="lineNoCov">          0 :                 m_free (tmp);</span>
+<span class="lineNum">     231 </span><span class="lineNoCov">          0 :                 rc = G10ERR_FILE_EXISTS;</span>
+<span class="lineNum">     232 </span><span class="lineNoCov">          0 :                 break;</span>
+<span class="lineNum">     233 </span>            :             }
+<span class="lineNum">     234 </span><span class="lineNoCov">          0 :             m_free (buf);</span>
+<span class="lineNum">     235 </span><span class="lineNoCov">          0 :             name = buf = tmp;</span>
+<span class="lineNum">     236 </span>            :         }
+<span class="lineNum">     237 </span>            : 
+<span class="lineNum">     238 </span><span class="lineNoCov">          0 :         if( !rc ) {</span>
+<span class="lineNum">     239 </span><span class="lineNoCov">          0 :             if( !(*a = iobuf_create( name )) ) {</span>
+<span class="lineNum">     240 </span>            :                 log_error(_(&quot;%s: can't create: %s\n&quot;), name, strerror(errno) );
+<span class="lineNum">     241 </span><span class="lineNoCov">          0 :                 rc = G10ERR_CREATE_FILE;</span>
+<span class="lineNum">     242 </span>            :             }
+<span class="lineNum">     243 </span><span class="lineNoCov">          0 :             else if( opt.verbose )</span>
+<span class="lineNum">     244 </span>            :                 log_info(_(&quot;writing to `%s'\n&quot;), name );
+<span class="lineNum">     245 </span>            :         }
+<span class="lineNum">     246 </span><span class="lineNoCov">          0 :         m_free(buf);</span>
+<span class="lineNum">     247 </span>            :     }
+<span class="lineNum">     248 </span><span class="lineNoCov">          0 :     return rc;</span>
+<span class="lineNum">     249 </span>            : }
+<span class="lineNum">     250 </span>            : 
+<span class="lineNum">     251 </span>            : 
+<span class="lineNum">     252 </span>            : 
+<span class="lineNum">     253 </span>            : /****************
+<span class="lineNum">     254 </span>            :  * Try to open a file without the extension &quot;.sig&quot; or &quot;.asc&quot;
+<span class="lineNum">     255 </span>            :  * Return NULL if such a file is not available.
+<a name="256"><span class="lineNum">     256 </span>            :  */</a>
+<span class="lineNum">     257 </span>            : IOBUF
+<span class="lineNum">     258 </span><span class="lineNoCov">          0 : open_sigfile( const char *iname )</span>
+<span class="lineNum">     259 </span>            : {
+<span class="lineNum">     260 </span><span class="lineNoCov">          0 :     IOBUF a = NULL;</span>
+<span class="lineNum">     261 </span>            :     size_t len;
+<span class="lineNum">     262 </span>            : 
+<span class="lineNum">     263 </span><span class="lineNoCov">          0 :     if( iname &amp;&amp; !(*iname == '-' &amp;&amp; !iname[1]) ) {</span>
+<span class="lineNum">     264 </span><span class="lineNoCov">          0 :         len = strlen(iname);</span>
+<span class="lineNum">     265 </span><span class="lineNoCov">          0 :         if( len &gt; 4 &amp;&amp; ( !strcmp(iname + len - 4, &quot;.sig&quot;)</span>
+<span class="lineNum">     266 </span><span class="lineNoCov">          0 :                         || ( len &gt; 5 &amp;&amp; !strcmp(iname + len - 5, &quot;.sign&quot;) )</span>
+<span class="lineNum">     267 </span><span class="lineNoCov">          0 :                         || !strcmp(iname + len - 4, &quot;.asc&quot;)) ) {</span>
+<span class="lineNum">     268 </span>            :             char *buf;
+<span class="lineNum">     269 </span><span class="lineNoCov">          0 :             buf = m_strdup(iname);</span>
+<span class="lineNum">     270 </span><span class="lineNoCov">          0 :             buf[len-(buf[len-1]=='n'?5:4)] = 0 ;</span>
+<span class="lineNum">     271 </span><span class="lineNoCov">          0 :             a = iobuf_open( buf );</span>
+<span class="lineNum">     272 </span><span class="lineNoCov">          0 :             if( a &amp;&amp; opt.verbose )</span>
+<span class="lineNum">     273 </span>            :                 log_info(_(&quot;assuming signed data in `%s'\n&quot;), buf );
+<span class="lineNum">     274 </span><span class="lineNoCov">          0 :             m_free(buf);</span>
+<span class="lineNum">     275 </span>            :         }
+<span class="lineNum">     276 </span>            :     }
+<span class="lineNum">     277 </span><span class="lineNoCov">          0 :     return a;</span>
+<span class="lineNum">     278 </span>            : }
+<span class="lineNum">     279 </span>            : 
+<span class="lineNum">     280 </span>            : 
+<span class="lineNum">     281 </span>            : /****************
+<span class="lineNum">     282 </span>            :  * Copy the option file skeleton to the given directory.
+<a name="283"><span class="lineNum">     283 </span>            :  */</a>
+<span class="lineNum">     284 </span>            : static void
+<span class="lineNum">     285 </span><span class="lineNoCov">          0 : copy_options_file( const char *destdir )</span>
+<span class="lineNum">     286 </span>            : {
+<span class="lineNum">     287 </span><span class="lineNoCov">          0 :     const char *datadir = GNUPG_DATADIR;</span>
+<span class="lineNum">     288 </span>            :     char *fname;
+<span class="lineNum">     289 </span>            :     FILE *src, *dst;
+<span class="lineNum">     290 </span><span class="lineNoCov">          0 :     int linefeeds=0;</span>
+<span class="lineNum">     291 </span>            :     int c;
+<span class="lineNum">     292 </span>            : 
+<span class="lineNum">     293 </span><span class="lineNoCov">          0 :     if( opt.dry_run )</span>
+<span class="lineNum">     294 </span><span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">     295 </span>            : 
+<span class="lineNum">     296 </span><span class="lineNoCov">          0 :     fname = m_alloc( strlen(datadir) + strlen(destdir) + 15 );</span>
+<span class="lineNum">     297 </span><span class="lineNoCov">          0 :     strcpy(stpcpy(fname, datadir), &quot;/options&quot; SKELEXT );</span>
+<span class="lineNum">     298 </span><span class="lineNoCov">          0 :     src = fopen( fname, &quot;r&quot; );</span>
+<span class="lineNum">     299 </span><span class="lineNoCov">          0 :     if( !src ) {</span>
+<span class="lineNum">     300 </span>            :         log_error(_(&quot;%s: can't open: %s\n&quot;), fname, strerror(errno) );
+<span class="lineNum">     301 </span><span class="lineNoCov">          0 :         m_free(fname);</span>
+<span class="lineNum">     302 </span><span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">     303 </span>            :     }
+<span class="lineNum">     304 </span><span class="lineNoCov">          0 :     strcpy(stpcpy(fname, destdir), &quot;/options&quot; );</span>
+<span class="lineNum">     305 </span><span class="lineNoCov">          0 :     dst = fopen( fname, &quot;w&quot; );</span>
+<span class="lineNum">     306 </span><span class="lineNoCov">          0 :     if( !dst ) {</span>
+<span class="lineNum">     307 </span>            :         log_error(_(&quot;%s: can't create: %s\n&quot;), fname, strerror(errno) );
+<span class="lineNum">     308 </span><span class="lineNoCov">          0 :         fclose( src );</span>
+<span class="lineNum">     309 </span><span class="lineNoCov">          0 :         m_free(fname);</span>
+<span class="lineNum">     310 </span><span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">     311 </span>            :     }
+<span class="lineNum">     312 </span>            : 
+<span class="lineNum">     313 </span><span class="lineNoCov">          0 :     while( (c=getc(src)) != EOF ) {</span>
+<span class="lineNum">     314 </span><span class="lineNoCov">          0 :         if( linefeeds &lt; 3 ) {</span>
+<span class="lineNum">     315 </span><span class="lineNoCov">          0 :             if( c == '\n' )</span>
+<span class="lineNum">     316 </span><span class="lineNoCov">          0 :                 linefeeds++;</span>
+<span class="lineNum">     317 </span>            :         }
+<span class="lineNum">     318 </span>            :         else
+<span class="lineNum">     319 </span><span class="lineNoCov">          0 :             putc( c, dst );</span>
+<span class="lineNum">     320 </span>            :     }
+<span class="lineNum">     321 </span><span class="lineNoCov">          0 :     fclose( dst );</span>
+<span class="lineNum">     322 </span><span class="lineNoCov">          0 :     fclose( src );</span>
+<span class="lineNum">     323 </span>            :     log_info(_(&quot;%s: new options file created\n&quot;), fname );
+<span class="lineNum">     324 </span><span class="lineNoCov">          0 :     m_free(fname);</span>
+<span class="lineNum">     325 </span>            : }
+<span class="lineNum">     326 </span>            : 
+<a name="327"><span class="lineNum">     327 </span>            : </a>
+<span class="lineNum">     328 </span>            : void
+<span class="lineNum">     329 </span><span class="lineNoCov">          0 : try_make_homedir( const char *fname )</span>
+<span class="lineNum">     330 </span>            : {
+<span class="lineNum">     331 </span><span class="lineNoCov">          0 :     const char *defhome = GNUPG_HOMEDIR;</span>
+<span class="lineNum">     332 </span>            : 
+<span class="lineNum">     333 </span>            :     /* Create the directory only if the supplied directory name
+<span class="lineNum">     334 </span>            :      * is the same as the default one.  This way we avoid to create
+<span class="lineNum">     335 </span>            :      * arbitrary directories when a non-default homedirectory is used.
+<span class="lineNum">     336 </span>            :      * To cope with HOME, we do compare only the suffix if we see that
+<span class="lineNum">     337 </span>            :      * the default homedir does start with a tilde.
+<span class="lineNum">     338 </span>            :      */
+<span class="lineNum">     339 </span><span class="lineNoCov">          0 :     if( opt.dry_run )</span>
+<span class="lineNum">     340 </span><span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">     341 </span>            : 
+<span class="lineNum">     342 </span><span class="lineNoCov">          0 :     if ( ( *defhome == '~'</span>
+<span class="lineNum">     343 </span><span class="lineNoCov">          0 :            &amp;&amp; ( strlen(fname) &gt;= strlen (defhome+1)</span>
+<span class="lineNum">     344 </span><span class="lineNoCov">          0 :                 &amp;&amp; !strcmp(fname+strlen(fname)-strlen(defhome+1),</span>
+<span class="lineNum">     345 </span>            :                            defhome+1 ) ))
+<span class="lineNum">     346 </span><span class="lineNoCov">          0 :          || ( *defhome != '~'</span>
+<span class="lineNum">     347 </span><span class="lineNoCov">          0 :               &amp;&amp; !compare_filenames( fname, defhome ) )</span>
+<span class="lineNum">     348 </span>            :         ) {
+<span class="lineNum">     349 </span><span class="lineNoCov">          0 :         if( mkdir( fname, S_IRUSR|S_IWUSR|S_IXUSR ) )</span>
+<span class="lineNum">     350 </span><span class="lineNoCov">          0 :             log_fatal( _(&quot;%s: can't create directory: %s\n&quot;),</span>
+<span class="lineNum">     351 </span><span class="lineNoCov">          0 :                                         fname,  strerror(errno) );</span>
+<span class="lineNum">     352 </span><span class="lineNoCov">          0 :         else if( !opt.quiet )</span>
+<span class="lineNum">     353 </span>            :             log_info( _(&quot;%s: directory created\n&quot;), fname );
+<span class="lineNum">     354 </span><span class="lineNoCov">          0 :         copy_options_file( fname );</span>
+<span class="lineNum">     355 </span>            :         log_info(_(&quot;you have to start GnuPG again, &quot;
+<span class="lineNum">     356 </span>            :                    &quot;so it can read the new options file\n&quot;) );
+<span class="lineNum">     357 </span><span class="lineNoCov">          0 :         g10_exit(1);</span>
+<span class="lineNum">     358 </span>            :     }
+<span class="lineNum">     359 </span>            : }
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

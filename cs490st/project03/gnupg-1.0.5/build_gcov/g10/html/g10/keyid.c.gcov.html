@@ -1,0 +1,554 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - g10/keyid.c</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">g10</a> - keyid.c<span style="font-size: 80%;"> (source / <a href="keyid.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">209</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2012-11-04</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">21</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /* keyid.c - key ID and fingerprint handling</a>
+<span class="lineNum">       2 </span>            :  * Copyright (C) 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
+<span class="lineNum">       3 </span>            :  *
+<span class="lineNum">       4 </span>            :  * This file is part of GnuPG.
+<span class="lineNum">       5 </span>            :  *
+<span class="lineNum">       6 </span>            :  * GnuPG is free software; you can redistribute it and/or modify
+<span class="lineNum">       7 </span>            :  * it under the terms of the GNU General Public License as published by
+<span class="lineNum">       8 </span>            :  * the Free Software Foundation; either version 2 of the License, or
+<span class="lineNum">       9 </span>            :  * (at your option) any later version.
+<span class="lineNum">      10 </span>            :  *
+<span class="lineNum">      11 </span>            :  * GnuPG is distributed in the hope that it will be useful,
+<span class="lineNum">      12 </span>            :  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<span class="lineNum">      13 </span>            :  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<span class="lineNum">      14 </span>            :  * GNU General Public License for more details.
+<span class="lineNum">      15 </span>            :  *
+<span class="lineNum">      16 </span>            :  * You should have received a copy of the GNU General Public License
+<span class="lineNum">      17 </span>            :  * along with this program; if not, write to the Free Software
+<span class="lineNum">      18 </span>            :  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
+<span class="lineNum">      19 </span>            :  */
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : #include &lt;config.h&gt;
+<span class="lineNum">      22 </span>            : #include &lt;stdio.h&gt;
+<span class="lineNum">      23 </span>            : #include &lt;stdlib.h&gt;
+<span class="lineNum">      24 </span>            : #include &lt;string.h&gt;
+<span class="lineNum">      25 </span>            : #include &lt;errno.h&gt;
+<span class="lineNum">      26 </span>            : #include &lt;time.h&gt;
+<span class="lineNum">      27 </span>            : #include &lt;assert.h&gt;
+<span class="lineNum">      28 </span>            : #include &quot;util.h&quot;
+<span class="lineNum">      29 </span>            : #include &quot;main.h&quot;
+<span class="lineNum">      30 </span>            : #include &quot;packet.h&quot;
+<span class="lineNum">      31 </span>            : #include &quot;options.h&quot;
+<span class="lineNum">      32 </span>            : #include &quot;mpi.h&quot;
+<span class="lineNum">      33 </span>            : #include &quot;keydb.h&quot;
+<span class="lineNum">      34 </span>            : #include &quot;i18n.h&quot;
+<span class="lineNum">      35 </span>            : 
+<a name="36"><span class="lineNum">      36 </span>            : </a>
+<span class="lineNum">      37 </span>            : int
+<span class="lineNum">      38 </span><span class="lineNoCov">          0 : pubkey_letter( int algo )</span>
+<span class="lineNum">      39 </span>            : {
+<span class="lineNum">      40 </span><span class="lineNoCov">          0 :     switch( algo ) {</span>
+<span class="lineNum">      41 </span><span class="lineNoCov">          0 :       case PUBKEY_ALGO_RSA:     return 'R' ;</span>
+<span class="lineNum">      42 </span><span class="lineNoCov">          0 :       case PUBKEY_ALGO_RSA_E:   return 'r' ;</span>
+<span class="lineNum">      43 </span><span class="lineNoCov">          0 :       case PUBKEY_ALGO_RSA_S:   return 's' ;</span>
+<span class="lineNum">      44 </span><span class="lineNoCov">          0 :       case PUBKEY_ALGO_ELGAMAL_E: return 'g';</span>
+<span class="lineNum">      45 </span><span class="lineNoCov">          0 :       case PUBKEY_ALGO_ELGAMAL: return 'G' ;</span>
+<span class="lineNum">      46 </span><span class="lineNoCov">          0 :       case PUBKEY_ALGO_DSA:     return 'D' ;</span>
+<span class="lineNum">      47 </span><span class="lineNoCov">          0 :       default: return '?';</span>
+<span class="lineNum">      48 </span>            :     }
+<span class="lineNum">      49 </span>            : }
+<span class="lineNum">      50 </span>            : 
+<a name="51"><span class="lineNum">      51 </span>            : </a>
+<span class="lineNum">      52 </span>            : static MD_HANDLE
+<span class="lineNum">      53 </span><span class="lineNoCov">          0 : do_fingerprint_md( PKT_public_key *pk )</span>
+<span class="lineNum">      54 </span>            : {
+<span class="lineNum">      55 </span>            :     MD_HANDLE md;
+<span class="lineNum">      56 </span>            :     unsigned n;
+<span class="lineNum">      57 </span>            :     unsigned nb[PUBKEY_MAX_NPKEY];
+<span class="lineNum">      58 </span>            :     unsigned nn[PUBKEY_MAX_NPKEY];
+<span class="lineNum">      59 </span>            :     byte *pp[PUBKEY_MAX_NPKEY];
+<span class="lineNum">      60 </span>            :     int i;
+<span class="lineNum">      61 </span><span class="lineNoCov">          0 :     int npkey = pubkey_get_npkey( pk-&gt;pubkey_algo );</span>
+<span class="lineNum">      62 </span>            : 
+<span class="lineNum">      63 </span><span class="lineNoCov">          0 :     md = md_open( pk-&gt;version &lt; 4 ? DIGEST_ALGO_RMD160 : DIGEST_ALGO_SHA1, 0);</span>
+<span class="lineNum">      64 </span><span class="lineNoCov">          0 :     n = pk-&gt;version &lt; 4 ? 8 : 6;</span>
+<span class="lineNum">      65 </span><span class="lineNoCov">          0 :     for(i=0; i &lt; npkey; i++ ) {</span>
+<span class="lineNum">      66 </span><span class="lineNoCov">          0 :         nb[i] = mpi_get_nbits(pk-&gt;pkey[i]);</span>
+<span class="lineNum">      67 </span><span class="lineNoCov">          0 :         pp[i] = mpi_get_buffer( pk-&gt;pkey[i], nn+i, NULL );</span>
+<span class="lineNum">      68 </span><span class="lineNoCov">          0 :         n += 2 + nn[i];</span>
+<span class="lineNum">      69 </span>            :     }
+<span class="lineNum">      70 </span>            : 
+<span class="lineNum">      71 </span><span class="lineNoCov">          0 :     md_putc( md, 0x99 );     /* ctb */</span>
+<span class="lineNum">      72 </span><span class="lineNoCov">          0 :     md_putc( md, n &gt;&gt; 8 );   /* 2 byte length header */</span>
+<span class="lineNum">      73 </span><span class="lineNoCov">          0 :     md_putc( md, n );</span>
+<span class="lineNum">      74 </span><span class="lineNoCov">          0 :     if( pk-&gt;version &lt; 4 )</span>
+<span class="lineNum">      75 </span><span class="lineNoCov">          0 :         md_putc( md, 3 );</span>
+<span class="lineNum">      76 </span>            :     else
+<span class="lineNum">      77 </span><span class="lineNoCov">          0 :         md_putc( md, 4 );</span>
+<span class="lineNum">      78 </span>            : 
+<span class="lineNum">      79 </span><span class="lineNoCov">          0 :     {   u32 a = pk-&gt;timestamp;</span>
+<span class="lineNum">      80 </span><span class="lineNoCov">          0 :         md_putc( md, a &gt;&gt; 24 );</span>
+<span class="lineNum">      81 </span><span class="lineNoCov">          0 :         md_putc( md, a &gt;&gt; 16 );</span>
+<span class="lineNum">      82 </span><span class="lineNoCov">          0 :         md_putc( md, a &gt;&gt;  8 );</span>
+<span class="lineNum">      83 </span><span class="lineNoCov">          0 :         md_putc( md, a       );</span>
+<span class="lineNum">      84 </span>            :     }
+<span class="lineNum">      85 </span><span class="lineNoCov">          0 :     if( pk-&gt;version &lt; 4 ) {</span>
+<span class="lineNum">      86 </span>            :         u16 a;
+<span class="lineNum">      87 </span>            : 
+<span class="lineNum">      88 </span><span class="lineNoCov">          0 :         if( pk-&gt;expiredate )</span>
+<span class="lineNum">      89 </span><span class="lineNoCov">          0 :             a = (u16)((pk-&gt;expiredate - pk-&gt;timestamp) / 86400L);</span>
+<span class="lineNum">      90 </span>            :         else
+<span class="lineNum">      91 </span><span class="lineNoCov">          0 :             a = 0;</span>
+<span class="lineNum">      92 </span><span class="lineNoCov">          0 :         md_putc( md, a &gt;&gt; 8 );</span>
+<span class="lineNum">      93 </span><span class="lineNoCov">          0 :         md_putc( md, a      );</span>
+<span class="lineNum">      94 </span>            :     }
+<span class="lineNum">      95 </span><span class="lineNoCov">          0 :     md_putc( md, pk-&gt;pubkey_algo );</span>
+<span class="lineNum">      96 </span><span class="lineNoCov">          0 :     for(i=0; i &lt; npkey; i++ ) {</span>
+<span class="lineNum">      97 </span><span class="lineNoCov">          0 :         md_putc( md, nb[i]&gt;&gt;8);</span>
+<span class="lineNum">      98 </span><span class="lineNoCov">          0 :         md_putc( md, nb[i] );</span>
+<span class="lineNum">      99 </span><span class="lineNoCov">          0 :         md_write( md, pp[i], nn[i] );</span>
+<span class="lineNum">     100 </span><span class="lineNoCov">          0 :         m_free(pp[i]);</span>
+<span class="lineNum">     101 </span>            :     }
+<span class="lineNum">     102 </span><span class="lineNoCov">          0 :     md_final( md );</span>
+<span class="lineNum">     103 </span>            : 
+<span class="lineNum">     104 </span><span class="lineNoCov">          0 :     return md;</span>
+<span class="lineNum">     105 </span>            : }
+<a name="106"><span class="lineNum">     106 </span>            : </a>
+<span class="lineNum">     107 </span>            : static MD_HANDLE
+<span class="lineNum">     108 </span><span class="lineNoCov">          0 : do_fingerprint_md_sk( PKT_secret_key *sk )</span>
+<span class="lineNum">     109 </span>            : {
+<span class="lineNum">     110 </span>            :     PKT_public_key pk;
+<span class="lineNum">     111 </span><span class="lineNoCov">          0 :     int npkey = pubkey_get_npkey( sk-&gt;pubkey_algo ); /* npkey is correct! */</span>
+<span class="lineNum">     112 </span>            :     int i;
+<span class="lineNum">     113 </span>            : 
+<span class="lineNum">     114 </span><span class="lineNoCov">          0 :     pk.pubkey_algo = sk-&gt;pubkey_algo;</span>
+<span class="lineNum">     115 </span><span class="lineNoCov">          0 :     pk.version     = sk-&gt;version;</span>
+<span class="lineNum">     116 </span><span class="lineNoCov">          0 :     pk.timestamp = sk-&gt;timestamp;</span>
+<span class="lineNum">     117 </span><span class="lineNoCov">          0 :     pk.expiredate = sk-&gt;expiredate;</span>
+<span class="lineNum">     118 </span><span class="lineNoCov">          0 :     pk.pubkey_algo = sk-&gt;pubkey_algo;</span>
+<span class="lineNum">     119 </span><span class="lineNoCov">          0 :     for( i=0; i &lt; npkey; i++ )</span>
+<span class="lineNum">     120 </span><span class="lineNoCov">          0 :         pk.pkey[i] = sk-&gt;skey[i];</span>
+<span class="lineNum">     121 </span><span class="lineNoCov">          0 :     return do_fingerprint_md( &amp;pk );</span>
+<span class="lineNum">     122 </span>            : }
+<span class="lineNum">     123 </span>            : 
+<span class="lineNum">     124 </span>            : 
+<span class="lineNum">     125 </span>            : /****************
+<span class="lineNum">     126 </span>            :  * Get the keyid from the secret key and put it into keyid
+<span class="lineNum">     127 </span>            :  * if this is not NULL. Return the 32 low bits of the keyid.
+<a name="128"><span class="lineNum">     128 </span>            :  */</a>
+<span class="lineNum">     129 </span>            : u32
+<span class="lineNum">     130 </span><span class="lineNoCov">          0 : keyid_from_sk( PKT_secret_key *sk, u32 *keyid )</span>
+<span class="lineNum">     131 </span>            : {
+<span class="lineNum">     132 </span>            :     u32 lowbits;
+<span class="lineNum">     133 </span>            :     u32 dummy_keyid[2];
+<span class="lineNum">     134 </span>            : 
+<span class="lineNum">     135 </span><span class="lineNoCov">          0 :     if( !keyid )</span>
+<span class="lineNum">     136 </span><span class="lineNoCov">          0 :         keyid = dummy_keyid;</span>
+<span class="lineNum">     137 </span>            : 
+<span class="lineNum">     138 </span><span class="lineNoCov">          0 :     if( sk-&gt;version &lt; 4 &amp;&amp; is_RSA(sk-&gt;pubkey_algo) ) {</span>
+<span class="lineNum">     139 </span><span class="lineNoCov">          0 :         lowbits = pubkey_get_npkey(sk-&gt;pubkey_algo) ?</span>
+<span class="lineNum">     140 </span><span class="lineNoCov">          0 :                      mpi_get_keyid( sk-&gt;skey[0], keyid ) : 0; /* take n */</span>
+<span class="lineNum">     141 </span>            :     }
+<span class="lineNum">     142 </span>            :     else {
+<span class="lineNum">     143 </span>            :         const byte *dp;
+<span class="lineNum">     144 </span>            :         MD_HANDLE md;
+<span class="lineNum">     145 </span><span class="lineNoCov">          0 :         md = do_fingerprint_md_sk(sk);</span>
+<span class="lineNum">     146 </span><span class="lineNoCov">          0 :         dp = md_read( md, 0 );</span>
+<span class="lineNum">     147 </span><span class="lineNoCov">          0 :         keyid[0] = dp[12] &lt;&lt; 24 | dp[13] &lt;&lt; 16 | dp[14] &lt;&lt; 8 | dp[15] ;</span>
+<span class="lineNum">     148 </span><span class="lineNoCov">          0 :         keyid[1] = dp[16] &lt;&lt; 24 | dp[17] &lt;&lt; 16 | dp[18] &lt;&lt; 8 | dp[19] ;</span>
+<span class="lineNum">     149 </span><span class="lineNoCov">          0 :         lowbits = keyid[1];</span>
+<span class="lineNum">     150 </span><span class="lineNoCov">          0 :         md_close(md);</span>
+<span class="lineNum">     151 </span>            :     }
+<span class="lineNum">     152 </span>            : 
+<span class="lineNum">     153 </span><span class="lineNoCov">          0 :     return lowbits;</span>
+<span class="lineNum">     154 </span>            : }
+<span class="lineNum">     155 </span>            : 
+<span class="lineNum">     156 </span>            : 
+<span class="lineNum">     157 </span>            : /****************
+<span class="lineNum">     158 </span>            :  * Get the keyid from the public key and put it into keyid
+<span class="lineNum">     159 </span>            :  * if this is not NULL. Return the 32 low bits of the keyid.
+<a name="160"><span class="lineNum">     160 </span>            :  */</a>
+<span class="lineNum">     161 </span>            : u32
+<span class="lineNum">     162 </span><span class="lineNoCov">          0 : keyid_from_pk( PKT_public_key *pk, u32 *keyid )</span>
+<span class="lineNum">     163 </span>            : {
+<span class="lineNum">     164 </span>            :     u32 lowbits;
+<span class="lineNum">     165 </span>            :     u32 dummy_keyid[2];
+<span class="lineNum">     166 </span>            : 
+<span class="lineNum">     167 </span><span class="lineNoCov">          0 :     if( !keyid )</span>
+<span class="lineNum">     168 </span><span class="lineNoCov">          0 :         keyid = dummy_keyid;</span>
+<span class="lineNum">     169 </span>            : 
+<span class="lineNum">     170 </span><span class="lineNoCov">          0 :     if( pk-&gt;keyid[0] || pk-&gt;keyid[1] ) {</span>
+<span class="lineNum">     171 </span><span class="lineNoCov">          0 :         keyid[0] = pk-&gt;keyid[0];</span>
+<span class="lineNum">     172 </span><span class="lineNoCov">          0 :         keyid[1] = pk-&gt;keyid[1];</span>
+<span class="lineNum">     173 </span><span class="lineNoCov">          0 :         lowbits = keyid[1];</span>
+<span class="lineNum">     174 </span>            :     }
+<span class="lineNum">     175 </span><span class="lineNoCov">          0 :     else if( pk-&gt;version &lt; 4 &amp;&amp; is_RSA(pk-&gt;pubkey_algo) ) {</span>
+<span class="lineNum">     176 </span><span class="lineNoCov">          0 :         lowbits = pubkey_get_npkey(pk-&gt;pubkey_algo) ?</span>
+<span class="lineNum">     177 </span><span class="lineNoCov">          0 :                      mpi_get_keyid( pk-&gt;pkey[0], keyid ) : 0 ; /* from n */</span>
+<span class="lineNum">     178 </span><span class="lineNoCov">          0 :         pk-&gt;keyid[0] = keyid[0];</span>
+<span class="lineNum">     179 </span><span class="lineNoCov">          0 :         pk-&gt;keyid[1] = keyid[1];</span>
+<span class="lineNum">     180 </span>            :     }
+<span class="lineNum">     181 </span>            :     else {
+<span class="lineNum">     182 </span>            :         const byte *dp;
+<span class="lineNum">     183 </span>            :         MD_HANDLE md;
+<span class="lineNum">     184 </span><span class="lineNoCov">          0 :         md = do_fingerprint_md(pk);</span>
+<span class="lineNum">     185 </span><span class="lineNoCov">          0 :         dp = md_read( md, 0 );</span>
+<span class="lineNum">     186 </span><span class="lineNoCov">          0 :         keyid[0] = dp[12] &lt;&lt; 24 | dp[13] &lt;&lt; 16 | dp[14] &lt;&lt; 8 | dp[15] ;</span>
+<span class="lineNum">     187 </span><span class="lineNoCov">          0 :         keyid[1] = dp[16] &lt;&lt; 24 | dp[17] &lt;&lt; 16 | dp[18] &lt;&lt; 8 | dp[19] ;</span>
+<span class="lineNum">     188 </span><span class="lineNoCov">          0 :         lowbits = keyid[1];</span>
+<span class="lineNum">     189 </span><span class="lineNoCov">          0 :         md_close(md);</span>
+<span class="lineNum">     190 </span><span class="lineNoCov">          0 :         pk-&gt;keyid[0] = keyid[0];</span>
+<span class="lineNum">     191 </span><span class="lineNoCov">          0 :         pk-&gt;keyid[1] = keyid[1];</span>
+<span class="lineNum">     192 </span>            :     }
+<span class="lineNum">     193 </span>            : 
+<span class="lineNum">     194 </span><span class="lineNoCov">          0 :     return lowbits;</span>
+<span class="lineNum">     195 </span>            : }
+<span class="lineNum">     196 </span>            : 
+<span class="lineNum">     197 </span>            : 
+<span class="lineNum">     198 </span>            : /****************
+<span class="lineNum">     199 </span>            :  * Get the keyid from the fingerprint.  This function is simple for most
+<span class="lineNum">     200 </span>            :  * keys, but has to do a keylookup for old stayle keys.
+<a name="201"><span class="lineNum">     201 </span>            :  */</a>
+<span class="lineNum">     202 </span>            : u32
+<span class="lineNum">     203 </span><span class="lineNoCov">          0 : keyid_from_fingerprint( const byte *fprint, size_t fprint_len, u32 *keyid )</span>
+<span class="lineNum">     204 </span>            : {
+<span class="lineNum">     205 </span>            :     u32 dummy_keyid[2];
+<span class="lineNum">     206 </span>            : 
+<span class="lineNum">     207 </span><span class="lineNoCov">          0 :     if( !keyid )</span>
+<span class="lineNum">     208 </span><span class="lineNoCov">          0 :         keyid = dummy_keyid;</span>
+<span class="lineNum">     209 </span>            : 
+<span class="lineNum">     210 </span><span class="lineNoCov">          0 :     if( fprint_len != 20 ) {</span>
+<span class="lineNum">     211 </span>            :         /* This is special as we have to lookup the key first */
+<span class="lineNum">     212 </span>            :         PKT_public_key pk;
+<span class="lineNum">     213 </span>            :         int rc;
+<span class="lineNum">     214 </span>            : 
+<span class="lineNum">     215 </span><span class="lineNoCov">          0 :         memset( &amp;pk, 0, sizeof pk );</span>
+<span class="lineNum">     216 </span><span class="lineNoCov">          0 :         rc = get_pubkey_byfprint( &amp;pk, fprint, fprint_len );</span>
+<span class="lineNum">     217 </span><span class="lineNoCov">          0 :         if( rc ) {</span>
+<span class="lineNum">     218 </span>            :             log_error(&quot;Oops: keyid_from_fingerprint: no pubkey\n&quot;);
+<span class="lineNum">     219 </span><span class="lineNoCov">          0 :             keyid[0] = 0;</span>
+<span class="lineNum">     220 </span><span class="lineNoCov">          0 :             keyid[1] = 0;</span>
+<span class="lineNum">     221 </span>            :         }
+<span class="lineNum">     222 </span>            :         else
+<span class="lineNum">     223 </span><span class="lineNoCov">          0 :             keyid_from_pk( &amp;pk, keyid );</span>
+<span class="lineNum">     224 </span>            :     }
+<span class="lineNum">     225 </span>            :     else {
+<span class="lineNum">     226 </span><span class="lineNoCov">          0 :         const byte *dp = fprint;</span>
+<span class="lineNum">     227 </span><span class="lineNoCov">          0 :         keyid[0] = dp[12] &lt;&lt; 24 | dp[13] &lt;&lt; 16 | dp[14] &lt;&lt; 8 | dp[15] ;</span>
+<span class="lineNum">     228 </span><span class="lineNoCov">          0 :         keyid[1] = dp[16] &lt;&lt; 24 | dp[17] &lt;&lt; 16 | dp[18] &lt;&lt; 8 | dp[19] ;</span>
+<span class="lineNum">     229 </span>            :     }
+<span class="lineNum">     230 </span>            : 
+<span class="lineNum">     231 </span><span class="lineNoCov">          0 :     return keyid[1];</span>
+<span class="lineNum">     232 </span>            : }
+<span class="lineNum">     233 </span>            : 
+<a name="234"><span class="lineNum">     234 </span>            : </a>
+<span class="lineNum">     235 </span>            : u32
+<span class="lineNum">     236 </span><span class="lineNoCov">          0 : keyid_from_sig( PKT_signature *sig, u32 *keyid )</span>
+<span class="lineNum">     237 </span>            : {
+<span class="lineNum">     238 </span><span class="lineNoCov">          0 :     if( keyid ) {</span>
+<span class="lineNum">     239 </span><span class="lineNoCov">          0 :         keyid[0] = sig-&gt;keyid[0];</span>
+<span class="lineNum">     240 </span><span class="lineNoCov">          0 :         keyid[1] = sig-&gt;keyid[1];</span>
+<span class="lineNum">     241 </span>            :     }
+<span class="lineNum">     242 </span><span class="lineNoCov">          0 :     return sig-&gt;keyid[1];</span>
+<span class="lineNum">     243 </span>            : }
+<span class="lineNum">     244 </span>            : 
+<span class="lineNum">     245 </span>            : /****************
+<span class="lineNum">     246 </span>            :  * return the number of bits used in the pk
+<a name="247"><span class="lineNum">     247 </span>            :  */</a>
+<span class="lineNum">     248 </span>            : unsigned
+<span class="lineNum">     249 </span><span class="lineNoCov">          0 : nbits_from_pk( PKT_public_key *pk )</span>
+<span class="lineNum">     250 </span>            : {
+<span class="lineNum">     251 </span><span class="lineNoCov">          0 :     return pubkey_nbits( pk-&gt;pubkey_algo, pk-&gt;pkey );</span>
+<span class="lineNum">     252 </span>            : }
+<span class="lineNum">     253 </span>            : 
+<span class="lineNum">     254 </span>            : /****************
+<span class="lineNum">     255 </span>            :  * return the number of bits used in the sk
+<a name="256"><span class="lineNum">     256 </span>            :  */</a>
+<span class="lineNum">     257 </span>            : unsigned
+<span class="lineNum">     258 </span><span class="lineNoCov">          0 : nbits_from_sk( PKT_secret_key *sk )</span>
+<span class="lineNum">     259 </span>            : {
+<span class="lineNum">     260 </span><span class="lineNoCov">          0 :     return pubkey_nbits( sk-&gt;pubkey_algo, sk-&gt;skey );</span>
+<span class="lineNum">     261 </span>            : }
+<a name="262"><span class="lineNum">     262 </span>            : </a>
+<span class="lineNum">     263 </span>            : static const char *
+<span class="lineNum">     264 </span><span class="lineNoCov">          0 : mk_datestr (char *buffer, time_t atime)</span>
+<span class="lineNum">     265 </span>            : {
+<span class="lineNum">     266 </span>            :     struct tm *tp;
+<span class="lineNum">     267 </span>            : 
+<span class="lineNum">     268 </span><span class="lineNoCov">          0 :     if ( atime &lt; 0 ) /* 32 bit time_t and after 2038-01-19 */</span>
+<span class="lineNum">     269 </span><span class="lineNoCov">          0 :         strcpy (buffer, &quot;????-??-??&quot;); /* mark this as invalid */</span>
+<span class="lineNum">     270 </span>            :     else {
+<span class="lineNum">     271 </span><span class="lineNoCov">          0 :         tp = gmtime (&amp;atime);</span>
+<span class="lineNum">     272 </span><span class="lineNoCov">          0 :         sprintf (buffer,&quot;%04d-%02d-%02d&quot;,</span>
+<span class="lineNum">     273 </span><span class="lineNoCov">          0 :                  1900+tp-&gt;tm_year, tp-&gt;tm_mon+1, tp-&gt;tm_mday );</span>
+<span class="lineNum">     274 </span>            :     }
+<span class="lineNum">     275 </span><span class="lineNoCov">          0 :     return buffer;</span>
+<span class="lineNum">     276 </span>            : }
+<span class="lineNum">     277 </span>            : 
+<span class="lineNum">     278 </span>            : /****************
+<span class="lineNum">     279 </span>            :  * return a string with the creation date of the pk
+<span class="lineNum">     280 </span>            :  * Note: this is alloced in a static buffer.
+<span class="lineNum">     281 </span>            :  *    Format is: yyyy-mm-dd
+<a name="282"><span class="lineNum">     282 </span>            :  */</a>
+<span class="lineNum">     283 </span>            : const char *
+<span class="lineNum">     284 </span><span class="lineNoCov">          0 : datestr_from_pk( PKT_public_key *pk )</span>
+<span class="lineNum">     285 </span>            : {
+<span class="lineNum">     286 </span>            :     static char buffer[11+5];
+<span class="lineNum">     287 </span><span class="lineNoCov">          0 :     time_t atime = pk-&gt;timestamp;</span>
+<span class="lineNum">     288 </span>            : 
+<span class="lineNum">     289 </span><span class="lineNoCov">          0 :     return mk_datestr (buffer, atime);</span>
+<span class="lineNum">     290 </span>            : }
+<a name="291"><span class="lineNum">     291 </span>            : </a>
+<span class="lineNum">     292 </span>            : const char *
+<span class="lineNum">     293 </span><span class="lineNoCov">          0 : datestr_from_sk( PKT_secret_key *sk )</span>
+<span class="lineNum">     294 </span>            : {
+<span class="lineNum">     295 </span>            :     static char buffer[11+5];
+<span class="lineNum">     296 </span><span class="lineNoCov">          0 :     time_t atime = sk-&gt;timestamp;</span>
+<span class="lineNum">     297 </span>            : 
+<span class="lineNum">     298 </span><span class="lineNoCov">          0 :     return mk_datestr (buffer, atime);</span>
+<span class="lineNum">     299 </span>            : }
+<a name="300"><span class="lineNum">     300 </span>            : </a>
+<span class="lineNum">     301 </span>            : const char *
+<span class="lineNum">     302 </span><span class="lineNoCov">          0 : datestr_from_sig( PKT_signature *sig )</span>
+<span class="lineNum">     303 </span>            : {
+<span class="lineNum">     304 </span>            :     static char buffer[11+5];
+<span class="lineNum">     305 </span><span class="lineNoCov">          0 :     time_t atime = sig-&gt;timestamp;</span>
+<span class="lineNum">     306 </span>            : 
+<span class="lineNum">     307 </span><span class="lineNoCov">          0 :     return mk_datestr (buffer, atime);</span>
+<span class="lineNum">     308 </span>            : }
+<span class="lineNum">     309 </span>            : 
+<a name="310"><span class="lineNum">     310 </span>            : </a>
+<span class="lineNum">     311 </span>            : const char *
+<span class="lineNum">     312 </span><span class="lineNoCov">          0 : expirestr_from_pk( PKT_public_key *pk )</span>
+<span class="lineNum">     313 </span>            : {
+<span class="lineNum">     314 </span>            :     static char buffer[11+5];
+<span class="lineNum">     315 </span>            :     time_t atime;
+<span class="lineNum">     316 </span>            : 
+<span class="lineNum">     317 </span><span class="lineNoCov">          0 :     if( !pk-&gt;expiredate )</span>
+<span class="lineNum">     318 </span><span class="lineNoCov">          0 :         return _(&quot;never     &quot;);</span>
+<span class="lineNum">     319 </span><span class="lineNoCov">          0 :     atime = pk-&gt;expiredate;</span>
+<span class="lineNum">     320 </span><span class="lineNoCov">          0 :     return mk_datestr (buffer, atime);</span>
+<span class="lineNum">     321 </span>            : }
+<a name="322"><span class="lineNum">     322 </span>            : </a>
+<span class="lineNum">     323 </span>            : const char *
+<span class="lineNum">     324 </span><span class="lineNoCov">          0 : expirestr_from_sk( PKT_secret_key *sk )</span>
+<span class="lineNum">     325 </span>            : {
+<span class="lineNum">     326 </span>            :     static char buffer[11+5];
+<span class="lineNum">     327 </span>            :     time_t atime;
+<span class="lineNum">     328 </span>            : 
+<span class="lineNum">     329 </span><span class="lineNoCov">          0 :     if( !sk-&gt;expiredate )</span>
+<span class="lineNum">     330 </span><span class="lineNoCov">          0 :         return &quot;never     &quot;;</span>
+<span class="lineNum">     331 </span><span class="lineNoCov">          0 :     atime = sk-&gt;expiredate;</span>
+<span class="lineNum">     332 </span><span class="lineNoCov">          0 :     return mk_datestr (buffer, atime);</span>
+<span class="lineNum">     333 </span>            : }
+<a name="334"><span class="lineNum">     334 </span>            : </a>
+<span class="lineNum">     335 </span>            : const char *
+<span class="lineNum">     336 </span><span class="lineNoCov">          0 : colon_strtime (u32 t)</span>
+<span class="lineNum">     337 </span>            : {
+<span class="lineNum">     338 </span><span class="lineNoCov">          0 :     if (!t)</span>
+<span class="lineNum">     339 </span><span class="lineNoCov">          0 :         return &quot;&quot;;</span>
+<span class="lineNum">     340 </span><span class="lineNoCov">          0 :     if (opt.fixed_list_mode) {</span>
+<span class="lineNum">     341 </span>            :         static char buf[15];
+<span class="lineNum">     342 </span><span class="lineNoCov">          0 :         sprintf (buf, &quot;%lu&quot;, (ulong)t);</span>
+<span class="lineNum">     343 </span><span class="lineNoCov">          0 :         return buf;</span>
+<span class="lineNum">     344 </span>            :     }
+<span class="lineNum">     345 </span><span class="lineNoCov">          0 :     return strtimestamp(t);</span>
+<span class="lineNum">     346 </span>            : }
+<a name="347"><span class="lineNum">     347 </span>            : </a>
+<span class="lineNum">     348 </span>            : const char *
+<span class="lineNum">     349 </span><span class="lineNoCov">          0 : colon_datestr_from_pk (PKT_public_key *pk)</span>
+<span class="lineNum">     350 </span>            : {
+<span class="lineNum">     351 </span><span class="lineNoCov">          0 :     if (opt.fixed_list_mode) {</span>
+<span class="lineNum">     352 </span>            :         static char buf[15];
+<span class="lineNum">     353 </span><span class="lineNoCov">          0 :         sprintf (buf, &quot;%lu&quot;, (ulong)pk-&gt;timestamp);</span>
+<span class="lineNum">     354 </span><span class="lineNoCov">          0 :         return buf;</span>
+<span class="lineNum">     355 </span>            :     }
+<span class="lineNum">     356 </span><span class="lineNoCov">          0 :     return datestr_from_pk (pk);</span>
+<span class="lineNum">     357 </span>            : }
+<a name="358"><span class="lineNum">     358 </span>            : </a>
+<span class="lineNum">     359 </span>            : const char *
+<span class="lineNum">     360 </span><span class="lineNoCov">          0 : colon_datestr_from_sk (PKT_secret_key *sk)</span>
+<span class="lineNum">     361 </span>            : {
+<span class="lineNum">     362 </span><span class="lineNoCov">          0 :     if (opt.fixed_list_mode) {</span>
+<span class="lineNum">     363 </span>            :         static char buf[15];
+<span class="lineNum">     364 </span><span class="lineNoCov">          0 :         sprintf (buf, &quot;%lu&quot;, (ulong)sk-&gt;timestamp);</span>
+<span class="lineNum">     365 </span><span class="lineNoCov">          0 :         return buf;</span>
+<span class="lineNum">     366 </span>            :     }
+<span class="lineNum">     367 </span><span class="lineNoCov">          0 :     return datestr_from_sk (sk);</span>
+<span class="lineNum">     368 </span>            : }
+<a name="369"><span class="lineNum">     369 </span>            : </a>
+<span class="lineNum">     370 </span>            : const char *
+<span class="lineNum">     371 </span><span class="lineNoCov">          0 : colon_datestr_from_sig (PKT_signature *sig)</span>
+<span class="lineNum">     372 </span>            : {
+<span class="lineNum">     373 </span><span class="lineNoCov">          0 :     if (opt.fixed_list_mode) {</span>
+<span class="lineNum">     374 </span>            :         static char buf[15];
+<span class="lineNum">     375 </span><span class="lineNoCov">          0 :         sprintf (buf, &quot;%lu&quot;, (ulong)sig-&gt;timestamp);</span>
+<span class="lineNum">     376 </span><span class="lineNoCov">          0 :         return buf;</span>
+<span class="lineNum">     377 </span>            :     }
+<span class="lineNum">     378 </span><span class="lineNoCov">          0 :     return datestr_from_sig (sig);</span>
+<span class="lineNum">     379 </span>            : }
+<span class="lineNum">     380 </span>            : 
+<span class="lineNum">     381 </span>            : 
+<span class="lineNum">     382 </span>            : 
+<span class="lineNum">     383 </span>            : /**************** .
+<span class="lineNum">     384 </span>            :  * Return a byte array with the fingerprint for the given PK/SK
+<span class="lineNum">     385 </span>            :  * The length of the array is returned in ret_len. Caller must free
+<span class="lineNum">     386 </span>            :  * the array or provide an array of length MAX_FINGERPRINT_LEN.
+<span class="lineNum">     387 </span>            :  */
+<a name="388"><span class="lineNum">     388 </span>            : </a>
+<span class="lineNum">     389 </span>            : byte *
+<span class="lineNum">     390 </span><span class="lineNoCov">          0 : fingerprint_from_pk( PKT_public_key *pk, byte *array, size_t *ret_len )</span>
+<span class="lineNum">     391 </span>            : {
+<span class="lineNum">     392 </span>            :     byte *p, *buf;
+<span class="lineNum">     393 </span>            :     const char *dp;
+<span class="lineNum">     394 </span>            :     size_t len;
+<span class="lineNum">     395 </span>            :     unsigned n;
+<span class="lineNum">     396 </span>            : 
+<span class="lineNum">     397 </span><span class="lineNoCov">          0 :     if( pk-&gt;version &lt; 4 &amp;&amp; is_RSA(pk-&gt;pubkey_algo) ) {</span>
+<span class="lineNum">     398 </span>            :         /* RSA in version 3 packets is special */
+<span class="lineNum">     399 </span>            :         MD_HANDLE md;
+<span class="lineNum">     400 </span>            : 
+<span class="lineNum">     401 </span><span class="lineNoCov">          0 :         md = md_open( DIGEST_ALGO_MD5, 0);</span>
+<span class="lineNum">     402 </span><span class="lineNoCov">          0 :         if( pubkey_get_npkey( pk-&gt;pubkey_algo ) &gt; 1 ) {</span>
+<span class="lineNum">     403 </span><span class="lineNoCov">          0 :             p = buf = mpi_get_buffer( pk-&gt;pkey[0], &amp;n, NULL );</span>
+<span class="lineNum">     404 </span><span class="lineNoCov">          0 :             md_write( md, p, n );</span>
+<span class="lineNum">     405 </span><span class="lineNoCov">          0 :             m_free(buf);</span>
+<span class="lineNum">     406 </span><span class="lineNoCov">          0 :             p = buf = mpi_get_buffer( pk-&gt;pkey[1], &amp;n, NULL );</span>
+<span class="lineNum">     407 </span><span class="lineNoCov">          0 :             md_write( md, p, n );</span>
+<span class="lineNum">     408 </span><span class="lineNoCov">          0 :             m_free(buf);</span>
+<span class="lineNum">     409 </span>            :         }
+<span class="lineNum">     410 </span><span class="lineNoCov">          0 :         md_final(md);</span>
+<span class="lineNum">     411 </span><span class="lineNoCov">          0 :         if( !array )</span>
+<span class="lineNum">     412 </span><span class="lineNoCov">          0 :             array = m_alloc( 16 );</span>
+<span class="lineNum">     413 </span><span class="lineNoCov">          0 :         len = 16;</span>
+<span class="lineNum">     414 </span><span class="lineNoCov">          0 :         memcpy(array, md_read(md, DIGEST_ALGO_MD5), 16 );</span>
+<span class="lineNum">     415 </span><span class="lineNoCov">          0 :         md_close(md);</span>
+<span class="lineNum">     416 </span>            :     }
+<span class="lineNum">     417 </span>            :     else {
+<span class="lineNum">     418 </span>            :         MD_HANDLE md;
+<span class="lineNum">     419 </span><span class="lineNoCov">          0 :         md = do_fingerprint_md(pk);</span>
+<span class="lineNum">     420 </span><span class="lineNoCov">          0 :         dp = md_read( md, 0 );</span>
+<span class="lineNum">     421 </span><span class="lineNoCov">          0 :         len = md_digest_length( md_get_algo( md ) );</span>
+<span class="lineNum">     422 </span><span class="lineNoCov">          0 :         assert( len &lt;= MAX_FINGERPRINT_LEN );</span>
+<span class="lineNum">     423 </span><span class="lineNoCov">          0 :         if( !array )</span>
+<span class="lineNum">     424 </span><span class="lineNoCov">          0 :             array = m_alloc( len );</span>
+<span class="lineNum">     425 </span><span class="lineNoCov">          0 :         memcpy(array, dp, len );</span>
+<span class="lineNum">     426 </span><span class="lineNoCov">          0 :         md_close(md);</span>
+<span class="lineNum">     427 </span>            :     }
+<span class="lineNum">     428 </span>            : 
+<span class="lineNum">     429 </span><span class="lineNoCov">          0 :     *ret_len = len;</span>
+<span class="lineNum">     430 </span><span class="lineNoCov">          0 :     return array;</span>
+<span class="lineNum">     431 </span>            : }
+<a name="432"><span class="lineNum">     432 </span>            : </a>
+<span class="lineNum">     433 </span>            : byte *
+<span class="lineNum">     434 </span><span class="lineNoCov">          0 : fingerprint_from_sk( PKT_secret_key *sk, byte *array, size_t *ret_len )</span>
+<span class="lineNum">     435 </span>            : {
+<span class="lineNum">     436 </span>            :     byte *p, *buf;
+<span class="lineNum">     437 </span>            :     const char *dp;
+<span class="lineNum">     438 </span>            :     size_t len;
+<span class="lineNum">     439 </span>            :     unsigned n;
+<span class="lineNum">     440 </span>            : 
+<span class="lineNum">     441 </span><span class="lineNoCov">          0 :     if( sk-&gt;version &lt; 4 &amp;&amp; is_RSA(sk-&gt;pubkey_algo) ) {</span>
+<span class="lineNum">     442 </span>            :         /* RSA in version 3 packets is special */
+<span class="lineNum">     443 </span>            :         MD_HANDLE md;
+<span class="lineNum">     444 </span>            : 
+<span class="lineNum">     445 </span><span class="lineNoCov">          0 :         md = md_open( DIGEST_ALGO_MD5, 0);</span>
+<span class="lineNum">     446 </span><span class="lineNoCov">          0 :         if( pubkey_get_npkey( sk-&gt;pubkey_algo ) &gt; 1 ) {</span>
+<span class="lineNum">     447 </span><span class="lineNoCov">          0 :             p = buf = mpi_get_buffer( sk-&gt;skey[1], &amp;n, NULL );</span>
+<span class="lineNum">     448 </span><span class="lineNoCov">          0 :             md_write( md, p, n );</span>
+<span class="lineNum">     449 </span><span class="lineNoCov">          0 :             m_free(buf);</span>
+<span class="lineNum">     450 </span><span class="lineNoCov">          0 :             p = buf = mpi_get_buffer( sk-&gt;skey[0], &amp;n, NULL );</span>
+<span class="lineNum">     451 </span><span class="lineNoCov">          0 :             md_write( md, p, n );</span>
+<span class="lineNum">     452 </span><span class="lineNoCov">          0 :             m_free(buf);</span>
+<span class="lineNum">     453 </span>            :         }
+<span class="lineNum">     454 </span><span class="lineNoCov">          0 :         md_final(md);</span>
+<span class="lineNum">     455 </span><span class="lineNoCov">          0 :         if( !array )</span>
+<span class="lineNum">     456 </span><span class="lineNoCov">          0 :             array = m_alloc( 16 );</span>
+<span class="lineNum">     457 </span><span class="lineNoCov">          0 :         len = 16;</span>
+<span class="lineNum">     458 </span><span class="lineNoCov">          0 :         memcpy(array, md_read(md, DIGEST_ALGO_MD5), 16 );</span>
+<span class="lineNum">     459 </span><span class="lineNoCov">          0 :         md_close(md);</span>
+<span class="lineNum">     460 </span>            :     }
+<span class="lineNum">     461 </span>            :     else {
+<span class="lineNum">     462 </span>            :         MD_HANDLE md;
+<span class="lineNum">     463 </span><span class="lineNoCov">          0 :         md = do_fingerprint_md_sk(sk);</span>
+<span class="lineNum">     464 </span><span class="lineNoCov">          0 :         dp = md_read( md, 0 );</span>
+<span class="lineNum">     465 </span><span class="lineNoCov">          0 :         len = md_digest_length( md_get_algo( md ) );</span>
+<span class="lineNum">     466 </span><span class="lineNoCov">          0 :         assert( len &lt;= MAX_FINGERPRINT_LEN );</span>
+<span class="lineNum">     467 </span><span class="lineNoCov">          0 :         if( !array )</span>
+<span class="lineNum">     468 </span><span class="lineNoCov">          0 :             array = m_alloc( len );</span>
+<span class="lineNum">     469 </span><span class="lineNoCov">          0 :         memcpy(array, dp, len );</span>
+<span class="lineNum">     470 </span><span class="lineNoCov">          0 :         md_close(md);</span>
+<span class="lineNum">     471 </span>            :     }
+<span class="lineNum">     472 </span>            : 
+<span class="lineNum">     473 </span><span class="lineNoCov">          0 :     *ret_len = len;</span>
+<span class="lineNum">     474 </span><span class="lineNoCov">          0 :     return array;</span>
+<span class="lineNum">     475 </span>            : }
+<span class="lineNum">     476 </span>            : 
+<span class="lineNum">     477 </span>            : 
+<span class="lineNum">     478 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

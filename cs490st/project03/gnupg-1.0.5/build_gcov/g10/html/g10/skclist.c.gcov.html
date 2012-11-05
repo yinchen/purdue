@@ -1,0 +1,273 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - g10/skclist.c</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">g10</a> - skclist.c<span style="font-size: 80%;"> (source / <a href="skclist.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">68</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2012-11-04</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /* skclist.c</a>
+<span class="lineNum">       2 </span>            :  * Copyright (C) 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
+<span class="lineNum">       3 </span>            :  *
+<span class="lineNum">       4 </span>            :  * This file is part of GnuPG.
+<span class="lineNum">       5 </span>            :  *
+<span class="lineNum">       6 </span>            :  * GnuPG is free software; you can redistribute it and/or modify
+<span class="lineNum">       7 </span>            :  * it under the terms of the GNU General Public License as published by
+<span class="lineNum">       8 </span>            :  * the Free Software Foundation; either version 2 of the License, or
+<span class="lineNum">       9 </span>            :  * (at your option) any later version.
+<span class="lineNum">      10 </span>            :  *
+<span class="lineNum">      11 </span>            :  * GnuPG is distributed in the hope that it will be useful,
+<span class="lineNum">      12 </span>            :  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<span class="lineNum">      13 </span>            :  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<span class="lineNum">      14 </span>            :  * GNU General Public License for more details.
+<span class="lineNum">      15 </span>            :  *
+<span class="lineNum">      16 </span>            :  * You should have received a copy of the GNU General Public License
+<span class="lineNum">      17 </span>            :  * along with this program; if not, write to the Free Software
+<span class="lineNum">      18 </span>            :  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
+<span class="lineNum">      19 </span>            :  */
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : #include &lt;config.h&gt;
+<span class="lineNum">      22 </span>            : #include &lt;stdio.h&gt;
+<span class="lineNum">      23 </span>            : #include &lt;stdlib.h&gt;
+<span class="lineNum">      24 </span>            : #include &lt;string.h&gt;
+<span class="lineNum">      25 </span>            : #include &lt;errno.h&gt;
+<span class="lineNum">      26 </span>            : #include &lt;assert.h&gt;
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : #include &quot;options.h&quot;
+<span class="lineNum">      29 </span>            : #include &quot;packet.h&quot;
+<span class="lineNum">      30 </span>            : #include &quot;errors.h&quot;
+<span class="lineNum">      31 </span>            : #include &quot;keydb.h&quot;
+<span class="lineNum">      32 </span>            : #include &quot;memory.h&quot;
+<span class="lineNum">      33 </span>            : #include &quot;util.h&quot;
+<span class="lineNum">      34 </span>            : #include &quot;i18n.h&quot;
+<span class="lineNum">      35 </span>            : #include &quot;cipher.h&quot;
+<span class="lineNum">      36 </span>            : 
+<a name="37"><span class="lineNum">      37 </span>            : </a>
+<span class="lineNum">      38 </span>            : void
+<span class="lineNum">      39 </span><span class="lineNoCov">          0 : release_sk_list( SK_LIST sk_list )</span>
+<span class="lineNum">      40 </span>            : {
+<span class="lineNum">      41 </span>            :     SK_LIST sk_rover;
+<span class="lineNum">      42 </span>            : 
+<span class="lineNum">      43 </span><span class="lineNoCov">          0 :     for( ; sk_list; sk_list = sk_rover ) {</span>
+<span class="lineNum">      44 </span><span class="lineNoCov">          0 :         sk_rover = sk_list-&gt;next;</span>
+<span class="lineNum">      45 </span><span class="lineNoCov">          0 :         free_secret_key( sk_list-&gt;sk );</span>
+<span class="lineNum">      46 </span><span class="lineNoCov">          0 :         m_free( sk_list );</span>
+<span class="lineNum">      47 </span>            :     }
+<span class="lineNum">      48 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span>            : 
+<span class="lineNum">      51 </span>            : /* Check that we are only using keys which don't have
+<span class="lineNum">      52 </span>            :  * the string &quot;(insecure!)&quot; or &quot;not secure&quot; or &quot;do not use&quot;
+<span class="lineNum">      53 </span>            :  * in one of the user ids
+<a name="54"><span class="lineNum">      54 </span>            :  */</a>
+<span class="lineNum">      55 </span>            : static int
+<span class="lineNum">      56 </span><span class="lineNoCov">          0 : is_insecure( PKT_secret_key *sk )</span>
+<span class="lineNum">      57 </span>            : {
+<span class="lineNum">      58 </span>            : 
+<span class="lineNum">      59 </span><span class="lineNoCov">          0 :     return 0;  /* FIXME!! */</span>
+<span class="lineNum">      60 </span>            : }
+<span class="lineNum">      61 </span>            : 
+<a name="62"><span class="lineNum">      62 </span>            : </a>
+<span class="lineNum">      63 </span>            : static int
+<span class="lineNum">      64 </span><span class="lineNoCov">          0 : key_present_in_sk_list(SK_LIST sk_list, PKT_secret_key *sk)</span>
+<span class="lineNum">      65 </span>            : {
+<span class="lineNum">      66 </span><span class="lineNoCov">          0 :     for (; sk_list; sk_list = sk_list-&gt;next) {</span>
+<span class="lineNum">      67 </span><span class="lineNoCov">          0 :         if ( !cmp_secret_keys(sk_list-&gt;sk, sk) )</span>
+<span class="lineNum">      68 </span><span class="lineNoCov">          0 :             return 0;</span>
+<span class="lineNum">      69 </span>            :     }
+<span class="lineNum">      70 </span><span class="lineNoCov">          0 :     return -1;</span>
+<span class="lineNum">      71 </span>            : }
+<a name="72"><span class="lineNum">      72 </span>            : </a>
+<span class="lineNum">      73 </span>            : static int
+<span class="lineNum">      74 </span><span class="lineNoCov">          0 : is_duplicated_entry (STRLIST list, STRLIST item)</span>
+<span class="lineNum">      75 </span>            : {
+<span class="lineNum">      76 </span><span class="lineNoCov">          0 :     for(; list &amp;&amp; list != item; list = list-&gt;next) {</span>
+<span class="lineNum">      77 </span><span class="lineNoCov">          0 :         if ( !strcmp (list-&gt;d, item-&gt;d) )</span>
+<span class="lineNum">      78 </span><span class="lineNoCov">          0 :             return 1;</span>
+<span class="lineNum">      79 </span>            :     }
+<span class="lineNum">      80 </span><span class="lineNoCov">          0 :     return 0;</span>
+<span class="lineNum">      81 </span>            : }
+<span class="lineNum">      82 </span>            : 
+<a name="83"><span class="lineNum">      83 </span>            : </a>
+<span class="lineNum">      84 </span>            : int
+<span class="lineNum">      85 </span><span class="lineNoCov">          0 : build_sk_list( STRLIST locusr, SK_LIST *ret_sk_list, int unlock,</span>
+<span class="lineNum">      86 </span>            :                                                         unsigned use )
+<span class="lineNum">      87 </span>            : {
+<span class="lineNum">      88 </span><span class="lineNoCov">          0 :     SK_LIST sk_list = NULL;</span>
+<span class="lineNum">      89 </span>            :     int rc;
+<span class="lineNum">      90 </span>            : 
+<span class="lineNum">      91 </span><span class="lineNoCov">          0 :     if( !locusr ) { /* use the default one */</span>
+<span class="lineNum">      92 </span>            :         PKT_secret_key *sk;
+<span class="lineNum">      93 </span>            : 
+<span class="lineNum">      94 </span><span class="lineNoCov">          0 :         sk = m_alloc_clear( sizeof *sk );</span>
+<span class="lineNum">      95 </span><span class="lineNoCov">          0 :         sk-&gt;req_usage = use;</span>
+<span class="lineNum">      96 </span><span class="lineNoCov">          0 :         if( (rc = get_seckey_byname( sk, NULL, unlock )) ) {</span>
+<span class="lineNum">      97 </span><span class="lineNoCov">          0 :             free_secret_key( sk ); sk = NULL;</span>
+<span class="lineNum">      98 </span>            :             log_error(&quot;no default secret key: %s\n&quot;, g10_errstr(rc) );
+<span class="lineNum">      99 </span>            :         }
+<span class="lineNum">     100 </span><span class="lineNoCov">          0 :         else if( !(rc=check_pubkey_algo2(sk-&gt;pubkey_algo, use)) ) {</span>
+<span class="lineNum">     101 </span>            :             SK_LIST r;
+<span class="lineNum">     102 </span>            : 
+<span class="lineNum">     103 </span><span class="lineNoCov">          0 :             if( sk-&gt;version == 4 &amp;&amp; (use &amp; PUBKEY_USAGE_SIG)</span>
+<span class="lineNum">     104 </span><span class="lineNoCov">          0 :                 &amp;&amp; sk-&gt;pubkey_algo == PUBKEY_ALGO_ELGAMAL_E ) {</span>
+<span class="lineNum">     105 </span>            :                 log_info(&quot;this is a PGP generated &quot;
+<span class="lineNum">     106 </span>            :                     &quot;ElGamal key which is NOT secure for signatures!\n&quot;);
+<span class="lineNum">     107 </span><span class="lineNoCov">          0 :                 free_secret_key( sk ); sk = NULL;</span>
+<span class="lineNum">     108 </span>            :             }
+<span class="lineNum">     109 </span><span class="lineNoCov">          0 :             else if( random_is_faked() &amp;&amp; !is_insecure( sk ) ) {</span>
+<span class="lineNum">     110 </span>            :                 log_info(_(&quot;key is not flagged as insecure - &quot;
+<span class="lineNum">     111 </span>            :                            &quot;can't use it with the faked RNG!\n&quot;));
+<span class="lineNum">     112 </span><span class="lineNoCov">          0 :                 free_secret_key( sk ); sk = NULL;</span>
+<span class="lineNum">     113 </span>            :             }
+<span class="lineNum">     114 </span>            :             else {
+<span class="lineNum">     115 </span><span class="lineNoCov">          0 :                 r = m_alloc( sizeof *r );</span>
+<span class="lineNum">     116 </span><span class="lineNoCov">          0 :                 r-&gt;sk = sk; sk = NULL;</span>
+<span class="lineNum">     117 </span><span class="lineNoCov">          0 :                 r-&gt;next = sk_list;</span>
+<span class="lineNum">     118 </span><span class="lineNoCov">          0 :                 r-&gt;mark = 0;</span>
+<span class="lineNum">     119 </span><span class="lineNoCov">          0 :                 sk_list = r;</span>
+<span class="lineNum">     120 </span>            :             }
+<span class="lineNum">     121 </span>            :         }
+<span class="lineNum">     122 </span>            :         else {
+<span class="lineNum">     123 </span><span class="lineNoCov">          0 :             free_secret_key( sk ); sk = NULL;</span>
+<span class="lineNum">     124 </span>            :             log_error(&quot;invalid default secret key: %s\n&quot;, g10_errstr(rc) );
+<span class="lineNum">     125 </span>            :         }
+<span class="lineNum">     126 </span>            :     }
+<span class="lineNum">     127 </span>            :     else {
+<span class="lineNum">     128 </span><span class="lineNoCov">          0 :         STRLIST locusr_orig = locusr;</span>
+<span class="lineNum">     129 </span><span class="lineNoCov">          0 :         for(; locusr; locusr = locusr-&gt;next ) {</span>
+<span class="lineNum">     130 </span>            :             PKT_secret_key *sk;
+<span class="lineNum">     131 </span>            :             
+<span class="lineNum">     132 </span><span class="lineNoCov">          0 :             rc = 0;</span>
+<span class="lineNum">     133 </span>            :             /* Do an early check agains duplicated entries.  However this
+<span class="lineNum">     134 </span>            :              * won't catch all duplicates because the user IDs may be
+<span class="lineNum">     135 </span>            :              * specified in different ways.
+<span class="lineNum">     136 </span>            :              */
+<span class="lineNum">     137 </span><span class="lineNoCov">          0 :             if ( is_duplicated_entry ( locusr_orig, locusr ) ) {</span>
+<span class="lineNum">     138 </span>            :                 log_error(_(&quot;skipped `%s': duplicated\n&quot;), locusr-&gt;d );
+<span class="lineNum">     139 </span><span class="lineNoCov">          0 :                 continue;</span>
+<span class="lineNum">     140 </span>            :             }
+<span class="lineNum">     141 </span><span class="lineNoCov">          0 :             sk = m_alloc_clear( sizeof *sk );</span>
+<span class="lineNum">     142 </span><span class="lineNoCov">          0 :             sk-&gt;req_usage = use;</span>
+<span class="lineNum">     143 </span><span class="lineNoCov">          0 :             if( (rc = get_seckey_byname( sk, locusr-&gt;d, 0 )) ) {</span>
+<span class="lineNum">     144 </span><span class="lineNoCov">          0 :                 free_secret_key( sk ); sk = NULL;</span>
+<span class="lineNum">     145 </span>            :                 log_error(_(&quot;skipped `%s': %s\n&quot;), locusr-&gt;d, g10_errstr(rc) );
+<span class="lineNum">     146 </span>            :             }
+<span class="lineNum">     147 </span><span class="lineNoCov">          0 :             else if ( key_present_in_sk_list(sk_list, sk) == 0) {</span>
+<span class="lineNum">     148 </span><span class="lineNoCov">          0 :                 free_secret_key(sk); sk = NULL;</span>
+<span class="lineNum">     149 </span>            :                 log_info(_(&quot;skipped: secret key already present\n&quot;));
+<span class="lineNum">     150 </span>            :             }
+<span class="lineNum">     151 </span><span class="lineNoCov">          0 :             else if ( unlock &amp;&amp; (rc = check_secret_key( sk, 0 )) ) {</span>
+<span class="lineNum">     152 </span><span class="lineNoCov">          0 :                 free_secret_key( sk ); sk = NULL;</span>
+<span class="lineNum">     153 </span>            :                 log_error(_(&quot;skipped `%s': %s\n&quot;), locusr-&gt;d, g10_errstr(rc) );
+<span class="lineNum">     154 </span>            :             }
+<span class="lineNum">     155 </span><span class="lineNoCov">          0 :             else if( !(rc=check_pubkey_algo2(sk-&gt;pubkey_algo, use)) ) {</span>
+<span class="lineNum">     156 </span>            :                 SK_LIST r;
+<span class="lineNum">     157 </span>            : 
+<span class="lineNum">     158 </span><span class="lineNoCov">          0 :                 if( sk-&gt;version == 4 &amp;&amp; (use &amp; PUBKEY_USAGE_SIG)</span>
+<span class="lineNum">     159 </span><span class="lineNoCov">          0 :                     &amp;&amp; sk-&gt;pubkey_algo == PUBKEY_ALGO_ELGAMAL_E ) {</span>
+<span class="lineNum">     160 </span>            :                     log_info(_(&quot;skipped `%s': this is a PGP generated &quot;
+<span class="lineNum">     161 </span>            :                         &quot;ElGamal key which is not secure for signatures!\n&quot;),
+<span class="lineNum">     162 </span>            :                         locusr-&gt;d );
+<span class="lineNum">     163 </span><span class="lineNoCov">          0 :                     free_secret_key( sk ); sk = NULL;</span>
+<span class="lineNum">     164 </span>            :                 }
+<span class="lineNum">     165 </span><span class="lineNoCov">          0 :                 else if( random_is_faked() &amp;&amp; !is_insecure( sk ) ) {</span>
+<span class="lineNum">     166 </span>            :                     log_info(_(&quot;key is not flagged as insecure - &quot;
+<span class="lineNum">     167 </span>            :                                &quot;can't use it with the faked RNG!\n&quot;));
+<span class="lineNum">     168 </span><span class="lineNoCov">          0 :                     free_secret_key( sk ); sk = NULL;</span>
+<span class="lineNum">     169 </span>            :                 }
+<span class="lineNum">     170 </span>            :                 else {
+<span class="lineNum">     171 </span><span class="lineNoCov">          0 :                     r = m_alloc( sizeof *r );</span>
+<span class="lineNum">     172 </span><span class="lineNoCov">          0 :                     r-&gt;sk = sk; sk = NULL;</span>
+<span class="lineNum">     173 </span><span class="lineNoCov">          0 :                     r-&gt;next = sk_list;</span>
+<span class="lineNum">     174 </span><span class="lineNoCov">          0 :                     r-&gt;mark = 0;</span>
+<span class="lineNum">     175 </span><span class="lineNoCov">          0 :                     sk_list = r;</span>
+<span class="lineNum">     176 </span>            :                 }
+<span class="lineNum">     177 </span>            :             }
+<span class="lineNum">     178 </span>            :             else {
+<span class="lineNum">     179 </span><span class="lineNoCov">          0 :                 free_secret_key( sk ); sk = NULL;</span>
+<span class="lineNum">     180 </span>            :                 log_error(&quot;skipped `%s': %s\n&quot;, locusr-&gt;d, g10_errstr(rc) );
+<span class="lineNum">     181 </span>            :             }
+<span class="lineNum">     182 </span>            :         }
+<span class="lineNum">     183 </span>            :     }
+<span class="lineNum">     184 </span>            : 
+<span class="lineNum">     185 </span>            : 
+<span class="lineNum">     186 </span><span class="lineNoCov">          0 :     if( !rc &amp;&amp; !sk_list ) {</span>
+<span class="lineNum">     187 </span>            :         log_error(&quot;no valid signators\n&quot;);
+<span class="lineNum">     188 </span><span class="lineNoCov">          0 :         rc = G10ERR_NO_USER_ID;</span>
+<span class="lineNum">     189 </span>            :     }
+<span class="lineNum">     190 </span>            : 
+<span class="lineNum">     191 </span><span class="lineNoCov">          0 :     if( rc )</span>
+<span class="lineNum">     192 </span><span class="lineNoCov">          0 :         release_sk_list( sk_list );</span>
+<span class="lineNum">     193 </span>            :     else
+<span class="lineNum">     194 </span><span class="lineNoCov">          0 :         *ret_sk_list = sk_list;</span>
+<span class="lineNum">     195 </span><span class="lineNoCov">          0 :     return rc;</span>
+<span class="lineNum">     196 </span>            : }
+<span class="lineNum">     197 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

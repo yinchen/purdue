@@ -1,0 +1,292 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - g10/signal.c</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">g10</a> - signal.c<span style="font-size: 80%;"> (source / <a href="signal.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">66</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2012-11-04</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">9</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /* signal.c - signal handling</a>
+<span class="lineNum">       2 </span>            :  * Copyright (C) 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
+<span class="lineNum">       3 </span>            :  *
+<span class="lineNum">       4 </span>            :  * This file is part of GnuPG.
+<span class="lineNum">       5 </span>            :  *
+<span class="lineNum">       6 </span>            :  * GnuPG is free software; you can redistribute it and/or modify
+<span class="lineNum">       7 </span>            :  * it under the terms of the GNU General Public License as published by
+<span class="lineNum">       8 </span>            :  * the Free Software Foundation; either version 2 of the License, or
+<span class="lineNum">       9 </span>            :  * (at your option) any later version.
+<span class="lineNum">      10 </span>            :  *
+<span class="lineNum">      11 </span>            :  * GnuPG is distributed in the hope that it will be useful,
+<span class="lineNum">      12 </span>            :  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<span class="lineNum">      13 </span>            :  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<span class="lineNum">      14 </span>            :  * GNU General Public License for more details.
+<span class="lineNum">      15 </span>            :  *
+<span class="lineNum">      16 </span>            :  * You should have received a copy of the GNU General Public License
+<span class="lineNum">      17 </span>            :  * along with this program; if not, write to the Free Software
+<span class="lineNum">      18 </span>            :  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
+<span class="lineNum">      19 </span>            :  */
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : #include &lt;config.h&gt;
+<span class="lineNum">      22 </span>            : #include &lt;stdio.h&gt;
+<span class="lineNum">      23 </span>            : #include &lt;stdlib.h&gt;
+<span class="lineNum">      24 </span>            : #include &lt;signal.h&gt;
+<span class="lineNum">      25 </span>            : #include &lt;unistd.h&gt;
+<span class="lineNum">      26 </span>            : #include &lt;string.h&gt;
+<span class="lineNum">      27 </span>            : #include &lt;errno.h&gt;
+<span class="lineNum">      28 </span>            : #include &lt;assert.h&gt;
+<span class="lineNum">      29 </span>            : 
+<span class="lineNum">      30 </span>            : #include &quot;options.h&quot;
+<span class="lineNum">      31 </span>            : #include &quot;errors.h&quot;
+<span class="lineNum">      32 </span>            : #include &quot;memory.h&quot;
+<span class="lineNum">      33 </span>            : #include &quot;util.h&quot;
+<span class="lineNum">      34 </span>            : #include &quot;main.h&quot;
+<span class="lineNum">      35 </span>            : #include &quot;ttyio.h&quot;
+<span class="lineNum">      36 </span>            : 
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span>            : static volatile int caught_fatal_sig = 0;
+<span class="lineNum">      39 </span>            : static volatile int caught_sigusr1 = 0;
+<a name="40"><span class="lineNum">      40 </span>            : </a>
+<span class="lineNum">      41 </span>            : static void
+<span class="lineNum">      42 </span><span class="lineNoCov">          0 : init_one_signal (int sig, RETSIGTYPE (*handler)(int), int check_ign )</span>
+<span class="lineNum">      43 </span>            : {
+<span class="lineNum">      44 </span>            :  #ifndef HAVE_DOSISH_SYSTEM
+<span class="lineNum">      45 </span>            :   #if HAVE_SIGACTION
+<span class="lineNum">      46 </span>            :     struct sigaction oact, nact;
+<span class="lineNum">      47 </span>            : 
+<span class="lineNum">      48 </span><span class="lineNoCov">          0 :     if (check_ign) {</span>
+<span class="lineNum">      49 </span>            :         /* we don't want to change an IGN handler */
+<span class="lineNum">      50 </span><span class="lineNoCov">          0 :         sigaction (sig, NULL, &amp;oact );</span>
+<span class="lineNum">      51 </span><span class="lineNoCov">          0 :         if (oact.sa_handler == SIG_IGN )</span>
+<span class="lineNum">      52 </span><span class="lineNoCov">          0 :             return;</span>
+<span class="lineNum">      53 </span>            :     }
+<span class="lineNum">      54 </span>            : 
+<span class="lineNum">      55 </span><span class="lineNoCov">          0 :     nact.sa_handler = handler;</span>
+<span class="lineNum">      56 </span><span class="lineNoCov">          0 :     sigemptyset (&amp;nact.sa_mask);</span>
+<span class="lineNum">      57 </span><span class="lineNoCov">          0 :     nact.sa_flags = 0;</span>
+<span class="lineNum">      58 </span><span class="lineNoCov">          0 :     sigaction ( sig, &amp;nact, NULL);</span>
+<span class="lineNum">      59 </span>            :   #else 
+<span class="lineNum">      60 </span>            :     RETSIGTYPE (*ohandler)(int);
+<span class="lineNum">      61 </span>            : 
+<span class="lineNum">      62 </span>            :     ohandler = signal (sig, handler);
+<span class="lineNum">      63 </span>            :     if (check_ign &amp;&amp; ohandler == SIG_IGN) {
+<span class="lineNum">      64 </span>            :         /* Change it back if it was already set to IGN */
+<span class="lineNum">      65 </span>            :         signal (sig, SIG_IGN);
+<span class="lineNum">      66 </span>            :     }
+<span class="lineNum">      67 </span>            :   #endif
+<span class="lineNum">      68 </span>            :  #endif /*!HAVE_DOSISH_SYSTEM*/
+<span class="lineNum">      69 </span>            : }
+<a name="70"><span class="lineNum">      70 </span>            : </a>
+<span class="lineNum">      71 </span>            : static const char *
+<span class="lineNum">      72 </span><span class="lineNoCov">          0 : get_signal_name( int signum )</span>
+<span class="lineNum">      73 </span>            : {
+<span class="lineNum">      74 </span>            :   #if defined(SYS_SIGLIST_DECLARED) &amp;&amp; defined(NSIG)
+<span class="lineNum">      75 </span><span class="lineNoCov">          0 :     return (signum &gt;= 0 &amp;&amp; signum &lt; NSIG) ? sys_siglist[signum] : &quot;?&quot;;</span>
+<span class="lineNum">      76 </span>            :   #else
+<span class="lineNum">      77 </span>            :     return &quot;some signal&quot;;
+<span class="lineNum">      78 </span>            :   #endif
+<span class="lineNum">      79 </span>            : }
+<span class="lineNum">      80 </span>            : 
+<a name="81"><span class="lineNum">      81 </span>            : </a>
+<span class="lineNum">      82 </span>            : static RETSIGTYPE
+<span class="lineNum">      83 </span><span class="lineNoCov">          0 : got_fatal_signal( int sig )</span>
+<span class="lineNum">      84 </span>            : {
+<span class="lineNum">      85 </span>            :     const char *s;
+<span class="lineNum">      86 </span>            : 
+<span class="lineNum">      87 </span><span class="lineNoCov">          0 :     if( caught_fatal_sig )</span>
+<span class="lineNum">      88 </span><span class="lineNoCov">          0 :         raise( sig );</span>
+<span class="lineNum">      89 </span><span class="lineNoCov">          0 :     caught_fatal_sig = 1;</span>
+<span class="lineNum">      90 </span>            : 
+<span class="lineNum">      91 </span><span class="lineNoCov">          0 :     secmem_term();</span>
+<span class="lineNum">      92 </span>            :     /* better don't transtale these messages */
+<span class="lineNum">      93 </span><span class="lineNoCov">          0 :     write(2, &quot;\n&quot;, 1 );</span>
+<span class="lineNum">      94 </span><span class="lineNoCov">          0 :     s = log_get_name(); if( s ) write(2, s, strlen(s) );</span>
+<span class="lineNum">      95 </span><span class="lineNoCov">          0 :     write(2, &quot;: &quot;, 2 );</span>
+<span class="lineNum">      96 </span><span class="lineNoCov">          0 :     s = get_signal_name(sig); write(2, s, strlen(s) );</span>
+<span class="lineNum">      97 </span><span class="lineNoCov">          0 :     write(2, &quot; caught ... exiting\n&quot;, 21 );</span>
+<span class="lineNum">      98 </span>            : 
+<span class="lineNum">      99 </span><span class="lineNoCov">          0 :     system (&quot;touch core.29292&quot;);</span>
+<span class="lineNum">     100 </span>            : 
+<span class="lineNum">     101 </span>            :     /* reset action to default action and raise signal again */
+<span class="lineNum">     102 </span><span class="lineNoCov">          0 :     init_one_signal (sig, SIG_DFL, 0);</span>
+<span class="lineNum">     103 </span><span class="lineNoCov">          0 :     remove_lockfiles ();</span>
+<span class="lineNum">     104 </span><span class="lineNoCov">          0 :     raise( sig );</span>
+<span class="lineNum">     105 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     106 </span>            : 
+<a name="107"><span class="lineNum">     107 </span>            : </a>
+<span class="lineNum">     108 </span>            : static RETSIGTYPE
+<span class="lineNum">     109 </span><span class="lineNoCov">          0 : got_usr_signal( int sig )</span>
+<span class="lineNum">     110 </span>            : {
+<span class="lineNum">     111 </span><span class="lineNoCov">          0 :     caught_sigusr1 = 1;</span>
+<span class="lineNum">     112 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     113 </span>            : 
+<a name="114"><span class="lineNum">     114 </span>            : </a>
+<span class="lineNum">     115 </span>            : void
+<span class="lineNum">     116 </span><span class="lineNoCov">          0 : init_signals()</span>
+<span class="lineNum">     117 </span>            : {
+<span class="lineNum">     118 </span>            :   #ifndef HAVE_DOSISH_SYSTEM
+<span class="lineNum">     119 </span><span class="lineNoCov">          0 :     init_one_signal (SIGINT, got_fatal_signal, 1 );</span>
+<span class="lineNum">     120 </span><span class="lineNoCov">          0 :     init_one_signal (SIGHUP, got_fatal_signal, 1 );</span>
+<span class="lineNum">     121 </span><span class="lineNoCov">          0 :     init_one_signal (SIGTERM, got_fatal_signal, 1 );</span>
+<span class="lineNum">     122 </span><span class="lineNoCov">          0 :     init_one_signal (SIGQUIT, got_fatal_signal, 1 );</span>
+<span class="lineNum">     123 </span><span class="lineNoCov">          0 :     init_one_signal (SIGSEGV, got_fatal_signal, 1 );</span>
+<span class="lineNum">     124 </span><span class="lineNoCov">          0 :     init_one_signal (SIGUSR1, got_usr_signal, 0 );</span>
+<span class="lineNum">     125 </span><span class="lineNoCov">          0 :     init_one_signal (SIGPIPE, SIG_IGN, 0 );</span>
+<span class="lineNum">     126 </span>            :   #endif
+<span class="lineNum">     127 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     128 </span>            : 
+<a name="129"><span class="lineNum">     129 </span>            : </a>
+<span class="lineNum">     130 </span>            : void
+<span class="lineNum">     131 </span><span class="lineNoCov">          0 : pause_on_sigusr( int which )</span>
+<span class="lineNum">     132 </span>            : {
+<span class="lineNum">     133 </span>            :   #ifndef HAVE_DOSISH_SYSTEM
+<span class="lineNum">     134 </span>            :    #ifdef HAVE_SIGPROCMASK
+<span class="lineNum">     135 </span>            :     sigset_t mask, oldmask;
+<span class="lineNum">     136 </span>            : 
+<span class="lineNum">     137 </span><span class="lineNoCov">          0 :     assert( which == 1 );</span>
+<span class="lineNum">     138 </span><span class="lineNoCov">          0 :     sigemptyset( &amp;mask );</span>
+<span class="lineNum">     139 </span><span class="lineNoCov">          0 :     sigaddset( &amp;mask, SIGUSR1 );</span>
+<span class="lineNum">     140 </span>            : 
+<span class="lineNum">     141 </span><span class="lineNoCov">          0 :     sigprocmask( SIG_BLOCK, &amp;mask, &amp;oldmask );</span>
+<span class="lineNum">     142 </span><span class="lineNoCov">          0 :     while( !caught_sigusr1 )</span>
+<span class="lineNum">     143 </span><span class="lineNoCov">          0 :         sigsuspend( &amp;oldmask );</span>
+<span class="lineNum">     144 </span><span class="lineNoCov">          0 :     caught_sigusr1 = 0;</span>
+<span class="lineNum">     145 </span><span class="lineNoCov">          0 :     sigprocmask( SIG_UNBLOCK, &amp;mask, NULL );</span>
+<span class="lineNum">     146 </span>            :    #else 
+<span class="lineNum">     147 </span>            :      assert (which == 1);
+<span class="lineNum">     148 </span>            :      sighold (SIGUSR1);
+<span class="lineNum">     149 </span>            :      while (!caught_sigusr1)
+<span class="lineNum">     150 </span>            :          sigpause(SIGUSR1);
+<span class="lineNum">     151 </span>            :      caught_sigusr1 = 0;
+<span class="lineNum">     152 </span>            :      sigrelse(SIGUSR1); ????
+<span class="lineNum">     153 </span>            :    #endif /*!HAVE_SIGPROCMASK*/
+<span class="lineNum">     154 </span>            :   #endif
+<span class="lineNum">     155 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     156 </span>            : 
+<a name="157"><span class="lineNum">     157 </span>            : </a>
+<span class="lineNum">     158 </span>            : static void
+<span class="lineNum">     159 </span><span class="lineNoCov">          0 : do_block( int block )</span>
+<span class="lineNum">     160 </span>            : {
+<span class="lineNum">     161 </span>            :  #ifndef HAVE_DOSISH_SYSTEM
+<span class="lineNum">     162 </span>            :     static int is_blocked;
+<span class="lineNum">     163 </span>            :   #ifdef HAVE_SIGPROCMASK
+<span class="lineNum">     164 </span>            :     static sigset_t oldmask;
+<span class="lineNum">     165 </span>            : 
+<span class="lineNum">     166 </span><span class="lineNoCov">          0 :     if( block ) {</span>
+<span class="lineNum">     167 </span>            :         sigset_t newmask;
+<span class="lineNum">     168 </span>            : 
+<span class="lineNum">     169 </span><span class="lineNoCov">          0 :         if( is_blocked )</span>
+<span class="lineNum">     170 </span><span class="lineNoCov">          0 :             log_bug(&quot;signals are already blocked\n&quot;);</span>
+<span class="lineNum">     171 </span><span class="lineNoCov">          0 :         sigfillset( &amp;newmask );</span>
+<span class="lineNum">     172 </span><span class="lineNoCov">          0 :         sigprocmask( SIG_BLOCK, &amp;newmask, &amp;oldmask );</span>
+<span class="lineNum">     173 </span><span class="lineNoCov">          0 :         is_blocked = 1;</span>
+<span class="lineNum">     174 </span>            :     }
+<span class="lineNum">     175 </span>            :     else {
+<span class="lineNum">     176 </span><span class="lineNoCov">          0 :         if( !is_blocked )</span>
+<span class="lineNum">     177 </span><span class="lineNoCov">          0 :             log_bug(&quot;signals are not blocked\n&quot;);</span>
+<span class="lineNum">     178 </span><span class="lineNoCov">          0 :         sigprocmask( SIG_SETMASK, &amp;oldmask, NULL );</span>
+<span class="lineNum">     179 </span><span class="lineNoCov">          0 :         is_blocked = 0;</span>
+<span class="lineNum">     180 </span>            :     }
+<span class="lineNum">     181 </span>            :   #else /*!HAVE_SIGPROCMASK*/
+<span class="lineNum">     182 </span>            :     static void (*disposition[MAXSIG])();
+<span class="lineNum">     183 </span>            :     int sig;
+<span class="lineNum">     184 </span>            : 
+<span class="lineNum">     185 </span>            :     if( block ) {
+<span class="lineNum">     186 </span>            :         if( is_blocked )
+<span class="lineNum">     187 </span>            :             log_bug(&quot;signals are already blocked\n&quot;);
+<span class="lineNum">     188 </span>            :         for (sig=1; sig &lt; MAXSIG; sig++) {
+<span class="lineNum">     189 </span>            :             disposition[sig] = sigset (sig, SIG_HOLD);
+<span class="lineNum">     190 </span>            :         }
+<span class="lineNum">     191 </span>            :         is_blocked = 1;
+<span class="lineNum">     192 </span>            :     }
+<span class="lineNum">     193 </span>            :     else {
+<span class="lineNum">     194 </span>            :         if( !is_blocked )
+<span class="lineNum">     195 </span>            :             log_bug(&quot;signals are not blocked\n&quot;);
+<span class="lineNum">     196 </span>            :         for (sig=1; sig &lt; MAXSIG; sig++) {
+<span class="lineNum">     197 </span>            :             sigset (sig, disposition[sig]);
+<span class="lineNum">     198 </span>            :         }
+<span class="lineNum">     199 </span>            :         is_blocked = 0;
+<span class="lineNum">     200 </span>            :     }
+<span class="lineNum">     201 </span>            :   #endif /*!HAVE_SIGPROCMASK*/
+<span class="lineNum">     202 </span>            :  #endif /*HAVE_DOSISH_SYSTEM*/
+<span class="lineNum">     203 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     204 </span>            : 
+<a name="205"><span class="lineNum">     205 </span>            : </a>
+<span class="lineNum">     206 </span>            : void
+<span class="lineNum">     207 </span><span class="lineNoCov">          0 : block_all_signals()</span>
+<span class="lineNum">     208 </span>            : {
+<span class="lineNum">     209 </span><span class="lineNoCov">          0 :     do_block(1);</span>
+<span class="lineNum">     210 </span><span class="lineNoCov">          0 : }</span>
+<a name="211"><span class="lineNum">     211 </span>            : </a>
+<span class="lineNum">     212 </span>            : void
+<span class="lineNum">     213 </span><span class="lineNoCov">          0 : unblock_all_signals()</span>
+<span class="lineNum">     214 </span>            : {
+<span class="lineNum">     215 </span><span class="lineNoCov">          0 :     do_block(0);</span>
+<span class="lineNum">     216 </span><span class="lineNoCov">          0 : }</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,1455 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - g10/import.c</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">g10</a> - import.c<span style="font-size: 80%;"> (source / <a href="import.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">616</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2012-11-04</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">18</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /* import.c</a>
+<span class="lineNum">       2 </span>            :  * Copyright (C) 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
+<span class="lineNum">       3 </span>            :  *
+<span class="lineNum">       4 </span>            :  * This file is part of GnuPG.
+<span class="lineNum">       5 </span>            :  *
+<span class="lineNum">       6 </span>            :  * GnuPG is free software; you can redistribute it and/or modify
+<span class="lineNum">       7 </span>            :  * it under the terms of the GNU General Public License as published by
+<span class="lineNum">       8 </span>            :  * the Free Software Foundation; either version 2 of the License, or
+<span class="lineNum">       9 </span>            :  * (at your option) any later version.
+<span class="lineNum">      10 </span>            :  *
+<span class="lineNum">      11 </span>            :  * GnuPG is distributed in the hope that it will be useful,
+<span class="lineNum">      12 </span>            :  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<span class="lineNum">      13 </span>            :  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<span class="lineNum">      14 </span>            :  * GNU General Public License for more details.
+<span class="lineNum">      15 </span>            :  *
+<span class="lineNum">      16 </span>            :  * You should have received a copy of the GNU General Public License
+<span class="lineNum">      17 </span>            :  * along with this program; if not, write to the Free Software
+<span class="lineNum">      18 </span>            :  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
+<span class="lineNum">      19 </span>            :  */
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : #include &lt;config.h&gt;
+<span class="lineNum">      22 </span>            : #include &lt;stdio.h&gt;
+<span class="lineNum">      23 </span>            : #include &lt;stdlib.h&gt;
+<span class="lineNum">      24 </span>            : #include &lt;string.h&gt;
+<span class="lineNum">      25 </span>            : #include &lt;errno.h&gt;
+<span class="lineNum">      26 </span>            : #include &lt;assert.h&gt;
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : #include &quot;options.h&quot;
+<span class="lineNum">      29 </span>            : #include &quot;packet.h&quot;
+<span class="lineNum">      30 </span>            : #include &quot;errors.h&quot;
+<span class="lineNum">      31 </span>            : #include &quot;keydb.h&quot;
+<span class="lineNum">      32 </span>            : #include &quot;memory.h&quot;
+<span class="lineNum">      33 </span>            : #include &quot;util.h&quot;
+<span class="lineNum">      34 </span>            : #include &quot;trustdb.h&quot;
+<span class="lineNum">      35 </span>            : #include &quot;main.h&quot;
+<span class="lineNum">      36 </span>            : #include &quot;i18n.h&quot;
+<span class="lineNum">      37 </span>            : #include &quot;status.h&quot;
+<span class="lineNum">      38 </span>            : 
+<span class="lineNum">      39 </span>            : 
+<span class="lineNum">      40 </span>            : static struct {
+<span class="lineNum">      41 </span>            :     ulong count;
+<span class="lineNum">      42 </span>            :     ulong no_user_id;
+<span class="lineNum">      43 </span>            :     ulong imported;
+<span class="lineNum">      44 </span>            :     ulong imported_rsa;
+<span class="lineNum">      45 </span>            :     ulong n_uids;
+<span class="lineNum">      46 </span>            :     ulong n_sigs;
+<span class="lineNum">      47 </span>            :     ulong n_subk;
+<span class="lineNum">      48 </span>            :     ulong unchanged;
+<span class="lineNum">      49 </span>            :     ulong n_revoc;
+<span class="lineNum">      50 </span>            :     ulong secret_read;
+<span class="lineNum">      51 </span>            :     ulong secret_imported;
+<span class="lineNum">      52 </span>            :     ulong secret_dups;
+<span class="lineNum">      53 </span>            :     ulong skipped_new_keys;
+<span class="lineNum">      54 </span>            : } stats;
+<span class="lineNum">      55 </span>            : 
+<span class="lineNum">      56 </span>            : 
+<span class="lineNum">      57 </span>            : static int import( IOBUF inp, int fast, const char* fname, int allow_secret );
+<span class="lineNum">      58 </span>            : static void print_stats(void);
+<span class="lineNum">      59 </span>            : static int read_block( IOBUF a, PACKET **pending_pkt, KBNODE *ret_root );
+<span class="lineNum">      60 </span>            : static void remove_bad_stuff (KBNODE keyblock);
+<span class="lineNum">      61 </span>            : static int import_one( const char *fname, KBNODE keyblock, int fast );
+<span class="lineNum">      62 </span>            : static int import_secret_one( const char *fname, KBNODE keyblock, int allow );
+<span class="lineNum">      63 </span>            : static int import_revoke_cert( const char *fname, KBNODE node );
+<span class="lineNum">      64 </span>            : static int chk_self_sigs( const char *fname, KBNODE keyblock,
+<span class="lineNum">      65 </span>            :                           PKT_public_key *pk, u32 *keyid );
+<span class="lineNum">      66 </span>            : static void mark_non_selfsigned_uids_valid( KBNODE keyblock, u32 *kid );
+<span class="lineNum">      67 </span>            : static int delete_inv_parts( const char *fname, KBNODE keyblock, u32 *keyid );
+<span class="lineNum">      68 </span>            : static int merge_blocks( const char *fname, KBNODE keyblock_orig,
+<span class="lineNum">      69 </span>            :                          KBNODE keyblock, u32 *keyid,
+<span class="lineNum">      70 </span>            :                          int *n_uids, int *n_sigs, int *n_subk );
+<span class="lineNum">      71 </span>            : static int append_uid( KBNODE keyblock, KBNODE node, int *n_sigs,
+<span class="lineNum">      72 </span>            :                              const char *fname, u32 *keyid );
+<span class="lineNum">      73 </span>            : static int append_key( KBNODE keyblock, KBNODE node, int *n_sigs,
+<span class="lineNum">      74 </span>            :                              const char *fname, u32 *keyid );
+<span class="lineNum">      75 </span>            : static int merge_sigs( KBNODE dst, KBNODE src, int *n_sigs,
+<span class="lineNum">      76 </span>            :                              const char *fname, u32 *keyid );
+<span class="lineNum">      77 </span>            : static int merge_keysigs( KBNODE dst, KBNODE src, int *n_sigs,
+<span class="lineNum">      78 </span>            :                              const char *fname, u32 *keyid );
+<span class="lineNum">      79 </span>            : 
+<span class="lineNum">      80 </span>            : 
+<span class="lineNum">      81 </span>            : /****************
+<span class="lineNum">      82 </span>            :  * Import the public keys from the given filename. Input may be armored.
+<span class="lineNum">      83 </span>            :  * This function rejects all keys which are not validly self signed on at
+<span class="lineNum">      84 </span>            :  * least one userid. Only user ids which are self signed will be imported.
+<span class="lineNum">      85 </span>            :  * Other signatures are not checked.
+<span class="lineNum">      86 </span>            :  *
+<span class="lineNum">      87 </span>            :  * Actually this function does a merge. It works like this:
+<span class="lineNum">      88 </span>            :  *
+<span class="lineNum">      89 </span>            :  *  - get the keyblock
+<span class="lineNum">      90 </span>            :  *  - check self-signatures and remove all userids and their signatures
+<span class="lineNum">      91 </span>            :  *    without/invalid self-signatures.
+<span class="lineNum">      92 </span>            :  *  - reject the keyblock, if we have no valid userid.
+<span class="lineNum">      93 </span>            :  *  - See whether we have this key already in one of our pubrings.
+<span class="lineNum">      94 </span>            :  *    If not, simply add it to the default keyring.
+<span class="lineNum">      95 </span>            :  *  - Compare the key and the self-signatures of the new and the one in
+<span class="lineNum">      96 </span>            :  *    our keyring.  If they are different something weird is going on;
+<span class="lineNum">      97 </span>            :  *    ask what to do.
+<span class="lineNum">      98 </span>            :  *  - See whether we have only non-self-signature on one user id; if not
+<span class="lineNum">      99 </span>            :  *    ask the user what to do.
+<span class="lineNum">     100 </span>            :  *  - compare the signatures: If we already have this signature, check
+<span class="lineNum">     101 </span>            :  *    that they compare okay; if not, issue a warning and ask the user.
+<span class="lineNum">     102 </span>            :  *    (consider looking at the timestamp and use the newest?)
+<span class="lineNum">     103 </span>            :  *  - Simply add the signature.  Can't verify here because we may not have
+<span class="lineNum">     104 </span>            :  *    the signature's public key yet; verification is done when putting it
+<span class="lineNum">     105 </span>            :  *    into the trustdb, which is done automagically as soon as this pubkey
+<span class="lineNum">     106 </span>            :  *    is used.
+<span class="lineNum">     107 </span>            :  *  - Proceed with next signature.
+<span class="lineNum">     108 </span>            :  *
+<span class="lineNum">     109 </span>            :  *  Key revocation certificates have special handling.
+<span class="lineNum">     110 </span>            :  *
+<a name="111"><span class="lineNum">     111 </span>            :  */</a>
+<span class="lineNum">     112 </span>            : void
+<span class="lineNum">     113 </span><span class="lineNoCov">          0 : import_keys( char **fnames, int nnames, int fast )</span>
+<span class="lineNum">     114 </span>            : {
+<span class="lineNum">     115 </span>            :     int i;
+<span class="lineNum">     116 </span>            : 
+<span class="lineNum">     117 </span>            :     /* fixme: don't use static variables */
+<span class="lineNum">     118 </span><span class="lineNoCov">          0 :     memset( &amp;stats, 0, sizeof( stats ) );</span>
+<span class="lineNum">     119 </span>            : 
+<span class="lineNum">     120 </span><span class="lineNoCov">          0 :     if( !fnames &amp;&amp; !nnames )</span>
+<span class="lineNum">     121 </span><span class="lineNoCov">          0 :         nnames = 1;  /* Ohh what a ugly hack to jump into the loop */</span>
+<span class="lineNum">     122 </span>            : 
+<span class="lineNum">     123 </span><span class="lineNoCov">          0 :     for(i=0; i &lt; nnames; i++ ) {</span>
+<span class="lineNum">     124 </span><span class="lineNoCov">          0 :         const char *fname = fnames? fnames[i] : NULL;</span>
+<span class="lineNum">     125 </span><span class="lineNoCov">          0 :         IOBUF inp = iobuf_open(fname);</span>
+<span class="lineNum">     126 </span><span class="lineNoCov">          0 :         if( !fname )</span>
+<span class="lineNum">     127 </span><span class="lineNoCov">          0 :             fname = &quot;[stdin]&quot;;</span>
+<span class="lineNum">     128 </span><span class="lineNoCov">          0 :         if( !inp )</span>
+<span class="lineNum">     129 </span>            :             log_error(_(&quot;can't open `%s': %s\n&quot;), fname, strerror(errno) );
+<span class="lineNum">     130 </span>            :         else {
+<span class="lineNum">     131 </span><span class="lineNoCov">          0 :             int rc = import( inp, fast, fname, opt.allow_secret_key_import );</span>
+<span class="lineNum">     132 </span><span class="lineNoCov">          0 :             iobuf_close(inp);</span>
+<span class="lineNum">     133 </span>            :             if( rc )
+<span class="lineNum">     134 </span>            :                 log_error(&quot;import from `%s' failed: %s\n&quot;, fname,
+<span class="lineNum">     135 </span>            :                                                            g10_errstr(rc) );
+<span class="lineNum">     136 </span>            :         }
+<span class="lineNum">     137 </span><span class="lineNoCov">          0 :         if( !fname )</span>
+<span class="lineNum">     138 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     139 </span>            :     }
+<span class="lineNum">     140 </span><span class="lineNoCov">          0 :     print_stats();</span>
+<span class="lineNum">     141 </span><span class="lineNoCov">          0 :     if( !fast )</span>
+<span class="lineNum">     142 </span><span class="lineNoCov">          0 :         sync_trustdb();</span>
+<span class="lineNum">     143 </span><span class="lineNoCov">          0 : }</span>
+<a name="144"><span class="lineNum">     144 </span>            : </a>
+<span class="lineNum">     145 </span>            : int
+<span class="lineNum">     146 </span><span class="lineNoCov">          0 : import_keys_stream( IOBUF inp, int fast )</span>
+<span class="lineNum">     147 </span>            : {
+<span class="lineNum">     148 </span><span class="lineNoCov">          0 :     int rc = 0;</span>
+<span class="lineNum">     149 </span>            : 
+<span class="lineNum">     150 </span>            :     /* fixme: don't use static variables */
+<span class="lineNum">     151 </span><span class="lineNoCov">          0 :     memset( &amp;stats, 0, sizeof( stats ) );</span>
+<span class="lineNum">     152 </span><span class="lineNoCov">          0 :     rc = import( inp, fast, &quot;[stream]&quot;, opt.allow_secret_key_import );</span>
+<span class="lineNum">     153 </span><span class="lineNoCov">          0 :     print_stats();</span>
+<span class="lineNum">     154 </span><span class="lineNoCov">          0 :     if( !fast )</span>
+<span class="lineNum">     155 </span><span class="lineNoCov">          0 :         sync_trustdb();</span>
+<span class="lineNum">     156 </span><span class="lineNoCov">          0 :     return rc;</span>
+<span class="lineNum">     157 </span>            : }
+<a name="158"><span class="lineNum">     158 </span>            : </a>
+<span class="lineNum">     159 </span>            : static int
+<span class="lineNum">     160 </span><span class="lineNoCov">          0 : import( IOBUF inp, int fast, const char* fname, int allow_secret )</span>
+<span class="lineNum">     161 </span>            : {
+<span class="lineNum">     162 </span><span class="lineNoCov">          0 :     PACKET *pending_pkt = NULL;</span>
+<span class="lineNum">     163 </span>            :     KBNODE keyblock;
+<span class="lineNum">     164 </span><span class="lineNoCov">          0 :     int rc = 0;</span>
+<span class="lineNum">     165 </span>            : 
+<span class="lineNum">     166 </span><span class="lineNoCov">          0 :     getkey_disable_caches();</span>
+<span class="lineNum">     167 </span>            : 
+<span class="lineNum">     168 </span><span class="lineNoCov">          0 :     if( !opt.no_armor ) { /* armored reading is not disabled */</span>
+<span class="lineNum">     169 </span><span class="lineNoCov">          0 :         armor_filter_context_t *afx = m_alloc_clear( sizeof *afx );</span>
+<span class="lineNum">     170 </span><span class="lineNoCov">          0 :         afx-&gt;only_keyblocks = 1;</span>
+<span class="lineNum">     171 </span><span class="lineNoCov">          0 :         iobuf_push_filter2( inp, armor_filter, afx, 1 );</span>
+<span class="lineNum">     172 </span>            :     }
+<span class="lineNum">     173 </span>            : 
+<span class="lineNum">     174 </span><span class="lineNoCov">          0 :     while( !(rc = read_block( inp, &amp;pending_pkt, &amp;keyblock) )) {</span>
+<span class="lineNum">     175 </span><span class="lineNoCov">          0 :         remove_bad_stuff (keyblock);</span>
+<span class="lineNum">     176 </span><span class="lineNoCov">          0 :         if( keyblock-&gt;pkt-&gt;pkttype == PKT_PUBLIC_KEY )</span>
+<span class="lineNum">     177 </span><span class="lineNoCov">          0 :             rc = import_one( fname, keyblock, fast );</span>
+<span class="lineNum">     178 </span><span class="lineNoCov">          0 :         else if( keyblock-&gt;pkt-&gt;pkttype == PKT_SECRET_KEY ) </span>
+<span class="lineNum">     179 </span><span class="lineNoCov">          0 :                 rc = import_secret_one( fname, keyblock, allow_secret );</span>
+<span class="lineNum">     180 </span><span class="lineNoCov">          0 :         else if( keyblock-&gt;pkt-&gt;pkttype == PKT_SIGNATURE</span>
+<span class="lineNum">     181 </span><span class="lineNoCov">          0 :                  &amp;&amp; keyblock-&gt;pkt-&gt;pkt.signature-&gt;sig_class == 0x20 )</span>
+<span class="lineNum">     182 </span><span class="lineNoCov">          0 :             rc = import_revoke_cert( fname, keyblock );</span>
+<span class="lineNum">     183 </span>            :         else {
+<span class="lineNum">     184 </span>            :             log_info( _(&quot;skipping block of type %d\n&quot;),
+<span class="lineNum">     185 </span>            :                                             keyblock-&gt;pkt-&gt;pkttype );
+<span class="lineNum">     186 </span>            :         }
+<span class="lineNum">     187 </span><span class="lineNoCov">          0 :         release_kbnode(keyblock);</span>
+<span class="lineNum">     188 </span><span class="lineNoCov">          0 :         if( rc )</span>
+<span class="lineNum">     189 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     190 </span><span class="lineNoCov">          0 :         if( !(++stats.count % 100) &amp;&amp; !opt.quiet )</span>
+<span class="lineNum">     191 </span>            :             log_info(_(&quot;%lu keys so far processed\n&quot;), stats.count );
+<span class="lineNum">     192 </span>            :     }
+<span class="lineNum">     193 </span><span class="lineNoCov">          0 :     if( rc == -1 )</span>
+<span class="lineNum">     194 </span><span class="lineNoCov">          0 :         rc = 0;</span>
+<span class="lineNum">     195 </span>            :     else if( rc &amp;&amp; rc != G10ERR_INV_KEYRING )
+<span class="lineNum">     196 </span>            :         log_error( _(&quot;error reading `%s': %s\n&quot;), fname, g10_errstr(rc));
+<span class="lineNum">     197 </span>            : 
+<span class="lineNum">     198 </span><span class="lineNoCov">          0 :     return rc;</span>
+<span class="lineNum">     199 </span>            : }
+<span class="lineNum">     200 </span>            : 
+<a name="201"><span class="lineNum">     201 </span>            : </a>
+<span class="lineNum">     202 </span>            : static void
+<span class="lineNum">     203 </span><span class="lineNoCov">          0 : print_stats()</span>
+<span class="lineNum">     204 </span>            : {
+<span class="lineNum">     205 </span><span class="lineNoCov">          0 :     if( !opt.quiet ) {</span>
+<span class="lineNum">     206 </span>            :         log_info(_(&quot;Total number processed: %lu\n&quot;), stats.count );
+<span class="lineNum">     207 </span><span class="lineNoCov">          0 :         if( stats.skipped_new_keys )</span>
+<span class="lineNum">     208 </span>            :             log_info(_(&quot;      skipped new keys: %lu\n&quot;),
+<span class="lineNum">     209 </span>            :                                                 stats.skipped_new_keys );
+<span class="lineNum">     210 </span><span class="lineNoCov">          0 :         if( stats.no_user_id )</span>
+<span class="lineNum">     211 </span>            :             log_info(_(&quot;          w/o user IDs: %lu\n&quot;), stats.no_user_id );
+<span class="lineNum">     212 </span><span class="lineNoCov">          0 :         if( stats.imported || stats.imported_rsa ) {</span>
+<span class="lineNum">     213 </span>            :             log_info(_(&quot;              imported: %lu&quot;), stats.imported );
+<span class="lineNum">     214 </span><span class="lineNoCov">          0 :             if( stats.imported_rsa )</span>
+<span class="lineNum">     215 </span><span class="lineNoCov">          0 :                 fprintf(stderr, &quot;  (RSA: %lu)&quot;, stats.imported_rsa );</span>
+<span class="lineNum">     216 </span><span class="lineNoCov">          0 :             putc('\n', stderr);</span>
+<span class="lineNum">     217 </span>            :         }
+<span class="lineNum">     218 </span><span class="lineNoCov">          0 :         if( stats.unchanged )</span>
+<span class="lineNum">     219 </span>            :             log_info(_(&quot;             unchanged: %lu\n&quot;), stats.unchanged );
+<span class="lineNum">     220 </span><span class="lineNoCov">          0 :         if( stats.n_uids )</span>
+<span class="lineNum">     221 </span>            :             log_info(_(&quot;          new user IDs: %lu\n&quot;), stats.n_uids );
+<span class="lineNum">     222 </span><span class="lineNoCov">          0 :         if( stats.n_subk )</span>
+<span class="lineNum">     223 </span>            :             log_info(_(&quot;           new subkeys: %lu\n&quot;), stats.n_subk );
+<span class="lineNum">     224 </span><span class="lineNoCov">          0 :         if( stats.n_sigs )</span>
+<span class="lineNum">     225 </span>            :             log_info(_(&quot;        new signatures: %lu\n&quot;), stats.n_sigs );
+<span class="lineNum">     226 </span><span class="lineNoCov">          0 :         if( stats.n_revoc )</span>
+<span class="lineNum">     227 </span>            :             log_info(_(&quot;   new key revocations: %lu\n&quot;), stats.n_revoc );
+<span class="lineNum">     228 </span><span class="lineNoCov">          0 :         if( stats.secret_read )</span>
+<span class="lineNum">     229 </span>            :             log_info(_(&quot;      secret keys read: %lu\n&quot;), stats.secret_read );
+<span class="lineNum">     230 </span><span class="lineNoCov">          0 :         if( stats.secret_imported )</span>
+<span class="lineNum">     231 </span>            :             log_info(_(&quot;  secret keys imported: %lu\n&quot;), stats.secret_imported );
+<span class="lineNum">     232 </span><span class="lineNoCov">          0 :         if( stats.secret_dups )</span>
+<span class="lineNum">     233 </span>            :             log_info(_(&quot; secret keys unchanged: %lu\n&quot;), stats.secret_dups );
+<span class="lineNum">     234 </span>            :     }
+<span class="lineNum">     235 </span>            : 
+<span class="lineNum">     236 </span><span class="lineNoCov">          0 :     if( is_status_enabled() ) {</span>
+<span class="lineNum">     237 </span>            :         char buf[13*20];
+<span class="lineNum">     238 </span><span class="lineNoCov">          0 :         sprintf(buf, &quot;%lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu&quot;,</span>
+<span class="lineNum">     239 </span>            :                 stats.count,
+<span class="lineNum">     240 </span>            :                 stats.no_user_id,
+<span class="lineNum">     241 </span>            :                 stats.imported,
+<span class="lineNum">     242 </span>            :                 stats.imported_rsa,
+<span class="lineNum">     243 </span>            :                 stats.unchanged,
+<span class="lineNum">     244 </span>            :                 stats.n_uids,
+<span class="lineNum">     245 </span>            :                 stats.n_subk,
+<span class="lineNum">     246 </span>            :                 stats.n_sigs,
+<span class="lineNum">     247 </span>            :                 stats.n_revoc,
+<span class="lineNum">     248 </span>            :                 stats.secret_read,
+<span class="lineNum">     249 </span>            :                 stats.secret_imported,
+<span class="lineNum">     250 </span>            :                 stats.secret_dups,
+<span class="lineNum">     251 </span>            :                 stats.skipped_new_keys );
+<span class="lineNum">     252 </span><span class="lineNoCov">          0 :         write_status_text( STATUS_IMPORT_RES, buf );</span>
+<span class="lineNum">     253 </span>            :     }
+<span class="lineNum">     254 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     255 </span>            : 
+<span class="lineNum">     256 </span>            : 
+<span class="lineNum">     257 </span>            : /****************
+<span class="lineNum">     258 </span>            :  * Read the next keyblock from stream A.
+<span class="lineNum">     259 </span>            :  * PENDING_PKT should be initialzed to NULL
+<span class="lineNum">     260 </span>            :  * and not chnaged form the caller.
+<span class="lineNum">     261 </span>            :  * Retunr: 0 = okay, -1 no more blocks or another errorcode.
+<a name="262"><span class="lineNum">     262 </span>            :  */</a>
+<span class="lineNum">     263 </span>            : static int
+<span class="lineNum">     264 </span><span class="lineNoCov">          0 : read_block( IOBUF a, PACKET **pending_pkt, KBNODE *ret_root )</span>
+<span class="lineNum">     265 </span>            : {
+<span class="lineNum">     266 </span>            :     int rc;
+<span class="lineNum">     267 </span>            :     PACKET *pkt;
+<span class="lineNum">     268 </span><span class="lineNoCov">          0 :     KBNODE root = NULL;</span>
+<span class="lineNum">     269 </span>            :     int in_cert;
+<span class="lineNum">     270 </span>            : 
+<span class="lineNum">     271 </span><span class="lineNoCov">          0 :     if( *pending_pkt ) {</span>
+<span class="lineNum">     272 </span><span class="lineNoCov">          0 :         root = new_kbnode( *pending_pkt );</span>
+<span class="lineNum">     273 </span><span class="lineNoCov">          0 :         *pending_pkt = NULL;</span>
+<span class="lineNum">     274 </span><span class="lineNoCov">          0 :         in_cert = 1;</span>
+<span class="lineNum">     275 </span>            :     }
+<span class="lineNum">     276 </span>            :     else
+<span class="lineNum">     277 </span><span class="lineNoCov">          0 :         in_cert = 0;</span>
+<span class="lineNum">     278 </span><span class="lineNoCov">          0 :     pkt = m_alloc( sizeof *pkt );</span>
+<span class="lineNum">     279 </span><span class="lineNoCov">          0 :     init_packet(pkt);</span>
+<span class="lineNum">     280 </span><span class="lineNoCov">          0 :     while( (rc=parse_packet(a, pkt)) != -1 ) {</span>
+<span class="lineNum">     281 </span><span class="lineNoCov">          0 :         if( rc ) {  /* ignore errors */</span>
+<span class="lineNum">     282 </span><span class="lineNoCov">          0 :             if( rc != G10ERR_UNKNOWN_PACKET ) {</span>
+<span class="lineNum">     283 </span>            :                 log_error(&quot;read_block: read error: %s\n&quot;, g10_errstr(rc) );
+<span class="lineNum">     284 </span><span class="lineNoCov">          0 :                 rc = G10ERR_INV_KEYRING;</span>
+<span class="lineNum">     285 </span><span class="lineNoCov">          0 :                 goto ready;</span>
+<span class="lineNum">     286 </span>            :             }
+<span class="lineNum">     287 </span><span class="lineNoCov">          0 :             free_packet( pkt );</span>
+<span class="lineNum">     288 </span><span class="lineNoCov">          0 :             init_packet(pkt);</span>
+<span class="lineNum">     289 </span><span class="lineNoCov">          0 :             continue;</span>
+<span class="lineNum">     290 </span>            :         }
+<span class="lineNum">     291 </span>            : 
+<span class="lineNum">     292 </span><span class="lineNoCov">          0 :         if( !root &amp;&amp; pkt-&gt;pkttype == PKT_SIGNATURE</span>
+<span class="lineNum">     293 </span><span class="lineNoCov">          0 :                   &amp;&amp; pkt-&gt;pkt.signature-&gt;sig_class == 0x20 ) {</span>
+<span class="lineNum">     294 </span>            :             /* this is a revocation certificate which is handled
+<span class="lineNum">     295 </span>            :              * in a special way */
+<span class="lineNum">     296 </span><span class="lineNoCov">          0 :             root = new_kbnode( pkt );</span>
+<span class="lineNum">     297 </span><span class="lineNoCov">          0 :             pkt = NULL;</span>
+<span class="lineNum">     298 </span><span class="lineNoCov">          0 :             goto ready;</span>
+<span class="lineNum">     299 </span>            :         }
+<span class="lineNum">     300 </span>            : 
+<span class="lineNum">     301 </span>            :         /* make a linked list of all packets */
+<span class="lineNum">     302 </span><span class="lineNoCov">          0 :         switch( pkt-&gt;pkttype ) {</span>
+<span class="lineNum">     303 </span>            :           case PKT_COMPRESSED:
+<span class="lineNum">     304 </span><span class="lineNoCov">          0 :             if( pkt-&gt;pkt.compressed-&gt;algorithm &lt; 1</span>
+<span class="lineNum">     305 </span><span class="lineNoCov">          0 :                 || pkt-&gt;pkt.compressed-&gt;algorithm &gt; 2 ) {</span>
+<span class="lineNum">     306 </span><span class="lineNoCov">          0 :                 rc = G10ERR_COMPR_ALGO;</span>
+<span class="lineNum">     307 </span><span class="lineNoCov">          0 :                 goto ready;</span>
+<span class="lineNum">     308 </span>            :             }
+<span class="lineNum">     309 </span>            :             {
+<span class="lineNum">     310 </span><span class="lineNoCov">          0 :                 compress_filter_context_t *cfx = m_alloc_clear( sizeof *cfx );</span>
+<span class="lineNum">     311 </span><span class="lineNoCov">          0 :                 cfx-&gt;algo = pkt-&gt;pkt.compressed-&gt;algorithm;</span>
+<span class="lineNum">     312 </span><span class="lineNoCov">          0 :                 pkt-&gt;pkt.compressed-&gt;buf = NULL;</span>
+<span class="lineNum">     313 </span><span class="lineNoCov">          0 :                 iobuf_push_filter2( a, compress_filter, cfx, 1 );</span>
+<span class="lineNum">     314 </span>            :             }
+<span class="lineNum">     315 </span><span class="lineNoCov">          0 :             free_packet( pkt );</span>
+<span class="lineNum">     316 </span><span class="lineNoCov">          0 :             init_packet(pkt);</span>
+<span class="lineNum">     317 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     318 </span>            : 
+<span class="lineNum">     319 </span>            : 
+<span class="lineNum">     320 </span>            :           case PKT_PUBLIC_KEY:
+<span class="lineNum">     321 </span>            :           case PKT_SECRET_KEY:
+<span class="lineNum">     322 </span><span class="lineNoCov">          0 :             if( in_cert ) { /* store this packet */</span>
+<span class="lineNum">     323 </span><span class="lineNoCov">          0 :                 *pending_pkt = pkt;</span>
+<span class="lineNum">     324 </span><span class="lineNoCov">          0 :                 pkt = NULL;</span>
+<span class="lineNum">     325 </span><span class="lineNoCov">          0 :                 goto ready;</span>
+<span class="lineNum">     326 </span>            :             }
+<span class="lineNum">     327 </span><span class="lineNoCov">          0 :             in_cert = 1;</span>
+<span class="lineNum">     328 </span>            :           default:
+<span class="lineNum">     329 </span><span class="lineNoCov">          0 :             if( in_cert ) {</span>
+<span class="lineNum">     330 </span><span class="lineNoCov">          0 :                 if( !root )</span>
+<span class="lineNum">     331 </span><span class="lineNoCov">          0 :                     root = new_kbnode( pkt );</span>
+<span class="lineNum">     332 </span>            :                 else
+<span class="lineNum">     333 </span><span class="lineNoCov">          0 :                     add_kbnode( root, new_kbnode( pkt ) );</span>
+<span class="lineNum">     334 </span><span class="lineNoCov">          0 :                 pkt = m_alloc( sizeof *pkt );</span>
+<span class="lineNum">     335 </span>            :             }
+<span class="lineNum">     336 </span><span class="lineNoCov">          0 :             init_packet(pkt);</span>
+<span class="lineNum">     337 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     338 </span>            :         }
+<span class="lineNum">     339 </span>            :     }
+<span class="lineNum">     340 </span>            :   ready:
+<span class="lineNum">     341 </span><span class="lineNoCov">          0 :     if( rc == -1 &amp;&amp; root )</span>
+<span class="lineNum">     342 </span><span class="lineNoCov">          0 :         rc = 0;</span>
+<span class="lineNum">     343 </span>            : 
+<span class="lineNum">     344 </span><span class="lineNoCov">          0 :     if( rc )</span>
+<span class="lineNum">     345 </span><span class="lineNoCov">          0 :         release_kbnode( root );</span>
+<span class="lineNum">     346 </span>            :     else
+<span class="lineNum">     347 </span><span class="lineNoCov">          0 :         *ret_root = root;</span>
+<span class="lineNum">     348 </span><span class="lineNoCov">          0 :     free_packet( pkt );</span>
+<span class="lineNum">     349 </span><span class="lineNoCov">          0 :     m_free( pkt );</span>
+<span class="lineNum">     350 </span><span class="lineNoCov">          0 :     return rc;</span>
+<span class="lineNum">     351 </span>            : }
+<span class="lineNum">     352 </span>            : 
+<a name="353"><span class="lineNum">     353 </span>            : </a>
+<span class="lineNum">     354 </span>            : static void
+<span class="lineNum">     355 </span><span class="lineNoCov">          0 : remove_bad_stuff (KBNODE keyblock)</span>
+<span class="lineNum">     356 </span>            : {
+<span class="lineNum">     357 </span>            :     KBNODE node;
+<span class="lineNum">     358 </span>            : 
+<span class="lineNum">     359 </span><span class="lineNoCov">          0 :     for (node=keyblock; node; node = node-&gt;next ) {</span>
+<span class="lineNum">     360 </span><span class="lineNoCov">          0 :         if( node-&gt;pkt-&gt;pkttype == PKT_SIGNATURE ) {</span>
+<span class="lineNum">     361 </span>            :             /* delete the subpackets we use for the verification cache */
+<span class="lineNum">     362 </span><span class="lineNoCov">          0 :             delete_sig_subpkt (node-&gt;pkt-&gt;pkt.signature-&gt;unhashed_data,</span>
+<span class="lineNum">     363 </span>            :                                SIGSUBPKT_PRIV_VERIFY_CACHE);
+<span class="lineNum">     364 </span>            :         }
+<span class="lineNum">     365 </span>            :     }
+<span class="lineNum">     366 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     367 </span>            : 
+<span class="lineNum">     368 </span>            : 
+<span class="lineNum">     369 </span>            : /****************
+<span class="lineNum">     370 </span>            :  * Try to import one keyblock.  Return an error only in serious cases, but
+<span class="lineNum">     371 </span>            :  * never for an invalid keyblock.  It uses log_error to increase the
+<span class="lineNum">     372 </span>            :  * internal errorcount, so that invalid input can be detected by programs
+<span class="lineNum">     373 </span>            :  * which called g10.
+<a name="374"><span class="lineNum">     374 </span>            :  */</a>
+<span class="lineNum">     375 </span>            : static int
+<span class="lineNum">     376 </span><span class="lineNoCov">          0 : import_one( const char *fname, KBNODE keyblock, int fast )</span>
+<span class="lineNum">     377 </span>            : {
+<span class="lineNum">     378 </span>            :     PKT_public_key *pk;
+<span class="lineNum">     379 </span>            :     PKT_public_key *pk_orig;
+<span class="lineNum">     380 </span>            :     KBNODE node, uidnode;
+<span class="lineNum">     381 </span><span class="lineNoCov">          0 :     KBNODE keyblock_orig = NULL;</span>
+<span class="lineNum">     382 </span>            :     KBPOS kbpos;
+<span class="lineNum">     383 </span>            :     u32 keyid[2];
+<span class="lineNum">     384 </span><span class="lineNoCov">          0 :     int rc = 0;</span>
+<span class="lineNum">     385 </span><span class="lineNoCov">          0 :     int new_key = 0;</span>
+<span class="lineNum">     386 </span><span class="lineNoCov">          0 :     int mod_key = 0;</span>
+<span class="lineNum">     387 </span>            : 
+<span class="lineNum">     388 </span>            :     /* get the key and print some info about it */
+<span class="lineNum">     389 </span><span class="lineNoCov">          0 :     node = find_kbnode( keyblock, PKT_PUBLIC_KEY );</span>
+<span class="lineNum">     390 </span><span class="lineNoCov">          0 :     if( !node )</span>
+<span class="lineNum">     391 </span><span class="lineNoCov">          0 :         BUG();</span>
+<span class="lineNum">     392 </span>            : 
+<span class="lineNum">     393 </span><span class="lineNoCov">          0 :     pk = node-&gt;pkt-&gt;pkt.public_key;</span>
+<span class="lineNum">     394 </span><span class="lineNoCov">          0 :     keyid_from_pk( pk, keyid );</span>
+<span class="lineNum">     395 </span><span class="lineNoCov">          0 :     uidnode = find_next_kbnode( keyblock, PKT_USER_ID );</span>
+<span class="lineNum">     396 </span>            : 
+<span class="lineNum">     397 </span><span class="lineNoCov">          0 :     if( opt.verbose ) {</span>
+<span class="lineNum">     398 </span>            :         log_info( &quot;pub  %4u%c/%08lX %s   &quot;,
+<span class="lineNum">     399 </span>            :                   nbits_from_pk( pk ),
+<span class="lineNum">     400 </span>            :                   pubkey_letter( pk-&gt;pubkey_algo ),
+<span class="lineNum">     401 </span>            :                   (ulong)keyid[1], datestr_from_pk(pk) );
+<span class="lineNum">     402 </span><span class="lineNoCov">          0 :         if( uidnode )</span>
+<span class="lineNum">     403 </span><span class="lineNoCov">          0 :             print_utf8_string( stderr, uidnode-&gt;pkt-&gt;pkt.user_id-&gt;name,</span>
+<span class="lineNum">     404 </span><span class="lineNoCov">          0 :                                        uidnode-&gt;pkt-&gt;pkt.user_id-&gt;len );</span>
+<span class="lineNum">     405 </span><span class="lineNoCov">          0 :         putc('\n', stderr);</span>
+<span class="lineNum">     406 </span>            :     }
+<span class="lineNum">     407 </span><span class="lineNoCov">          0 :     if( !uidnode ) {</span>
+<span class="lineNum">     408 </span>            :         log_error( _(&quot;key %08lX: no user ID\n&quot;), (ulong)keyid[1]);
+<span class="lineNum">     409 </span><span class="lineNoCov">          0 :         return 0;</span>
+<span class="lineNum">     410 </span>            :     }
+<span class="lineNum">     411 </span>            : 
+<span class="lineNum">     412 </span><span class="lineNoCov">          0 :     clear_kbnode_flags( keyblock );</span>
+<span class="lineNum">     413 </span><span class="lineNoCov">          0 :     rc = chk_self_sigs( fname, keyblock , pk, keyid );</span>
+<span class="lineNum">     414 </span><span class="lineNoCov">          0 :     if( rc )</span>
+<span class="lineNum">     415 </span><span class="lineNoCov">          0 :         return rc== -1? 0:rc;</span>
+<span class="lineNum">     416 </span>            : 
+<span class="lineNum">     417 </span><span class="lineNoCov">          0 :     if( opt.allow_non_selfsigned_uid )</span>
+<span class="lineNum">     418 </span><span class="lineNoCov">          0 :         mark_non_selfsigned_uids_valid( keyblock, keyid );</span>
+<span class="lineNum">     419 </span>            : 
+<span class="lineNum">     420 </span><span class="lineNoCov">          0 :     if( !delete_inv_parts( fname, keyblock, keyid ) ) {</span>
+<span class="lineNum">     421 </span><span class="lineNoCov">          0 :         if( !opt.quiet ) {</span>
+<span class="lineNum">     422 </span>            :             log_info( _(&quot;key %08lX: no valid user IDs\n&quot;),
+<span class="lineNum">     423 </span>            :                                                         (ulong)keyid[1]);
+<span class="lineNum">     424 </span>            :             log_info(_(&quot;this may be caused by a missing self-signature\n&quot;));
+<span class="lineNum">     425 </span>            :         }
+<span class="lineNum">     426 </span><span class="lineNoCov">          0 :         stats.no_user_id++;</span>
+<span class="lineNum">     427 </span><span class="lineNoCov">          0 :         return 0;</span>
+<span class="lineNum">     428 </span>            :     }
+<span class="lineNum">     429 </span>            : 
+<span class="lineNum">     430 </span>            : 
+<span class="lineNum">     431 </span>            :     /* do we have this key already in one of our pubrings ? */
+<span class="lineNum">     432 </span><span class="lineNoCov">          0 :     pk_orig = m_alloc_clear( sizeof *pk_orig );</span>
+<span class="lineNum">     433 </span><span class="lineNoCov">          0 :     rc = get_pubkey( pk_orig, keyid );</span>
+<span class="lineNum">     434 </span><span class="lineNoCov">          0 :     if( rc &amp;&amp; rc != G10ERR_NO_PUBKEY &amp;&amp; rc != G10ERR_UNU_PUBKEY ) {</span>
+<span class="lineNum">     435 </span>            :         log_error( _(&quot;key %08lX: public key not found: %s\n&quot;),
+<span class="lineNum">     436 </span>            :                                 (ulong)keyid[1], g10_errstr(rc));
+<span class="lineNum">     437 </span>            :     }
+<span class="lineNum">     438 </span><span class="lineNoCov">          0 :     else if ( rc &amp;&amp; opt.merge_only ) {</span>
+<span class="lineNum">     439 </span><span class="lineNoCov">          0 :         if( opt.verbose )</span>
+<span class="lineNum">     440 </span>            :             log_info( _(&quot;key %08lX: new key - skipped\n&quot;), (ulong)keyid[1] );
+<span class="lineNum">     441 </span><span class="lineNoCov">          0 :         rc = 0;</span>
+<span class="lineNum">     442 </span><span class="lineNoCov">          0 :         fast = 1; /* so that we don't get into the trustdb update */</span>
+<span class="lineNum">     443 </span><span class="lineNoCov">          0 :         stats.skipped_new_keys++;</span>
+<span class="lineNum">     444 </span>            :     }
+<span class="lineNum">     445 </span><span class="lineNoCov">          0 :     else if( rc ) { /* insert this key */</span>
+<span class="lineNum">     446 </span>            :         /* get default resource */
+<span class="lineNum">     447 </span><span class="lineNoCov">          0 :         if( get_keyblock_handle( NULL, 0, &amp;kbpos ) ) {</span>
+<span class="lineNum">     448 </span>            :             log_error(_(&quot;no default public keyring\n&quot;));
+<span class="lineNum">     449 </span><span class="lineNoCov">          0 :             return G10ERR_GENERAL;</span>
+<span class="lineNum">     450 </span>            :         }
+<span class="lineNum">     451 </span><span class="lineNoCov">          0 :         if( opt.verbose &gt; 1 )</span>
+<span class="lineNum">     452 </span>            :             log_info( _(&quot;writing to `%s'\n&quot;),
+<span class="lineNum">     453 </span>            :                                 keyblock_resource_name(&amp;kbpos) );
+<span class="lineNum">     454 </span><span class="lineNoCov">          0 :         if( (rc=lock_keyblock( &amp;kbpos )) )</span>
+<span class="lineNum">     455 </span>            :            log_error(_(&quot;can't lock keyring `%s': %s\n&quot;),
+<span class="lineNum">     456 </span>            :                        keyblock_resource_name(&amp;kbpos), g10_errstr(rc) );
+<span class="lineNum">     457 </span><span class="lineNoCov">          0 :         else if( (rc=insert_keyblock( &amp;kbpos, keyblock )) )</span>
+<span class="lineNum">     458 </span>            :            log_error( _(&quot;error writing keyring `%s': %s\n&quot;),
+<span class="lineNum">     459 </span>            :                        keyblock_resource_name(&amp;kbpos), g10_errstr(rc) );
+<span class="lineNum">     460 </span><span class="lineNoCov">          0 :         unlock_keyblock( &amp;kbpos );</span>
+<span class="lineNum">     461 </span>            :         /* we are ready */
+<span class="lineNum">     462 </span><span class="lineNoCov">          0 :         if( !opt.quiet )</span>
+<span class="lineNum">     463 </span>            :             log_info( _(&quot;key %08lX: public key imported\n&quot;), (ulong)keyid[1]);
+<span class="lineNum">     464 </span><span class="lineNoCov">          0 :         if( is_status_enabled() ) {</span>
+<span class="lineNum">     465 </span><span class="lineNoCov">          0 :             char *us = get_long_user_id_string( keyid );</span>
+<span class="lineNum">     466 </span><span class="lineNoCov">          0 :             write_status_text( STATUS_IMPORTED, us );</span>
+<span class="lineNum">     467 </span><span class="lineNoCov">          0 :             m_free(us);</span>
+<span class="lineNum">     468 </span>            :         }
+<span class="lineNum">     469 </span><span class="lineNoCov">          0 :         stats.imported++;</span>
+<span class="lineNum">     470 </span><span class="lineNoCov">          0 :         if( is_RSA( pk-&gt;pubkey_algo ) )</span>
+<span class="lineNum">     471 </span><span class="lineNoCov">          0 :             stats.imported_rsa++;</span>
+<span class="lineNum">     472 </span><span class="lineNoCov">          0 :         new_key = 1;</span>
+<span class="lineNum">     473 </span>            :     }
+<span class="lineNum">     474 </span>            :     else { /* merge */
+<span class="lineNum">     475 </span>            :         int n_uids, n_sigs, n_subk;
+<span class="lineNum">     476 </span>            : 
+<span class="lineNum">     477 </span>            :         /* Compare the original against the new key; just to be sure nothing
+<span class="lineNum">     478 </span>            :          * weird is going on */
+<span class="lineNum">     479 </span><span class="lineNoCov">          0 :         if( cmp_public_keys( pk_orig, pk ) ) {</span>
+<span class="lineNum">     480 </span>            :             log_error( _(&quot;key %08lX: doesn't match our copy\n&quot;),
+<span class="lineNum">     481 </span>            :                                                           (ulong)keyid[1]);
+<span class="lineNum">     482 </span><span class="lineNoCov">          0 :             rc = G10ERR_GENERAL;</span>
+<span class="lineNum">     483 </span><span class="lineNoCov">          0 :             goto leave;</span>
+<span class="lineNum">     484 </span>            :         }
+<span class="lineNum">     485 </span>            : 
+<span class="lineNum">     486 </span>            :         /* now read the original keyblock */
+<span class="lineNum">     487 </span><span class="lineNoCov">          0 :         rc = find_keyblock_bypk( &amp;kbpos, pk_orig );</span>
+<span class="lineNum">     488 </span><span class="lineNoCov">          0 :         if( rc ) {</span>
+<span class="lineNum">     489 </span>            :             log_error( _(&quot;key %08lX: can't locate original keyblock: %s\n&quot;),
+<span class="lineNum">     490 </span>            :                                      (ulong)keyid[1], g10_errstr(rc));
+<span class="lineNum">     491 </span><span class="lineNoCov">          0 :             goto leave;</span>
+<span class="lineNum">     492 </span>            :         }
+<span class="lineNum">     493 </span><span class="lineNoCov">          0 :         rc = read_keyblock( &amp;kbpos, &amp;keyblock_orig );</span>
+<span class="lineNum">     494 </span><span class="lineNoCov">          0 :         if( rc ) {</span>
+<span class="lineNum">     495 </span>            :             log_error( _(&quot;key %08lX: can't read original keyblock: %s\n&quot;),
+<span class="lineNum">     496 </span>            :                                             (ulong)keyid[1], g10_errstr(rc));
+<span class="lineNum">     497 </span><span class="lineNoCov">          0 :             goto leave;</span>
+<span class="lineNum">     498 </span>            :         }
+<span class="lineNum">     499 </span>            : 
+<span class="lineNum">     500 </span><span class="lineNoCov">          0 :         collapse_uids( &amp;keyblock );</span>
+<span class="lineNum">     501 </span>            :         /* and try to merge the block */
+<span class="lineNum">     502 </span><span class="lineNoCov">          0 :         clear_kbnode_flags( keyblock_orig );</span>
+<span class="lineNum">     503 </span><span class="lineNoCov">          0 :         clear_kbnode_flags( keyblock );</span>
+<span class="lineNum">     504 </span><span class="lineNoCov">          0 :         n_uids = n_sigs = n_subk = 0;</span>
+<span class="lineNum">     505 </span><span class="lineNoCov">          0 :         rc = merge_blocks( fname, keyblock_orig, keyblock,</span>
+<span class="lineNum">     506 </span>            :                                 keyid, &amp;n_uids, &amp;n_sigs, &amp;n_subk );
+<span class="lineNum">     507 </span><span class="lineNoCov">          0 :         if( rc )</span>
+<span class="lineNum">     508 </span><span class="lineNoCov">          0 :             goto leave;</span>
+<span class="lineNum">     509 </span><span class="lineNoCov">          0 :         if( n_uids || n_sigs || n_subk ) {</span>
+<span class="lineNum">     510 </span><span class="lineNoCov">          0 :             mod_key = 1;</span>
+<span class="lineNum">     511 </span>            :             /* keyblock_orig has been updated; write */
+<span class="lineNum">     512 </span><span class="lineNoCov">          0 :             if( (rc=lock_keyblock( &amp;kbpos )) )</span>
+<span class="lineNum">     513 </span>            :                log_error( _(&quot;can't lock keyring `%s': %s\n&quot;),
+<span class="lineNum">     514 </span>            :                           keyblock_resource_name(&amp;kbpos), g10_errstr(rc) );
+<span class="lineNum">     515 </span><span class="lineNoCov">          0 :             else if( (rc=update_keyblock( &amp;kbpos, keyblock_orig )) )</span>
+<span class="lineNum">     516 </span>            :                 log_error( _(&quot;error writing keyring `%s': %s\n&quot;),
+<span class="lineNum">     517 </span>            :                              keyblock_resource_name(&amp;kbpos), g10_errstr(rc) );
+<span class="lineNum">     518 </span><span class="lineNoCov">          0 :             unlock_keyblock( &amp;kbpos );</span>
+<span class="lineNum">     519 </span>            :             /* we are ready */
+<span class="lineNum">     520 </span><span class="lineNoCov">          0 :             if( !opt.quiet ) {</span>
+<span class="lineNum">     521 </span><span class="lineNoCov">          0 :                 if( n_uids == 1 )</span>
+<span class="lineNum">     522 </span>            :                     log_info( _(&quot;key %08lX: 1 new user ID\n&quot;),
+<span class="lineNum">     523 </span>            :                                              (ulong)keyid[1]);
+<span class="lineNum">     524 </span><span class="lineNoCov">          0 :                 else if( n_uids )</span>
+<span class="lineNum">     525 </span>            :                     log_info( _(&quot;key %08lX: %d new user IDs\n&quot;),
+<span class="lineNum">     526 </span>            :                                              (ulong)keyid[1], n_uids );
+<span class="lineNum">     527 </span><span class="lineNoCov">          0 :                 if( n_sigs == 1 )</span>
+<span class="lineNum">     528 </span>            :                     log_info( _(&quot;key %08lX: 1 new signature\n&quot;),
+<span class="lineNum">     529 </span>            :                                              (ulong)keyid[1]);
+<span class="lineNum">     530 </span><span class="lineNoCov">          0 :                 else if( n_sigs )</span>
+<span class="lineNum">     531 </span>            :                     log_info( _(&quot;key %08lX: %d new signatures\n&quot;),
+<span class="lineNum">     532 </span>            :                                              (ulong)keyid[1], n_sigs );
+<span class="lineNum">     533 </span><span class="lineNoCov">          0 :                 if( n_subk == 1 )</span>
+<span class="lineNum">     534 </span>            :                     log_info( _(&quot;key %08lX: 1 new subkey\n&quot;),
+<span class="lineNum">     535 </span>            :                                              (ulong)keyid[1]);
+<span class="lineNum">     536 </span><span class="lineNoCov">          0 :                 else if( n_subk )</span>
+<span class="lineNum">     537 </span>            :                     log_info( _(&quot;key %08lX: %d new subkeys\n&quot;),
+<span class="lineNum">     538 </span>            :                                              (ulong)keyid[1], n_subk );
+<span class="lineNum">     539 </span>            :             }
+<span class="lineNum">     540 </span>            : 
+<span class="lineNum">     541 </span><span class="lineNoCov">          0 :             stats.n_uids +=n_uids;</span>
+<span class="lineNum">     542 </span><span class="lineNoCov">          0 :             stats.n_sigs +=n_sigs;</span>
+<span class="lineNum">     543 </span><span class="lineNoCov">          0 :             stats.n_subk +=n_subk;</span>
+<span class="lineNum">     544 </span>            :         }
+<span class="lineNum">     545 </span>            :         else {
+<span class="lineNum">     546 </span><span class="lineNoCov">          0 :             if( !opt.quiet )</span>
+<span class="lineNum">     547 </span>            :                 log_info( _(&quot;key %08lX: not changed\n&quot;), (ulong)keyid[1] );
+<span class="lineNum">     548 </span><span class="lineNoCov">          0 :             stats.unchanged++;</span>
+<span class="lineNum">     549 </span>            :         }
+<span class="lineNum">     550 </span>            :     }
+<span class="lineNum">     551 </span><span class="lineNoCov">          0 :     if( !rc &amp;&amp; !fast ) {</span>
+<span class="lineNum">     552 </span><span class="lineNoCov">          0 :         rc = query_trust_record( new_key? pk : pk_orig );</span>
+<span class="lineNum">     553 </span><span class="lineNoCov">          0 :         if( rc &amp;&amp; rc != -1 )</span>
+<span class="lineNum">     554 </span>            :             log_error(&quot;trustdb error: %s\n&quot;, g10_errstr(rc) );
+<span class="lineNum">     555 </span><span class="lineNoCov">          0 :         else if( rc == -1 ) { /* not found trustdb */</span>
+<span class="lineNum">     556 </span><span class="lineNoCov">          0 :             rc = insert_trust_record( new_key? keyblock : keyblock_orig );</span>
+<span class="lineNum">     557 </span>            :             if( rc )
+<span class="lineNum">     558 </span>            :                 log_error(&quot;key %08lX: trustdb insert failed: %s\n&quot;,
+<span class="lineNum">     559 </span>            :                                         (ulong)keyid[1], g10_errstr(rc) );
+<span class="lineNum">     560 </span>            :         }
+<span class="lineNum">     561 </span><span class="lineNoCov">          0 :         else if( mod_key )</span>
+<span class="lineNum">     562 </span><span class="lineNoCov">          0 :             rc = update_trust_record( keyblock_orig, 1, NULL );</span>
+<span class="lineNum">     563 </span>            :         else
+<span class="lineNum">     564 </span><span class="lineNoCov">          0 :             rc = clear_trust_checked_flag( new_key? pk : pk_orig );</span>
+<span class="lineNum">     565 </span>            :     }
+<span class="lineNum">     566 </span>            : 
+<span class="lineNum">     567 </span>            :   leave:
+<span class="lineNum">     568 </span><span class="lineNoCov">          0 :     release_kbnode( keyblock_orig );</span>
+<span class="lineNum">     569 </span><span class="lineNoCov">          0 :     free_public_key( pk_orig );</span>
+<span class="lineNum">     570 </span><span class="lineNoCov">          0 :     return rc;</span>
+<span class="lineNum">     571 </span>            : }
+<span class="lineNum">     572 </span>            : 
+<span class="lineNum">     573 </span>            : 
+<span class="lineNum">     574 </span>            : /****************
+<span class="lineNum">     575 </span>            :  * Ditto for secret keys.  Handling is simpler than for public keys.
+<span class="lineNum">     576 </span>            :  * We allow secret key importing only when allow is true, this is so
+<span class="lineNum">     577 </span>            :  * that a secret key can not be imported accidently and thereby tampering
+<span class="lineNum">     578 </span>            :  * with the trust calculation.
+<a name="579"><span class="lineNum">     579 </span>            :  */</a>
+<span class="lineNum">     580 </span>            : static int
+<span class="lineNum">     581 </span><span class="lineNoCov">          0 : import_secret_one( const char *fname, KBNODE keyblock, int allow )</span>
+<span class="lineNum">     582 </span>            : {
+<span class="lineNum">     583 </span>            :     PKT_secret_key *sk;
+<span class="lineNum">     584 </span>            :     KBNODE node, uidnode;
+<span class="lineNum">     585 </span>            :     KBPOS kbpos;
+<span class="lineNum">     586 </span>            :     u32 keyid[2];
+<span class="lineNum">     587 </span><span class="lineNoCov">          0 :     int rc = 0;</span>
+<span class="lineNum">     588 </span>            : 
+<span class="lineNum">     589 </span>            :     /* get the key and print some info about it */
+<span class="lineNum">     590 </span><span class="lineNoCov">          0 :     node = find_kbnode( keyblock, PKT_SECRET_KEY );</span>
+<span class="lineNum">     591 </span><span class="lineNoCov">          0 :     if( !node )</span>
+<span class="lineNum">     592 </span><span class="lineNoCov">          0 :         BUG();</span>
+<span class="lineNum">     593 </span>            : 
+<span class="lineNum">     594 </span><span class="lineNoCov">          0 :     sk = node-&gt;pkt-&gt;pkt.secret_key;</span>
+<span class="lineNum">     595 </span><span class="lineNoCov">          0 :     keyid_from_sk( sk, keyid );</span>
+<span class="lineNum">     596 </span><span class="lineNoCov">          0 :     uidnode = find_next_kbnode( keyblock, PKT_USER_ID );</span>
+<span class="lineNum">     597 </span>            : 
+<span class="lineNum">     598 </span><span class="lineNoCov">          0 :     if( opt.verbose ) {</span>
+<span class="lineNum">     599 </span>            :         log_info( &quot;sec  %4u%c/%08lX %s   &quot;,
+<span class="lineNum">     600 </span>            :                   nbits_from_sk( sk ),
+<span class="lineNum">     601 </span>            :                   pubkey_letter( sk-&gt;pubkey_algo ),
+<span class="lineNum">     602 </span>            :                   (ulong)keyid[1], datestr_from_sk(sk) );
+<span class="lineNum">     603 </span><span class="lineNoCov">          0 :         if( uidnode )</span>
+<span class="lineNum">     604 </span><span class="lineNoCov">          0 :             print_utf8_string( stderr, uidnode-&gt;pkt-&gt;pkt.user_id-&gt;name,</span>
+<span class="lineNum">     605 </span><span class="lineNoCov">          0 :                                        uidnode-&gt;pkt-&gt;pkt.user_id-&gt;len );</span>
+<span class="lineNum">     606 </span><span class="lineNoCov">          0 :         putc('\n', stderr);</span>
+<span class="lineNum">     607 </span>            :     }
+<span class="lineNum">     608 </span><span class="lineNoCov">          0 :     stats.secret_read++;</span>
+<span class="lineNum">     609 </span><span class="lineNoCov">          0 :     if (!allow) {</span>
+<span class="lineNum">     610 </span>            :         log_info ( _(&quot;secret key %08lX not imported &quot;
+<span class="lineNum">     611 </span>            :                     &quot;(use %s to allow for it)\n&quot;),
+<span class="lineNum">     612 </span>            :                    (ulong)keyid[1], &quot;--allow-secret-key-import&quot;);
+<span class="lineNum">     613 </span><span class="lineNoCov">          0 :         return 0;</span>
+<span class="lineNum">     614 </span>            :     }
+<span class="lineNum">     615 </span>            : 
+<span class="lineNum">     616 </span><span class="lineNoCov">          0 :     if( !uidnode ) {</span>
+<span class="lineNum">     617 </span>            :         log_error( _(&quot;key %08lX: no user ID\n&quot;), (ulong)keyid[1]);
+<span class="lineNum">     618 </span><span class="lineNoCov">          0 :         return 0;</span>
+<span class="lineNum">     619 </span>            :     }
+<span class="lineNum">     620 </span>            : 
+<span class="lineNum">     621 </span><span class="lineNoCov">          0 :     clear_kbnode_flags( keyblock );</span>
+<span class="lineNum">     622 </span>            : 
+<span class="lineNum">     623 </span>            :     /* do we have this key already in one of our secrings ? */
+<span class="lineNum">     624 </span><span class="lineNoCov">          0 :     rc = seckey_available( keyid );</span>
+<span class="lineNum">     625 </span><span class="lineNoCov">          0 :     if( rc == G10ERR_NO_SECKEY &amp;&amp; !opt.merge_only ) { /* simply insert this key */</span>
+<span class="lineNum">     626 </span>            :         /* get default resource */
+<span class="lineNum">     627 </span><span class="lineNoCov">          0 :         if( get_keyblock_handle( NULL, 1, &amp;kbpos ) ) {</span>
+<span class="lineNum">     628 </span>            :             log_error(&quot;no default secret keyring\n&quot;);
+<span class="lineNum">     629 </span><span class="lineNoCov">          0 :             return G10ERR_GENERAL;</span>
+<span class="lineNum">     630 </span>            :         }
+<span class="lineNum">     631 </span><span class="lineNoCov">          0 :         if( (rc=lock_keyblock( &amp;kbpos )) )</span>
+<span class="lineNum">     632 </span>            :             log_error( _(&quot;can't lock keyring `%s': %s\n&quot;),
+<span class="lineNum">     633 </span>            :                          keyblock_resource_name(&amp;kbpos), g10_errstr(rc) );
+<span class="lineNum">     634 </span><span class="lineNoCov">          0 :         else if( (rc=insert_keyblock( &amp;kbpos, keyblock )) )</span>
+<span class="lineNum">     635 </span>            :             log_error( _(&quot;error writing keyring `%s': %s\n&quot;),
+<span class="lineNum">     636 </span>            :                       keyblock_resource_name(&amp;kbpos), g10_errstr(rc) );
+<span class="lineNum">     637 </span><span class="lineNoCov">          0 :         unlock_keyblock( &amp;kbpos );</span>
+<span class="lineNum">     638 </span>            :         /* we are ready */
+<span class="lineNum">     639 </span><span class="lineNoCov">          0 :         if( !opt.quiet )</span>
+<span class="lineNum">     640 </span>            :             log_info( _(&quot;key %08lX: secret key imported\n&quot;), (ulong)keyid[1]);
+<span class="lineNum">     641 </span><span class="lineNoCov">          0 :         stats.secret_imported++;</span>
+<span class="lineNum">     642 </span>            :     }
+<span class="lineNum">     643 </span><span class="lineNoCov">          0 :     else if( !rc ) { /* we can't merge secret keys */</span>
+<span class="lineNum">     644 </span>            :         log_error( _(&quot;key %08lX: already in secret keyring\n&quot;),
+<span class="lineNum">     645 </span>            :                                                         (ulong)keyid[1]);
+<span class="lineNum">     646 </span><span class="lineNoCov">          0 :         stats.secret_dups++;</span>
+<span class="lineNum">     647 </span>            :     }
+<span class="lineNum">     648 </span>            :     else
+<span class="lineNum">     649 </span>            :         log_error( _(&quot;key %08lX: secret key not found: %s\n&quot;),
+<span class="lineNum">     650 </span>            :                                 (ulong)keyid[1], g10_errstr(rc));
+<span class="lineNum">     651 </span>            : 
+<span class="lineNum">     652 </span><span class="lineNoCov">          0 :     return rc;</span>
+<span class="lineNum">     653 </span>            : }
+<span class="lineNum">     654 </span>            : 
+<span class="lineNum">     655 </span>            : 
+<span class="lineNum">     656 </span>            : /****************
+<span class="lineNum">     657 </span>            :  * Import a revocation certificate; this is a single signature packet.
+<a name="658"><span class="lineNum">     658 </span>            :  */</a>
+<span class="lineNum">     659 </span>            : static int
+<span class="lineNum">     660 </span><span class="lineNoCov">          0 : import_revoke_cert( const char *fname, KBNODE node )</span>
+<span class="lineNum">     661 </span>            : {
+<span class="lineNum">     662 </span><span class="lineNoCov">          0 :     PKT_public_key *pk=NULL;</span>
+<span class="lineNum">     663 </span><span class="lineNoCov">          0 :     KBNODE onode, keyblock = NULL;</span>
+<span class="lineNum">     664 </span>            :     KBPOS kbpos;
+<span class="lineNum">     665 </span>            :     u32 keyid[2];
+<span class="lineNum">     666 </span><span class="lineNoCov">          0 :     int rc = 0;</span>
+<span class="lineNum">     667 </span>            : 
+<span class="lineNum">     668 </span><span class="lineNoCov">          0 :     assert( !node-&gt;next );</span>
+<span class="lineNum">     669 </span><span class="lineNoCov">          0 :     assert( node-&gt;pkt-&gt;pkttype == PKT_SIGNATURE );</span>
+<span class="lineNum">     670 </span><span class="lineNoCov">          0 :     assert( node-&gt;pkt-&gt;pkt.signature-&gt;sig_class == 0x20 );</span>
+<span class="lineNum">     671 </span>            : 
+<span class="lineNum">     672 </span><span class="lineNoCov">          0 :     keyid[0] = node-&gt;pkt-&gt;pkt.signature-&gt;keyid[0];</span>
+<span class="lineNum">     673 </span><span class="lineNoCov">          0 :     keyid[1] = node-&gt;pkt-&gt;pkt.signature-&gt;keyid[1];</span>
+<span class="lineNum">     674 </span>            : 
+<span class="lineNum">     675 </span><span class="lineNoCov">          0 :     pk = m_alloc_clear( sizeof *pk );</span>
+<span class="lineNum">     676 </span><span class="lineNoCov">          0 :     rc = get_pubkey( pk, keyid );</span>
+<span class="lineNum">     677 </span><span class="lineNoCov">          0 :     if( rc == G10ERR_NO_PUBKEY ) {</span>
+<span class="lineNum">     678 </span>            :         log_info( _(&quot;key %08lX: no public key - &quot;
+<span class="lineNum">     679 </span>            :                  &quot;can't apply revocation certificate\n&quot;), (ulong)keyid[1]);
+<span class="lineNum">     680 </span><span class="lineNoCov">          0 :         rc = 0;</span>
+<span class="lineNum">     681 </span><span class="lineNoCov">          0 :         goto leave;</span>
+<span class="lineNum">     682 </span>            :     }
+<span class="lineNum">     683 </span><span class="lineNoCov">          0 :     else if( rc ) {</span>
+<span class="lineNum">     684 </span>            :         log_error( _(&quot;key %08lX: public key not found: %s\n&quot;),
+<span class="lineNum">     685 </span>            :                                        (ulong)keyid[1], g10_errstr(rc));
+<span class="lineNum">     686 </span><span class="lineNoCov">          0 :         goto leave;</span>
+<span class="lineNum">     687 </span>            :     }
+<span class="lineNum">     688 </span>            : 
+<span class="lineNum">     689 </span>            :     /* read the original keyblock */
+<span class="lineNum">     690 </span><span class="lineNoCov">          0 :     rc = find_keyblock_bypk( &amp;kbpos, pk );</span>
+<span class="lineNum">     691 </span><span class="lineNoCov">          0 :     if( rc ) {</span>
+<span class="lineNum">     692 </span>            :         log_error( _(&quot;key %08lX: can't locate original keyblock: %s\n&quot;),
+<span class="lineNum">     693 </span>            :                                         (ulong)keyid[1], g10_errstr(rc));
+<span class="lineNum">     694 </span><span class="lineNoCov">          0 :         goto leave;</span>
+<span class="lineNum">     695 </span>            :     }
+<span class="lineNum">     696 </span><span class="lineNoCov">          0 :     rc = read_keyblock( &amp;kbpos, &amp;keyblock );</span>
+<span class="lineNum">     697 </span><span class="lineNoCov">          0 :     if( rc ) {</span>
+<span class="lineNum">     698 </span>            :         log_error( _(&quot;key %08lX: can't read original keyblock: %s\n&quot;),
+<span class="lineNum">     699 </span>            :                                         (ulong)keyid[1], g10_errstr(rc));
+<span class="lineNum">     700 </span><span class="lineNoCov">          0 :         goto leave;</span>
+<span class="lineNum">     701 </span>            :     }
+<span class="lineNum">     702 </span>            : 
+<span class="lineNum">     703 </span>            : 
+<span class="lineNum">     704 </span>            :     /* it is okay, that node is not in keyblock because
+<span class="lineNum">     705 </span>            :      * check_key_signature works fine for sig_class 0x20 in this
+<span class="lineNum">     706 </span>            :      * special case. */
+<span class="lineNum">     707 </span><span class="lineNoCov">          0 :     rc = check_key_signature( keyblock, node, NULL);</span>
+<span class="lineNum">     708 </span>            :     if( rc ) {
+<span class="lineNum">     709 </span>            :         log_error( _(&quot;key %08lX: invalid revocation certificate&quot;
+<span class="lineNum">     710 </span>            :                   &quot;: %s - rejected\n&quot;), (ulong)keyid[1], g10_errstr(rc));
+<span class="lineNum">     711 </span>            :     }
+<span class="lineNum">     712 </span>            : 
+<span class="lineNum">     713 </span>            : 
+<span class="lineNum">     714 </span>            :     /* check whether we already have this */
+<span class="lineNum">     715 </span><span class="lineNoCov">          0 :     for(onode=keyblock-&gt;next; onode; onode=onode-&gt;next ) {</span>
+<span class="lineNum">     716 </span><span class="lineNoCov">          0 :         if( onode-&gt;pkt-&gt;pkttype == PKT_USER_ID )</span>
+<span class="lineNum">     717 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     718 </span><span class="lineNoCov">          0 :         else if( onode-&gt;pkt-&gt;pkttype == PKT_SIGNATURE</span>
+<span class="lineNum">     719 </span><span class="lineNoCov">          0 :                  &amp;&amp; onode-&gt;pkt-&gt;pkt.signature-&gt;sig_class == 0x20</span>
+<span class="lineNum">     720 </span><span class="lineNoCov">          0 :                  &amp;&amp; keyid[0] == onode-&gt;pkt-&gt;pkt.signature-&gt;keyid[0]</span>
+<span class="lineNum">     721 </span><span class="lineNoCov">          0 :                  &amp;&amp; keyid[1] == onode-&gt;pkt-&gt;pkt.signature-&gt;keyid[1] ) {</span>
+<span class="lineNum">     722 </span><span class="lineNoCov">          0 :             rc = 0;</span>
+<span class="lineNum">     723 </span><span class="lineNoCov">          0 :             goto leave; /* yes, we already know about it */</span>
+<span class="lineNum">     724 </span>            :         }
+<span class="lineNum">     725 </span>            :     }
+<span class="lineNum">     726 </span>            : 
+<span class="lineNum">     727 </span>            : 
+<span class="lineNum">     728 </span>            :     /* insert it */
+<span class="lineNum">     729 </span><span class="lineNoCov">          0 :     insert_kbnode( keyblock, clone_kbnode(node), 0 );</span>
+<span class="lineNum">     730 </span>            : 
+<span class="lineNum">     731 </span>            :     /* and write the keyblock back */
+<span class="lineNum">     732 </span><span class="lineNoCov">          0 :     if( (rc=lock_keyblock( &amp;kbpos )) )</span>
+<span class="lineNum">     733 </span>            :         log_error( _(&quot;can't lock keyring `%s': %s\n&quot;),
+<span class="lineNum">     734 </span>            :                    keyblock_resource_name(&amp;kbpos), g10_errstr(rc) );
+<span class="lineNum">     735 </span><span class="lineNoCov">          0 :     else if( (rc=update_keyblock( &amp;kbpos, keyblock )) )</span>
+<span class="lineNum">     736 </span>            :         log_error( _(&quot;error writing keyring `%s': %s\n&quot;),
+<span class="lineNum">     737 </span>            :                     keyblock_resource_name(&amp;kbpos), g10_errstr(rc) );
+<span class="lineNum">     738 </span><span class="lineNoCov">          0 :     unlock_keyblock( &amp;kbpos );</span>
+<span class="lineNum">     739 </span>            :     /* we are ready */
+<span class="lineNum">     740 </span><span class="lineNoCov">          0 :     if( !opt.quiet )</span>
+<span class="lineNum">     741 </span>            :         log_info( _(&quot;key %08lX: revocation certificate imported\n&quot;),
+<span class="lineNum">     742 </span>            :                                         (ulong)keyid[1]);
+<span class="lineNum">     743 </span><span class="lineNoCov">          0 :     stats.n_revoc++;</span>
+<span class="lineNum">     744 </span><span class="lineNoCov">          0 :     if( clear_trust_checked_flag( pk ) ) {</span>
+<span class="lineNum">     745 </span>            :         /* seems that we have to insert the record first */
+<span class="lineNum">     746 </span><span class="lineNoCov">          0 :         rc = insert_trust_record( keyblock );</span>
+<span class="lineNum">     747 </span><span class="lineNoCov">          0 :         if( rc )</span>
+<span class="lineNum">     748 </span>            :             log_error(&quot;key %08lX: trustdb insert failed: %s\n&quot;,
+<span class="lineNum">     749 </span>            :                                         (ulong)keyid[1], g10_errstr(rc) );
+<span class="lineNum">     750 </span>            :         else
+<span class="lineNum">     751 </span><span class="lineNoCov">          0 :             rc = clear_trust_checked_flag( pk );</span>
+<span class="lineNum">     752 </span>            :     }
+<span class="lineNum">     753 </span>            : 
+<span class="lineNum">     754 </span>            :   leave:
+<span class="lineNum">     755 </span><span class="lineNoCov">          0 :     release_kbnode( keyblock );</span>
+<span class="lineNum">     756 </span><span class="lineNoCov">          0 :     free_public_key( pk );</span>
+<span class="lineNum">     757 </span><span class="lineNoCov">          0 :     return rc;</span>
+<span class="lineNum">     758 </span>            : }
+<span class="lineNum">     759 </span>            : 
+<span class="lineNum">     760 </span>            : 
+<span class="lineNum">     761 </span>            : /****************
+<span class="lineNum">     762 </span>            :  * loop over the keyblock and check all self signatures.
+<span class="lineNum">     763 </span>            :  * Mark all user-ids with a self-signature by setting flag bit 0.
+<span class="lineNum">     764 </span>            :  * Mark all user-ids with an invalid self-signature by setting bit 1.
+<span class="lineNum">     765 </span>            :  * This works also for subkeys, here the subkey is marked.
+<a name="766"><span class="lineNum">     766 </span>            :  */</a>
+<span class="lineNum">     767 </span>            : static int
+<span class="lineNum">     768 </span><span class="lineNoCov">          0 : chk_self_sigs( const char *fname, KBNODE keyblock,</span>
+<span class="lineNum">     769 </span>            :                PKT_public_key *pk, u32 *keyid )
+<span class="lineNum">     770 </span>            : {
+<span class="lineNum">     771 </span>            :     KBNODE n;
+<span class="lineNum">     772 </span>            :     PKT_signature *sig;
+<span class="lineNum">     773 </span>            :     int rc;
+<span class="lineNum">     774 </span>            : 
+<span class="lineNum">     775 </span><span class="lineNoCov">          0 :     for( n=keyblock; (n = find_next_kbnode(n, 0)); ) {</span>
+<span class="lineNum">     776 </span><span class="lineNoCov">          0 :         if( n-&gt;pkt-&gt;pkttype != PKT_SIGNATURE )</span>
+<span class="lineNum">     777 </span><span class="lineNoCov">          0 :             continue;</span>
+<span class="lineNum">     778 </span><span class="lineNoCov">          0 :         sig = n-&gt;pkt-&gt;pkt.signature;</span>
+<span class="lineNum">     779 </span><span class="lineNoCov">          0 :         if( keyid[0] == sig-&gt;keyid[0] &amp;&amp; keyid[1] == sig-&gt;keyid[1] ) {</span>
+<span class="lineNum">     780 </span><span class="lineNoCov">          0 :             if( (sig-&gt;sig_class&amp;~3) == 0x10 ) {</span>
+<span class="lineNum">     781 </span><span class="lineNoCov">          0 :                 KBNODE unode = find_prev_kbnode( keyblock, n, PKT_USER_ID );</span>
+<span class="lineNum">     782 </span><span class="lineNoCov">          0 :                 if( !unode )  {</span>
+<span class="lineNum">     783 </span>            :                     log_error( _(&quot;key %08lX: no user ID for signature\n&quot;),
+<span class="lineNum">     784 </span>            :                                             (ulong)keyid[1]);
+<span class="lineNum">     785 </span><span class="lineNoCov">          0 :                     return -1;  /* the complete keyblock is invalid */</span>
+<span class="lineNum">     786 </span>            :                 }
+<span class="lineNum">     787 </span><span class="lineNoCov">          0 :                 rc = check_key_signature( keyblock, n, NULL);</span>
+<span class="lineNum">     788 </span><span class="lineNoCov">          0 :                 if( rc ) {</span>
+<span class="lineNum">     789 </span>            :                     log_info( rc == G10ERR_PUBKEY_ALGO ?
+<span class="lineNum">     790 </span>            :                          _(&quot;key %08lX: unsupported public key algorithm\n&quot;):
+<span class="lineNum">     791 </span>            :                          _(&quot;key %08lX: invalid self-signature\n&quot;),
+<span class="lineNum">     792 </span>            :                                      (ulong)keyid[1]);
+<span class="lineNum">     793 </span>            : 
+<span class="lineNum">     794 </span><span class="lineNoCov">          0 :                     unode-&gt;flag |= 2; /* mark as invalid */</span>
+<span class="lineNum">     795 </span>            :                 }
+<span class="lineNum">     796 </span><span class="lineNoCov">          0 :                 unode-&gt;flag |= 1; /* mark that signature checked */</span>
+<span class="lineNum">     797 </span>            :             }
+<span class="lineNum">     798 </span><span class="lineNoCov">          0 :             else if( sig-&gt;sig_class == 0x18 ) {</span>
+<span class="lineNum">     799 </span><span class="lineNoCov">          0 :                 KBNODE knode = find_prev_kbnode( keyblock,</span>
+<span class="lineNum">     800 </span>            :                                                  n, PKT_PUBLIC_SUBKEY );
+<span class="lineNum">     801 </span><span class="lineNoCov">          0 :                 if( !knode )</span>
+<span class="lineNum">     802 </span><span class="lineNoCov">          0 :                     knode = find_prev_kbnode( keyblock,</span>
+<span class="lineNum">     803 </span>            :                                                  n, PKT_SECRET_SUBKEY );
+<span class="lineNum">     804 </span>            : 
+<span class="lineNum">     805 </span><span class="lineNoCov">          0 :                 if( !knode ) {</span>
+<span class="lineNum">     806 </span>            :                     log_info( _(&quot;key %08lX: no subkey for key binding\n&quot;),
+<span class="lineNum">     807 </span>            :                                             (ulong)keyid[1]);
+<span class="lineNum">     808 </span><span class="lineNoCov">          0 :                     n-&gt;flag |= 4; /* delete this */</span>
+<span class="lineNum">     809 </span>            :                 }
+<span class="lineNum">     810 </span>            :                 else {
+<span class="lineNum">     811 </span><span class="lineNoCov">          0 :                     rc = check_key_signature( keyblock, n, NULL);</span>
+<span class="lineNum">     812 </span><span class="lineNoCov">          0 :                     if( rc ) {</span>
+<span class="lineNum">     813 </span>            :                         log_info(  rc == G10ERR_PUBKEY_ALGO ?
+<span class="lineNum">     814 </span>            :                            _(&quot;key %08lX: unsupported public key algorithm\n&quot;):
+<span class="lineNum">     815 </span>            :                            _(&quot;key %08lX: invalid subkey binding\n&quot;),
+<span class="lineNum">     816 </span>            :                                          (ulong)keyid[1]);
+<span class="lineNum">     817 </span>            : 
+<span class="lineNum">     818 </span><span class="lineNoCov">          0 :                         knode-&gt;flag |= 2; /* mark as invalid */</span>
+<span class="lineNum">     819 </span>            :                     }
+<span class="lineNum">     820 </span><span class="lineNoCov">          0 :                     knode-&gt;flag |= 1; /* mark that signature checked */</span>
+<span class="lineNum">     821 </span>            :                 }
+<span class="lineNum">     822 </span>            :             }
+<span class="lineNum">     823 </span>            :         }
+<span class="lineNum">     824 </span>            :     }
+<span class="lineNum">     825 </span><span class="lineNoCov">          0 :     return 0;</span>
+<span class="lineNum">     826 </span>            : }
+<span class="lineNum">     827 </span>            : 
+<span class="lineNum">     828 </span>            : 
+<span class="lineNum">     829 </span>            : 
+<span class="lineNum">     830 </span>            : /****************
+<span class="lineNum">     831 </span>            :  * If a user ID has at least one signature, mark it as valid
+<a name="832"><span class="lineNum">     832 </span>            :  */</a>
+<span class="lineNum">     833 </span>            : static void
+<span class="lineNum">     834 </span><span class="lineNoCov">          0 : mark_non_selfsigned_uids_valid( KBNODE keyblock, u32 *kid )</span>
+<span class="lineNum">     835 </span>            : {
+<span class="lineNum">     836 </span>            :     KBNODE node;
+<span class="lineNum">     837 </span><span class="lineNoCov">          0 :     for(node=keyblock-&gt;next; node; node = node-&gt;next ) {</span>
+<span class="lineNum">     838 </span><span class="lineNoCov">          0 :         if( node-&gt;pkt-&gt;pkttype == PKT_USER_ID &amp;&amp; !(node-&gt;flag &amp; 1) ) {</span>
+<span class="lineNum">     839 </span><span class="lineNoCov">          0 :             if( (node-&gt;next &amp;&amp; node-&gt;next-&gt;pkt-&gt;pkttype == PKT_SIGNATURE)</span>
+<span class="lineNum">     840 </span><span class="lineNoCov">          0 :                 || !node-&gt;next ) {</span>
+<span class="lineNum">     841 </span><span class="lineNoCov">          0 :                 node-&gt;flag |= 1;</span>
+<span class="lineNum">     842 </span>            :                 log_info( _(&quot;key %08lX: accepted non self-signed user ID '&quot;),
+<span class="lineNum">     843 </span>            :                                                          (ulong)kid[1]);
+<span class="lineNum">     844 </span><span class="lineNoCov">          0 :                 print_string( log_stream(), node-&gt;pkt-&gt;pkt.user_id-&gt;name,</span>
+<span class="lineNum">     845 </span><span class="lineNoCov">          0 :                                             node-&gt;pkt-&gt;pkt.user_id-&gt;len, 0 );</span>
+<span class="lineNum">     846 </span><span class="lineNoCov">          0 :                 fputs(&quot;'\n&quot;, log_stream() );</span>
+<span class="lineNum">     847 </span>            :             }
+<span class="lineNum">     848 </span>            :         }
+<span class="lineNum">     849 </span>            :     }
+<span class="lineNum">     850 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     851 </span>            : 
+<span class="lineNum">     852 </span>            : /****************
+<span class="lineNum">     853 </span>            :  * delete all parts which are invalid and those signatures whose
+<span class="lineNum">     854 </span>            :  * public key algorithm is not available in this implemenation;
+<span class="lineNum">     855 </span>            :  * but consider RSA as valid, because parse/build_packets knows
+<span class="lineNum">     856 </span>            :  * about it.
+<span class="lineNum">     857 </span>            :  * returns: true if at least one valid user-id is left over.
+<a name="858"><span class="lineNum">     858 </span>            :  */</a>
+<span class="lineNum">     859 </span>            : static int
+<span class="lineNum">     860 </span><span class="lineNoCov">          0 : delete_inv_parts( const char *fname, KBNODE keyblock, u32 *keyid )</span>
+<span class="lineNum">     861 </span>            : {
+<span class="lineNum">     862 </span>            :     KBNODE node;
+<span class="lineNum">     863 </span><span class="lineNoCov">          0 :     int nvalid=0, uid_seen=0;</span>
+<span class="lineNum">     864 </span>            :     const char *p;
+<span class="lineNum">     865 </span>            : 
+<span class="lineNum">     866 </span><span class="lineNoCov">          0 :     for(node=keyblock-&gt;next; node; node = node-&gt;next ) {</span>
+<span class="lineNum">     867 </span><span class="lineNoCov">          0 :         if( node-&gt;pkt-&gt;pkttype == PKT_USER_ID ) {</span>
+<span class="lineNum">     868 </span><span class="lineNoCov">          0 :             uid_seen = 1;</span>
+<span class="lineNum">     869 </span><span class="lineNoCov">          0 :             if( (node-&gt;flag &amp; 2) || !(node-&gt;flag &amp; 1) ) {</span>
+<span class="lineNum">     870 </span><span class="lineNoCov">          0 :                 if( opt.verbose ) {</span>
+<span class="lineNum">     871 </span>            :                     log_info( _(&quot;key %08lX: skipped user ID '&quot;),
+<span class="lineNum">     872 </span>            :                                                          (ulong)keyid[1]);
+<span class="lineNum">     873 </span><span class="lineNoCov">          0 :                     print_utf8_string( stderr, node-&gt;pkt-&gt;pkt.user_id-&gt;name,</span>
+<span class="lineNum">     874 </span><span class="lineNoCov">          0 :                                        node-&gt;pkt-&gt;pkt.user_id-&gt;len );</span>
+<span class="lineNum">     875 </span><span class="lineNoCov">          0 :                     fputs(&quot;'\n&quot;, stderr );</span>
+<span class="lineNum">     876 </span>            :                 }
+<span class="lineNum">     877 </span><span class="lineNoCov">          0 :                 delete_kbnode( node ); /* the user-id */</span>
+<span class="lineNum">     878 </span>            :                 /* and all following packets up to the next user-id */
+<span class="lineNum">     879 </span><span class="lineNoCov">          0 :                 while( node-&gt;next</span>
+<span class="lineNum">     880 </span><span class="lineNoCov">          0 :                        &amp;&amp; node-&gt;next-&gt;pkt-&gt;pkttype != PKT_USER_ID</span>
+<span class="lineNum">     881 </span><span class="lineNoCov">          0 :                        &amp;&amp; node-&gt;next-&gt;pkt-&gt;pkttype != PKT_PUBLIC_SUBKEY</span>
+<span class="lineNum">     882 </span><span class="lineNoCov">          0 :                        &amp;&amp; node-&gt;next-&gt;pkt-&gt;pkttype != PKT_SECRET_SUBKEY ){</span>
+<span class="lineNum">     883 </span><span class="lineNoCov">          0 :                     delete_kbnode( node-&gt;next );</span>
+<span class="lineNum">     884 </span><span class="lineNoCov">          0 :                     node = node-&gt;next;</span>
+<span class="lineNum">     885 </span>            :                 }
+<span class="lineNum">     886 </span>            :             }
+<span class="lineNum">     887 </span>            :             else
+<span class="lineNum">     888 </span><span class="lineNoCov">          0 :                 nvalid++;</span>
+<span class="lineNum">     889 </span>            :         }
+<span class="lineNum">     890 </span><span class="lineNoCov">          0 :         else if(    node-&gt;pkt-&gt;pkttype == PKT_PUBLIC_SUBKEY</span>
+<span class="lineNum">     891 </span><span class="lineNoCov">          0 :                  || node-&gt;pkt-&gt;pkttype == PKT_SECRET_SUBKEY ) {</span>
+<span class="lineNum">     892 </span><span class="lineNoCov">          0 :             if( (node-&gt;flag &amp; 2) || !(node-&gt;flag &amp; 1) ) {</span>
+<span class="lineNum">     893 </span><span class="lineNoCov">          0 :                 if( opt.verbose ) {</span>
+<span class="lineNum">     894 </span>            :                     log_info( _(&quot;key %08lX: skipped subkey\n&quot;),
+<span class="lineNum">     895 </span>            :                                                          (ulong)keyid[1]);
+<span class="lineNum">     896 </span>            :                 }
+<span class="lineNum">     897 </span><span class="lineNoCov">          0 :                 delete_kbnode( node ); /* the subkey */</span>
+<span class="lineNum">     898 </span>            :                 /* and all following signature packets */
+<span class="lineNum">     899 </span><span class="lineNoCov">          0 :                 while( node-&gt;next</span>
+<span class="lineNum">     900 </span><span class="lineNoCov">          0 :                        &amp;&amp; node-&gt;next-&gt;pkt-&gt;pkttype == PKT_SIGNATURE ) {</span>
+<span class="lineNum">     901 </span><span class="lineNoCov">          0 :                     delete_kbnode( node-&gt;next );</span>
+<span class="lineNum">     902 </span><span class="lineNoCov">          0 :                     node = node-&gt;next;</span>
+<span class="lineNum">     903 </span>            :                 }
+<span class="lineNum">     904 </span>            :             }
+<span class="lineNum">     905 </span>            :         }
+<span class="lineNum">     906 </span><span class="lineNoCov">          0 :         else if( node-&gt;pkt-&gt;pkttype == PKT_SIGNATURE</span>
+<span class="lineNum">     907 </span><span class="lineNoCov">          0 :                  &amp;&amp; check_pubkey_algo( node-&gt;pkt-&gt;pkt.signature-&gt;pubkey_algo)</span>
+<span class="lineNum">     908 </span><span class="lineNoCov">          0 :                  &amp;&amp; node-&gt;pkt-&gt;pkt.signature-&gt;pubkey_algo != PUBKEY_ALGO_RSA )</span>
+<span class="lineNum">     909 </span><span class="lineNoCov">          0 :             delete_kbnode( node ); /* build_packet() can't handle this */</span>
+<span class="lineNum">     910 </span><span class="lineNoCov">          0 :         else if( node-&gt;pkt-&gt;pkttype == PKT_SIGNATURE</span>
+<span class="lineNum">     911 </span><span class="lineNoCov">          0 :                  &amp;&amp; (p = parse_sig_subpkt2( node-&gt;pkt-&gt;pkt.signature,</span>
+<span class="lineNum">     912 </span>            :                                             SIGSUBPKT_EXPORTABLE, NULL ))
+<span class="lineNum">     913 </span><span class="lineNoCov">          0 :                  &amp;&amp; !*p</span>
+<span class="lineNum">     914 </span><span class="lineNoCov">          0 :                  &amp;&amp; seckey_available( node-&gt;pkt-&gt;pkt.signature-&gt;keyid ) ) {</span>
+<span class="lineNum">     915 </span>            :             /* here we violate the rfc a bit by still allowing
+<span class="lineNum">     916 </span>            :              * to import non-exportable signature when we have the
+<span class="lineNum">     917 </span>            :              * the secret key used to create this signature - it
+<span class="lineNum">     918 </span>            :              * seems that this makes sense */
+<span class="lineNum">     919 </span>            :             log_info( _(&quot;key %08lX: non exportable signature &quot;
+<span class="lineNum">     920 </span>            :                                     &quot;(class %02x) - skipped\n&quot;),
+<span class="lineNum">     921 </span>            :                                     (ulong)keyid[1],
+<span class="lineNum">     922 </span>            :                                      node-&gt;pkt-&gt;pkt.signature-&gt;sig_class );
+<span class="lineNum">     923 </span><span class="lineNoCov">          0 :             delete_kbnode( node );</span>
+<span class="lineNum">     924 </span>            :         }
+<span class="lineNum">     925 </span><span class="lineNoCov">          0 :         else if( node-&gt;pkt-&gt;pkttype == PKT_SIGNATURE</span>
+<span class="lineNum">     926 </span><span class="lineNoCov">          0 :                  &amp;&amp; node-&gt;pkt-&gt;pkt.signature-&gt;sig_class == 0x20 )  {</span>
+<span class="lineNum">     927 </span><span class="lineNoCov">          0 :             if( uid_seen ) {</span>
+<span class="lineNum">     928 </span>            :                 log_error( _(&quot;key %08lX: revocation certificate &quot;
+<span class="lineNum">     929 </span>            :                                      &quot;at wrong place - skipped\n&quot;),
+<span class="lineNum">     930 </span>            :                                     (ulong)keyid[1]);
+<span class="lineNum">     931 </span><span class="lineNoCov">          0 :                 delete_kbnode( node );</span>
+<span class="lineNum">     932 </span>            :             }
+<span class="lineNum">     933 </span>            :             else {
+<span class="lineNum">     934 </span><span class="lineNoCov">          0 :                 int rc = check_key_signature( keyblock, node, NULL);</span>
+<span class="lineNum">     935 </span><span class="lineNoCov">          0 :                 if( rc ) {</span>
+<span class="lineNum">     936 </span>            :                     log_error( _(&quot;key %08lX: invalid revocation &quot;
+<span class="lineNum">     937 </span>            :                               &quot;certificate: %s - skipped\n&quot;),
+<span class="lineNum">     938 </span>            :                               (ulong)keyid[1], g10_errstr(rc));
+<span class="lineNum">     939 </span><span class="lineNoCov">          0 :                     delete_kbnode( node );</span>
+<span class="lineNum">     940 </span>            :                 }
+<span class="lineNum">     941 </span>            :             }
+<span class="lineNum">     942 </span>            :         }
+<span class="lineNum">     943 </span><span class="lineNoCov">          0 :         else if( (node-&gt;flag &amp; 4) ) /* marked for deletion */</span>
+<span class="lineNum">     944 </span><span class="lineNoCov">          0 :             delete_kbnode( node );</span>
+<span class="lineNum">     945 </span>            :     }
+<span class="lineNum">     946 </span>            : 
+<span class="lineNum">     947 </span>            :     /* note: because keyblock is the public key, it is never marked
+<span class="lineNum">     948 </span>            :      * for deletion and so keyblock cannot change */
+<span class="lineNum">     949 </span><span class="lineNoCov">          0 :     commit_kbnode( &amp;keyblock );</span>
+<span class="lineNum">     950 </span><span class="lineNoCov">          0 :     return nvalid;</span>
+<span class="lineNum">     951 </span>            : }
+<span class="lineNum">     952 </span>            : 
+<span class="lineNum">     953 </span>            : 
+<span class="lineNum">     954 </span>            : /****************
+<span class="lineNum">     955 </span>            :  * It may happen that the imported keyblock has duplicated user IDs.
+<span class="lineNum">     956 </span>            :  * We check this here and collapse those user IDs together with their
+<span class="lineNum">     957 </span>            :  * sigs into one.
+<span class="lineNum">     958 </span>            :  * Returns: True if the keyblock hash changed.
+<a name="959"><span class="lineNum">     959 </span>            :  */</a>
+<span class="lineNum">     960 </span>            : int
+<span class="lineNum">     961 </span><span class="lineNoCov">          0 : collapse_uids( KBNODE *keyblock )</span>
+<span class="lineNum">     962 </span>            : {
+<span class="lineNum">     963 </span>            :     KBNODE n, n2;
+<span class="lineNum">     964 </span>            :     int in_uid;
+<span class="lineNum">     965 </span><span class="lineNoCov">          0 :     int any=0;</span>
+<span class="lineNum">     966 </span>            :     u32 kid1;
+<span class="lineNum">     967 </span>            : 
+<span class="lineNum">     968 </span>            :   restart:
+<span class="lineNum">     969 </span><span class="lineNoCov">          0 :     for( n = *keyblock; n; n = n-&gt;next ) {</span>
+<span class="lineNum">     970 </span><span class="lineNoCov">          0 :         if( n-&gt;pkt-&gt;pkttype != PKT_USER_ID )</span>
+<span class="lineNum">     971 </span><span class="lineNoCov">          0 :             continue;</span>
+<span class="lineNum">     972 </span><span class="lineNoCov">          0 :         for( n2 = n-&gt;next; n2; n2 = n2-&gt;next ) {</span>
+<span class="lineNum">     973 </span><span class="lineNoCov">          0 :             if( n2-&gt;pkt-&gt;pkttype == PKT_USER_ID</span>
+<span class="lineNum">     974 </span><span class="lineNoCov">          0 :                 &amp;&amp; !cmp_user_ids( n-&gt;pkt-&gt;pkt.user_id,</span>
+<span class="lineNum">     975 </span><span class="lineNoCov">          0 :                                   n2-&gt;pkt-&gt;pkt.user_id ) ) {</span>
+<span class="lineNum">     976 </span>            :                 /* found a duplicate */
+<span class="lineNum">     977 </span><span class="lineNoCov">          0 :                 any = 1;</span>
+<span class="lineNum">     978 </span><span class="lineNoCov">          0 :                 if( !n2-&gt;next</span>
+<span class="lineNum">     979 </span><span class="lineNoCov">          0 :                     || n2-&gt;next-&gt;pkt-&gt;pkttype == PKT_USER_ID</span>
+<span class="lineNum">     980 </span><span class="lineNoCov">          0 :                     || n2-&gt;next-&gt;pkt-&gt;pkttype == PKT_PUBLIC_SUBKEY</span>
+<span class="lineNum">     981 </span><span class="lineNoCov">          0 :                     || n2-&gt;next-&gt;pkt-&gt;pkttype == PKT_SECRET_SUBKEY  ) {</span>
+<span class="lineNum">     982 </span>            :                     /* no more signatures: delete the user ID
+<span class="lineNum">     983 </span>            :                      * and start over */
+<span class="lineNum">     984 </span><span class="lineNoCov">          0 :                     remove_kbnode( keyblock, n2 );</span>
+<span class="lineNum">     985 </span>            :                 }
+<span class="lineNum">     986 </span>            :                 else {
+<span class="lineNum">     987 </span>            :                     /* The simple approach: Move one signature and
+<span class="lineNum">     988 </span>            :                      * then start over to delete the next one :-( */
+<span class="lineNum">     989 </span><span class="lineNoCov">          0 :                     move_kbnode( keyblock, n2-&gt;next, n-&gt;next );</span>
+<span class="lineNum">     990 </span>            :                 }
+<span class="lineNum">     991 </span><span class="lineNoCov">          0 :                 goto restart;</span>
+<span class="lineNum">     992 </span>            :             }
+<span class="lineNum">     993 </span>            :         }
+<span class="lineNum">     994 </span>            :     }
+<span class="lineNum">     995 </span><span class="lineNoCov">          0 :     if( !any )</span>
+<span class="lineNum">     996 </span><span class="lineNoCov">          0 :         return 0;</span>
+<span class="lineNum">     997 </span>            : 
+<span class="lineNum">     998 </span>            :   restart_sig:
+<span class="lineNum">     999 </span>            :     /* now we may have duplicate signatures on one user ID: fix this */
+<span class="lineNum">    1000 </span><span class="lineNoCov">          0 :     for( in_uid = 0, n = *keyblock; n; n = n-&gt;next ) {</span>
+<span class="lineNum">    1001 </span><span class="lineNoCov">          0 :         if( n-&gt;pkt-&gt;pkttype == PKT_USER_ID )</span>
+<span class="lineNum">    1002 </span><span class="lineNoCov">          0 :             in_uid = 1;</span>
+<span class="lineNum">    1003 </span><span class="lineNoCov">          0 :         else if( n-&gt;pkt-&gt;pkttype == PKT_PUBLIC_SUBKEY</span>
+<span class="lineNum">    1004 </span><span class="lineNoCov">          0 :                  || n-&gt;pkt-&gt;pkttype == PKT_SECRET_SUBKEY )</span>
+<span class="lineNum">    1005 </span><span class="lineNoCov">          0 :             in_uid = 0;</span>
+<span class="lineNum">    1006 </span><span class="lineNoCov">          0 :         else if( in_uid ) {</span>
+<span class="lineNum">    1007 </span><span class="lineNoCov">          0 :             n2 = n;</span>
+<span class="lineNum">    1008 </span>            :             do {
+<span class="lineNum">    1009 </span><span class="lineNoCov">          0 :                 KBNODE ncmp = NULL;</span>
+<span class="lineNum">    1010 </span><span class="lineNoCov">          0 :                 for( ; n2; n2 = n2-&gt;next ) {</span>
+<span class="lineNum">    1011 </span><span class="lineNoCov">          0 :                     if(    n2-&gt;pkt-&gt;pkttype == PKT_USER_ID</span>
+<span class="lineNum">    1012 </span><span class="lineNoCov">          0 :                         || n2-&gt;pkt-&gt;pkttype == PKT_PUBLIC_SUBKEY</span>
+<span class="lineNum">    1013 </span><span class="lineNoCov">          0 :                         || n2-&gt;pkt-&gt;pkttype == PKT_SECRET_SUBKEY )</span>
+<span class="lineNum">    1014 </span>            :                         break;
+<span class="lineNum">    1015 </span><span class="lineNoCov">          0 :                     if( n2-&gt;pkt-&gt;pkttype != PKT_SIGNATURE )</span>
+<span class="lineNum">    1016 </span>            :                         ;
+<span class="lineNum">    1017 </span><span class="lineNoCov">          0 :                     else if( !ncmp )</span>
+<span class="lineNum">    1018 </span><span class="lineNoCov">          0 :                         ncmp = n2;</span>
+<span class="lineNum">    1019 </span><span class="lineNoCov">          0 :                     else if( !cmp_signatures( ncmp-&gt;pkt-&gt;pkt.signature,</span>
+<span class="lineNum">    1020 </span><span class="lineNoCov">          0 :                                                 n2-&gt;pkt-&gt;pkt.signature )) {</span>
+<span class="lineNum">    1021 </span><span class="lineNoCov">          0 :                         remove_kbnode( keyblock, n2 );</span>
+<span class="lineNum">    1022 </span><span class="lineNoCov">          0 :                         goto restart_sig;</span>
+<span class="lineNum">    1023 </span>            :                     }
+<span class="lineNum">    1024 </span>            :                 }
+<span class="lineNum">    1025 </span><span class="lineNoCov">          0 :                 n2 = ncmp? ncmp-&gt;next : NULL;</span>
+<span class="lineNum">    1026 </span><span class="lineNoCov">          0 :             } while( n2 );</span>
+<span class="lineNum">    1027 </span>            :         }
+<span class="lineNum">    1028 </span>            :     }
+<span class="lineNum">    1029 </span>            : 
+<span class="lineNum">    1030 </span><span class="lineNoCov">          0 :     if( (n = find_kbnode( *keyblock, PKT_PUBLIC_KEY )) )</span>
+<span class="lineNum">    1031 </span><span class="lineNoCov">          0 :         kid1 = keyid_from_pk( n-&gt;pkt-&gt;pkt.public_key, NULL );</span>
+<span class="lineNum">    1032 </span><span class="lineNoCov">          0 :     else if( (n = find_kbnode( *keyblock, PKT_SECRET_KEY )) )</span>
+<span class="lineNum">    1033 </span><span class="lineNoCov">          0 :         kid1 = keyid_from_sk( n-&gt;pkt-&gt;pkt.secret_key, NULL );</span>
+<span class="lineNum">    1034 </span>            :     else
+<span class="lineNum">    1035 </span><span class="lineNoCov">          0 :         kid1 = 0;</span>
+<span class="lineNum">    1036 </span>            :     log_info(_(&quot;key %08lX: duplicated user ID detected - merged\n&quot;),
+<span class="lineNum">    1037 </span>            :                                                                  (ulong)kid1);
+<span class="lineNum">    1038 </span>            : 
+<span class="lineNum">    1039 </span><span class="lineNoCov">          0 :     return 1;</span>
+<span class="lineNum">    1040 </span>            : }
+<span class="lineNum">    1041 </span>            : 
+<span class="lineNum">    1042 </span>            : 
+<span class="lineNum">    1043 </span>            : 
+<span class="lineNum">    1044 </span>            : /****************
+<span class="lineNum">    1045 </span>            :  * compare and merge the blocks
+<span class="lineNum">    1046 </span>            :  *
+<span class="lineNum">    1047 </span>            :  * o compare the signatures: If we already have this signature, check
+<span class="lineNum">    1048 </span>            :  *   that they compare okay; if not, issue a warning and ask the user.
+<span class="lineNum">    1049 </span>            :  * o Simply add the signature.  Can't verify here because we may not have
+<span class="lineNum">    1050 </span>            :  *   the signature's public key yet; verification is done when putting it
+<span class="lineNum">    1051 </span>            :  *   into the trustdb, which is done automagically as soon as this pubkey
+<span class="lineNum">    1052 </span>            :  *   is used.
+<span class="lineNum">    1053 </span>            :  * Note: We indicate newly inserted packets with flag bit 0
+<a name="1054"><span class="lineNum">    1054 </span>            :  */</a>
+<span class="lineNum">    1055 </span>            : static int
+<span class="lineNum">    1056 </span><span class="lineNoCov">          0 : merge_blocks( const char *fname, KBNODE keyblock_orig, KBNODE keyblock,</span>
+<span class="lineNum">    1057 </span>            :               u32 *keyid, int *n_uids, int *n_sigs, int *n_subk )
+<span class="lineNum">    1058 </span>            : {
+<span class="lineNum">    1059 </span>            :     KBNODE onode, node;
+<span class="lineNum">    1060 </span>            :     int rc, found;
+<span class="lineNum">    1061 </span>            : 
+<span class="lineNum">    1062 </span>            :     /* 1st: handle revocation certificates */
+<span class="lineNum">    1063 </span><span class="lineNoCov">          0 :     for(node=keyblock-&gt;next; node; node=node-&gt;next ) {</span>
+<span class="lineNum">    1064 </span><span class="lineNoCov">          0 :         if( node-&gt;pkt-&gt;pkttype == PKT_USER_ID )</span>
+<span class="lineNum">    1065 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">    1066 </span><span class="lineNoCov">          0 :         else if( node-&gt;pkt-&gt;pkttype == PKT_SIGNATURE</span>
+<span class="lineNum">    1067 </span><span class="lineNoCov">          0 :                  &amp;&amp; node-&gt;pkt-&gt;pkt.signature-&gt;sig_class == 0x20 )  {</span>
+<span class="lineNum">    1068 </span>            :             /* check whether we already have this */
+<span class="lineNum">    1069 </span><span class="lineNoCov">          0 :             found = 0;</span>
+<span class="lineNum">    1070 </span><span class="lineNoCov">          0 :             for(onode=keyblock_orig-&gt;next; onode; onode=onode-&gt;next ) {</span>
+<span class="lineNum">    1071 </span><span class="lineNoCov">          0 :                 if( onode-&gt;pkt-&gt;pkttype == PKT_USER_ID )</span>
+<span class="lineNum">    1072 </span><span class="lineNoCov">          0 :                     break;</span>
+<span class="lineNum">    1073 </span><span class="lineNoCov">          0 :                 else if( onode-&gt;pkt-&gt;pkttype == PKT_SIGNATURE</span>
+<span class="lineNum">    1074 </span><span class="lineNoCov">          0 :                          &amp;&amp; onode-&gt;pkt-&gt;pkt.signature-&gt;sig_class == 0x20</span>
+<span class="lineNum">    1075 </span><span class="lineNoCov">          0 :                          &amp;&amp; node-&gt;pkt-&gt;pkt.signature-&gt;keyid[0]</span>
+<span class="lineNum">    1076 </span><span class="lineNoCov">          0 :                             == onode-&gt;pkt-&gt;pkt.signature-&gt;keyid[0]</span>
+<span class="lineNum">    1077 </span><span class="lineNoCov">          0 :                          &amp;&amp; node-&gt;pkt-&gt;pkt.signature-&gt;keyid[1]</span>
+<span class="lineNum">    1078 </span><span class="lineNoCov">          0 :                             == onode-&gt;pkt-&gt;pkt.signature-&gt;keyid[1] ) {</span>
+<span class="lineNum">    1079 </span><span class="lineNoCov">          0 :                     found = 1;</span>
+<span class="lineNum">    1080 </span><span class="lineNoCov">          0 :                     break;</span>
+<span class="lineNum">    1081 </span>            :                 }
+<span class="lineNum">    1082 </span>            :             }
+<span class="lineNum">    1083 </span><span class="lineNoCov">          0 :             if( !found ) {</span>
+<span class="lineNum">    1084 </span><span class="lineNoCov">          0 :                 KBNODE n2 = clone_kbnode(node);</span>
+<span class="lineNum">    1085 </span><span class="lineNoCov">          0 :                 insert_kbnode( keyblock_orig, n2, 0 );</span>
+<span class="lineNum">    1086 </span><span class="lineNoCov">          0 :                 n2-&gt;flag |= 1;</span>
+<span class="lineNum">    1087 </span><span class="lineNoCov">          0 :                 ++*n_sigs;</span>
+<span class="lineNum">    1088 </span>            :                 log_info( _(&quot;key %08lX: revocation certificate added\n&quot;),
+<span class="lineNum">    1089 </span>            :                                          (ulong)keyid[1]);
+<span class="lineNum">    1090 </span>            :             }
+<span class="lineNum">    1091 </span>            :         }
+<span class="lineNum">    1092 </span>            :     }
+<span class="lineNum">    1093 </span>            : 
+<span class="lineNum">    1094 </span>            :     /* 2nd: try to merge new certificates in */
+<span class="lineNum">    1095 </span><span class="lineNoCov">          0 :     for(onode=keyblock_orig-&gt;next; onode; onode=onode-&gt;next ) {</span>
+<span class="lineNum">    1096 </span><span class="lineNoCov">          0 :         if( !(onode-&gt;flag &amp; 1) &amp;&amp; onode-&gt;pkt-&gt;pkttype == PKT_USER_ID) {</span>
+<span class="lineNum">    1097 </span>            :             /* find the user id in the imported keyblock */
+<span class="lineNum">    1098 </span><span class="lineNoCov">          0 :             for(node=keyblock-&gt;next; node; node=node-&gt;next )</span>
+<span class="lineNum">    1099 </span><span class="lineNoCov">          0 :                 if( node-&gt;pkt-&gt;pkttype == PKT_USER_ID</span>
+<span class="lineNum">    1100 </span><span class="lineNoCov">          0 :                     &amp;&amp; !cmp_user_ids( onode-&gt;pkt-&gt;pkt.user_id,</span>
+<span class="lineNum">    1101 </span><span class="lineNoCov">          0 :                                           node-&gt;pkt-&gt;pkt.user_id ) )</span>
+<span class="lineNum">    1102 </span><span class="lineNoCov">          0 :                     break;</span>
+<span class="lineNum">    1103 </span><span class="lineNoCov">          0 :             if( node ) { /* found: merge */</span>
+<span class="lineNum">    1104 </span><span class="lineNoCov">          0 :                 rc = merge_sigs( onode, node, n_sigs, fname, keyid );</span>
+<span class="lineNum">    1105 </span><span class="lineNoCov">          0 :                 if( rc )</span>
+<span class="lineNum">    1106 </span><span class="lineNoCov">          0 :                     return rc;</span>
+<span class="lineNum">    1107 </span>            :             }
+<span class="lineNum">    1108 </span>            :         }
+<span class="lineNum">    1109 </span>            :     }
+<span class="lineNum">    1110 </span>            : 
+<span class="lineNum">    1111 </span>            :     /* 3rd: add new user-ids */
+<span class="lineNum">    1112 </span><span class="lineNoCov">          0 :     for(node=keyblock-&gt;next; node; node=node-&gt;next ) {</span>
+<span class="lineNum">    1113 </span><span class="lineNoCov">          0 :         if( node-&gt;pkt-&gt;pkttype == PKT_USER_ID) {</span>
+<span class="lineNum">    1114 </span>            :             /* do we have this in the original keyblock */
+<span class="lineNum">    1115 </span><span class="lineNoCov">          0 :             for(onode=keyblock_orig-&gt;next; onode; onode=onode-&gt;next )</span>
+<span class="lineNum">    1116 </span><span class="lineNoCov">          0 :                 if( onode-&gt;pkt-&gt;pkttype == PKT_USER_ID</span>
+<span class="lineNum">    1117 </span><span class="lineNoCov">          0 :                     &amp;&amp; !cmp_user_ids( onode-&gt;pkt-&gt;pkt.user_id,</span>
+<span class="lineNum">    1118 </span><span class="lineNoCov">          0 :                                       node-&gt;pkt-&gt;pkt.user_id ) )</span>
+<span class="lineNum">    1119 </span><span class="lineNoCov">          0 :                     break;</span>
+<span class="lineNum">    1120 </span><span class="lineNoCov">          0 :             if( !onode ) { /* this is a new user id: append */</span>
+<span class="lineNum">    1121 </span><span class="lineNoCov">          0 :                 rc = append_uid( keyblock_orig, node, n_sigs, fname, keyid);</span>
+<span class="lineNum">    1122 </span><span class="lineNoCov">          0 :                 if( rc )</span>
+<span class="lineNum">    1123 </span><span class="lineNoCov">          0 :                     return rc;</span>
+<span class="lineNum">    1124 </span><span class="lineNoCov">          0 :                 ++*n_uids;</span>
+<span class="lineNum">    1125 </span>            :             }
+<span class="lineNum">    1126 </span>            :         }
+<span class="lineNum">    1127 </span>            :     }
+<span class="lineNum">    1128 </span>            : 
+<span class="lineNum">    1129 </span>            :     /*  add new subkeys */
+<span class="lineNum">    1130 </span><span class="lineNoCov">          0 :     for(node=keyblock-&gt;next; node; node=node-&gt;next ) {</span>
+<span class="lineNum">    1131 </span><span class="lineNoCov">          0 :         onode = NULL;</span>
+<span class="lineNum">    1132 </span><span class="lineNoCov">          0 :         if( node-&gt;pkt-&gt;pkttype == PKT_PUBLIC_SUBKEY ) {</span>
+<span class="lineNum">    1133 </span>            :             /* do we have this in the original keyblock? */
+<span class="lineNum">    1134 </span><span class="lineNoCov">          0 :             for(onode=keyblock_orig-&gt;next; onode; onode=onode-&gt;next )</span>
+<span class="lineNum">    1135 </span><span class="lineNoCov">          0 :                 if( onode-&gt;pkt-&gt;pkttype == PKT_PUBLIC_SUBKEY</span>
+<span class="lineNum">    1136 </span><span class="lineNoCov">          0 :                     &amp;&amp; !cmp_public_keys( onode-&gt;pkt-&gt;pkt.public_key,</span>
+<span class="lineNum">    1137 </span><span class="lineNoCov">          0 :                                          node-&gt;pkt-&gt;pkt.public_key ) )</span>
+<span class="lineNum">    1138 </span><span class="lineNoCov">          0 :                     break;</span>
+<span class="lineNum">    1139 </span><span class="lineNoCov">          0 :             if( !onode ) { /* this is a new subkey: append */</span>
+<span class="lineNum">    1140 </span><span class="lineNoCov">          0 :                 rc = append_key( keyblock_orig, node, n_sigs, fname, keyid);</span>
+<span class="lineNum">    1141 </span><span class="lineNoCov">          0 :                 if( rc )</span>
+<span class="lineNum">    1142 </span><span class="lineNoCov">          0 :                     return rc;</span>
+<span class="lineNum">    1143 </span><span class="lineNoCov">          0 :                 ++*n_subk;</span>
+<span class="lineNum">    1144 </span>            :             }
+<span class="lineNum">    1145 </span>            :         }
+<span class="lineNum">    1146 </span><span class="lineNoCov">          0 :         else if( node-&gt;pkt-&gt;pkttype == PKT_SECRET_SUBKEY ) {</span>
+<span class="lineNum">    1147 </span>            :             /* do we have this in the original keyblock? */
+<span class="lineNum">    1148 </span><span class="lineNoCov">          0 :             for(onode=keyblock_orig-&gt;next; onode; onode=onode-&gt;next )</span>
+<span class="lineNum">    1149 </span><span class="lineNoCov">          0 :                 if( onode-&gt;pkt-&gt;pkttype == PKT_SECRET_SUBKEY</span>
+<span class="lineNum">    1150 </span><span class="lineNoCov">          0 :                     &amp;&amp; !cmp_secret_keys( onode-&gt;pkt-&gt;pkt.secret_key,</span>
+<span class="lineNum">    1151 </span><span class="lineNoCov">          0 :                                          node-&gt;pkt-&gt;pkt.secret_key ) )</span>
+<span class="lineNum">    1152 </span><span class="lineNoCov">          0 :                     break;</span>
+<span class="lineNum">    1153 </span><span class="lineNoCov">          0 :             if( !onode ) { /* this is a new subkey: append */</span>
+<span class="lineNum">    1154 </span><span class="lineNoCov">          0 :                 rc = append_key( keyblock_orig, node, n_sigs, fname, keyid);</span>
+<span class="lineNum">    1155 </span><span class="lineNoCov">          0 :                 if( rc )</span>
+<span class="lineNum">    1156 </span><span class="lineNoCov">          0 :                     return rc;</span>
+<span class="lineNum">    1157 </span><span class="lineNoCov">          0 :                 ++*n_subk;</span>
+<span class="lineNum">    1158 </span>            :             }
+<span class="lineNum">    1159 </span>            :         }
+<span class="lineNum">    1160 </span>            :     }
+<span class="lineNum">    1161 </span>            : 
+<span class="lineNum">    1162 </span>            :     /* merge subkey certificates */
+<span class="lineNum">    1163 </span><span class="lineNoCov">          0 :     for(onode=keyblock_orig-&gt;next; onode; onode=onode-&gt;next ) {</span>
+<span class="lineNum">    1164 </span><span class="lineNoCov">          0 :         if( !(onode-&gt;flag &amp; 1)</span>
+<span class="lineNum">    1165 </span><span class="lineNoCov">          0 :             &amp;&amp;  (   onode-&gt;pkt-&gt;pkttype == PKT_PUBLIC_SUBKEY</span>
+<span class="lineNum">    1166 </span><span class="lineNoCov">          0 :                  || onode-&gt;pkt-&gt;pkttype == PKT_SECRET_SUBKEY) ) {</span>
+<span class="lineNum">    1167 </span>            :             /* find the subkey in the imported keyblock */
+<span class="lineNum">    1168 </span><span class="lineNoCov">          0 :             for(node=keyblock-&gt;next; node; node=node-&gt;next ) {</span>
+<span class="lineNum">    1169 </span><span class="lineNoCov">          0 :                 if( node-&gt;pkt-&gt;pkttype == PKT_PUBLIC_SUBKEY</span>
+<span class="lineNum">    1170 </span><span class="lineNoCov">          0 :                     &amp;&amp; !cmp_public_keys( onode-&gt;pkt-&gt;pkt.public_key,</span>
+<span class="lineNum">    1171 </span><span class="lineNoCov">          0 :                                           node-&gt;pkt-&gt;pkt.public_key ) )</span>
+<span class="lineNum">    1172 </span>            :                     break;
+<span class="lineNum">    1173 </span><span class="lineNoCov">          0 :                 else if( node-&gt;pkt-&gt;pkttype == PKT_SECRET_SUBKEY</span>
+<span class="lineNum">    1174 </span><span class="lineNoCov">          0 :                     &amp;&amp; !cmp_secret_keys( onode-&gt;pkt-&gt;pkt.secret_key,</span>
+<span class="lineNum">    1175 </span><span class="lineNoCov">          0 :                                           node-&gt;pkt-&gt;pkt.secret_key ) )</span>
+<span class="lineNum">    1176 </span><span class="lineNoCov">          0 :                     break;</span>
+<span class="lineNum">    1177 </span>            :             }
+<span class="lineNum">    1178 </span><span class="lineNoCov">          0 :             if( node ) { /* found: merge */</span>
+<span class="lineNum">    1179 </span><span class="lineNoCov">          0 :                 rc = merge_keysigs( onode, node, n_sigs, fname, keyid );</span>
+<span class="lineNum">    1180 </span><span class="lineNoCov">          0 :                 if( rc )</span>
+<span class="lineNum">    1181 </span><span class="lineNoCov">          0 :                     return rc;</span>
+<span class="lineNum">    1182 </span>            :             }
+<span class="lineNum">    1183 </span>            :         }
+<span class="lineNum">    1184 </span>            :     }
+<span class="lineNum">    1185 </span>            : 
+<span class="lineNum">    1186 </span>            : 
+<span class="lineNum">    1187 </span><span class="lineNoCov">          0 :     return 0;</span>
+<span class="lineNum">    1188 </span>            : }
+<span class="lineNum">    1189 </span>            : 
+<span class="lineNum">    1190 </span>            : 
+<span class="lineNum">    1191 </span>            : /****************
+<span class="lineNum">    1192 </span>            :  * append the userid starting with NODE and all signatures to KEYBLOCK.
+<a name="1193"><span class="lineNum">    1193 </span>            :  */</a>
+<span class="lineNum">    1194 </span>            : static int
+<span class="lineNum">    1195 </span><span class="lineNoCov">          0 : append_uid( KBNODE keyblock, KBNODE node, int *n_sigs,</span>
+<span class="lineNum">    1196 </span>            :                                           const char *fname, u32 *keyid )
+<span class="lineNum">    1197 </span>            : {
+<span class="lineNum">    1198 </span><span class="lineNoCov">          0 :     KBNODE n, n_where=NULL;</span>
+<span class="lineNum">    1199 </span>            : 
+<span class="lineNum">    1200 </span><span class="lineNoCov">          0 :     assert(node-&gt;pkt-&gt;pkttype == PKT_USER_ID );</span>
+<span class="lineNum">    1201 </span><span class="lineNoCov">          0 :     if( !node-&gt;next || node-&gt;next-&gt;pkt-&gt;pkttype == PKT_USER_ID ) {</span>
+<span class="lineNum">    1202 </span>            :         log_error( _(&quot;key %08lX: our copy has no self-signature\n&quot;),
+<span class="lineNum">    1203 </span>            :                                                   (ulong)keyid[1]);
+<span class="lineNum">    1204 </span><span class="lineNoCov">          0 :         return G10ERR_GENERAL;</span>
+<span class="lineNum">    1205 </span>            :     }
+<span class="lineNum">    1206 </span>            : 
+<span class="lineNum">    1207 </span>            :     /* find the position */
+<span class="lineNum">    1208 </span><span class="lineNoCov">          0 :     for( n = keyblock; n; n_where = n, n = n-&gt;next ) {</span>
+<span class="lineNum">    1209 </span><span class="lineNoCov">          0 :         if( n-&gt;pkt-&gt;pkttype == PKT_PUBLIC_SUBKEY</span>
+<span class="lineNum">    1210 </span><span class="lineNoCov">          0 :             || n-&gt;pkt-&gt;pkttype == PKT_SECRET_SUBKEY )</span>
+<span class="lineNum">    1211 </span>            :             break;
+<span class="lineNum">    1212 </span>            :     }
+<span class="lineNum">    1213 </span><span class="lineNoCov">          0 :     if( !n )</span>
+<span class="lineNum">    1214 </span><span class="lineNoCov">          0 :         n_where = NULL;</span>
+<span class="lineNum">    1215 </span>            : 
+<span class="lineNum">    1216 </span>            :     /* and append/insert */
+<span class="lineNum">    1217 </span><span class="lineNoCov">          0 :     while( node ) {</span>
+<span class="lineNum">    1218 </span>            :         /* we add a clone to the original keyblock, because this
+<span class="lineNum">    1219 </span>            :          * one is released first */
+<span class="lineNum">    1220 </span><span class="lineNoCov">          0 :         n = clone_kbnode(node);</span>
+<span class="lineNum">    1221 </span><span class="lineNoCov">          0 :         if( n_where ) {</span>
+<span class="lineNum">    1222 </span><span class="lineNoCov">          0 :             insert_kbnode( n_where, n, 0 );</span>
+<span class="lineNum">    1223 </span><span class="lineNoCov">          0 :             n_where = n;</span>
+<span class="lineNum">    1224 </span>            :         }
+<span class="lineNum">    1225 </span>            :         else
+<span class="lineNum">    1226 </span><span class="lineNoCov">          0 :             add_kbnode( keyblock, n );</span>
+<span class="lineNum">    1227 </span><span class="lineNoCov">          0 :         n-&gt;flag |= 1;</span>
+<span class="lineNum">    1228 </span><span class="lineNoCov">          0 :         node-&gt;flag |= 1;</span>
+<span class="lineNum">    1229 </span><span class="lineNoCov">          0 :         if( n-&gt;pkt-&gt;pkttype == PKT_SIGNATURE )</span>
+<span class="lineNum">    1230 </span><span class="lineNoCov">          0 :             ++*n_sigs;</span>
+<span class="lineNum">    1231 </span>            : 
+<span class="lineNum">    1232 </span><span class="lineNoCov">          0 :         node = node-&gt;next;</span>
+<span class="lineNum">    1233 </span><span class="lineNoCov">          0 :         if( node &amp;&amp; node-&gt;pkt-&gt;pkttype != PKT_SIGNATURE )</span>
+<span class="lineNum">    1234 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">    1235 </span>            :     }
+<span class="lineNum">    1236 </span>            : 
+<span class="lineNum">    1237 </span><span class="lineNoCov">          0 :     return 0;</span>
+<span class="lineNum">    1238 </span>            : }
+<span class="lineNum">    1239 </span>            : 
+<span class="lineNum">    1240 </span>            : 
+<span class="lineNum">    1241 </span>            : /****************
+<span class="lineNum">    1242 </span>            :  * Merge the sigs from SRC onto DST. SRC and DST are both a PKT_USER_ID.
+<span class="lineNum">    1243 </span>            :  * (how should we handle comment packets here?)
+<a name="1244"><span class="lineNum">    1244 </span>            :  */</a>
+<span class="lineNum">    1245 </span>            : static int
+<span class="lineNum">    1246 </span><span class="lineNoCov">          0 : merge_sigs( KBNODE dst, KBNODE src, int *n_sigs,</span>
+<span class="lineNum">    1247 </span>            :                                     const char *fname, u32 *keyid )
+<span class="lineNum">    1248 </span>            : {
+<span class="lineNum">    1249 </span>            :     KBNODE n, n2;
+<span class="lineNum">    1250 </span><span class="lineNoCov">          0 :     int found=0;</span>
+<span class="lineNum">    1251 </span>            : 
+<span class="lineNum">    1252 </span><span class="lineNoCov">          0 :     assert(dst-&gt;pkt-&gt;pkttype == PKT_USER_ID );</span>
+<span class="lineNum">    1253 </span><span class="lineNoCov">          0 :     assert(src-&gt;pkt-&gt;pkttype == PKT_USER_ID );</span>
+<span class="lineNum">    1254 </span><span class="lineNoCov">          0 :     if( !dst-&gt;next || dst-&gt;next-&gt;pkt-&gt;pkttype == PKT_USER_ID ) {</span>
+<span class="lineNum">    1255 </span>            :         log_error( _(&quot;key %08lX: our copy has no self-signature\n&quot;),
+<span class="lineNum">    1256 </span>            :                                                   (ulong)keyid[1]);
+<span class="lineNum">    1257 </span><span class="lineNoCov">          0 :         return 0;</span>
+<span class="lineNum">    1258 </span>            :     }
+<span class="lineNum">    1259 </span>            : 
+<span class="lineNum">    1260 </span>            : 
+<span class="lineNum">    1261 </span><span class="lineNoCov">          0 :     for(n=src-&gt;next; n &amp;&amp; n-&gt;pkt-&gt;pkttype != PKT_USER_ID; n = n-&gt;next ) {</span>
+<span class="lineNum">    1262 </span><span class="lineNoCov">          0 :         if( n-&gt;pkt-&gt;pkttype != PKT_SIGNATURE )</span>
+<span class="lineNum">    1263 </span><span class="lineNoCov">          0 :             continue;</span>
+<span class="lineNum">    1264 </span><span class="lineNoCov">          0 :         if( n-&gt;pkt-&gt;pkt.signature-&gt;sig_class == 0x18</span>
+<span class="lineNum">    1265 </span><span class="lineNoCov">          0 :             || n-&gt;pkt-&gt;pkt.signature-&gt;sig_class == 0x28 )</span>
+<span class="lineNum">    1266 </span><span class="lineNoCov">          0 :             continue; /* skip signatures which are only valid on subkeys */</span>
+<span class="lineNum">    1267 </span><span class="lineNoCov">          0 :         found = 0;</span>
+<span class="lineNum">    1268 </span><span class="lineNoCov">          0 :         for(n2=dst-&gt;next; n2 &amp;&amp; n2-&gt;pkt-&gt;pkttype != PKT_USER_ID; n2 = n2-&gt;next){</span>
+<span class="lineNum">    1269 </span><span class="lineNoCov">          0 :             if( n2-&gt;pkt-&gt;pkttype == PKT_SIGNATURE</span>
+<span class="lineNum">    1270 </span><span class="lineNoCov">          0 :                 &amp;&amp; n-&gt;pkt-&gt;pkt.signature-&gt;keyid[0]</span>
+<span class="lineNum">    1271 </span><span class="lineNoCov">          0 :                    == n2-&gt;pkt-&gt;pkt.signature-&gt;keyid[0]</span>
+<span class="lineNum">    1272 </span><span class="lineNoCov">          0 :                 &amp;&amp; n-&gt;pkt-&gt;pkt.signature-&gt;keyid[1]</span>
+<span class="lineNum">    1273 </span><span class="lineNoCov">          0 :                    == n2-&gt;pkt-&gt;pkt.signature-&gt;keyid[1]</span>
+<span class="lineNum">    1274 </span><span class="lineNoCov">          0 :                 &amp;&amp; n-&gt;pkt-&gt;pkt.signature-&gt;timestamp</span>
+<span class="lineNum">    1275 </span><span class="lineNoCov">          0 :                    &lt;= n2-&gt;pkt-&gt;pkt.signature-&gt;timestamp</span>
+<span class="lineNum">    1276 </span><span class="lineNoCov">          0 :                 &amp;&amp; n-&gt;pkt-&gt;pkt.signature-&gt;sig_class</span>
+<span class="lineNum">    1277 </span><span class="lineNoCov">          0 :                    == n2-&gt;pkt-&gt;pkt.signature-&gt;sig_class ) {</span>
+<span class="lineNum">    1278 </span><span class="lineNoCov">          0 :                 found++;</span>
+<span class="lineNum">    1279 </span><span class="lineNoCov">          0 :                 break;</span>
+<span class="lineNum">    1280 </span>            :             }
+<span class="lineNum">    1281 </span>            :         }
+<span class="lineNum">    1282 </span><span class="lineNoCov">          0 :         if( !found ) {</span>
+<span class="lineNum">    1283 </span>            :             /* This signature is new or newer, append N to DST.
+<span class="lineNum">    1284 </span>            :              * We add a clone to the original keyblock, because this
+<span class="lineNum">    1285 </span>            :              * one is released first */
+<span class="lineNum">    1286 </span><span class="lineNoCov">          0 :             n2 = clone_kbnode(n);</span>
+<span class="lineNum">    1287 </span><span class="lineNoCov">          0 :             insert_kbnode( dst, n2, PKT_SIGNATURE );</span>
+<span class="lineNum">    1288 </span><span class="lineNoCov">          0 :             n2-&gt;flag |= 1;</span>
+<span class="lineNum">    1289 </span><span class="lineNoCov">          0 :             n-&gt;flag |= 1;</span>
+<span class="lineNum">    1290 </span><span class="lineNoCov">          0 :             ++*n_sigs;</span>
+<span class="lineNum">    1291 </span>            :         }
+<span class="lineNum">    1292 </span>            :     }
+<span class="lineNum">    1293 </span>            : 
+<span class="lineNum">    1294 </span><span class="lineNoCov">          0 :     return 0;</span>
+<span class="lineNum">    1295 </span>            : }
+<span class="lineNum">    1296 </span>            : 
+<span class="lineNum">    1297 </span>            : /****************
+<span class="lineNum">    1298 </span>            :  * Merge the sigs from SRC onto DST. SRC and DST are both a PKT_xxx_SUBKEY.
+<a name="1299"><span class="lineNum">    1299 </span>            :  */</a>
+<span class="lineNum">    1300 </span>            : static int
+<span class="lineNum">    1301 </span><span class="lineNoCov">          0 : merge_keysigs( KBNODE dst, KBNODE src, int *n_sigs,</span>
+<span class="lineNum">    1302 </span>            :                                     const char *fname, u32 *keyid )
+<span class="lineNum">    1303 </span>            : {
+<span class="lineNum">    1304 </span>            :     KBNODE n, n2;
+<span class="lineNum">    1305 </span><span class="lineNoCov">          0 :     int found=0;</span>
+<span class="lineNum">    1306 </span>            : 
+<span class="lineNum">    1307 </span><span class="lineNoCov">          0 :     assert(   dst-&gt;pkt-&gt;pkttype == PKT_PUBLIC_SUBKEY</span>
+<span class="lineNum">    1308 </span>            :            || dst-&gt;pkt-&gt;pkttype == PKT_SECRET_SUBKEY );
+<span class="lineNum">    1309 </span>            : 
+<span class="lineNum">    1310 </span><span class="lineNoCov">          0 :     for(n=src-&gt;next; n ; n = n-&gt;next ) {</span>
+<span class="lineNum">    1311 </span><span class="lineNoCov">          0 :         if( n-&gt;pkt-&gt;pkttype == PKT_PUBLIC_SUBKEY</span>
+<span class="lineNum">    1312 </span><span class="lineNoCov">          0 :             || n-&gt;pkt-&gt;pkttype == PKT_PUBLIC_KEY )</span>
+<span class="lineNum">    1313 </span>            :             break;
+<span class="lineNum">    1314 </span><span class="lineNoCov">          0 :         if( n-&gt;pkt-&gt;pkttype != PKT_SIGNATURE )</span>
+<span class="lineNum">    1315 </span><span class="lineNoCov">          0 :             continue;</span>
+<span class="lineNum">    1316 </span><span class="lineNoCov">          0 :         found = 0;</span>
+<span class="lineNum">    1317 </span><span class="lineNoCov">          0 :         for(n2=dst-&gt;next; n2; n2 = n2-&gt;next){</span>
+<span class="lineNum">    1318 </span><span class="lineNoCov">          0 :             if( n2-&gt;pkt-&gt;pkttype == PKT_PUBLIC_SUBKEY</span>
+<span class="lineNum">    1319 </span><span class="lineNoCov">          0 :                 || n2-&gt;pkt-&gt;pkttype == PKT_PUBLIC_KEY )</span>
+<span class="lineNum">    1320 </span>            :                 break;
+<span class="lineNum">    1321 </span><span class="lineNoCov">          0 :             if( n2-&gt;pkt-&gt;pkttype == PKT_SIGNATURE</span>
+<span class="lineNum">    1322 </span><span class="lineNoCov">          0 :                 &amp;&amp; n-&gt;pkt-&gt;pkt.signature-&gt;keyid[0]</span>
+<span class="lineNum">    1323 </span><span class="lineNoCov">          0 :                    == n2-&gt;pkt-&gt;pkt.signature-&gt;keyid[0]</span>
+<span class="lineNum">    1324 </span><span class="lineNoCov">          0 :                 &amp;&amp; n-&gt;pkt-&gt;pkt.signature-&gt;keyid[1]</span>
+<span class="lineNum">    1325 </span><span class="lineNoCov">          0 :                    == n2-&gt;pkt-&gt;pkt.signature-&gt;keyid[1]</span>
+<span class="lineNum">    1326 </span><span class="lineNoCov">          0 :                 &amp;&amp; n-&gt;pkt-&gt;pkt.signature-&gt;timestamp</span>
+<span class="lineNum">    1327 </span><span class="lineNoCov">          0 :                    &lt;= n2-&gt;pkt-&gt;pkt.signature-&gt;timestamp</span>
+<span class="lineNum">    1328 </span><span class="lineNoCov">          0 :                 &amp;&amp; n-&gt;pkt-&gt;pkt.signature-&gt;sig_class</span>
+<span class="lineNum">    1329 </span><span class="lineNoCov">          0 :                    == n2-&gt;pkt-&gt;pkt.signature-&gt;sig_class ) {</span>
+<span class="lineNum">    1330 </span><span class="lineNoCov">          0 :                 found++;</span>
+<span class="lineNum">    1331 </span><span class="lineNoCov">          0 :                 break;</span>
+<span class="lineNum">    1332 </span>            :             }
+<span class="lineNum">    1333 </span>            :         }
+<span class="lineNum">    1334 </span><span class="lineNoCov">          0 :         if( !found ) {</span>
+<span class="lineNum">    1335 </span>            :             /* This signature is new or newer, append N to DST.
+<span class="lineNum">    1336 </span>            :              * We add a clone to the original keyblock, because this
+<span class="lineNum">    1337 </span>            :              * one is released first */
+<span class="lineNum">    1338 </span><span class="lineNoCov">          0 :             n2 = clone_kbnode(n);</span>
+<span class="lineNum">    1339 </span><span class="lineNoCov">          0 :             insert_kbnode( dst, n2, PKT_SIGNATURE );</span>
+<span class="lineNum">    1340 </span><span class="lineNoCov">          0 :             n2-&gt;flag |= 1;</span>
+<span class="lineNum">    1341 </span><span class="lineNoCov">          0 :             n-&gt;flag |= 1;</span>
+<span class="lineNum">    1342 </span><span class="lineNoCov">          0 :             ++*n_sigs;</span>
+<span class="lineNum">    1343 </span>            :         }
+<span class="lineNum">    1344 </span>            :     }
+<span class="lineNum">    1345 </span>            : 
+<span class="lineNum">    1346 </span><span class="lineNoCov">          0 :     return 0;</span>
+<span class="lineNum">    1347 </span>            : }
+<span class="lineNum">    1348 </span>            : 
+<span class="lineNum">    1349 </span>            : /****************
+<span class="lineNum">    1350 </span>            :  * append the subkey starting with NODE and all signatures to KEYBLOCK.
+<span class="lineNum">    1351 </span>            :  * Mark all new and copied packets by setting flag bit 0.
+<a name="1352"><span class="lineNum">    1352 </span>            :  */</a>
+<span class="lineNum">    1353 </span>            : static int
+<span class="lineNum">    1354 </span><span class="lineNoCov">          0 : append_key( KBNODE keyblock, KBNODE node, int *n_sigs,</span>
+<span class="lineNum">    1355 </span>            :                                           const char *fname, u32 *keyid )
+<span class="lineNum">    1356 </span>            : {
+<span class="lineNum">    1357 </span>            :     KBNODE n;
+<span class="lineNum">    1358 </span>            : 
+<span class="lineNum">    1359 </span><span class="lineNoCov">          0 :     assert( node-&gt;pkt-&gt;pkttype == PKT_PUBLIC_SUBKEY</span>
+<span class="lineNum">    1360 </span>            :            || node-&gt;pkt-&gt;pkttype == PKT_SECRET_SUBKEY );
+<span class="lineNum">    1361 </span>            : 
+<span class="lineNum">    1362 </span><span class="lineNoCov">          0 :     while(  node ) {</span>
+<span class="lineNum">    1363 </span>            :         /* we add a clone to the original keyblock, because this
+<span class="lineNum">    1364 </span>            :          * one is released first */
+<span class="lineNum">    1365 </span><span class="lineNoCov">          0 :         n = clone_kbnode(node);</span>
+<span class="lineNum">    1366 </span><span class="lineNoCov">          0 :         add_kbnode( keyblock, n );</span>
+<span class="lineNum">    1367 </span><span class="lineNoCov">          0 :         n-&gt;flag |= 1;</span>
+<span class="lineNum">    1368 </span><span class="lineNoCov">          0 :         node-&gt;flag |= 1;</span>
+<span class="lineNum">    1369 </span><span class="lineNoCov">          0 :         if( n-&gt;pkt-&gt;pkttype == PKT_SIGNATURE )</span>
+<span class="lineNum">    1370 </span><span class="lineNoCov">          0 :             ++*n_sigs;</span>
+<span class="lineNum">    1371 </span>            : 
+<span class="lineNum">    1372 </span><span class="lineNoCov">          0 :         node = node-&gt;next;</span>
+<span class="lineNum">    1373 </span><span class="lineNoCov">          0 :         if( node &amp;&amp; node-&gt;pkt-&gt;pkttype != PKT_SIGNATURE )</span>
+<span class="lineNum">    1374 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">    1375 </span>            :     }
+<span class="lineNum">    1376 </span>            : 
+<span class="lineNum">    1377 </span><span class="lineNoCov">          0 :     return 0;</span>
+<span class="lineNum">    1378 </span>            : }
+<span class="lineNum">    1379 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

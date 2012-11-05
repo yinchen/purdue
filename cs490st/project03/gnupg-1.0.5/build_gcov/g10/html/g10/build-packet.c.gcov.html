@@ -1,0 +1,1192 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - g10/build-packet.c</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">g10</a> - build-packet.c<span style="font-size: 80%;"> (source / <a href="build-packet.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">596</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2012-11-04</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">30</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /* build-packet.c - assemble packets and write them</a>
+<span class="lineNum">       2 </span>            :  * Copyright (C) 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
+<span class="lineNum">       3 </span>            :  *
+<span class="lineNum">       4 </span>            :  * This file is part of GnuPG.
+<span class="lineNum">       5 </span>            :  *
+<span class="lineNum">       6 </span>            :  * GnuPG is free software; you can redistribute it and/or modify
+<span class="lineNum">       7 </span>            :  * it under the terms of the GNU General Public License as published by
+<span class="lineNum">       8 </span>            :  * the Free Software Foundation; either version 2 of the License, or
+<span class="lineNum">       9 </span>            :  * (at your option) any later version.
+<span class="lineNum">      10 </span>            :  *
+<span class="lineNum">      11 </span>            :  * GnuPG is distributed in the hope that it will be useful,
+<span class="lineNum">      12 </span>            :  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<span class="lineNum">      13 </span>            :  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<span class="lineNum">      14 </span>            :  * GNU General Public License for more details.
+<span class="lineNum">      15 </span>            :  *
+<span class="lineNum">      16 </span>            :  * You should have received a copy of the GNU General Public License
+<span class="lineNum">      17 </span>            :  * along with this program; if not, write to the Free Software
+<span class="lineNum">      18 </span>            :  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
+<span class="lineNum">      19 </span>            :  */
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : #include &lt;config.h&gt;
+<span class="lineNum">      22 </span>            : #include &lt;stdio.h&gt;
+<span class="lineNum">      23 </span>            : #include &lt;stdlib.h&gt;
+<span class="lineNum">      24 </span>            : #include &lt;string.h&gt;
+<span class="lineNum">      25 </span>            : #include &lt;assert.h&gt;
+<span class="lineNum">      26 </span>            : 
+<span class="lineNum">      27 </span>            : #include &quot;packet.h&quot;
+<span class="lineNum">      28 </span>            : #include &quot;errors.h&quot;
+<span class="lineNum">      29 </span>            : #include &quot;iobuf.h&quot;
+<span class="lineNum">      30 </span>            : #include &quot;mpi.h&quot;
+<span class="lineNum">      31 </span>            : #include &quot;util.h&quot;
+<span class="lineNum">      32 </span>            : #include &quot;cipher.h&quot;
+<span class="lineNum">      33 </span>            : #include &quot;memory.h&quot;
+<span class="lineNum">      34 </span>            : #include &quot;options.h&quot;
+<span class="lineNum">      35 </span>            : 
+<span class="lineNum">      36 </span>            : 
+<span class="lineNum">      37 </span>            : static int do_comment( IOBUF out, int ctb, PKT_comment *rem );
+<span class="lineNum">      38 </span>            : static int do_user_id( IOBUF out, int ctb, PKT_user_id *uid );
+<span class="lineNum">      39 </span>            : static int do_public_key( IOBUF out, int ctb, PKT_public_key *pk );
+<span class="lineNum">      40 </span>            : static int do_secret_key( IOBUF out, int ctb, PKT_secret_key *pk );
+<span class="lineNum">      41 </span>            : static int do_symkey_enc( IOBUF out, int ctb, PKT_symkey_enc *enc );
+<span class="lineNum">      42 </span>            : static int do_pubkey_enc( IOBUF out, int ctb, PKT_pubkey_enc *enc );
+<span class="lineNum">      43 </span>            : static u32 calc_plaintext( PKT_plaintext *pt );
+<span class="lineNum">      44 </span>            : static int do_plaintext( IOBUF out, int ctb, PKT_plaintext *pt );
+<span class="lineNum">      45 </span>            : static int do_encrypted( IOBUF out, int ctb, PKT_encrypted *ed );
+<span class="lineNum">      46 </span>            : static int do_encrypted_mdc( IOBUF out, int ctb, PKT_encrypted *ed );
+<span class="lineNum">      47 </span>            : static int do_mdc( IOBUF out, PKT_mdc *mdc );
+<span class="lineNum">      48 </span>            : static int do_compressed( IOBUF out, int ctb, PKT_compressed *cd );
+<span class="lineNum">      49 </span>            : static int do_signature( IOBUF out, int ctb, PKT_signature *sig );
+<span class="lineNum">      50 </span>            : static int do_onepass_sig( IOBUF out, int ctb, PKT_onepass_sig *ops );
+<span class="lineNum">      51 </span>            : 
+<span class="lineNum">      52 </span>            : static int calc_header_length( u32 len, int new_ctb );
+<span class="lineNum">      53 </span>            : static int write_16(IOBUF inp, u16 a);
+<span class="lineNum">      54 </span>            : static int write_32(IOBUF inp, u32 a);
+<span class="lineNum">      55 </span>            : static int write_header( IOBUF out, int ctb, u32 len );
+<span class="lineNum">      56 </span>            : static int write_sign_packet_header( IOBUF out, int ctb, u32 len );
+<span class="lineNum">      57 </span>            : static int write_header2( IOBUF out, int ctb, u32 len, int hdrlen, int blkmode );
+<span class="lineNum">      58 </span>            : static int write_new_header( IOBUF out, int ctb, u32 len, int hdrlen );
+<span class="lineNum">      59 </span>            : static int write_version( IOBUF out, int ctb );
+<span class="lineNum">      60 </span>            : 
+<span class="lineNum">      61 </span>            : /****************
+<span class="lineNum">      62 </span>            :  * Build a packet and write it to INP
+<span class="lineNum">      63 </span>            :  * Returns: 0 := okay
+<span class="lineNum">      64 </span>            :  *         &gt;0 := error
+<span class="lineNum">      65 </span>            :  * Note: Caller must free the packet
+<a name="66"><span class="lineNum">      66 </span>            :  */</a>
+<span class="lineNum">      67 </span>            : int
+<span class="lineNum">      68 </span><span class="lineNoCov">          0 : build_packet( IOBUF out, PACKET *pkt )</span>
+<span class="lineNum">      69 </span>            : {
+<span class="lineNum">      70 </span><span class="lineNoCov">          0 :     int new_ctb=0, rc=0, ctb;</span>
+<span class="lineNum">      71 </span>            :     int pkttype;
+<span class="lineNum">      72 </span>            : 
+<span class="lineNum">      73 </span><span class="lineNoCov">          0 :     if( DBG_PACKET )</span>
+<span class="lineNum">      74 </span>            :         log_debug(&quot;build_packet() type=%d\n&quot;, pkt-&gt;pkttype );
+<span class="lineNum">      75 </span><span class="lineNoCov">          0 :     assert( pkt-&gt;pkt.generic );</span>
+<span class="lineNum">      76 </span>            : 
+<span class="lineNum">      77 </span><span class="lineNoCov">          0 :     switch( (pkttype = pkt-&gt;pkttype) ) {</span>
+<span class="lineNum">      78 </span><span class="lineNoCov">          0 :       case PKT_OLD_COMMENT: pkttype = pkt-&gt;pkttype = PKT_COMMENT; break;</span>
+<span class="lineNum">      79 </span><span class="lineNoCov">          0 :       case PKT_PLAINTEXT: new_ctb = pkt-&gt;pkt.plaintext-&gt;new_ctb; break;</span>
+<span class="lineNum">      80 </span>            :       case PKT_ENCRYPTED:
+<span class="lineNum">      81 </span><span class="lineNoCov">          0 :       case PKT_ENCRYPTED_MDC: new_ctb = pkt-&gt;pkt.encrypted-&gt;new_ctb; break;</span>
+<span class="lineNum">      82 </span><span class="lineNoCov">          0 :       case PKT_COMPRESSED:new_ctb = pkt-&gt;pkt.compressed-&gt;new_ctb; break;</span>
+<span class="lineNum">      83 </span>            :       case PKT_USER_ID:
+<span class="lineNum">      84 </span><span class="lineNoCov">          0 :             if( pkt-&gt;pkt.user_id-&gt;photo )</span>
+<span class="lineNum">      85 </span><span class="lineNoCov">          0 :                 pkttype = PKT_PHOTO_ID;</span>
+<span class="lineNum">      86 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">      87 </span><span class="lineNoCov">          0 :       default: break;</span>
+<span class="lineNum">      88 </span>            :     }
+<span class="lineNum">      89 </span>            : 
+<span class="lineNum">      90 </span><span class="lineNoCov">          0 :     if( new_ctb || pkttype &gt; 15 ) /* new format */</span>
+<span class="lineNum">      91 </span><span class="lineNoCov">          0 :         ctb = 0xc0 | (pkttype &amp; 0x3f);</span>
+<span class="lineNum">      92 </span>            :     else
+<span class="lineNum">      93 </span><span class="lineNoCov">          0 :         ctb = 0x80 | ((pkttype &amp; 15)&lt;&lt;2);</span>
+<span class="lineNum">      94 </span><span class="lineNoCov">          0 :     switch( pkttype ) {</span>
+<span class="lineNum">      95 </span>            :       case PKT_PHOTO_ID:
+<span class="lineNum">      96 </span>            :       case PKT_USER_ID:
+<span class="lineNum">      97 </span><span class="lineNoCov">          0 :         rc = do_user_id( out, ctb, pkt-&gt;pkt.user_id );</span>
+<span class="lineNum">      98 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">      99 </span>            :       case PKT_COMMENT:
+<span class="lineNum">     100 </span><span class="lineNoCov">          0 :         rc = do_comment( out, ctb, pkt-&gt;pkt.comment );</span>
+<span class="lineNum">     101 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">     102 </span>            :       case PKT_PUBLIC_SUBKEY:
+<span class="lineNum">     103 </span>            :       case PKT_PUBLIC_KEY:
+<span class="lineNum">     104 </span><span class="lineNoCov">          0 :         rc = do_public_key( out, ctb, pkt-&gt;pkt.public_key );</span>
+<span class="lineNum">     105 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">     106 </span>            :       case PKT_SECRET_SUBKEY:
+<span class="lineNum">     107 </span>            :       case PKT_SECRET_KEY:
+<span class="lineNum">     108 </span><span class="lineNoCov">          0 :         rc = do_secret_key( out, ctb, pkt-&gt;pkt.secret_key );</span>
+<span class="lineNum">     109 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">     110 </span>            :       case PKT_SYMKEY_ENC:
+<span class="lineNum">     111 </span><span class="lineNoCov">          0 :         rc = do_symkey_enc( out, ctb, pkt-&gt;pkt.symkey_enc );</span>
+<span class="lineNum">     112 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">     113 </span>            :       case PKT_PUBKEY_ENC:
+<span class="lineNum">     114 </span><span class="lineNoCov">          0 :         rc = do_pubkey_enc( out, ctb, pkt-&gt;pkt.pubkey_enc );</span>
+<span class="lineNum">     115 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">     116 </span>            :       case PKT_PLAINTEXT:
+<span class="lineNum">     117 </span><span class="lineNoCov">          0 :         rc = do_plaintext( out, ctb, pkt-&gt;pkt.plaintext );</span>
+<span class="lineNum">     118 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">     119 </span>            :       case PKT_ENCRYPTED:
+<span class="lineNum">     120 </span><span class="lineNoCov">          0 :         rc = do_encrypted( out, ctb, pkt-&gt;pkt.encrypted );</span>
+<span class="lineNum">     121 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">     122 </span>            :       case PKT_ENCRYPTED_MDC:
+<span class="lineNum">     123 </span><span class="lineNoCov">          0 :         rc = do_encrypted_mdc( out, ctb, pkt-&gt;pkt.encrypted );</span>
+<span class="lineNum">     124 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">     125 </span>            :       case PKT_MDC:
+<span class="lineNum">     126 </span><span class="lineNoCov">          0 :         rc = do_mdc( out, pkt-&gt;pkt.mdc );</span>
+<span class="lineNum">     127 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">     128 </span>            :       case PKT_COMPRESSED:
+<span class="lineNum">     129 </span><span class="lineNoCov">          0 :         rc = do_compressed( out, ctb, pkt-&gt;pkt.compressed );</span>
+<span class="lineNum">     130 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">     131 </span>            :       case PKT_SIGNATURE:
+<span class="lineNum">     132 </span><span class="lineNoCov">          0 :         rc = do_signature( out, ctb, pkt-&gt;pkt.signature );</span>
+<span class="lineNum">     133 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">     134 </span>            :       case PKT_ONEPASS_SIG:
+<span class="lineNum">     135 </span><span class="lineNoCov">          0 :         rc = do_onepass_sig( out, ctb, pkt-&gt;pkt.onepass_sig );</span>
+<span class="lineNum">     136 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">     137 </span>            :       case PKT_RING_TRUST:
+<span class="lineNum">     138 </span><span class="lineNoCov">          0 :         break; /* ignore it */</span>
+<span class="lineNum">     139 </span>            :       default:
+<span class="lineNum">     140 </span><span class="lineNoCov">          0 :         log_bug(&quot;invalid packet type in build_packet()\n&quot;);</span>
+<span class="lineNum">     141 </span>            :         break;
+<span class="lineNum">     142 </span>            :     }
+<span class="lineNum">     143 </span>            : 
+<span class="lineNum">     144 </span><span class="lineNoCov">          0 :     return rc;</span>
+<span class="lineNum">     145 </span>            : }
+<span class="lineNum">     146 </span>            : 
+<span class="lineNum">     147 </span>            : /****************
+<span class="lineNum">     148 </span>            :  * calculate the length of a packet described by PKT
+<a name="149"><span class="lineNum">     149 </span>            :  */</a>
+<span class="lineNum">     150 </span>            : u32
+<span class="lineNum">     151 </span><span class="lineNoCov">          0 : calc_packet_length( PACKET *pkt )</span>
+<span class="lineNum">     152 </span>            : {
+<span class="lineNum">     153 </span><span class="lineNoCov">          0 :     u32 n=0;</span>
+<span class="lineNum">     154 </span><span class="lineNoCov">          0 :     int new_ctb = 0;</span>
+<span class="lineNum">     155 </span>            : 
+<span class="lineNum">     156 </span><span class="lineNoCov">          0 :     assert( pkt-&gt;pkt.generic );</span>
+<span class="lineNum">     157 </span><span class="lineNoCov">          0 :     switch( pkt-&gt;pkttype ) {</span>
+<span class="lineNum">     158 </span>            :       case PKT_PLAINTEXT:
+<span class="lineNum">     159 </span><span class="lineNoCov">          0 :         n = calc_plaintext( pkt-&gt;pkt.plaintext );</span>
+<span class="lineNum">     160 </span><span class="lineNoCov">          0 :         new_ctb = pkt-&gt;pkt.plaintext-&gt;new_ctb;</span>
+<span class="lineNum">     161 </span>            :         break;
+<span class="lineNum">     162 </span>            :       case PKT_PHOTO_ID:
+<span class="lineNum">     163 </span>            :       case PKT_USER_ID:
+<span class="lineNum">     164 </span>            :       case PKT_COMMENT:
+<span class="lineNum">     165 </span>            :       case PKT_PUBLIC_KEY:
+<span class="lineNum">     166 </span>            :       case PKT_SECRET_KEY:
+<span class="lineNum">     167 </span>            :       case PKT_SYMKEY_ENC:
+<span class="lineNum">     168 </span>            :       case PKT_PUBKEY_ENC:
+<span class="lineNum">     169 </span>            :       case PKT_ENCRYPTED:
+<span class="lineNum">     170 </span>            :       case PKT_SIGNATURE:
+<span class="lineNum">     171 </span>            :       case PKT_ONEPASS_SIG:
+<span class="lineNum">     172 </span>            :       case PKT_RING_TRUST:
+<span class="lineNum">     173 </span>            :       case PKT_COMPRESSED:
+<span class="lineNum">     174 </span>            :       default:
+<span class="lineNum">     175 </span><span class="lineNoCov">          0 :         log_bug(&quot;invalid packet type in calc_packet_length()&quot;);</span>
+<span class="lineNum">     176 </span>            :         break;
+<span class="lineNum">     177 </span>            :     }
+<span class="lineNum">     178 </span>            : 
+<span class="lineNum">     179 </span><span class="lineNoCov">          0 :     n += calc_header_length(n, new_ctb);</span>
+<span class="lineNum">     180 </span><span class="lineNoCov">          0 :     return n;</span>
+<span class="lineNum">     181 </span>            : }
+<a name="182"><span class="lineNum">     182 </span>            : </a>
+<span class="lineNum">     183 </span>            : static void
+<span class="lineNum">     184 </span><span class="lineNoCov">          0 : write_fake_data( IOBUF out, MPI a )</span>
+<span class="lineNum">     185 </span>            : {
+<span class="lineNum">     186 </span><span class="lineNoCov">          0 :     if( a ) {</span>
+<span class="lineNum">     187 </span>            :         int i;
+<span class="lineNum">     188 </span>            :         void *p;
+<span class="lineNum">     189 </span>            : 
+<span class="lineNum">     190 </span><span class="lineNoCov">          0 :         p = mpi_get_opaque( a, &amp;i );</span>
+<span class="lineNum">     191 </span><span class="lineNoCov">          0 :         iobuf_write( out, p, i );</span>
+<span class="lineNum">     192 </span>            :     }
+<span class="lineNum">     193 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     194 </span>            : 
+<a name="195"><span class="lineNum">     195 </span>            : </a>
+<span class="lineNum">     196 </span>            : static int
+<span class="lineNum">     197 </span><span class="lineNoCov">          0 : do_comment( IOBUF out, int ctb, PKT_comment *rem )</span>
+<span class="lineNum">     198 </span>            : {
+<span class="lineNum">     199 </span><span class="lineNoCov">          0 :     if( !opt.no_comment ) {</span>
+<span class="lineNum">     200 </span><span class="lineNoCov">          0 :         write_header(out, ctb, rem-&gt;len);</span>
+<span class="lineNum">     201 </span><span class="lineNoCov">          0 :         if( iobuf_write( out, rem-&gt;data, rem-&gt;len ) )</span>
+<span class="lineNum">     202 </span><span class="lineNoCov">          0 :             return G10ERR_WRITE_FILE;</span>
+<span class="lineNum">     203 </span>            :     }
+<span class="lineNum">     204 </span><span class="lineNoCov">          0 :     return 0;</span>
+<span class="lineNum">     205 </span>            : }
+<a name="206"><span class="lineNum">     206 </span>            : </a>
+<span class="lineNum">     207 </span>            : static int
+<span class="lineNum">     208 </span><span class="lineNoCov">          0 : do_user_id( IOBUF out, int ctb, PKT_user_id *uid )</span>
+<span class="lineNum">     209 </span>            : {
+<span class="lineNum">     210 </span><span class="lineNoCov">          0 :     if( uid-&gt;photo ) {</span>
+<span class="lineNum">     211 </span><span class="lineNoCov">          0 :         write_header(out, ctb, uid-&gt;photolen);</span>
+<span class="lineNum">     212 </span><span class="lineNoCov">          0 :         if( iobuf_write( out, uid-&gt;photo, uid-&gt;photolen ) )</span>
+<span class="lineNum">     213 </span><span class="lineNoCov">          0 :             return G10ERR_WRITE_FILE;</span>
+<span class="lineNum">     214 </span>            :     }
+<span class="lineNum">     215 </span>            :     else {
+<span class="lineNum">     216 </span><span class="lineNoCov">          0 :         write_header(out, ctb, uid-&gt;len);</span>
+<span class="lineNum">     217 </span><span class="lineNoCov">          0 :         if( iobuf_write( out, uid-&gt;name, uid-&gt;len ) )</span>
+<span class="lineNum">     218 </span><span class="lineNoCov">          0 :             return G10ERR_WRITE_FILE;</span>
+<span class="lineNum">     219 </span>            :     }
+<span class="lineNum">     220 </span><span class="lineNoCov">          0 :     return 0;</span>
+<span class="lineNum">     221 </span>            : }
+<a name="222"><span class="lineNum">     222 </span>            : </a>
+<span class="lineNum">     223 </span>            : static int
+<span class="lineNum">     224 </span><span class="lineNoCov">          0 : do_public_key( IOBUF out, int ctb, PKT_public_key *pk )</span>
+<span class="lineNum">     225 </span>            : {
+<span class="lineNum">     226 </span><span class="lineNoCov">          0 :     int rc = 0;</span>
+<span class="lineNum">     227 </span>            :     int n, i;
+<span class="lineNum">     228 </span><span class="lineNoCov">          0 :     IOBUF a = iobuf_temp();</span>
+<span class="lineNum">     229 </span>            : 
+<span class="lineNum">     230 </span><span class="lineNoCov">          0 :     if( !pk-&gt;version )</span>
+<span class="lineNum">     231 </span><span class="lineNoCov">          0 :         iobuf_put( a, 3 );</span>
+<span class="lineNum">     232 </span>            :     else
+<span class="lineNum">     233 </span><span class="lineNoCov">          0 :         iobuf_put( a, pk-&gt;version );</span>
+<span class="lineNum">     234 </span><span class="lineNoCov">          0 :     write_32(a, pk-&gt;timestamp );</span>
+<span class="lineNum">     235 </span><span class="lineNoCov">          0 :     if( pk-&gt;version &lt; 4 ) {</span>
+<span class="lineNum">     236 </span>            :         u16 ndays;
+<span class="lineNum">     237 </span><span class="lineNoCov">          0 :         if( pk-&gt;expiredate )</span>
+<span class="lineNum">     238 </span><span class="lineNoCov">          0 :             ndays = (u16)((pk-&gt;expiredate - pk-&gt;timestamp) / 86400L);</span>
+<span class="lineNum">     239 </span>            :         else
+<span class="lineNum">     240 </span><span class="lineNoCov">          0 :             ndays = 0;</span>
+<span class="lineNum">     241 </span><span class="lineNoCov">          0 :         write_16(a, ndays );</span>
+<span class="lineNum">     242 </span>            :     }
+<span class="lineNum">     243 </span><span class="lineNoCov">          0 :     iobuf_put(a, pk-&gt;pubkey_algo );</span>
+<span class="lineNum">     244 </span><span class="lineNoCov">          0 :     n = pubkey_get_npkey( pk-&gt;pubkey_algo );</span>
+<span class="lineNum">     245 </span><span class="lineNoCov">          0 :     if( !n )</span>
+<span class="lineNum">     246 </span><span class="lineNoCov">          0 :         write_fake_data( a, pk-&gt;pkey[0] );</span>
+<span class="lineNum">     247 </span><span class="lineNoCov">          0 :     for(i=0; i &lt; n; i++ )</span>
+<span class="lineNum">     248 </span><span class="lineNoCov">          0 :         mpi_write(a, pk-&gt;pkey[i] );</span>
+<span class="lineNum">     249 </span>            : 
+<span class="lineNum">     250 </span><span class="lineNoCov">          0 :     write_header2(out, ctb, iobuf_get_temp_length(a), pk-&gt;hdrbytes, 1 );</span>
+<span class="lineNum">     251 </span><span class="lineNoCov">          0 :     if( iobuf_write_temp( out, a ) )</span>
+<span class="lineNum">     252 </span><span class="lineNoCov">          0 :         rc = G10ERR_WRITE_FILE;</span>
+<span class="lineNum">     253 </span>            : 
+<span class="lineNum">     254 </span><span class="lineNoCov">          0 :     iobuf_close(a);</span>
+<span class="lineNum">     255 </span><span class="lineNoCov">          0 :     return rc;</span>
+<span class="lineNum">     256 </span>            : }
+<span class="lineNum">     257 </span>            : 
+<span class="lineNum">     258 </span>            : 
+<span class="lineNum">     259 </span>            : /****************
+<span class="lineNum">     260 </span>            :  * Make a hash value from the public key certificate
+<a name="261"><span class="lineNum">     261 </span>            :  */</a>
+<span class="lineNum">     262 </span>            : void
+<span class="lineNum">     263 </span><span class="lineNoCov">          0 : hash_public_key( MD_HANDLE md, PKT_public_key *pk )</span>
+<span class="lineNum">     264 </span>            : {
+<span class="lineNum">     265 </span>            :     PACKET pkt;
+<span class="lineNum">     266 </span><span class="lineNoCov">          0 :     int rc = 0;</span>
+<span class="lineNum">     267 </span>            :     int ctb;
+<span class="lineNum">     268 </span>            :     ulong pktlen;
+<span class="lineNum">     269 </span>            :     int c;
+<span class="lineNum">     270 </span><span class="lineNoCov">          0 :     IOBUF a = iobuf_temp();</span>
+<span class="lineNum">     271 </span>            :   #if 0
+<span class="lineNum">     272 </span>            :     FILE *fp = fopen(&quot;dump.pk&quot;, &quot;a&quot;);
+<span class="lineNum">     273 </span>            :     int i=0;
+<span class="lineNum">     274 </span>            : 
+<span class="lineNum">     275 </span>            :     fprintf(fp, &quot;\nHashing PK (v%d):\n&quot;, pk-&gt;version);
+<span class="lineNum">     276 </span>            :   #endif
+<span class="lineNum">     277 </span>            : 
+<span class="lineNum">     278 </span>            :     /* build the packet */
+<span class="lineNum">     279 </span><span class="lineNoCov">          0 :     init_packet(&amp;pkt);</span>
+<span class="lineNum">     280 </span><span class="lineNoCov">          0 :     pkt.pkttype = PKT_PUBLIC_KEY;</span>
+<span class="lineNum">     281 </span><span class="lineNoCov">          0 :     pkt.pkt.public_key = pk;</span>
+<span class="lineNum">     282 </span><span class="lineNoCov">          0 :     if( (rc = build_packet( a, &amp;pkt )) )</span>
+<span class="lineNum">     283 </span><span class="lineNoCov">          0 :         log_fatal(&quot;build public_key for hashing failed: %s\n&quot;, g10_errstr(rc));</span>
+<span class="lineNum">     284 </span>            : 
+<span class="lineNum">     285 </span><span class="lineNoCov">          0 :     if( !(pk-&gt;version == 3 &amp;&amp; pk-&gt;pubkey_algo == 16) ) {</span>
+<span class="lineNum">     286 </span>            :         /* skip the constructed header but don't do this for our very old
+<span class="lineNum">     287 </span>            :          * v3 ElG keys */
+<span class="lineNum">     288 </span><span class="lineNoCov">          0 :         ctb = iobuf_get_noeof(a);</span>
+<span class="lineNum">     289 </span><span class="lineNoCov">          0 :         pktlen = 0;</span>
+<span class="lineNum">     290 </span><span class="lineNoCov">          0 :         if( (ctb &amp; 0x40) ) {</span>
+<span class="lineNum">     291 </span><span class="lineNoCov">          0 :             c = iobuf_get_noeof(a);</span>
+<span class="lineNum">     292 </span><span class="lineNoCov">          0 :             if( c &lt; 192 )</span>
+<span class="lineNum">     293 </span><span class="lineNoCov">          0 :                 pktlen = c;</span>
+<span class="lineNum">     294 </span><span class="lineNoCov">          0 :             else if( c &lt; 224 ) {</span>
+<span class="lineNum">     295 </span><span class="lineNoCov">          0 :                 pktlen = (c - 192) * 256;</span>
+<span class="lineNum">     296 </span><span class="lineNoCov">          0 :                 c = iobuf_get_noeof(a);</span>
+<span class="lineNum">     297 </span><span class="lineNoCov">          0 :                 pktlen += c + 192;</span>
+<span class="lineNum">     298 </span>            :             }
+<span class="lineNum">     299 </span><span class="lineNoCov">          0 :             else if( c == 255 ) {</span>
+<span class="lineNum">     300 </span><span class="lineNoCov">          0 :                 pktlen  = iobuf_get_noeof(a) &lt;&lt; 24;</span>
+<span class="lineNum">     301 </span><span class="lineNoCov">          0 :                 pktlen |= iobuf_get_noeof(a) &lt;&lt; 16;</span>
+<span class="lineNum">     302 </span><span class="lineNoCov">          0 :                 pktlen |= iobuf_get_noeof(a) &lt;&lt; 8;</span>
+<span class="lineNum">     303 </span><span class="lineNoCov">          0 :                 pktlen |= iobuf_get_noeof(a);</span>
+<span class="lineNum">     304 </span>            :             }
+<span class="lineNum">     305 </span>            :         }
+<span class="lineNum">     306 </span>            :         else {
+<span class="lineNum">     307 </span><span class="lineNoCov">          0 :             int lenbytes = ((ctb&amp;3)==3)? 0 : (1&lt;&lt;(ctb &amp; 3));</span>
+<span class="lineNum">     308 </span><span class="lineNoCov">          0 :             for( ; lenbytes; lenbytes-- ) {</span>
+<span class="lineNum">     309 </span><span class="lineNoCov">          0 :                 pktlen &lt;&lt;= 8;</span>
+<span class="lineNum">     310 </span><span class="lineNoCov">          0 :                 pktlen |= iobuf_get_noeof(a);</span>
+<span class="lineNum">     311 </span>            :             }
+<span class="lineNum">     312 </span>            :         }
+<span class="lineNum">     313 </span>            :         /* hash a header */
+<span class="lineNum">     314 </span><span class="lineNoCov">          0 :         md_putc( md, 0x99 );</span>
+<span class="lineNum">     315 </span><span class="lineNoCov">          0 :         pktlen &amp;= 0xffff; /* can't handle longer packets */</span>
+<span class="lineNum">     316 </span><span class="lineNoCov">          0 :         md_putc( md, pktlen &gt;&gt; 8 );</span>
+<span class="lineNum">     317 </span><span class="lineNoCov">          0 :         md_putc( md, pktlen &amp; 0xff );</span>
+<span class="lineNum">     318 </span>            :     }
+<span class="lineNum">     319 </span>            :     /* hash the packet body */
+<span class="lineNum">     320 </span><span class="lineNoCov">          0 :     while( (c=iobuf_get(a)) != -1 ) {</span>
+<span class="lineNum">     321 </span>            :       #if 0
+<span class="lineNum">     322 </span>            :         fprintf( fp,&quot; %02x&quot;, c );
+<span class="lineNum">     323 </span>            :         if( (++i == 24) ) {
+<span class="lineNum">     324 </span>            :             putc('\n', fp);
+<span class="lineNum">     325 </span>            :             i=0;
+<span class="lineNum">     326 </span>            :         }
+<span class="lineNum">     327 </span>            :       #endif
+<span class="lineNum">     328 </span><span class="lineNoCov">          0 :         md_putc( md, c );</span>
+<span class="lineNum">     329 </span>            :     }
+<span class="lineNum">     330 </span>            :   #if 0
+<span class="lineNum">     331 </span>            :     putc('\n', fp);
+<span class="lineNum">     332 </span>            :     fclose(fp);
+<span class="lineNum">     333 </span>            :   #endif
+<span class="lineNum">     334 </span><span class="lineNoCov">          0 :     iobuf_cancel(a);</span>
+<span class="lineNum">     335 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     336 </span>            : 
+<a name="337"><span class="lineNum">     337 </span>            : </a>
+<span class="lineNum">     338 </span>            : static int
+<span class="lineNum">     339 </span><span class="lineNoCov">          0 : do_secret_key( IOBUF out, int ctb, PKT_secret_key *sk )</span>
+<span class="lineNum">     340 </span>            : {
+<span class="lineNum">     341 </span><span class="lineNoCov">          0 :     int rc = 0;</span>
+<span class="lineNum">     342 </span>            :     int i, nskey, npkey;
+<span class="lineNum">     343 </span><span class="lineNoCov">          0 :     IOBUF a = iobuf_temp();</span>
+<span class="lineNum">     344 </span>            : 
+<span class="lineNum">     345 </span><span class="lineNoCov">          0 :     if( !sk-&gt;version )</span>
+<span class="lineNum">     346 </span><span class="lineNoCov">          0 :         iobuf_put( a, 3 );</span>
+<span class="lineNum">     347 </span>            :     else
+<span class="lineNum">     348 </span><span class="lineNoCov">          0 :         iobuf_put( a, sk-&gt;version );</span>
+<span class="lineNum">     349 </span><span class="lineNoCov">          0 :     write_32(a, sk-&gt;timestamp );</span>
+<span class="lineNum">     350 </span><span class="lineNoCov">          0 :     if( sk-&gt;version &lt; 4 ) {</span>
+<span class="lineNum">     351 </span>            :         u16 ndays;
+<span class="lineNum">     352 </span><span class="lineNoCov">          0 :         if( sk-&gt;expiredate )</span>
+<span class="lineNum">     353 </span><span class="lineNoCov">          0 :             ndays = (u16)((sk-&gt;expiredate - sk-&gt;timestamp) / 86400L);</span>
+<span class="lineNum">     354 </span>            :         else
+<span class="lineNum">     355 </span><span class="lineNoCov">          0 :             ndays = 0;</span>
+<span class="lineNum">     356 </span><span class="lineNoCov">          0 :         write_16(a, ndays);</span>
+<span class="lineNum">     357 </span>            :     }
+<span class="lineNum">     358 </span><span class="lineNoCov">          0 :     iobuf_put(a, sk-&gt;pubkey_algo );</span>
+<span class="lineNum">     359 </span><span class="lineNoCov">          0 :     nskey = pubkey_get_nskey( sk-&gt;pubkey_algo );</span>
+<span class="lineNum">     360 </span><span class="lineNoCov">          0 :     npkey = pubkey_get_npkey( sk-&gt;pubkey_algo );</span>
+<span class="lineNum">     361 </span><span class="lineNoCov">          0 :     if( !npkey ) {</span>
+<span class="lineNum">     362 </span><span class="lineNoCov">          0 :         write_fake_data( a, sk-&gt;skey[0] );</span>
+<span class="lineNum">     363 </span><span class="lineNoCov">          0 :         goto leave;</span>
+<span class="lineNum">     364 </span>            :     }
+<span class="lineNum">     365 </span><span class="lineNoCov">          0 :     assert( npkey &lt; nskey );</span>
+<span class="lineNum">     366 </span>            : 
+<span class="lineNum">     367 </span><span class="lineNoCov">          0 :     for(i=0; i &lt; npkey; i++ )</span>
+<span class="lineNum">     368 </span><span class="lineNoCov">          0 :         mpi_write(a, sk-&gt;skey[i] );</span>
+<span class="lineNum">     369 </span><span class="lineNoCov">          0 :     if( sk-&gt;is_protected ) {</span>
+<span class="lineNum">     370 </span><span class="lineNoCov">          0 :         if( is_RSA(sk-&gt;pubkey_algo) &amp;&amp; sk-&gt;version &lt; 4</span>
+<span class="lineNum">     371 </span><span class="lineNoCov">          0 :                                     &amp;&amp; !sk-&gt;protect.s2k.mode ) {</span>
+<span class="lineNum">     372 </span><span class="lineNoCov">          0 :             iobuf_put(a, sk-&gt;protect.algo );</span>
+<span class="lineNum">     373 </span><span class="lineNoCov">          0 :             iobuf_write(a, sk-&gt;protect.iv, sk-&gt;protect.ivlen );</span>
+<span class="lineNum">     374 </span>            :         }
+<span class="lineNum">     375 </span>            :         else {
+<span class="lineNum">     376 </span><span class="lineNoCov">          0 :             iobuf_put(a, 0xff );</span>
+<span class="lineNum">     377 </span><span class="lineNoCov">          0 :             iobuf_put(a, sk-&gt;protect.algo );</span>
+<span class="lineNum">     378 </span><span class="lineNoCov">          0 :             if( sk-&gt;protect.s2k.mode &gt;= 1000 ) {</span>
+<span class="lineNum">     379 </span><span class="lineNoCov">          0 :                 iobuf_put(a, 101 );</span>
+<span class="lineNum">     380 </span><span class="lineNoCov">          0 :                 iobuf_put(a, sk-&gt;protect.s2k.hash_algo );</span>
+<span class="lineNum">     381 </span><span class="lineNoCov">          0 :                 iobuf_write(a, &quot;GNU&quot;, 3 );</span>
+<span class="lineNum">     382 </span><span class="lineNoCov">          0 :                 iobuf_put(a, sk-&gt;protect.s2k.mode - 1000 );</span>
+<span class="lineNum">     383 </span>            :             }
+<span class="lineNum">     384 </span>            :             else {
+<span class="lineNum">     385 </span><span class="lineNoCov">          0 :                 iobuf_put(a, sk-&gt;protect.s2k.mode );</span>
+<span class="lineNum">     386 </span><span class="lineNoCov">          0 :                 iobuf_put(a, sk-&gt;protect.s2k.hash_algo );</span>
+<span class="lineNum">     387 </span>            :             }
+<span class="lineNum">     388 </span><span class="lineNoCov">          0 :             if( sk-&gt;protect.s2k.mode == 1</span>
+<span class="lineNum">     389 </span><span class="lineNoCov">          0 :                 || sk-&gt;protect.s2k.mode == 3 )</span>
+<span class="lineNum">     390 </span><span class="lineNoCov">          0 :                 iobuf_write(a, sk-&gt;protect.s2k.salt, 8 );</span>
+<span class="lineNum">     391 </span><span class="lineNoCov">          0 :             if( sk-&gt;protect.s2k.mode == 3 )</span>
+<span class="lineNum">     392 </span><span class="lineNoCov">          0 :                 iobuf_put(a, sk-&gt;protect.s2k.count );</span>
+<span class="lineNum">     393 </span><span class="lineNoCov">          0 :             if( sk-&gt;protect.s2k.mode != 1001 )</span>
+<span class="lineNum">     394 </span><span class="lineNoCov">          0 :                 iobuf_write(a, sk-&gt;protect.iv, sk-&gt;protect.ivlen );</span>
+<span class="lineNum">     395 </span>            :         }
+<span class="lineNum">     396 </span>            :     }
+<span class="lineNum">     397 </span>            :     else
+<span class="lineNum">     398 </span><span class="lineNoCov">          0 :         iobuf_put(a, 0 );</span>
+<span class="lineNum">     399 </span><span class="lineNoCov">          0 :     if( sk-&gt;protect.s2k.mode == 1001 )</span>
+<span class="lineNum">     400 </span>            :         ;
+<span class="lineNum">     401 </span><span class="lineNoCov">          0 :     else if( sk-&gt;is_protected &amp;&amp; sk-&gt;version &gt;= 4 ) {</span>
+<span class="lineNum">     402 </span>            :         byte *p;
+<span class="lineNum">     403 </span><span class="lineNoCov">          0 :         assert( mpi_is_opaque( sk-&gt;skey[npkey] ) );</span>
+<span class="lineNum">     404 </span><span class="lineNoCov">          0 :         p = mpi_get_opaque( sk-&gt;skey[npkey], &amp;i );</span>
+<span class="lineNum">     405 </span><span class="lineNoCov">          0 :         iobuf_write(a, p, i );</span>
+<span class="lineNum">     406 </span>            :     }
+<span class="lineNum">     407 </span>            :     else {
+<span class="lineNum">     408 </span><span class="lineNoCov">          0 :         for(   ; i &lt; nskey; i++ )</span>
+<span class="lineNum">     409 </span><span class="lineNoCov">          0 :             mpi_write(a, sk-&gt;skey[i] );</span>
+<span class="lineNum">     410 </span><span class="lineNoCov">          0 :         write_16(a, sk-&gt;csum );</span>
+<span class="lineNum">     411 </span>            :     }
+<span class="lineNum">     412 </span>            : 
+<span class="lineNum">     413 </span>            :   leave:
+<span class="lineNum">     414 </span><span class="lineNoCov">          0 :     write_header2(out, ctb, iobuf_get_temp_length(a), sk-&gt;hdrbytes, 1 );</span>
+<span class="lineNum">     415 </span><span class="lineNoCov">          0 :     if( iobuf_write_temp( out, a ) )</span>
+<span class="lineNum">     416 </span><span class="lineNoCov">          0 :         rc = G10ERR_WRITE_FILE;</span>
+<span class="lineNum">     417 </span>            : 
+<span class="lineNum">     418 </span><span class="lineNoCov">          0 :     iobuf_close(a);</span>
+<span class="lineNum">     419 </span><span class="lineNoCov">          0 :     return rc;</span>
+<span class="lineNum">     420 </span>            : }
+<a name="421"><span class="lineNum">     421 </span>            : </a>
+<span class="lineNum">     422 </span>            : static int
+<span class="lineNum">     423 </span><span class="lineNoCov">          0 : do_symkey_enc( IOBUF out, int ctb, PKT_symkey_enc *enc )</span>
+<span class="lineNum">     424 </span>            : {
+<span class="lineNum">     425 </span><span class="lineNoCov">          0 :     int rc = 0;</span>
+<span class="lineNum">     426 </span><span class="lineNoCov">          0 :     IOBUF a = iobuf_temp();</span>
+<span class="lineNum">     427 </span>            : 
+<span class="lineNum">     428 </span><span class="lineNoCov">          0 :     assert( enc-&gt;version == 4 );</span>
+<span class="lineNum">     429 </span><span class="lineNoCov">          0 :     switch( enc-&gt;s2k.mode ) {</span>
+<span class="lineNum">     430 </span>            :       case 0: case 1: case 3: break;
+<span class="lineNum">     431 </span><span class="lineNoCov">          0 :       default: log_bug(&quot;do_symkey_enc: s2k=%d\n&quot;, enc-&gt;s2k.mode );</span>
+<span class="lineNum">     432 </span>            :     }
+<span class="lineNum">     433 </span><span class="lineNoCov">          0 :     iobuf_put( a, enc-&gt;version );</span>
+<span class="lineNum">     434 </span><span class="lineNoCov">          0 :     iobuf_put( a, enc-&gt;cipher_algo );</span>
+<span class="lineNum">     435 </span><span class="lineNoCov">          0 :     iobuf_put( a, enc-&gt;s2k.mode );</span>
+<span class="lineNum">     436 </span><span class="lineNoCov">          0 :     iobuf_put( a, enc-&gt;s2k.hash_algo );</span>
+<span class="lineNum">     437 </span><span class="lineNoCov">          0 :     if( enc-&gt;s2k.mode == 1 || enc-&gt;s2k.mode == 3 ) {</span>
+<span class="lineNum">     438 </span><span class="lineNoCov">          0 :         iobuf_write(a, enc-&gt;s2k.salt, 8 );</span>
+<span class="lineNum">     439 </span><span class="lineNoCov">          0 :         if( enc-&gt;s2k.mode == 3 )</span>
+<span class="lineNum">     440 </span><span class="lineNoCov">          0 :             iobuf_put(a, enc-&gt;s2k.count);</span>
+<span class="lineNum">     441 </span>            :     }
+<span class="lineNum">     442 </span><span class="lineNoCov">          0 :     if( enc-&gt;seskeylen )</span>
+<span class="lineNum">     443 </span><span class="lineNoCov">          0 :         iobuf_write(a, enc-&gt;seskey, enc-&gt;seskeylen );</span>
+<span class="lineNum">     444 </span>            : 
+<span class="lineNum">     445 </span><span class="lineNoCov">          0 :     write_header(out, ctb, iobuf_get_temp_length(a) );</span>
+<span class="lineNum">     446 </span><span class="lineNoCov">          0 :     if( iobuf_write_temp( out, a ) )</span>
+<span class="lineNum">     447 </span><span class="lineNoCov">          0 :         rc = G10ERR_WRITE_FILE;</span>
+<span class="lineNum">     448 </span>            : 
+<span class="lineNum">     449 </span><span class="lineNoCov">          0 :     iobuf_close(a);</span>
+<span class="lineNum">     450 </span><span class="lineNoCov">          0 :     return rc;</span>
+<span class="lineNum">     451 </span>            : }
+<span class="lineNum">     452 </span>            : 
+<span class="lineNum">     453 </span>            : 
+<span class="lineNum">     454 </span>            : 
+<a name="455"><span class="lineNum">     455 </span>            : </a>
+<span class="lineNum">     456 </span>            : static int
+<span class="lineNum">     457 </span><span class="lineNoCov">          0 : do_pubkey_enc( IOBUF out, int ctb, PKT_pubkey_enc *enc )</span>
+<span class="lineNum">     458 </span>            : {
+<span class="lineNum">     459 </span><span class="lineNoCov">          0 :     int rc = 0;</span>
+<span class="lineNum">     460 </span>            :     int n, i;
+<span class="lineNum">     461 </span><span class="lineNoCov">          0 :     IOBUF a = iobuf_temp();</span>
+<span class="lineNum">     462 </span>            : 
+<span class="lineNum">     463 </span><span class="lineNoCov">          0 :     write_version( a, ctb );</span>
+<span class="lineNum">     464 </span><span class="lineNoCov">          0 :     if( enc-&gt;throw_keyid ) {</span>
+<span class="lineNum">     465 </span><span class="lineNoCov">          0 :         write_32(a, 0 );  /* don't tell Eve who can decrypt the message */</span>
+<span class="lineNum">     466 </span><span class="lineNoCov">          0 :         write_32(a, 0 );</span>
+<span class="lineNum">     467 </span>            :     }
+<span class="lineNum">     468 </span>            :     else {
+<span class="lineNum">     469 </span><span class="lineNoCov">          0 :         write_32(a, enc-&gt;keyid[0] );</span>
+<span class="lineNum">     470 </span><span class="lineNoCov">          0 :         write_32(a, enc-&gt;keyid[1] );</span>
+<span class="lineNum">     471 </span>            :     }
+<span class="lineNum">     472 </span><span class="lineNoCov">          0 :     iobuf_put(a,enc-&gt;pubkey_algo );</span>
+<span class="lineNum">     473 </span><span class="lineNoCov">          0 :     n = pubkey_get_nenc( enc-&gt;pubkey_algo );</span>
+<span class="lineNum">     474 </span><span class="lineNoCov">          0 :     if( !n )</span>
+<span class="lineNum">     475 </span><span class="lineNoCov">          0 :         write_fake_data( a, enc-&gt;data[0] );</span>
+<span class="lineNum">     476 </span><span class="lineNoCov">          0 :     for(i=0; i &lt; n; i++ )</span>
+<span class="lineNum">     477 </span><span class="lineNoCov">          0 :         mpi_write(a, enc-&gt;data[i] );</span>
+<span class="lineNum">     478 </span>            : 
+<span class="lineNum">     479 </span><span class="lineNoCov">          0 :     write_header(out, ctb, iobuf_get_temp_length(a) );</span>
+<span class="lineNum">     480 </span><span class="lineNoCov">          0 :     if( iobuf_write_temp( out, a ) )</span>
+<span class="lineNum">     481 </span><span class="lineNoCov">          0 :         rc = G10ERR_WRITE_FILE;</span>
+<span class="lineNum">     482 </span>            : 
+<span class="lineNum">     483 </span><span class="lineNoCov">          0 :     iobuf_close(a);</span>
+<span class="lineNum">     484 </span><span class="lineNoCov">          0 :     return rc;</span>
+<span class="lineNum">     485 </span>            : }
+<span class="lineNum">     486 </span>            : 
+<span class="lineNum">     487 </span>            : 
+<span class="lineNum">     488 </span>            : 
+<a name="489"><span class="lineNum">     489 </span>            : </a>
+<span class="lineNum">     490 </span>            : static u32
+<span class="lineNum">     491 </span><span class="lineNoCov">          0 : calc_plaintext( PKT_plaintext *pt )</span>
+<span class="lineNum">     492 </span>            : {
+<span class="lineNum">     493 </span><span class="lineNoCov">          0 :     return pt-&gt;len? (1 + 1 + pt-&gt;namelen + 4 + pt-&gt;len) : 0;</span>
+<span class="lineNum">     494 </span>            : }
+<a name="495"><span class="lineNum">     495 </span>            : </a>
+<span class="lineNum">     496 </span>            : static int
+<span class="lineNum">     497 </span><span class="lineNoCov">          0 : do_plaintext( IOBUF out, int ctb, PKT_plaintext *pt )</span>
+<span class="lineNum">     498 </span>            : {
+<span class="lineNum">     499 </span><span class="lineNoCov">          0 :     int i, rc = 0;</span>
+<span class="lineNum">     500 </span>            :     u32 n;
+<span class="lineNum">     501 </span>            :     byte buf[1000]; /* this buffer has the plaintext! */
+<span class="lineNum">     502 </span>            :     int nbytes;
+<span class="lineNum">     503 </span>            : 
+<span class="lineNum">     504 </span><span class="lineNoCov">          0 :     write_header(out, ctb, calc_plaintext( pt ) );</span>
+<span class="lineNum">     505 </span><span class="lineNoCov">          0 :     iobuf_put(out, pt-&gt;mode );</span>
+<span class="lineNum">     506 </span><span class="lineNoCov">          0 :     iobuf_put(out, pt-&gt;namelen );</span>
+<span class="lineNum">     507 </span><span class="lineNoCov">          0 :     for(i=0; i &lt; pt-&gt;namelen; i++ )</span>
+<span class="lineNum">     508 </span><span class="lineNoCov">          0 :         iobuf_put(out, pt-&gt;name[i] );</span>
+<span class="lineNum">     509 </span><span class="lineNoCov">          0 :     if( write_32(out, pt-&gt;timestamp ) )</span>
+<span class="lineNum">     510 </span><span class="lineNoCov">          0 :         rc = G10ERR_WRITE_FILE;</span>
+<span class="lineNum">     511 </span>            : 
+<span class="lineNum">     512 </span><span class="lineNoCov">          0 :     n = 0;</span>
+<span class="lineNum">     513 </span><span class="lineNoCov">          0 :     while( (nbytes=iobuf_read(pt-&gt;buf, buf, 1000)) != -1 ) {</span>
+<span class="lineNum">     514 </span><span class="lineNoCov">          0 :         if( iobuf_write(out, buf, nbytes) == -1 ) {</span>
+<span class="lineNum">     515 </span><span class="lineNoCov">          0 :             rc = G10ERR_WRITE_FILE;</span>
+<span class="lineNum">     516 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     517 </span>            :         }
+<span class="lineNum">     518 </span><span class="lineNoCov">          0 :         n += nbytes;</span>
+<span class="lineNum">     519 </span>            :     }
+<span class="lineNum">     520 </span><span class="lineNoCov">          0 :     memset(buf,0,1000); /* at least burn the buffer */</span>
+<span class="lineNum">     521 </span><span class="lineNoCov">          0 :     if( !pt-&gt;len )</span>
+<span class="lineNum">     522 </span><span class="lineNoCov">          0 :         iobuf_set_block_mode(out, 0 ); /* write end marker */</span>
+<span class="lineNum">     523 </span><span class="lineNoCov">          0 :     else if( n != pt-&gt;len )</span>
+<span class="lineNum">     524 </span>            :         log_error(&quot;do_plaintext(): wrote %lu bytes but expected %lu bytes\n&quot;,
+<span class="lineNum">     525 </span>            :                         (ulong)n, (ulong)pt-&gt;len );
+<span class="lineNum">     526 </span>            : 
+<span class="lineNum">     527 </span><span class="lineNoCov">          0 :     return rc;</span>
+<span class="lineNum">     528 </span>            : }
+<span class="lineNum">     529 </span>            : 
+<span class="lineNum">     530 </span>            : 
+<a name="531"><span class="lineNum">     531 </span>            : </a>
+<span class="lineNum">     532 </span>            : static int
+<span class="lineNum">     533 </span><span class="lineNoCov">          0 : do_encrypted( IOBUF out, int ctb, PKT_encrypted *ed )</span>
+<span class="lineNum">     534 </span>            : {
+<span class="lineNum">     535 </span><span class="lineNoCov">          0 :     int rc = 0;</span>
+<span class="lineNum">     536 </span>            :     u32 n;
+<span class="lineNum">     537 </span>            : 
+<span class="lineNum">     538 </span><span class="lineNoCov">          0 :     n = ed-&gt;len ? (ed-&gt;len + ed-&gt;extralen) : 0;</span>
+<span class="lineNum">     539 </span><span class="lineNoCov">          0 :     write_header(out, ctb, n );</span>
+<span class="lineNum">     540 </span>            : 
+<span class="lineNum">     541 </span>            :     /* This is all. The caller has to write the real data */
+<span class="lineNum">     542 </span>            : 
+<span class="lineNum">     543 </span><span class="lineNoCov">          0 :     return rc;</span>
+<span class="lineNum">     544 </span>            : }
+<a name="545"><span class="lineNum">     545 </span>            : </a>
+<span class="lineNum">     546 </span>            : static int
+<span class="lineNum">     547 </span><span class="lineNoCov">          0 : do_encrypted_mdc( IOBUF out, int ctb, PKT_encrypted *ed )</span>
+<span class="lineNum">     548 </span>            : {
+<span class="lineNum">     549 </span><span class="lineNoCov">          0 :     int rc = 0;</span>
+<span class="lineNum">     550 </span>            :     u32 n;
+<span class="lineNum">     551 </span>            : 
+<span class="lineNum">     552 </span><span class="lineNoCov">          0 :     assert( ed-&gt;mdc_method );</span>
+<span class="lineNum">     553 </span>            : 
+<span class="lineNum">     554 </span><span class="lineNoCov">          0 :     n = ed-&gt;len ? (ed-&gt;len + ed-&gt;extralen) : 0;</span>
+<span class="lineNum">     555 </span><span class="lineNoCov">          0 :     write_header(out, ctb, n );</span>
+<span class="lineNum">     556 </span><span class="lineNoCov">          0 :     iobuf_put(out, 1 );  /* version */</span>
+<span class="lineNum">     557 </span>            : 
+<span class="lineNum">     558 </span>            :     /* This is all. The caller has to write the real data */
+<span class="lineNum">     559 </span>            : 
+<span class="lineNum">     560 </span><span class="lineNoCov">          0 :     return rc;</span>
+<span class="lineNum">     561 </span>            : }
+<span class="lineNum">     562 </span>            : 
+<a name="563"><span class="lineNum">     563 </span>            : </a>
+<span class="lineNum">     564 </span>            : static int
+<span class="lineNum">     565 </span><span class="lineNoCov">          0 : do_mdc( IOBUF out, PKT_mdc *mdc )</span>
+<span class="lineNum">     566 </span>            : {
+<span class="lineNum">     567 </span>            :     /* This packet requires a fixed header encoding */
+<span class="lineNum">     568 </span><span class="lineNoCov">          0 :     iobuf_put( out, 0xd3 ); /* packet ID and 1 byte length */</span>
+<span class="lineNum">     569 </span><span class="lineNoCov">          0 :     iobuf_put( out, 0x14 ); /* length = 20 */</span>
+<span class="lineNum">     570 </span><span class="lineNoCov">          0 :     if( iobuf_write( out, mdc-&gt;hash, sizeof(mdc-&gt;hash) ) )</span>
+<span class="lineNum">     571 </span><span class="lineNoCov">          0 :         return G10ERR_WRITE_FILE;</span>
+<span class="lineNum">     572 </span><span class="lineNoCov">          0 :     return 0;</span>
+<span class="lineNum">     573 </span>            : }
+<a name="574"><span class="lineNum">     574 </span>            : </a>
+<span class="lineNum">     575 </span>            : static int
+<span class="lineNum">     576 </span><span class="lineNoCov">          0 : do_compressed( IOBUF out, int ctb, PKT_compressed *cd )</span>
+<span class="lineNum">     577 </span>            : {
+<span class="lineNum">     578 </span><span class="lineNoCov">          0 :     int rc = 0;</span>
+<span class="lineNum">     579 </span>            : 
+<span class="lineNum">     580 </span>            :     /* we must use the old convention and don't use blockmode */
+<span class="lineNum">     581 </span><span class="lineNoCov">          0 :     write_header2(out, ctb, 0, 0, 0 );</span>
+<span class="lineNum">     582 </span><span class="lineNoCov">          0 :     iobuf_put(out, cd-&gt;algorithm );</span>
+<span class="lineNum">     583 </span>            : 
+<span class="lineNum">     584 </span>            :     /* This is all. The caller has to write the real data */
+<span class="lineNum">     585 </span>            : 
+<span class="lineNum">     586 </span><span class="lineNoCov">          0 :     return rc;</span>
+<span class="lineNum">     587 </span>            : }
+<span class="lineNum">     588 </span>            : 
+<span class="lineNum">     589 </span>            : 
+<span class="lineNum">     590 </span>            : 
+<span class="lineNum">     591 </span>            : /****************
+<span class="lineNum">     592 </span>            :  * Find a subpacket of type REQTYPE in BUFFER and a return a pointer
+<span class="lineNum">     593 </span>            :  * to the first byte of that subpacket data.
+<span class="lineNum">     594 </span>            :  * And return the length of the packet in RET_N and the number of
+<span class="lineNum">     595 </span>            :  * header bytes in RET_HLEN (length header and type byte).
+<a name="596"><span class="lineNum">     596 </span>            :  */</a>
+<span class="lineNum">     597 </span>            : byte *
+<span class="lineNum">     598 </span><span class="lineNoCov">          0 : find_subpkt( byte *buffer, sigsubpkttype_t reqtype,</span>
+<span class="lineNum">     599 </span>            :              size_t *ret_hlen, size_t *ret_n )
+<span class="lineNum">     600 </span>            : {
+<span class="lineNum">     601 </span>            :     int buflen;
+<span class="lineNum">     602 </span>            :     sigsubpkttype_t type;
+<span class="lineNum">     603 </span>            :     byte *bufstart;
+<span class="lineNum">     604 </span>            :     size_t n;
+<span class="lineNum">     605 </span>            : 
+<span class="lineNum">     606 </span><span class="lineNoCov">          0 :     if( !buffer )</span>
+<span class="lineNum">     607 </span><span class="lineNoCov">          0 :         return NULL;</span>
+<span class="lineNum">     608 </span><span class="lineNoCov">          0 :     buflen = (*buffer &lt;&lt; 8) | buffer[1];</span>
+<span class="lineNum">     609 </span><span class="lineNoCov">          0 :     buffer += 2;</span>
+<span class="lineNum">     610 </span>            :     for(;;) {
+<span class="lineNum">     611 </span><span class="lineNoCov">          0 :         if( !buflen )</span>
+<span class="lineNum">     612 </span><span class="lineNoCov">          0 :             return NULL; /* end of packets; not found */</span>
+<span class="lineNum">     613 </span><span class="lineNoCov">          0 :         bufstart = buffer;</span>
+<span class="lineNum">     614 </span><span class="lineNoCov">          0 :         n = *buffer++; buflen--;</span>
+<span class="lineNum">     615 </span><span class="lineNoCov">          0 :         if( n == 255 ) {</span>
+<span class="lineNum">     616 </span><span class="lineNoCov">          0 :             if( buflen &lt; 4 )</span>
+<span class="lineNum">     617 </span><span class="lineNoCov">          0 :                 break;</span>
+<span class="lineNum">     618 </span><span class="lineNoCov">          0 :             n = (buffer[0] &lt;&lt; 24) | (buffer[1] &lt;&lt; 16)</span>
+<span class="lineNum">     619 </span><span class="lineNoCov">          0 :                                   | (buffer[2] &lt;&lt; 8) | buffer[3];</span>
+<span class="lineNum">     620 </span><span class="lineNoCov">          0 :             buffer += 4;</span>
+<span class="lineNum">     621 </span><span class="lineNoCov">          0 :             buflen -= 4;</span>
+<span class="lineNum">     622 </span>            :         }
+<span class="lineNum">     623 </span><span class="lineNoCov">          0 :         else if( n &gt;= 192 ) {</span>
+<span class="lineNum">     624 </span><span class="lineNoCov">          0 :             if( buflen &lt; 2 )</span>
+<span class="lineNum">     625 </span><span class="lineNoCov">          0 :                 break;</span>
+<span class="lineNum">     626 </span><span class="lineNoCov">          0 :             n = (( n - 192 ) &lt;&lt; 8) + *buffer + 192;</span>
+<span class="lineNum">     627 </span><span class="lineNoCov">          0 :             buffer++;</span>
+<span class="lineNum">     628 </span><span class="lineNoCov">          0 :             buflen--;</span>
+<span class="lineNum">     629 </span>            :         }
+<span class="lineNum">     630 </span><span class="lineNoCov">          0 :         if( buflen &lt; n )</span>
+<span class="lineNum">     631 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     632 </span><span class="lineNoCov">          0 :         type = *buffer &amp; 0x7f;</span>
+<span class="lineNum">     633 </span><span class="lineNoCov">          0 :         if( type == reqtype ) {</span>
+<span class="lineNum">     634 </span><span class="lineNoCov">          0 :             buffer++;</span>
+<span class="lineNum">     635 </span><span class="lineNoCov">          0 :             n--;</span>
+<span class="lineNum">     636 </span><span class="lineNoCov">          0 :             if( n &gt; buflen )</span>
+<span class="lineNum">     637 </span><span class="lineNoCov">          0 :                 break;</span>
+<span class="lineNum">     638 </span><span class="lineNoCov">          0 :             if( ret_hlen )</span>
+<span class="lineNum">     639 </span><span class="lineNoCov">          0 :                 *ret_hlen = buffer - bufstart;</span>
+<span class="lineNum">     640 </span><span class="lineNoCov">          0 :             if( ret_n )</span>
+<span class="lineNum">     641 </span><span class="lineNoCov">          0 :                 *ret_n = n;</span>
+<span class="lineNum">     642 </span><span class="lineNoCov">          0 :             return buffer;</span>
+<span class="lineNum">     643 </span>            :         }
+<span class="lineNum">     644 </span><span class="lineNoCov">          0 :         buffer += n; buflen -=n;</span>
+<span class="lineNum">     645 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     646 </span>            : 
+<span class="lineNum">     647 </span>            :     log_error(&quot;find_subpkt: buffer shorter than subpacket\n&quot;);
+<span class="lineNum">     648 </span><span class="lineNoCov">          0 :     return NULL;</span>
+<span class="lineNum">     649 </span>            : }
+<span class="lineNum">     650 </span>            : 
+<span class="lineNum">     651 </span>            : /****************
+<span class="lineNum">     652 </span>            :  * Delete all subpackets of type REQTYPE and return the number of bytes
+<span class="lineNum">     653 </span>            :  * which are now unused at the end of the buffer.
+<a name="654"><span class="lineNum">     654 </span>            :  */</a>
+<span class="lineNum">     655 </span>            : size_t
+<span class="lineNum">     656 </span><span class="lineNoCov">          0 : delete_sig_subpkt( byte *buffer, sigsubpkttype_t reqtype )</span>
+<span class="lineNum">     657 </span>            : {
+<span class="lineNum">     658 </span>            :     int buflen, orig_buflen;
+<span class="lineNum">     659 </span>            :     sigsubpkttype_t type;
+<span class="lineNum">     660 </span>            :     byte *bufstart, *orig_buffer;
+<span class="lineNum">     661 </span>            :     size_t n;
+<span class="lineNum">     662 </span><span class="lineNoCov">          0 :     size_t unused = 0;</span>
+<span class="lineNum">     663 </span><span class="lineNoCov">          0 :     int okay = 0;</span>
+<span class="lineNum">     664 </span>            : 
+<span class="lineNum">     665 </span><span class="lineNoCov">          0 :     if( !buffer )</span>
+<span class="lineNum">     666 </span><span class="lineNoCov">          0 :         return 0;</span>
+<span class="lineNum">     667 </span><span class="lineNoCov">          0 :     orig_buffer = buffer;</span>
+<span class="lineNum">     668 </span><span class="lineNoCov">          0 :     buflen = (*buffer &lt;&lt; 8) | buffer[1];</span>
+<span class="lineNum">     669 </span><span class="lineNoCov">          0 :     buffer += 2;</span>
+<span class="lineNum">     670 </span><span class="lineNoCov">          0 :     orig_buflen = buflen;</span>
+<span class="lineNum">     671 </span>            :     for(;;) {
+<span class="lineNum">     672 </span><span class="lineNoCov">          0 :         if( !buflen ) {</span>
+<span class="lineNum">     673 </span><span class="lineNoCov">          0 :             okay = 1;</span>
+<span class="lineNum">     674 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     675 </span>            :         }
+<span class="lineNum">     676 </span><span class="lineNoCov">          0 :         bufstart = buffer;</span>
+<span class="lineNum">     677 </span><span class="lineNoCov">          0 :         n = *buffer++; buflen--;</span>
+<span class="lineNum">     678 </span><span class="lineNoCov">          0 :         if( n == 255 ) {</span>
+<span class="lineNum">     679 </span><span class="lineNoCov">          0 :             if( buflen &lt; 4 )</span>
+<span class="lineNum">     680 </span><span class="lineNoCov">          0 :                 break;</span>
+<span class="lineNum">     681 </span><span class="lineNoCov">          0 :             n = (buffer[0] &lt;&lt; 24) | (buffer[1] &lt;&lt; 16)</span>
+<span class="lineNum">     682 </span><span class="lineNoCov">          0 :                                   | (buffer[2] &lt;&lt; 8) | buffer[3];</span>
+<span class="lineNum">     683 </span><span class="lineNoCov">          0 :             buffer += 4;</span>
+<span class="lineNum">     684 </span><span class="lineNoCov">          0 :             buflen -= 4;</span>
+<span class="lineNum">     685 </span>            :         }
+<span class="lineNum">     686 </span><span class="lineNoCov">          0 :         else if( n &gt;= 192 ) {</span>
+<span class="lineNum">     687 </span><span class="lineNoCov">          0 :             if( buflen &lt; 2 )</span>
+<span class="lineNum">     688 </span><span class="lineNoCov">          0 :                 break;</span>
+<span class="lineNum">     689 </span><span class="lineNoCov">          0 :             n = (( n - 192 ) &lt;&lt; 8) + *buffer + 192;</span>
+<span class="lineNum">     690 </span><span class="lineNoCov">          0 :             buffer++;</span>
+<span class="lineNum">     691 </span><span class="lineNoCov">          0 :             buflen--;</span>
+<span class="lineNum">     692 </span>            :         }
+<span class="lineNum">     693 </span><span class="lineNoCov">          0 :         if( buflen &lt; n )</span>
+<span class="lineNum">     694 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     695 </span><span class="lineNoCov">          0 :         type = *buffer &amp; 0x7f;</span>
+<span class="lineNum">     696 </span><span class="lineNoCov">          0 :         if( type == reqtype ) {</span>
+<span class="lineNum">     697 </span><span class="lineNoCov">          0 :             buffer++;</span>
+<span class="lineNum">     698 </span><span class="lineNoCov">          0 :             buflen--;</span>
+<span class="lineNum">     699 </span><span class="lineNoCov">          0 :             n--;</span>
+<span class="lineNum">     700 </span><span class="lineNoCov">          0 :             if( n &gt; buflen )</span>
+<span class="lineNum">     701 </span><span class="lineNoCov">          0 :                 break;</span>
+<span class="lineNum">     702 </span><span class="lineNoCov">          0 :             memmove (bufstart, buffer + n, n + (buffer-bufstart)); /* shift */</span>
+<span class="lineNum">     703 </span><span class="lineNoCov">          0 :             unused += n + (buffer-bufstart);</span>
+<span class="lineNum">     704 </span><span class="lineNoCov">          0 :             buffer = bufstart;</span>
+<span class="lineNum">     705 </span><span class="lineNoCov">          0 :             buflen -= n;</span>
+<span class="lineNum">     706 </span>            :         }
+<span class="lineNum">     707 </span>            :         else {
+<span class="lineNum">     708 </span><span class="lineNoCov">          0 :             buffer += n; buflen -=n;</span>
+<span class="lineNum">     709 </span>            :         }
+<span class="lineNum">     710 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     711 </span>            : 
+<span class="lineNum">     712 </span>            :     if (!okay)
+<span class="lineNum">     713 </span>            :         log_error(&quot;delete_subpkt: buffer shorter than subpacket\n&quot;);
+<span class="lineNum">     714 </span><span class="lineNoCov">          0 :     assert (unused &lt;= orig_buflen);</span>
+<span class="lineNum">     715 </span><span class="lineNoCov">          0 :     orig_buflen -= unused;</span>
+<span class="lineNum">     716 </span><span class="lineNoCov">          0 :     orig_buffer[0] = (orig_buflen &gt;&gt; 8) &amp; 0xff;</span>
+<span class="lineNum">     717 </span><span class="lineNoCov">          0 :     orig_buffer[1] = orig_buflen &amp; 0xff;</span>
+<span class="lineNum">     718 </span><span class="lineNoCov">          0 :     return unused;</span>
+<span class="lineNum">     719 </span>            : }
+<span class="lineNum">     720 </span>            : 
+<span class="lineNum">     721 </span>            : 
+<span class="lineNum">     722 </span>            : /****************
+<span class="lineNum">     723 </span>            :  * Create or update a signature subpacket for SIG of TYPE.
+<span class="lineNum">     724 </span>            :  * This functions knows where to put the data (hashed or unhashed).
+<span class="lineNum">     725 </span>            :  * The function may move data from the unhashed part to the hashed one.
+<span class="lineNum">     726 </span>            :  * Note: All pointers into sig-&gt;[un]hashed are not valid after a call
+<span class="lineNum">     727 </span>            :  * to this function.  The data to put into the subpaket should be
+<span class="lineNum">     728 </span>            :  * in buffer with a length of buflen.
+<a name="729"><span class="lineNum">     729 </span>            :  */</a>
+<span class="lineNum">     730 </span>            : void
+<span class="lineNum">     731 </span><span class="lineNoCov">          0 : build_sig_subpkt( PKT_signature *sig, sigsubpkttype_t type,</span>
+<span class="lineNum">     732 </span>            :                   const byte *buffer, size_t buflen )
+<span class="lineNum">     733 </span>            : {
+<span class="lineNum">     734 </span>            :     byte *data;
+<span class="lineNum">     735 </span>            :     size_t hlen, dlen, nlen;
+<span class="lineNum">     736 </span><span class="lineNoCov">          0 :     int found=0;</span>
+<span class="lineNum">     737 </span>            :     int critical, hashed, realloced;
+<span class="lineNum">     738 </span>            :     size_t n, n0;
+<span class="lineNum">     739 </span><span class="lineNoCov">          0 :     size_t unused = 0;</span>
+<span class="lineNum">     740 </span>            : 
+<span class="lineNum">     741 </span><span class="lineNoCov">          0 :     critical = (type &amp; SIGSUBPKT_FLAG_CRITICAL);</span>
+<span class="lineNum">     742 </span><span class="lineNoCov">          0 :     type &amp;= ~SIGSUBPKT_FLAG_CRITICAL;</span>
+<span class="lineNum">     743 </span>            : 
+<span class="lineNum">     744 </span><span class="lineNoCov">          0 :     if( type == SIGSUBPKT_NOTATION )</span>
+<span class="lineNum">     745 </span>            :         ; /* we allow multiple packets */
+<span class="lineNum">     746 </span><span class="lineNoCov">          0 :     else if( (data = find_subpkt( sig-&gt;hashed_data, type, &amp;hlen, &amp;dlen )) )</span>
+<span class="lineNum">     747 </span><span class="lineNoCov">          0 :         found = 1;</span>
+<span class="lineNum">     748 </span><span class="lineNoCov">          0 :     else if( (data = find_subpkt( sig-&gt;unhashed_data, type, &amp;hlen, &amp;dlen )))</span>
+<span class="lineNum">     749 </span><span class="lineNoCov">          0 :         found = 2;</span>
+<span class="lineNum">     750 </span>            : 
+<span class="lineNum">     751 </span><span class="lineNoCov">          0 :     if (found==2 &amp;&amp; type == SIGSUBPKT_PRIV_VERIFY_CACHE) {</span>
+<span class="lineNum">     752 </span><span class="lineNoCov">          0 :         unused = delete_sig_subpkt (sig-&gt;unhashed_data, type);</span>
+<span class="lineNum">     753 </span><span class="lineNoCov">          0 :         assert (unused);</span>
+<span class="lineNum">     754 </span><span class="lineNoCov">          0 :         found = 0;</span>
+<span class="lineNum">     755 </span>            :     }
+<span class="lineNum">     756 </span>            : 
+<span class="lineNum">     757 </span><span class="lineNoCov">          0 :     if( found )</span>
+<span class="lineNum">     758 </span><span class="lineNoCov">          0 :         log_bug(&quot;build_sig_packet: update nyi\n&quot;);</span>
+<span class="lineNum">     759 </span><span class="lineNoCov">          0 :     if( (buflen+1) &gt;= 8384 )</span>
+<span class="lineNum">     760 </span><span class="lineNoCov">          0 :         nlen = 5;</span>
+<span class="lineNum">     761 </span><span class="lineNoCov">          0 :     else if( (buflen+1) &gt;= 192 )</span>
+<span class="lineNum">     762 </span><span class="lineNoCov">          0 :         nlen = 2;</span>
+<span class="lineNum">     763 </span>            :     else
+<span class="lineNum">     764 </span><span class="lineNoCov">          0 :         nlen = 1;</span>
+<span class="lineNum">     765 </span>            : 
+<span class="lineNum">     766 </span><span class="lineNoCov">          0 :     switch( type ) {</span>
+<span class="lineNum">     767 </span>            :       case SIGSUBPKT_SIG_CREATED:
+<span class="lineNum">     768 </span>            :       case SIGSUBPKT_PREF_SYM:
+<span class="lineNum">     769 </span>            :       case SIGSUBPKT_PREF_HASH:
+<span class="lineNum">     770 </span>            :       case SIGSUBPKT_PREF_COMPR:
+<span class="lineNum">     771 </span>            :       case SIGSUBPKT_KS_FLAGS:
+<span class="lineNum">     772 </span>            :       case SIGSUBPKT_KEY_EXPIRE:
+<span class="lineNum">     773 </span>            :       case SIGSUBPKT_NOTATION:
+<span class="lineNum">     774 </span>            :       case SIGSUBPKT_POLICY:
+<span class="lineNum">     775 </span>            :       case SIGSUBPKT_REVOC_REASON:
+<span class="lineNum">     776 </span><span class="lineNoCov">          0 :                hashed = 1; break;</span>
+<span class="lineNum">     777 </span><span class="lineNoCov">          0 :       default: hashed = 0; break;</span>
+<span class="lineNum">     778 </span>            :     }
+<span class="lineNum">     779 </span>            : 
+<span class="lineNum">     780 </span><span class="lineNoCov">          0 :     if( hashed ) {</span>
+<span class="lineNum">     781 </span><span class="lineNoCov">          0 :         n0 = sig-&gt;hashed_data ? ((*sig-&gt;hashed_data &lt;&lt; 8)</span>
+<span class="lineNum">     782 </span><span class="lineNoCov">          0 :                                     | sig-&gt;hashed_data[1]) : 0;</span>
+<span class="lineNum">     783 </span><span class="lineNoCov">          0 :         n = n0 + nlen + 1 + buflen; /* length, type, buffer */</span>
+<span class="lineNum">     784 </span><span class="lineNoCov">          0 :         realloced = !!sig-&gt;hashed_data;</span>
+<span class="lineNum">     785 </span><span class="lineNoCov">          0 :         data = sig-&gt;hashed_data ? m_realloc( sig-&gt;hashed_data, n+2 )</span>
+<span class="lineNum">     786 </span><span class="lineNoCov">          0 :                                 : m_alloc( n+2 );</span>
+<span class="lineNum">     787 </span>            :     }
+<span class="lineNum">     788 </span>            :     else {
+<span class="lineNum">     789 </span><span class="lineNoCov">          0 :         n0 = sig-&gt;unhashed_data ? ((*sig-&gt;unhashed_data &lt;&lt; 8)</span>
+<span class="lineNum">     790 </span><span class="lineNoCov">          0 :                                       | sig-&gt;unhashed_data[1]) : 0;</span>
+<span class="lineNum">     791 </span><span class="lineNoCov">          0 :         n = n0 + nlen + 1 + buflen; /* length, type, buffer */</span>
+<span class="lineNum">     792 </span><span class="lineNoCov">          0 :         if ( sig-&gt;unhashed_data &amp;&amp; (nlen + 1 + buflen) &lt;= unused ) {</span>
+<span class="lineNum">     793 </span>            :             /* does fit into the freed area */
+<span class="lineNum">     794 </span><span class="lineNoCov">          0 :             data = sig-&gt;unhashed_data;</span>
+<span class="lineNum">     795 </span><span class="lineNoCov">          0 :             realloced = 1;</span>
+<span class="lineNum">     796 </span>            :             log_debug (&quot;updating area of type %d\n&quot;, type );
+<span class="lineNum">     797 </span>            :         }
+<span class="lineNum">     798 </span>            :         else {
+<span class="lineNum">     799 </span><span class="lineNoCov">          0 :             realloced = !!sig-&gt;unhashed_data;</span>
+<span class="lineNum">     800 </span><span class="lineNoCov">          0 :             data = sig-&gt;unhashed_data ? m_realloc( sig-&gt;unhashed_data, n+2 )</span>
+<span class="lineNum">     801 </span><span class="lineNoCov">          0 :                                       : m_alloc( n+2 );</span>
+<span class="lineNum">     802 </span>            :         }
+<span class="lineNum">     803 </span>            :     }
+<span class="lineNum">     804 </span>            : 
+<span class="lineNum">     805 </span><span class="lineNoCov">          0 :     if( critical )</span>
+<span class="lineNum">     806 </span><span class="lineNoCov">          0 :         type |= SIGSUBPKT_FLAG_CRITICAL;</span>
+<span class="lineNum">     807 </span>            : 
+<span class="lineNum">     808 </span><span class="lineNoCov">          0 :     data[0] = (n &gt;&gt; 8) &amp; 0xff;</span>
+<span class="lineNum">     809 </span><span class="lineNoCov">          0 :     data[1] = n &amp; 0xff;</span>
+<span class="lineNum">     810 </span><span class="lineNoCov">          0 :     if( nlen == 5 ) {</span>
+<span class="lineNum">     811 </span><span class="lineNoCov">          0 :         data[n0+2] = 255;</span>
+<span class="lineNum">     812 </span><span class="lineNoCov">          0 :         data[n0+3] = (buflen+1) &gt;&gt; 24;</span>
+<span class="lineNum">     813 </span><span class="lineNoCov">          0 :         data[n0+4] = (buflen+1) &gt;&gt; 16;</span>
+<span class="lineNum">     814 </span><span class="lineNoCov">          0 :         data[n0+5] = (buflen+1) &gt;&gt;  8;</span>
+<span class="lineNum">     815 </span><span class="lineNoCov">          0 :         data[n0+6] = (buflen+1);</span>
+<span class="lineNum">     816 </span><span class="lineNoCov">          0 :         data[n0+7] = type;</span>
+<span class="lineNum">     817 </span><span class="lineNoCov">          0 :         memcpy(data+n0+8, buffer, buflen );</span>
+<span class="lineNum">     818 </span>            :     }
+<span class="lineNum">     819 </span><span class="lineNoCov">          0 :     else if( nlen == 2 ) {</span>
+<span class="lineNum">     820 </span><span class="lineNoCov">          0 :         data[n0+2] = (buflen+1-192) / 256 + 192;</span>
+<span class="lineNum">     821 </span><span class="lineNoCov">          0 :         data[n0+3] = (buflen+1-192) % 256;</span>
+<span class="lineNum">     822 </span><span class="lineNoCov">          0 :         data[n0+4] = type;</span>
+<span class="lineNum">     823 </span><span class="lineNoCov">          0 :         memcpy(data+n0+5, buffer, buflen );</span>
+<span class="lineNum">     824 </span>            :     }
+<span class="lineNum">     825 </span>            :     else {
+<span class="lineNum">     826 </span><span class="lineNoCov">          0 :         data[n0+2] = buflen+1;</span>
+<span class="lineNum">     827 </span><span class="lineNoCov">          0 :         data[n0+3] = type;</span>
+<span class="lineNum">     828 </span><span class="lineNoCov">          0 :         memcpy(data+n0+4, buffer, buflen );</span>
+<span class="lineNum">     829 </span>            :     }
+<span class="lineNum">     830 </span>            : 
+<span class="lineNum">     831 </span><span class="lineNoCov">          0 :     if( hashed ) {</span>
+<span class="lineNum">     832 </span><span class="lineNoCov">          0 :         if( !realloced )</span>
+<span class="lineNum">     833 </span><span class="lineNoCov">          0 :             m_free(sig-&gt;hashed_data);</span>
+<span class="lineNum">     834 </span><span class="lineNoCov">          0 :         sig-&gt;hashed_data = data;</span>
+<span class="lineNum">     835 </span>            :     }
+<span class="lineNum">     836 </span>            :     else {
+<span class="lineNum">     837 </span><span class="lineNoCov">          0 :         if( !realloced )</span>
+<span class="lineNum">     838 </span><span class="lineNoCov">          0 :             m_free(sig-&gt;unhashed_data);</span>
+<span class="lineNum">     839 </span><span class="lineNoCov">          0 :         sig-&gt;unhashed_data = data;</span>
+<span class="lineNum">     840 </span>            :     }
+<span class="lineNum">     841 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     842 </span>            : 
+<span class="lineNum">     843 </span>            : /****************
+<span class="lineNum">     844 </span>            :  * Put all the required stuff from SIG into subpackets of sig.
+<a name="845"><span class="lineNum">     845 </span>            :  */</a>
+<span class="lineNum">     846 </span>            : void
+<span class="lineNum">     847 </span><span class="lineNoCov">          0 : build_sig_subpkt_from_sig( PKT_signature *sig )</span>
+<span class="lineNum">     848 </span>            : {
+<span class="lineNum">     849 </span>            :     u32  u;
+<span class="lineNum">     850 </span>            :     byte buf[8];
+<span class="lineNum">     851 </span>            : 
+<span class="lineNum">     852 </span><span class="lineNoCov">          0 :     u = sig-&gt;keyid[0];</span>
+<span class="lineNum">     853 </span><span class="lineNoCov">          0 :     buf[0] = (u &gt;&gt; 24) &amp; 0xff;</span>
+<span class="lineNum">     854 </span><span class="lineNoCov">          0 :     buf[1] = (u &gt;&gt; 16) &amp; 0xff;</span>
+<span class="lineNum">     855 </span><span class="lineNoCov">          0 :     buf[2] = (u &gt;&gt;  8) &amp; 0xff;</span>
+<span class="lineNum">     856 </span><span class="lineNoCov">          0 :     buf[3] = u &amp; 0xff;</span>
+<span class="lineNum">     857 </span><span class="lineNoCov">          0 :     u = sig-&gt;keyid[1];</span>
+<span class="lineNum">     858 </span><span class="lineNoCov">          0 :     buf[4] = (u &gt;&gt; 24) &amp; 0xff;</span>
+<span class="lineNum">     859 </span><span class="lineNoCov">          0 :     buf[5] = (u &gt;&gt; 16) &amp; 0xff;</span>
+<span class="lineNum">     860 </span><span class="lineNoCov">          0 :     buf[6] = (u &gt;&gt;  8) &amp; 0xff;</span>
+<span class="lineNum">     861 </span><span class="lineNoCov">          0 :     buf[7] = u &amp; 0xff;</span>
+<span class="lineNum">     862 </span><span class="lineNoCov">          0 :     build_sig_subpkt( sig, SIGSUBPKT_ISSUER, buf, 8 );</span>
+<span class="lineNum">     863 </span>            : 
+<span class="lineNum">     864 </span><span class="lineNoCov">          0 :     u = sig-&gt;timestamp;</span>
+<span class="lineNum">     865 </span><span class="lineNoCov">          0 :     buf[0] = (u &gt;&gt; 24) &amp; 0xff;</span>
+<span class="lineNum">     866 </span><span class="lineNoCov">          0 :     buf[1] = (u &gt;&gt; 16) &amp; 0xff;</span>
+<span class="lineNum">     867 </span><span class="lineNoCov">          0 :     buf[2] = (u &gt;&gt;  8) &amp; 0xff;</span>
+<span class="lineNum">     868 </span><span class="lineNoCov">          0 :     buf[3] = u &amp; 0xff;</span>
+<span class="lineNum">     869 </span><span class="lineNoCov">          0 :     build_sig_subpkt( sig, SIGSUBPKT_SIG_CREATED, buf, 4 );</span>
+<span class="lineNum">     870 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     871 </span>            : 
+<a name="872"><span class="lineNum">     872 </span>            : </a>
+<span class="lineNum">     873 </span>            : static int
+<span class="lineNum">     874 </span><span class="lineNoCov">          0 : do_signature( IOBUF out, int ctb, PKT_signature *sig )</span>
+<span class="lineNum">     875 </span>            : {
+<span class="lineNum">     876 </span><span class="lineNoCov">          0 :     int rc = 0;</span>
+<span class="lineNum">     877 </span>            :     int n, i;
+<span class="lineNum">     878 </span><span class="lineNoCov">          0 :     IOBUF a = iobuf_temp();</span>
+<span class="lineNum">     879 </span>            : 
+<span class="lineNum">     880 </span><span class="lineNoCov">          0 :     if( !sig-&gt;version )</span>
+<span class="lineNum">     881 </span><span class="lineNoCov">          0 :         iobuf_put( a, 3 );</span>
+<span class="lineNum">     882 </span>            :     else
+<span class="lineNum">     883 </span><span class="lineNoCov">          0 :         iobuf_put( a, sig-&gt;version );</span>
+<span class="lineNum">     884 </span><span class="lineNoCov">          0 :     if( sig-&gt;version &lt; 4 )</span>
+<span class="lineNum">     885 </span><span class="lineNoCov">          0 :         iobuf_put(a, 5 ); /* constant */</span>
+<span class="lineNum">     886 </span><span class="lineNoCov">          0 :     iobuf_put(a, sig-&gt;sig_class );</span>
+<span class="lineNum">     887 </span><span class="lineNoCov">          0 :     if( sig-&gt;version &lt; 4 ) {</span>
+<span class="lineNum">     888 </span><span class="lineNoCov">          0 :         write_32(a, sig-&gt;timestamp );</span>
+<span class="lineNum">     889 </span><span class="lineNoCov">          0 :         write_32(a, sig-&gt;keyid[0] );</span>
+<span class="lineNum">     890 </span><span class="lineNoCov">          0 :         write_32(a, sig-&gt;keyid[1] );</span>
+<span class="lineNum">     891 </span>            :     }
+<span class="lineNum">     892 </span><span class="lineNoCov">          0 :     iobuf_put(a, sig-&gt;pubkey_algo );</span>
+<span class="lineNum">     893 </span><span class="lineNoCov">          0 :     iobuf_put(a, sig-&gt;digest_algo );</span>
+<span class="lineNum">     894 </span><span class="lineNoCov">          0 :     if( sig-&gt;version &gt;= 4 ) {</span>
+<span class="lineNum">     895 </span>            :         size_t nn;
+<span class="lineNum">     896 </span>            :         /* timestamp and keyid must have been packed into the
+<span class="lineNum">     897 </span>            :          * subpackets prior to the call of this function, because
+<span class="lineNum">     898 </span>            :          * these subpackets are hashed */
+<span class="lineNum">     899 </span><span class="lineNoCov">          0 :         nn = sig-&gt;hashed_data?((sig-&gt;hashed_data[0]&lt;&lt;8)</span>
+<span class="lineNum">     900 </span><span class="lineNoCov">          0 :                                 |sig-&gt;hashed_data[1])        :0;</span>
+<span class="lineNum">     901 </span><span class="lineNoCov">          0 :         write_16(a, nn);</span>
+<span class="lineNum">     902 </span><span class="lineNoCov">          0 :         if( nn )</span>
+<span class="lineNum">     903 </span><span class="lineNoCov">          0 :             iobuf_write( a, sig-&gt;hashed_data+2, nn );</span>
+<span class="lineNum">     904 </span><span class="lineNoCov">          0 :         nn = sig-&gt;unhashed_data?((sig-&gt;unhashed_data[0]&lt;&lt;8)</span>
+<span class="lineNum">     905 </span><span class="lineNoCov">          0 :                                   |sig-&gt;unhashed_data[1])   :0;</span>
+<span class="lineNum">     906 </span><span class="lineNoCov">          0 :         write_16(a, nn);</span>
+<span class="lineNum">     907 </span><span class="lineNoCov">          0 :         if( nn )</span>
+<span class="lineNum">     908 </span><span class="lineNoCov">          0 :             iobuf_write( a, sig-&gt;unhashed_data+2, nn );</span>
+<span class="lineNum">     909 </span>            :     }
+<span class="lineNum">     910 </span><span class="lineNoCov">          0 :     iobuf_put(a, sig-&gt;digest_start[0] );</span>
+<span class="lineNum">     911 </span><span class="lineNoCov">          0 :     iobuf_put(a, sig-&gt;digest_start[1] );</span>
+<span class="lineNum">     912 </span><span class="lineNoCov">          0 :     n = pubkey_get_nsig( sig-&gt;pubkey_algo );</span>
+<span class="lineNum">     913 </span><span class="lineNoCov">          0 :     if( !n )</span>
+<span class="lineNum">     914 </span><span class="lineNoCov">          0 :         write_fake_data( a, sig-&gt;data[0] );</span>
+<span class="lineNum">     915 </span><span class="lineNoCov">          0 :     for(i=0; i &lt; n; i++ )</span>
+<span class="lineNum">     916 </span><span class="lineNoCov">          0 :         mpi_write(a, sig-&gt;data[i] );</span>
+<span class="lineNum">     917 </span>            : 
+<span class="lineNum">     918 </span><span class="lineNoCov">          0 :     if( is_RSA(sig-&gt;pubkey_algo) &amp;&amp; sig-&gt;version &lt; 4 )</span>
+<span class="lineNum">     919 </span><span class="lineNoCov">          0 :         write_sign_packet_header(out, ctb, iobuf_get_temp_length(a) );</span>
+<span class="lineNum">     920 </span>            :     else
+<span class="lineNum">     921 </span><span class="lineNoCov">          0 :         write_header(out, ctb, iobuf_get_temp_length(a) );</span>
+<span class="lineNum">     922 </span><span class="lineNoCov">          0 :     if( iobuf_write_temp( out, a ) )</span>
+<span class="lineNum">     923 </span><span class="lineNoCov">          0 :         rc = G10ERR_WRITE_FILE;</span>
+<span class="lineNum">     924 </span>            : 
+<span class="lineNum">     925 </span><span class="lineNoCov">          0 :     iobuf_close(a);</span>
+<span class="lineNum">     926 </span><span class="lineNoCov">          0 :     return rc;</span>
+<span class="lineNum">     927 </span>            : }
+<span class="lineNum">     928 </span>            : 
+<a name="929"><span class="lineNum">     929 </span>            : </a>
+<span class="lineNum">     930 </span>            : static int
+<span class="lineNum">     931 </span><span class="lineNoCov">          0 : do_onepass_sig( IOBUF out, int ctb, PKT_onepass_sig *ops )</span>
+<span class="lineNum">     932 </span>            : {
+<span class="lineNum">     933 </span><span class="lineNoCov">          0 :     int rc = 0;</span>
+<span class="lineNum">     934 </span><span class="lineNoCov">          0 :     IOBUF a = iobuf_temp();</span>
+<span class="lineNum">     935 </span>            : 
+<span class="lineNum">     936 </span><span class="lineNoCov">          0 :     write_version( a, ctb );</span>
+<span class="lineNum">     937 </span><span class="lineNoCov">          0 :     iobuf_put(a, ops-&gt;sig_class );</span>
+<span class="lineNum">     938 </span><span class="lineNoCov">          0 :     iobuf_put(a, ops-&gt;digest_algo );</span>
+<span class="lineNum">     939 </span><span class="lineNoCov">          0 :     iobuf_put(a, ops-&gt;pubkey_algo );</span>
+<span class="lineNum">     940 </span><span class="lineNoCov">          0 :     write_32(a, ops-&gt;keyid[0] );</span>
+<span class="lineNum">     941 </span><span class="lineNoCov">          0 :     write_32(a, ops-&gt;keyid[1] );</span>
+<span class="lineNum">     942 </span><span class="lineNoCov">          0 :     iobuf_put(a, ops-&gt;last );</span>
+<span class="lineNum">     943 </span>            : 
+<span class="lineNum">     944 </span><span class="lineNoCov">          0 :     write_header(out, ctb, iobuf_get_temp_length(a) );</span>
+<span class="lineNum">     945 </span><span class="lineNoCov">          0 :     if( iobuf_write_temp( out, a ) )</span>
+<span class="lineNum">     946 </span><span class="lineNoCov">          0 :         rc = G10ERR_WRITE_FILE;</span>
+<span class="lineNum">     947 </span>            : 
+<span class="lineNum">     948 </span><span class="lineNoCov">          0 :     iobuf_close(a);</span>
+<span class="lineNum">     949 </span><span class="lineNoCov">          0 :     return rc;</span>
+<span class="lineNum">     950 </span>            : }
+<span class="lineNum">     951 </span>            : 
+<a name="952"><span class="lineNum">     952 </span>            : </a>
+<span class="lineNum">     953 </span>            : static int
+<span class="lineNum">     954 </span><span class="lineNoCov">          0 : write_16(IOBUF out, u16 a)</span>
+<span class="lineNum">     955 </span>            : {
+<span class="lineNum">     956 </span><span class="lineNoCov">          0 :     iobuf_put(out, a&gt;&gt;8);</span>
+<span class="lineNum">     957 </span><span class="lineNoCov">          0 :     if( iobuf_put(out,a) )</span>
+<span class="lineNum">     958 </span><span class="lineNoCov">          0 :         return -1;</span>
+<span class="lineNum">     959 </span><span class="lineNoCov">          0 :     return 0;</span>
+<span class="lineNum">     960 </span>            : }
+<a name="961"><span class="lineNum">     961 </span>            : </a>
+<span class="lineNum">     962 </span>            : static int
+<span class="lineNum">     963 </span><span class="lineNoCov">          0 : write_32(IOBUF out, u32 a)</span>
+<span class="lineNum">     964 </span>            : {
+<span class="lineNum">     965 </span><span class="lineNoCov">          0 :     iobuf_put(out, a&gt;&gt; 24);</span>
+<span class="lineNum">     966 </span><span class="lineNoCov">          0 :     iobuf_put(out, a&gt;&gt; 16);</span>
+<span class="lineNum">     967 </span><span class="lineNoCov">          0 :     iobuf_put(out, a&gt;&gt; 8);</span>
+<span class="lineNum">     968 </span><span class="lineNoCov">          0 :     if( iobuf_put(out, a) )</span>
+<span class="lineNum">     969 </span><span class="lineNoCov">          0 :         return -1;</span>
+<span class="lineNum">     970 </span><span class="lineNoCov">          0 :     return 0;</span>
+<span class="lineNum">     971 </span>            : }
+<span class="lineNum">     972 </span>            : 
+<span class="lineNum">     973 </span>            : 
+<span class="lineNum">     974 </span>            : /****************
+<span class="lineNum">     975 </span>            :  * calculate the length of a header
+<a name="976"><span class="lineNum">     976 </span>            :  */</a>
+<span class="lineNum">     977 </span>            : static int
+<span class="lineNum">     978 </span><span class="lineNoCov">          0 : calc_header_length( u32 len, int new_ctb )</span>
+<span class="lineNum">     979 </span>            : {
+<span class="lineNum">     980 </span><span class="lineNoCov">          0 :     if( !len )</span>
+<span class="lineNum">     981 </span><span class="lineNoCov">          0 :         return 1; /* only the ctb */</span>
+<span class="lineNum">     982 </span>            : 
+<span class="lineNum">     983 </span><span class="lineNoCov">          0 :     if( new_ctb ) {</span>
+<span class="lineNum">     984 </span><span class="lineNoCov">          0 :         if( len &lt; 192 )</span>
+<span class="lineNum">     985 </span><span class="lineNoCov">          0 :             return 2;</span>
+<span class="lineNum">     986 </span><span class="lineNoCov">          0 :         if( len &lt; 8384 )</span>
+<span class="lineNum">     987 </span><span class="lineNoCov">          0 :             return 3;</span>
+<span class="lineNum">     988 </span>            :         else
+<span class="lineNum">     989 </span><span class="lineNoCov">          0 :             return 6;</span>
+<span class="lineNum">     990 </span>            :     }
+<span class="lineNum">     991 </span><span class="lineNoCov">          0 :     if( len &lt; 256 )</span>
+<span class="lineNum">     992 </span><span class="lineNoCov">          0 :         return 2;</span>
+<span class="lineNum">     993 </span><span class="lineNoCov">          0 :     if( len &lt; 65536 )</span>
+<span class="lineNum">     994 </span><span class="lineNoCov">          0 :         return 3;</span>
+<span class="lineNum">     995 </span>            : 
+<span class="lineNum">     996 </span><span class="lineNoCov">          0 :     return 5;</span>
+<span class="lineNum">     997 </span>            : }
+<span class="lineNum">     998 </span>            : 
+<span class="lineNum">     999 </span>            : /****************
+<span class="lineNum">    1000 </span>            :  * Write the CTB and the packet length
+<a name="1001"><span class="lineNum">    1001 </span>            :  */</a>
+<span class="lineNum">    1002 </span>            : static int
+<span class="lineNum">    1003 </span><span class="lineNoCov">          0 : write_header( IOBUF out, int ctb, u32 len )</span>
+<span class="lineNum">    1004 </span>            : {
+<span class="lineNum">    1005 </span><span class="lineNoCov">          0 :     return write_header2( out, ctb, len, 0, 1 );</span>
+<span class="lineNum">    1006 </span>            : }
+<span class="lineNum">    1007 </span>            : 
+<a name="1008"><span class="lineNum">    1008 </span>            : </a>
+<span class="lineNum">    1009 </span>            : static int
+<span class="lineNum">    1010 </span><span class="lineNoCov">          0 : write_sign_packet_header( IOBUF out, int ctb, u32 len )</span>
+<span class="lineNum">    1011 </span>            : {
+<span class="lineNum">    1012 </span>            :     /* work around a bug in the pgp read function for signature packets,
+<span class="lineNum">    1013 </span>            :      * which are not correctly coded and silently assume at some
+<span class="lineNum">    1014 </span>            :      * point 2 byte length headers.*/
+<span class="lineNum">    1015 </span><span class="lineNoCov">          0 :     iobuf_put(out, 0x89 );</span>
+<span class="lineNum">    1016 </span><span class="lineNoCov">          0 :     iobuf_put(out, len &gt;&gt; 8 );</span>
+<span class="lineNum">    1017 </span><span class="lineNoCov">          0 :     return iobuf_put(out, len ) == -1 ? -1:0;</span>
+<span class="lineNum">    1018 </span>            : }
+<span class="lineNum">    1019 </span>            : 
+<span class="lineNum">    1020 </span>            : /****************
+<span class="lineNum">    1021 </span>            :  * if HDRLEN is &gt; 0, try to build a header of this length.
+<span class="lineNum">    1022 </span>            :  * we need this, so that we can hash packets without reading them again.
+<a name="1023"><span class="lineNum">    1023 </span>            :  */</a>
+<span class="lineNum">    1024 </span>            : static int
+<span class="lineNum">    1025 </span><span class="lineNoCov">          0 : write_header2( IOBUF out, int ctb, u32 len, int hdrlen, int blkmode )</span>
+<span class="lineNum">    1026 </span>            : {
+<span class="lineNum">    1027 </span><span class="lineNoCov">          0 :     if( ctb &amp; 0x40 )</span>
+<span class="lineNum">    1028 </span><span class="lineNoCov">          0 :         return write_new_header( out, ctb, len, hdrlen );</span>
+<span class="lineNum">    1029 </span>            : 
+<span class="lineNum">    1030 </span><span class="lineNoCov">          0 :     if( hdrlen ) {</span>
+<span class="lineNum">    1031 </span><span class="lineNoCov">          0 :         if( !len )</span>
+<span class="lineNum">    1032 </span><span class="lineNoCov">          0 :             ctb |= 3;</span>
+<span class="lineNum">    1033 </span><span class="lineNoCov">          0 :         else if( hdrlen == 2 &amp;&amp; len &lt; 256 )</span>
+<span class="lineNum">    1034 </span>            :             ;
+<span class="lineNum">    1035 </span><span class="lineNoCov">          0 :         else if( hdrlen == 3 &amp;&amp; len &lt; 65536 )</span>
+<span class="lineNum">    1036 </span><span class="lineNoCov">          0 :             ctb |= 1;</span>
+<span class="lineNum">    1037 </span>            :         else
+<span class="lineNum">    1038 </span><span class="lineNoCov">          0 :             ctb |= 2;</span>
+<span class="lineNum">    1039 </span>            :     }
+<span class="lineNum">    1040 </span>            :     else {
+<span class="lineNum">    1041 </span><span class="lineNoCov">          0 :         if( !len )</span>
+<span class="lineNum">    1042 </span><span class="lineNoCov">          0 :             ctb |= 3;</span>
+<span class="lineNum">    1043 </span><span class="lineNoCov">          0 :         else if( len &lt; 256 )</span>
+<span class="lineNum">    1044 </span>            :             ;
+<span class="lineNum">    1045 </span><span class="lineNoCov">          0 :         else if( len &lt; 65536 )</span>
+<span class="lineNum">    1046 </span><span class="lineNoCov">          0 :             ctb |= 1;</span>
+<span class="lineNum">    1047 </span>            :         else
+<span class="lineNum">    1048 </span><span class="lineNoCov">          0 :             ctb |= 2;</span>
+<span class="lineNum">    1049 </span>            :     }
+<span class="lineNum">    1050 </span><span class="lineNoCov">          0 :     if( iobuf_put(out, ctb ) )</span>
+<span class="lineNum">    1051 </span><span class="lineNoCov">          0 :         return -1;</span>
+<span class="lineNum">    1052 </span><span class="lineNoCov">          0 :     if( !len ) {</span>
+<span class="lineNum">    1053 </span><span class="lineNoCov">          0 :         if( blkmode )</span>
+<span class="lineNum">    1054 </span><span class="lineNoCov">          0 :             iobuf_set_block_mode(out, 8196 );</span>
+<span class="lineNum">    1055 </span>            :     }
+<span class="lineNum">    1056 </span>            :     else {
+<span class="lineNum">    1057 </span><span class="lineNoCov">          0 :         if( ctb &amp; 2 ) {</span>
+<span class="lineNum">    1058 </span><span class="lineNoCov">          0 :             iobuf_put(out, len &gt;&gt; 24 );</span>
+<span class="lineNum">    1059 </span><span class="lineNoCov">          0 :             iobuf_put(out, len &gt;&gt; 16 );</span>
+<span class="lineNum">    1060 </span>            :         }
+<span class="lineNum">    1061 </span><span class="lineNoCov">          0 :         if( ctb &amp; 3 )</span>
+<span class="lineNum">    1062 </span><span class="lineNoCov">          0 :             iobuf_put(out, len &gt;&gt; 8 );</span>
+<span class="lineNum">    1063 </span><span class="lineNoCov">          0 :         if( iobuf_put(out, len ) )</span>
+<span class="lineNum">    1064 </span><span class="lineNoCov">          0 :             return -1;</span>
+<span class="lineNum">    1065 </span>            :     }
+<span class="lineNum">    1066 </span><span class="lineNoCov">          0 :     return 0;</span>
+<span class="lineNum">    1067 </span>            : }
+<span class="lineNum">    1068 </span>            : 
+<a name="1069"><span class="lineNum">    1069 </span>            : </a>
+<span class="lineNum">    1070 </span>            : static int
+<span class="lineNum">    1071 </span><span class="lineNoCov">          0 : write_new_header( IOBUF out, int ctb, u32 len, int hdrlen )</span>
+<span class="lineNum">    1072 </span>            : {
+<span class="lineNum">    1073 </span><span class="lineNoCov">          0 :     if( hdrlen )</span>
+<span class="lineNum">    1074 </span><span class="lineNoCov">          0 :         log_bug(&quot;can't cope with hdrlen yet\n&quot;);</span>
+<span class="lineNum">    1075 </span>            : 
+<span class="lineNum">    1076 </span><span class="lineNoCov">          0 :     if( iobuf_put(out, ctb ) )</span>
+<span class="lineNum">    1077 </span><span class="lineNoCov">          0 :         return -1;</span>
+<span class="lineNum">    1078 </span><span class="lineNoCov">          0 :     if( !len ) {</span>
+<span class="lineNum">    1079 </span><span class="lineNoCov">          0 :         iobuf_set_partial_block_mode(out, 512 );</span>
+<span class="lineNum">    1080 </span>            :     }
+<span class="lineNum">    1081 </span>            :     else {
+<span class="lineNum">    1082 </span><span class="lineNoCov">          0 :         if( len &lt; 192 ) {</span>
+<span class="lineNum">    1083 </span><span class="lineNoCov">          0 :             if( iobuf_put(out, len ) )</span>
+<span class="lineNum">    1084 </span><span class="lineNoCov">          0 :                 return -1;</span>
+<span class="lineNum">    1085 </span>            :         }
+<span class="lineNum">    1086 </span><span class="lineNoCov">          0 :         else if( len &lt; 8384 ) {</span>
+<span class="lineNum">    1087 </span><span class="lineNoCov">          0 :             len -= 192;</span>
+<span class="lineNum">    1088 </span><span class="lineNoCov">          0 :             if( iobuf_put( out, (len / 256) + 192) )</span>
+<span class="lineNum">    1089 </span><span class="lineNoCov">          0 :                 return -1;</span>
+<span class="lineNum">    1090 </span><span class="lineNoCov">          0 :             if( iobuf_put( out, (len % 256) )  )</span>
+<span class="lineNum">    1091 </span><span class="lineNoCov">          0 :                 return -1;</span>
+<span class="lineNum">    1092 </span>            :         }
+<span class="lineNum">    1093 </span>            :         else {
+<span class="lineNum">    1094 </span><span class="lineNoCov">          0 :             if( iobuf_put( out, 0xff ) )</span>
+<span class="lineNum">    1095 </span><span class="lineNoCov">          0 :                 return -1;</span>
+<span class="lineNum">    1096 </span><span class="lineNoCov">          0 :             if( iobuf_put( out, (len &gt;&gt; 24)&amp;0xff ) )</span>
+<span class="lineNum">    1097 </span><span class="lineNoCov">          0 :                 return -1;</span>
+<span class="lineNum">    1098 </span><span class="lineNoCov">          0 :             if( iobuf_put( out, (len &gt;&gt; 16)&amp;0xff ) )</span>
+<span class="lineNum">    1099 </span><span class="lineNoCov">          0 :                 return -1;</span>
+<span class="lineNum">    1100 </span><span class="lineNoCov">          0 :             if( iobuf_put( out, (len &gt;&gt; 8)&amp;0xff )  )</span>
+<span class="lineNum">    1101 </span><span class="lineNoCov">          0 :                 return -1;</span>
+<span class="lineNum">    1102 </span><span class="lineNoCov">          0 :             if( iobuf_put( out, len &amp; 0xff ) )</span>
+<span class="lineNum">    1103 </span><span class="lineNoCov">          0 :                 return -1;</span>
+<span class="lineNum">    1104 </span>            :         }
+<span class="lineNum">    1105 </span>            :     }
+<span class="lineNum">    1106 </span><span class="lineNoCov">          0 :     return 0;</span>
+<span class="lineNum">    1107 </span>            : }
+<a name="1108"><span class="lineNum">    1108 </span>            : </a>
+<span class="lineNum">    1109 </span>            : static int
+<span class="lineNum">    1110 </span><span class="lineNoCov">          0 : write_version( IOBUF out, int ctb )</span>
+<span class="lineNum">    1111 </span>            : {
+<span class="lineNum">    1112 </span><span class="lineNoCov">          0 :     if( iobuf_put( out, 3 ) )</span>
+<span class="lineNum">    1113 </span><span class="lineNoCov">          0 :         return -1;</span>
+<span class="lineNum">    1114 </span><span class="lineNoCov">          0 :     return 0;</span>
+<span class="lineNum">    1115 </span>            : }
+<span class="lineNum">    1116 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,1934 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - g10/g10.c</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">g10</a> - g10.c<span style="font-size: 80%;"> (source / <a href="g10.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">151</td>
+            <td class="headerCovTableEntry">871</td>
+            <td class="headerCovTableEntryLo">17.3 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2012-11-04</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntry">14</td>
+            <td class="headerCovTableEntryLo">28.6 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /* g10.c - The GnuPG utility (main for gpg)</a>
+<span class="lineNum">       2 </span>            :  * Copyright (C) 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
+<span class="lineNum">       3 </span>            :  *
+<span class="lineNum">       4 </span>            :  * This file is part of GnuPG.
+<span class="lineNum">       5 </span>            :  *
+<span class="lineNum">       6 </span>            :  * GnuPG is free software; you can redistribute it and/or modify
+<span class="lineNum">       7 </span>            :  * it under the terms of the GNU General Public License as published by
+<span class="lineNum">       8 </span>            :  * the Free Software Foundation; either version 2 of the License, or
+<span class="lineNum">       9 </span>            :  * (at your option) any later version.
+<span class="lineNum">      10 </span>            :  *
+<span class="lineNum">      11 </span>            :  * GnuPG is distributed in the hope that it will be useful,
+<span class="lineNum">      12 </span>            :  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<span class="lineNum">      13 </span>            :  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<span class="lineNum">      14 </span>            :  * GNU General Public License for more details.
+<span class="lineNum">      15 </span>            :  *
+<span class="lineNum">      16 </span>            :  * You should have received a copy of the GNU General Public License
+<span class="lineNum">      17 </span>            :  * along with this program; if not, write to the Free Software
+<span class="lineNum">      18 </span>            :  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
+<span class="lineNum">      19 </span>            :  */
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : #include &lt;config.h&gt;
+<span class="lineNum">      22 </span>            : #include &lt;errno.h&gt;
+<span class="lineNum">      23 </span>            : #include &lt;stdio.h&gt;
+<span class="lineNum">      24 </span>            : #include &lt;stdlib.h&gt;
+<span class="lineNum">      25 </span>            : #include &lt;string.h&gt;
+<span class="lineNum">      26 </span>            : #include &lt;ctype.h&gt;
+<span class="lineNum">      27 </span>            : #include &lt;unistd.h&gt;
+<span class="lineNum">      28 </span>            : #ifdef HAVE_DOSISH_SYSTEM
+<span class="lineNum">      29 </span>            :   #include &lt;fcntl.h&gt; /* for setmode() */
+<span class="lineNum">      30 </span>            : #endif
+<span class="lineNum">      31 </span>            : 
+<span class="lineNum">      32 </span>            : 
+<span class="lineNum">      33 </span>            : #include &quot;packet.h&quot;
+<span class="lineNum">      34 </span>            : #include &quot;iobuf.h&quot;
+<span class="lineNum">      35 </span>            : #include &quot;memory.h&quot;
+<span class="lineNum">      36 </span>            : #include &quot;util.h&quot;
+<span class="lineNum">      37 </span>            : #include &quot;main.h&quot;
+<span class="lineNum">      38 </span>            : #include &quot;options.h&quot;
+<span class="lineNum">      39 </span>            : #include &quot;keydb.h&quot;
+<span class="lineNum">      40 </span>            : #include &quot;trustdb.h&quot;
+<span class="lineNum">      41 </span>            : #include &quot;mpi.h&quot;
+<span class="lineNum">      42 </span>            : #include &quot;cipher.h&quot;
+<span class="lineNum">      43 </span>            : #include &quot;filter.h&quot;
+<span class="lineNum">      44 </span>            : #include &quot;ttyio.h&quot;
+<span class="lineNum">      45 </span>            : #include &quot;i18n.h&quot;
+<span class="lineNum">      46 </span>            : #include &quot;status.h&quot;
+<span class="lineNum">      47 </span>            : #include &quot;g10defs.h&quot;
+<span class="lineNum">      48 </span>            : #include &quot;hkp.h&quot;
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span>            : enum cmd_and_opt_values { aNull = 0,
+<span class="lineNum">      51 </span>            :     oArmor        = 'a',
+<span class="lineNum">      52 </span>            :     aDetachedSign = 'b',
+<span class="lineNum">      53 </span>            :     aSym          = 'c',
+<span class="lineNum">      54 </span>            :     aDecrypt      = 'd',
+<span class="lineNum">      55 </span>            :     aEncr         = 'e',
+<span class="lineNum">      56 </span>            :     oInteractive  = 'i',
+<span class="lineNum">      57 </span>            :     oKOption      = 'k',
+<span class="lineNum">      58 </span>            :     oDryRun       = 'n',
+<span class="lineNum">      59 </span>            :     oOutput       = 'o',
+<span class="lineNum">      60 </span>            :     oQuiet        = 'q',
+<span class="lineNum">      61 </span>            :     oRecipient    = 'r',
+<span class="lineNum">      62 </span>            :     aSign         = 's',
+<span class="lineNum">      63 </span>            :     oTextmodeShort= 't',
+<span class="lineNum">      64 </span>            :     oUser         = 'u',
+<span class="lineNum">      65 </span>            :     oVerbose      = 'v',
+<span class="lineNum">      66 </span>            :     oCompress     = 'z',
+<span class="lineNum">      67 </span>            :     oNotation     = 'N',
+<span class="lineNum">      68 </span>            :     oBatch        = 500,
+<span class="lineNum">      69 </span>            :     aClearsign,
+<span class="lineNum">      70 </span>            :     aStore,
+<span class="lineNum">      71 </span>            :     aKeygen,
+<span class="lineNum">      72 </span>            :     aSignEncr,
+<span class="lineNum">      73 </span>            :     aSignKey,
+<span class="lineNum">      74 </span>            :     aLSignKey,
+<span class="lineNum">      75 </span>            :     aListPackets,
+<span class="lineNum">      76 </span>            :     aEditKey,
+<span class="lineNum">      77 </span>            :     aDeleteKey,
+<span class="lineNum">      78 </span>            :     aDeleteSecretKey,
+<span class="lineNum">      79 </span>            :     aDeleteSecretAndPublicKey,
+<span class="lineNum">      80 </span>            :     aKMode,
+<span class="lineNum">      81 </span>            :     aKModeC,
+<span class="lineNum">      82 </span>            :     aImport,
+<span class="lineNum">      83 </span>            :     aFastImport,
+<span class="lineNum">      84 </span>            :     aVerify,
+<span class="lineNum">      85 </span>            :     aVerifyFiles,
+<span class="lineNum">      86 </span>            :     aListKeys,
+<span class="lineNum">      87 </span>            :     aListSigs,
+<span class="lineNum">      88 </span>            :     aListSecretKeys,
+<span class="lineNum">      89 </span>            :     aSendKeys,
+<span class="lineNum">      90 </span>            :     aRecvKeys,
+<span class="lineNum">      91 </span>            :     aExport,
+<span class="lineNum">      92 </span>            :     aExportAll,
+<span class="lineNum">      93 </span>            :     aExportSecret,
+<span class="lineNum">      94 </span>            :     aExportSecretSub,
+<span class="lineNum">      95 </span>            :     aCheckKeys,
+<span class="lineNum">      96 </span>            :     aGenRevoke,
+<span class="lineNum">      97 </span>            :     aPrimegen,
+<span class="lineNum">      98 </span>            :     aPrintMD,
+<span class="lineNum">      99 </span>            :     aPrintMDs,
+<span class="lineNum">     100 </span>            :     aCheckTrustDB,
+<span class="lineNum">     101 </span>            :     aUpdateTrustDB,
+<span class="lineNum">     102 </span>            :     aFixTrustDB,
+<span class="lineNum">     103 </span>            :     aListTrustDB,
+<span class="lineNum">     104 </span>            :     aListTrustPath,
+<span class="lineNum">     105 </span>            :     aExportOwnerTrust,
+<span class="lineNum">     106 </span>            :     aImportOwnerTrust,
+<span class="lineNum">     107 </span>            :     aDeArmor,
+<span class="lineNum">     108 </span>            :     aEnArmor,
+<span class="lineNum">     109 </span>            :     aGenRandom,
+<span class="lineNum">     110 </span>            :     aPipeMode,
+<span class="lineNum">     111 </span>            :     aRefreshCaches,
+<span class="lineNum">     112 </span>            : 
+<span class="lineNum">     113 </span>            :     oTextmode,
+<span class="lineNum">     114 </span>            :     oFingerprint,
+<span class="lineNum">     115 </span>            :     oWithFingerprint,
+<span class="lineNum">     116 </span>            :     oAnswerYes,
+<span class="lineNum">     117 </span>            :     oAnswerNo,
+<span class="lineNum">     118 </span>            :     oKeyring,
+<span class="lineNum">     119 </span>            :     oSecretKeyring,
+<span class="lineNum">     120 </span>            :     oDefaultKey,
+<span class="lineNum">     121 </span>            :     oDefRecipient,
+<span class="lineNum">     122 </span>            :     oDefRecipientSelf,
+<span class="lineNum">     123 </span>            :     oNoDefRecipient,
+<span class="lineNum">     124 </span>            :     oOptions,
+<span class="lineNum">     125 </span>            :     oDebug,
+<span class="lineNum">     126 </span>            :     oDebugAll,
+<span class="lineNum">     127 </span>            :     oStatusFD,
+<span class="lineNum">     128 </span>            :     oNoComment,
+<span class="lineNum">     129 </span>            :     oNoVersion,
+<span class="lineNum">     130 </span>            :     oEmitVersion,
+<span class="lineNum">     131 </span>            :     oCompletesNeeded,
+<span class="lineNum">     132 </span>            :     oMarginalsNeeded,
+<span class="lineNum">     133 </span>            :     oMaxCertDepth,
+<span class="lineNum">     134 </span>            :     oLoadExtension,
+<span class="lineNum">     135 </span>            :     oRFC1991,
+<span class="lineNum">     136 </span>            :     oOpenPGP,
+<span class="lineNum">     137 </span>            :     oCipherAlgo,
+<span class="lineNum">     138 </span>            :     oDigestAlgo,
+<span class="lineNum">     139 </span>            :     oCompressAlgo,
+<span class="lineNum">     140 </span>            :     oPasswdFD,
+<span class="lineNum">     141 </span>            :     oCommandFD,
+<span class="lineNum">     142 </span>            :     oQuickRandom,
+<span class="lineNum">     143 </span>            :     oNoVerbose,
+<span class="lineNum">     144 </span>            :     oTrustDBName,
+<span class="lineNum">     145 </span>            :     oNoSecmemWarn,
+<span class="lineNum">     146 </span>            :     oNoArmor,
+<span class="lineNum">     147 </span>            :     oNoDefKeyring,
+<span class="lineNum">     148 </span>            :     oNoGreeting,
+<span class="lineNum">     149 </span>            :     oNoTTY,
+<span class="lineNum">     150 </span>            :     oNoOptions,
+<span class="lineNum">     151 </span>            :     oNoBatch,
+<span class="lineNum">     152 </span>            :     oHomedir,
+<span class="lineNum">     153 </span>            :     oWithColons,
+<span class="lineNum">     154 </span>            :     oWithKeyData,
+<span class="lineNum">     155 </span>            :     oSkipVerify,
+<span class="lineNum">     156 </span>            :     oCompressKeys,
+<span class="lineNum">     157 </span>            :     oCompressSigs,
+<span class="lineNum">     158 </span>            :     oAlwaysTrust,
+<span class="lineNum">     159 </span>            :     oEmuChecksumBug,
+<span class="lineNum">     160 </span>            :     oRunAsShmCP,
+<span class="lineNum">     161 </span>            :     oSetFilename,
+<span class="lineNum">     162 </span>            :     oSetPolicyURL,
+<span class="lineNum">     163 </span>            :     oUseEmbeddedFilename,
+<span class="lineNum">     164 </span>            :     oComment,
+<span class="lineNum">     165 </span>            :     oDefaultComment,
+<span class="lineNum">     166 </span>            :     oThrowKeyid,
+<span class="lineNum">     167 </span>            :     oForceV3Sigs,
+<span class="lineNum">     168 </span>            :     oForceMDC,
+<span class="lineNum">     169 </span>            :     oS2KMode,
+<span class="lineNum">     170 </span>            :     oS2KDigest,
+<span class="lineNum">     171 </span>            :     oS2KCipher,
+<span class="lineNum">     172 </span>            :     oCharset,
+<span class="lineNum">     173 </span>            :     oNotDashEscaped,
+<span class="lineNum">     174 </span>            :     oEscapeFrom,
+<span class="lineNum">     175 </span>            :     oLockOnce,
+<span class="lineNum">     176 </span>            :     oLockMultiple,
+<span class="lineNum">     177 </span>            :     oLockNever,
+<span class="lineNum">     178 </span>            :     oKeyServer,
+<span class="lineNum">     179 </span>            :     oEncryptTo,
+<span class="lineNum">     180 </span>            :     oNoEncryptTo,
+<span class="lineNum">     181 </span>            :     oLoggerFD,
+<span class="lineNum">     182 </span>            :     oUtf8Strings,
+<span class="lineNum">     183 </span>            :     oNoUtf8Strings,
+<span class="lineNum">     184 </span>            :     oDisableCipherAlgo,
+<span class="lineNum">     185 </span>            :     oDisablePubkeyAlgo,
+<span class="lineNum">     186 </span>            :     oAllowNonSelfsignedUID,
+<span class="lineNum">     187 </span>            :     oAllowFreeformUID,
+<span class="lineNum">     188 </span>            :     oAllowSecretKeyImport,                      
+<span class="lineNum">     189 </span>            :     oEnableSpecialFilenames,
+<span class="lineNum">     190 </span>            :     oNoLiteral,
+<span class="lineNum">     191 </span>            :     oSetFilesize,
+<span class="lineNum">     192 </span>            :     oHonorHttpProxy,
+<span class="lineNum">     193 </span>            :     oFastListMode,
+<span class="lineNum">     194 </span>            :     oListOnly,
+<span class="lineNum">     195 </span>            :     oIgnoreTimeConflict,
+<span class="lineNum">     196 </span>            :     oIgnoreCrcError,                          
+<span class="lineNum">     197 </span>            :     oShowSessionKey,
+<span class="lineNum">     198 </span>            :     oOverrideSessionKey,
+<span class="lineNum">     199 </span>            :     oNoRandomSeedFile,
+<span class="lineNum">     200 </span>            :     oNoAutoKeyRetrieve,
+<span class="lineNum">     201 </span>            :     oUseAgent,
+<span class="lineNum">     202 </span>            :     oMergeOnly,
+<span class="lineNum">     203 </span>            :     oTryAllSecrets,
+<span class="lineNum">     204 </span>            :     oTrustedKey,
+<span class="lineNum">     205 </span>            :     oNoExpensiveTrustChecks,
+<span class="lineNum">     206 </span>            :     oFixedListMode,
+<span class="lineNum">     207 </span>            :     oNoSigCache,
+<span class="lineNum">     208 </span>            :     oNoSigCreateCheck,
+<span class="lineNum">     209 </span>            :     oEmu3DESS2KBug,  /* will be removed in 1.1 */
+<span class="lineNum">     210 </span>            :     oEmuMDEncodeBug,
+<span class="lineNum">     211 </span>            : aTest };
+<span class="lineNum">     212 </span>            : 
+<span class="lineNum">     213 </span>            : 
+<span class="lineNum">     214 </span>            : static ARGPARSE_OPTS opts[] = {
+<span class="lineNum">     215 </span>            : 
+<span class="lineNum">     216 </span>            :     { 300, NULL, 0, N_(&quot;@Commands:\n &quot;) },
+<span class="lineNum">     217 </span>            : 
+<span class="lineNum">     218 </span>            :     { aSign, &quot;sign&quot;,      256, N_(&quot;|[file]|make a signature&quot;)},
+<span class="lineNum">     219 </span>            :     { aClearsign, &quot;clearsign&quot;, 256, N_(&quot;|[file]|make a clear text signature&quot;) },
+<span class="lineNum">     220 </span>            :     { aDetachedSign, &quot;detach-sign&quot;, 256, N_(&quot;make a detached signature&quot;)},
+<span class="lineNum">     221 </span>            :     { aEncr, &quot;encrypt&quot;,   256, N_(&quot;encrypt data&quot;)},
+<span class="lineNum">     222 </span>            :     { aSym, &quot;symmetric&quot;, 256, N_(&quot;encryption only with symmetric cipher&quot;)},
+<span class="lineNum">     223 </span>            :     { aStore, &quot;store&quot;,     256, N_(&quot;store only&quot;)},
+<span class="lineNum">     224 </span>            :     { aDecrypt, &quot;decrypt&quot;,   256, N_(&quot;decrypt data (default)&quot;)},
+<span class="lineNum">     225 </span>            :     { aVerify, &quot;verify&quot;   , 256, N_(&quot;verify a signature&quot;)},
+<span class="lineNum">     226 </span>            :     { aVerifyFiles, &quot;verify-files&quot; , 256, &quot;@&quot; },
+<span class="lineNum">     227 </span>            :     { aListKeys, &quot;list-keys&quot;, 256, N_(&quot;list keys&quot;)},
+<span class="lineNum">     228 </span>            :     { aListKeys, &quot;list-public-keys&quot;, 256, &quot;@&quot; },
+<span class="lineNum">     229 </span>            :     { aListSigs, &quot;list-sigs&quot;, 256, N_(&quot;list keys and signatures&quot;)},
+<span class="lineNum">     230 </span>            :     { aCheckKeys, &quot;check-sigs&quot;,256, N_(&quot;check key signatures&quot;)},
+<span class="lineNum">     231 </span>            :     { oFingerprint, &quot;fingerprint&quot;, 256, N_(&quot;list keys and fingerprints&quot;)},
+<span class="lineNum">     232 </span>            :     { aListSecretKeys, &quot;list-secret-keys&quot;, 256, N_(&quot;list secret keys&quot;)},
+<span class="lineNum">     233 </span>            :     { aKeygen,     &quot;gen-key&quot;,  256, N_(&quot;generate a new key pair&quot;)},
+<span class="lineNum">     234 </span>            :     { aDeleteKey, &quot;delete-key&quot;,256, N_(&quot;remove key from the public keyring&quot;)},
+<span class="lineNum">     235 </span>            :     { aDeleteSecretKey, &quot;delete-secret-key&quot;,256,
+<span class="lineNum">     236 </span>            :                                     N_(&quot;remove key from the secret keyring&quot;)},
+<span class="lineNum">     237 </span>            :     { aSignKey,  &quot;sign-key&quot;   ,256, N_(&quot;sign a key&quot;)},
+<span class="lineNum">     238 </span>            :     { aLSignKey, &quot;lsign-key&quot;  ,256, N_(&quot;sign a key locally&quot;)},
+<span class="lineNum">     239 </span>            :     { aEditKey,  &quot;edit-key&quot;   ,256, N_(&quot;sign or edit a key&quot;)},
+<span class="lineNum">     240 </span>            :     { aGenRevoke, &quot;gen-revoke&quot;,256, N_(&quot;generate a revocation certificate&quot;)},
+<span class="lineNum">     241 </span>            :     { aExport, &quot;export&quot;           , 256, N_(&quot;export keys&quot;) },
+<span class="lineNum">     242 </span>            :     { aSendKeys, &quot;send-keys&quot;     , 256, N_(&quot;export keys to a key server&quot;) },
+<span class="lineNum">     243 </span>            :     { aRecvKeys, &quot;recv-keys&quot;     , 256, N_(&quot;import keys from a key server&quot;) },
+<span class="lineNum">     244 </span>            :     { aExportAll, &quot;export-all&quot;    , 256, &quot;@&quot; },
+<span class="lineNum">     245 </span>            :     { aExportSecret, &quot;export-secret-keys&quot; , 256, &quot;@&quot; },
+<span class="lineNum">     246 </span>            :     { aExportSecretSub, &quot;export-secret-subkeys&quot; , 256, &quot;@&quot; },
+<span class="lineNum">     247 </span>            :     { aImport, &quot;import&quot;,      256     , N_(&quot;import/merge keys&quot;)},
+<span class="lineNum">     248 </span>            :     { aFastImport, &quot;fast-import&quot;,  256 , &quot;@&quot;},
+<span class="lineNum">     249 </span>            :     { aListPackets, &quot;list-packets&quot;,256,N_(&quot;list only the sequence of packets&quot;)},
+<span class="lineNum">     250 </span>            :     { aExportOwnerTrust,
+<span class="lineNum">     251 </span>            :               &quot;export-ownertrust&quot;, 256, N_(&quot;export the ownertrust values&quot;)},
+<span class="lineNum">     252 </span>            :     { aImportOwnerTrust,
+<span class="lineNum">     253 </span>            :               &quot;import-ownertrust&quot;, 256 , N_(&quot;import ownertrust values&quot;)},
+<span class="lineNum">     254 </span>            :     { aUpdateTrustDB,
+<span class="lineNum">     255 </span>            :               &quot;update-trustdb&quot;,0 , N_(&quot;update the trust database&quot;)},
+<span class="lineNum">     256 </span>            :     { aCheckTrustDB,
+<span class="lineNum">     257 </span>            :               &quot;check-trustdb&quot;,0 , N_(&quot;|[NAMES]|check the trust database&quot;)},
+<span class="lineNum">     258 </span>            :     { aFixTrustDB, &quot;fix-trustdb&quot;,0 , N_(&quot;fix a corrupted trust database&quot;)},
+<span class="lineNum">     259 </span>            :     { aDeArmor, &quot;dearmor&quot;, 256, N_(&quot;De-Armor a file or stdin&quot;) },
+<span class="lineNum">     260 </span>            :     { aDeArmor, &quot;dearmour&quot;, 256, &quot;@&quot; },
+<span class="lineNum">     261 </span>            :     { aEnArmor, &quot;enarmor&quot;, 256, N_(&quot;En-Armor a file or stdin&quot;) },
+<span class="lineNum">     262 </span>            :     { aEnArmor, &quot;enarmour&quot;, 256, &quot;@&quot; },
+<span class="lineNum">     263 </span>            :     { aPrintMD,  &quot;print-md&quot; , 256, N_(&quot;|algo [files]|print message digests&quot;)},
+<span class="lineNum">     264 </span>            :     { aPrimegen, &quot;gen-prime&quot; , 256, &quot;@&quot; },
+<span class="lineNum">     265 </span>            :     { aGenRandom, &quot;gen-random&quot; , 256, &quot;@&quot; },
+<span class="lineNum">     266 </span>            : 
+<span class="lineNum">     267 </span>            :     { 301, NULL, 0, N_(&quot;@\nOptions:\n &quot;) },
+<span class="lineNum">     268 </span>            : 
+<span class="lineNum">     269 </span>            :     { oArmor, &quot;armor&quot;,     0, N_(&quot;create ascii armored output&quot;)},
+<span class="lineNum">     270 </span>            :     { oArmor, &quot;armour&quot;,     0, &quot;@&quot; },
+<span class="lineNum">     271 </span>            :     { oRecipient, &quot;recipient&quot;, 2, N_(&quot;|NAME|encrypt for NAME&quot;)},
+<span class="lineNum">     272 </span>            :     { oRecipient, &quot;remote-user&quot;, 2, &quot;@&quot;},  /* old option name */
+<span class="lineNum">     273 </span>            :     { oDefRecipient, &quot;default-recipient&quot; ,2,
+<span class="lineNum">     274 </span>            :                                   N_(&quot;|NAME|use NAME as default recipient&quot;)},
+<span class="lineNum">     275 </span>            :     { oDefRecipientSelf, &quot;default-recipient-self&quot; ,0,
+<span class="lineNum">     276 </span>            :                                 N_(&quot;use the default key as default recipient&quot;)},
+<span class="lineNum">     277 </span>            :     { oNoDefRecipient, &quot;no-default-recipient&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     278 </span>            :     { oEncryptTo, &quot;encrypt-to&quot;, 2, &quot;@&quot; },
+<span class="lineNum">     279 </span>            :     { oNoEncryptTo, &quot;no-encrypt-to&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     280 </span>            :     { oUser, &quot;local-user&quot;,2, N_(&quot;use this user-id to sign or decrypt&quot;)},
+<span class="lineNum">     281 </span>            :     { oCompress, NULL,        1, N_(&quot;|N|set compress level N (0 disables)&quot;) },
+<span class="lineNum">     282 </span>            :     { oTextmodeShort, NULL,   0, &quot;@&quot;},
+<span class="lineNum">     283 </span>            :     { oTextmode, &quot;textmode&quot;,  0, N_(&quot;use canonical text mode&quot;)},
+<span class="lineNum">     284 </span>            :     { oOutput, &quot;output&quot;,    2, N_(&quot;use as output file&quot;)},
+<span class="lineNum">     285 </span>            :     { oVerbose, &quot;verbose&quot;,   0, N_(&quot;verbose&quot;) },
+<span class="lineNum">     286 </span>            :     { oQuiet,   &quot;quiet&quot;,   0, N_(&quot;be somewhat more quiet&quot;) },
+<span class="lineNum">     287 </span>            :     { oNoTTY, &quot;no-tty&quot;, 0, N_(&quot;don't use the terminal at all&quot;) },
+<span class="lineNum">     288 </span>            :     { oForceV3Sigs, &quot;force-v3-sigs&quot;, 0, N_(&quot;force v3 signatures&quot;) },
+<span class="lineNum">     289 </span>            :     { oForceMDC, &quot;force-mdc&quot;, 0, N_(&quot;always use a MDC for encryption&quot;) },
+<span class="lineNum">     290 </span>            :     { oDryRun, &quot;dry-run&quot;,   0, N_(&quot;do not make any changes&quot;) },
+<span class="lineNum">     291 </span>            :   /*{ oInteractive, &quot;interactive&quot;, 0, N_(&quot;prompt before overwriting&quot;) }, */
+<span class="lineNum">     292 </span>            :     { oUseAgent, &quot;use-agent&quot;,0, N_(&quot;use the gpg-agent&quot;)},
+<span class="lineNum">     293 </span>            :     { oBatch, &quot;batch&quot;,     0, N_(&quot;batch mode: never ask&quot;)},
+<span class="lineNum">     294 </span>            :     { oAnswerYes, &quot;yes&quot;,       0, N_(&quot;assume yes on most questions&quot;)},
+<span class="lineNum">     295 </span>            :     { oAnswerNo,  &quot;no&quot;,        0, N_(&quot;assume no on most questions&quot;)},
+<span class="lineNum">     296 </span>            :     { oKeyring, &quot;keyring&quot;   ,2, N_(&quot;add this keyring to the list of keyrings&quot;)},
+<span class="lineNum">     297 </span>            :     { oSecretKeyring, &quot;secret-keyring&quot; ,2, N_(&quot;add this secret keyring to the list&quot;)},
+<span class="lineNum">     298 </span>            :     { oDefaultKey, &quot;default-key&quot; ,2, N_(&quot;|NAME|use NAME as default secret key&quot;)},
+<span class="lineNum">     299 </span>            :     { oKeyServer, &quot;keyserver&quot;,2, N_(&quot;|HOST|use this keyserver to lookup keys&quot;)},
+<span class="lineNum">     300 </span>            :     { oCharset, &quot;charset&quot;   , 2, N_(&quot;|NAME|set terminal charset to NAME&quot;) },
+<span class="lineNum">     301 </span>            :     { oOptions, &quot;options&quot;   , 2, N_(&quot;read options from file&quot;)},
+<span class="lineNum">     302 </span>            : 
+<span class="lineNum">     303 </span>            :     { oDebug, &quot;debug&quot;     ,4|16, &quot;@&quot;},
+<span class="lineNum">     304 </span>            :     { oDebugAll, &quot;debug-all&quot; ,0, &quot;@&quot;},
+<span class="lineNum">     305 </span>            :     { oStatusFD, &quot;status-fd&quot; ,1, N_(&quot;|FD|write status info to this FD&quot;) },
+<span class="lineNum">     306 </span>            :     { oNoComment, &quot;no-comment&quot;, 0,   &quot;@&quot;},
+<span class="lineNum">     307 </span>            :     { oCompletesNeeded, &quot;completes-needed&quot;, 1, &quot;@&quot;},
+<span class="lineNum">     308 </span>            :     { oMarginalsNeeded, &quot;marginals-needed&quot;, 1, &quot;@&quot;},
+<span class="lineNum">     309 </span>            :     { oMaxCertDepth,    &quot;max-cert-depth&quot;, 1, &quot;@&quot; },
+<span class="lineNum">     310 </span>            :     { oTrustedKey, &quot;trusted-key&quot;, 2, N_(&quot;|KEYID|ulimately trust this key&quot;)},
+<span class="lineNum">     311 </span>            :     { oLoadExtension, &quot;load-extension&quot; ,2, N_(&quot;|FILE|load extension module FILE&quot;)},
+<span class="lineNum">     312 </span>            :     { oRFC1991, &quot;rfc1991&quot;,   0, N_(&quot;emulate the mode described in RFC1991&quot;)},
+<span class="lineNum">     313 </span>            :     { oOpenPGP, &quot;openpgp&quot;, 0, N_(&quot;set all packet, cipher and digest options to OpenPGP behavior&quot;)},
+<span class="lineNum">     314 </span>            :     { oS2KMode, &quot;s2k-mode&quot;,  1, N_(&quot;|N|use passphrase mode N&quot;)},
+<span class="lineNum">     315 </span>            :     { oS2KDigest, &quot;s2k-digest-algo&quot;,2,
+<span class="lineNum">     316 </span>            :                 N_(&quot;|NAME|use message digest algorithm NAME for passphrases&quot;)},
+<span class="lineNum">     317 </span>            :     { oS2KCipher, &quot;s2k-cipher-algo&quot;,2,
+<span class="lineNum">     318 </span>            :                 N_(&quot;|NAME|use cipher algorithm NAME for passphrases&quot;)},
+<span class="lineNum">     319 </span>            :     { oCipherAlgo, &quot;cipher-algo&quot;, 2 , N_(&quot;|NAME|use cipher algorithm NAME&quot;)},
+<span class="lineNum">     320 </span>            :     { oDigestAlgo, &quot;digest-algo&quot;, 2 , N_(&quot;|NAME|use message digest algorithm NAME&quot;)},
+<span class="lineNum">     321 </span>            :     { oCompressAlgo, &quot;compress-algo&quot;, 1 , N_(&quot;|N|use compress algorithm N&quot;)},
+<span class="lineNum">     322 </span>            :     { oThrowKeyid, &quot;throw-keyid&quot;, 0, N_(&quot;throw keyid field of encrypted packets&quot;)},
+<span class="lineNum">     323 </span>            :     { oNotation,   &quot;notation-data&quot;, 2, N_(&quot;|NAME=VALUE|use this notation data&quot;)},
+<span class="lineNum">     324 </span>            : 
+<span class="lineNum">     325 </span>            :     { 302, NULL, 0, N_(
+<span class="lineNum">     326 </span>            :   &quot;@\n(See the man page for a complete listing of all commands and options)\n&quot;
+<span class="lineNum">     327 </span>            :                       )},
+<span class="lineNum">     328 </span>            : 
+<span class="lineNum">     329 </span>            :     { 303, NULL, 0, N_(&quot;@\nExamples:\n\n&quot;
+<span class="lineNum">     330 </span>            :     &quot; -se -r Bob [file]          sign and encrypt for user Bob\n&quot;
+<span class="lineNum">     331 </span>            :     &quot; --clearsign [file]         make a clear text signature\n&quot;
+<span class="lineNum">     332 </span>            :     &quot; --detach-sign [file]       make a detached signature\n&quot;
+<span class="lineNum">     333 </span>            :     &quot; --list-keys [names]        show keys\n&quot;
+<span class="lineNum">     334 </span>            :     &quot; --fingerprint [names]      show fingerprints\n&quot;  ) },
+<span class="lineNum">     335 </span>            : 
+<span class="lineNum">     336 </span>            :   /* hidden options */
+<span class="lineNum">     337 </span>            :     { aExportOwnerTrust, &quot;list-ownertrust&quot;,0 , &quot;@&quot;},  /* alias */
+<span class="lineNum">     338 </span>            :     { aPrintMDs, &quot;print-mds&quot; , 256, &quot;@&quot;}, /* old */
+<span class="lineNum">     339 </span>            :     { aListTrustDB, &quot;list-trustdb&quot;,0 , &quot;@&quot;},
+<span class="lineNum">     340 </span>            :     { aListTrustPath, &quot;list-trust-path&quot;,0, &quot;@&quot;},
+<span class="lineNum">     341 </span>            :     { aPipeMode,  &quot;pipemode&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     342 </span>            :     { oKOption, NULL,    0, &quot;@&quot;},
+<span class="lineNum">     343 </span>            :     { oPasswdFD, &quot;passphrase-fd&quot;,1, &quot;@&quot; },
+<span class="lineNum">     344 </span>            :     { oCommandFD, &quot;command-fd&quot;,1, &quot;@&quot; },
+<span class="lineNum">     345 </span>            :     { oQuickRandom, &quot;quick-random&quot;, 0, &quot;@&quot;},
+<span class="lineNum">     346 </span>            :     { oNoVerbose, &quot;no-verbose&quot;, 0, &quot;@&quot;},
+<span class="lineNum">     347 </span>            :     { oTrustDBName, &quot;trustdb-name&quot;, 2, &quot;@&quot; },
+<span class="lineNum">     348 </span>            :     { oNoSecmemWarn, &quot;no-secmem-warning&quot;, 0, &quot;@&quot; }, /* used only by regression tests */
+<span class="lineNum">     349 </span>            :     { oNoArmor, &quot;no-armor&quot;,   0, &quot;@&quot;},
+<span class="lineNum">     350 </span>            :     { oNoArmor, &quot;no-armour&quot;,   0, &quot;@&quot;},
+<span class="lineNum">     351 </span>            :     { oNoDefKeyring, &quot;no-default-keyring&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     352 </span>            :     { oNoGreeting, &quot;no-greeting&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     353 </span>            :     { oNoOptions, &quot;no-options&quot;, 0, &quot;@&quot; }, /* shortcut for --options /dev/null */
+<span class="lineNum">     354 </span>            :     { oHomedir, &quot;homedir&quot;, 2, &quot;@&quot; },   /* defaults to &quot;~/.gnupg&quot; */
+<span class="lineNum">     355 </span>            :     { oNoBatch, &quot;no-batch&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     356 </span>            :     { oWithColons, &quot;with-colons&quot;, 0, &quot;@&quot;},
+<span class="lineNum">     357 </span>            :     { oWithKeyData,&quot;with-key-data&quot;, 0, &quot;@&quot;},
+<span class="lineNum">     358 </span>            :     { aListKeys, &quot;list-key&quot;, 0, &quot;@&quot; }, /* alias */
+<span class="lineNum">     359 </span>            :     { aListSigs, &quot;list-sig&quot;, 0, &quot;@&quot; }, /* alias */
+<span class="lineNum">     360 </span>            :     { aCheckKeys, &quot;check-sig&quot;,0, &quot;@&quot; }, /* alias */
+<span class="lineNum">     361 </span>            :     { oSkipVerify, &quot;skip-verify&quot;,0, &quot;@&quot; },
+<span class="lineNum">     362 </span>            :     { oCompressKeys, &quot;compress-keys&quot;,0, &quot;@&quot;},
+<span class="lineNum">     363 </span>            :     { oCompressSigs, &quot;compress-sigs&quot;,0, &quot;@&quot;},
+<span class="lineNum">     364 </span>            :     { oAlwaysTrust, &quot;always-trust&quot;, 0, &quot;@&quot;},
+<span class="lineNum">     365 </span>            :     { oEmuChecksumBug, &quot;emulate-checksum-bug&quot;, 0, &quot;@&quot;},
+<span class="lineNum">     366 </span>            :     { oRunAsShmCP, &quot;run-as-shm-coprocess&quot;, 4, &quot;@&quot; },
+<span class="lineNum">     367 </span>            :     { oSetFilename, &quot;set-filename&quot;, 2, &quot;@&quot; },
+<span class="lineNum">     368 </span>            :     { oSetPolicyURL, &quot;set-policy-url&quot;, 2, &quot;@&quot; },
+<span class="lineNum">     369 </span>            :     { oComment, &quot;comment&quot;, 2, &quot;@&quot; },
+<span class="lineNum">     370 </span>            :     { oDefaultComment, &quot;default-comment&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     371 </span>            :     { oNoVersion, &quot;no-version&quot;, 0, &quot;@&quot;},
+<span class="lineNum">     372 </span>            :     { oEmitVersion, &quot;emit-version&quot;, 0, &quot;@&quot;},
+<span class="lineNum">     373 </span>            :     { oNotDashEscaped, &quot;not-dash-escaped&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     374 </span>            :     { oEscapeFrom, &quot;escape-from-lines&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     375 </span>            :     { oLockOnce, &quot;lock-once&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     376 </span>            :     { oLockMultiple, &quot;lock-multiple&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     377 </span>            :     { oLockNever, &quot;lock-never&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     378 </span>            :     { oLoggerFD, &quot;logger-fd&quot;,1, &quot;@&quot; },
+<span class="lineNum">     379 </span>            :     { oUseEmbeddedFilename, &quot;use-embedded-filename&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     380 </span>            :     { oUtf8Strings, &quot;utf8-strings&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     381 </span>            :     { oNoUtf8Strings, &quot;no-utf8-strings&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     382 </span>            :     { oWithFingerprint, &quot;with-fingerprint&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     383 </span>            :     { oDisableCipherAlgo,  &quot;disable-cipher-algo&quot;, 2, &quot;@&quot; },
+<span class="lineNum">     384 </span>            :     { oDisablePubkeyAlgo,  &quot;disable-pubkey-algo&quot;, 2, &quot;@&quot; },
+<span class="lineNum">     385 </span>            :     { oAllowNonSelfsignedUID, &quot;allow-non-selfsigned-uid&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     386 </span>            :     { oAllowFreeformUID, &quot;allow-freeform-uid&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     387 </span>            :     { oNoLiteral, &quot;no-literal&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     388 </span>            :     { oSetFilesize, &quot;set-filesize&quot;, 20, &quot;@&quot; },
+<span class="lineNum">     389 </span>            :     { oHonorHttpProxy,&quot;honor-http-proxy&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     390 </span>            :     { oFastListMode,&quot;fast-list-mode&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     391 </span>            :     { oFixedListMode,&quot;fixed-list-mode&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     392 </span>            :     { oListOnly, &quot;list-only&quot;, 0, &quot;@&quot;},
+<span class="lineNum">     393 </span>            :     { oIgnoreTimeConflict, &quot;ignore-time-conflict&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     394 </span>            :     { oIgnoreCrcError, &quot;ignore-crc-error&quot;, 0,&quot;@&quot; },
+<span class="lineNum">     395 </span>            :     { oShowSessionKey, &quot;show-session-key&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     396 </span>            :     { oOverrideSessionKey, &quot;override-session-key&quot;, 2, &quot;@&quot; },
+<span class="lineNum">     397 </span>            :     { oNoRandomSeedFile,  &quot;no-random-seed-file&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     398 </span>            :     { oNoAutoKeyRetrieve, &quot;no-auto-key-retrieve&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     399 </span>            :     { oNoSigCache,         &quot;no-sig-cache&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     400 </span>            :     { oNoSigCreateCheck,   &quot;no-sig-create-check&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     401 </span>            :     { oMergeOnly,         &quot;merge-only&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     402 </span>            :     { oAllowSecretKeyImport, &quot;allow-secret-key-import&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     403 </span>            :     { oTryAllSecrets,  &quot;try-all-secrets&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     404 </span>            :     { oEnableSpecialFilenames, &quot;enable-special-filenames&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     405 </span>            :     { oNoExpensiveTrustChecks, &quot;no-expensive-trust-checks&quot;, 0, &quot;@&quot; },
+<span class="lineNum">     406 </span>            :     { aDeleteSecretAndPublicKey, &quot;delete-secret-and-public-key&quot;,256, &quot;@&quot; },
+<span class="lineNum">     407 </span>            :     { oEmu3DESS2KBug,  &quot;emulate-3des-s2k-bug&quot;, 0, &quot;@&quot;},
+<span class="lineNum">     408 </span>            :     { oEmuMDEncodeBug,  &quot;emulate-md-encode-bug&quot;, 0, &quot;@&quot;},
+<span class="lineNum">     409 </span>            : {0} };
+<span class="lineNum">     410 </span>            : 
+<span class="lineNum">     411 </span>            : 
+<span class="lineNum">     412 </span>            : 
+<span class="lineNum">     413 </span>            : int g10_errors_seen = 0;
+<span class="lineNum">     414 </span>            : 
+<span class="lineNum">     415 </span>            : static int utf8_strings = 0;
+<span class="lineNum">     416 </span>            : static int maybe_setuid = 1;
+<span class="lineNum">     417 </span>            : 
+<span class="lineNum">     418 </span>            : static char *build_list( const char *text,
+<span class="lineNum">     419 </span>            :                          const char *(*mapf)(int), int (*chkf)(int) );
+<span class="lineNum">     420 </span>            : static void set_cmd( enum cmd_and_opt_values *ret_cmd,
+<span class="lineNum">     421 </span>            :                         enum cmd_and_opt_values new_cmd );
+<span class="lineNum">     422 </span>            : static void print_hex( byte *p, size_t n );
+<span class="lineNum">     423 </span>            : static void print_mds( const char *fname, int algo );
+<span class="lineNum">     424 </span>            : static void add_notation_data( const char *string );
+<span class="lineNum">     425 </span>            : static int  check_policy_url( const char *s );
+<a name="426"><span class="lineNum">     426 </span>            : </a>
+<span class="lineNum">     427 </span>            : const char *
+<span class="lineNum">     428 </span><span class="lineNoCov">          0 : strusage( int level )</span>
+<span class="lineNum">     429 </span>            : {
+<span class="lineNum">     430 </span>            :   static char *digests, *pubkeys, *ciphers;
+<span class="lineNum">     431 </span>            :     const char *p;
+<span class="lineNum">     432 </span><span class="lineNoCov">          0 :     switch( level ) {</span>
+<span class="lineNum">     433 </span><span class="lineNoCov">          0 :       case 11: p = &quot;gpg (GnuPG)&quot;;</span>
+<span class="lineNum">     434 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">     435 </span><span class="lineNoCov">          0 :       case 13: p = VERSION; break;</span>
+<span class="lineNum">     436 </span><span class="lineNoCov">          0 :       case 17: p = PRINTABLE_OS_NAME; break;</span>
+<span class="lineNum">     437 </span><span class="lineNoCov">          0 :       case 19: p =</span>
+<span class="lineNum">     438 </span>            :             _(&quot;Please report bugs to &lt;gnupg-bugs@gnu.org&gt;.\n&quot;);
+<span class="lineNum">     439 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">     440 </span>            :       case 1:
+<span class="lineNum">     441 </span><span class="lineNoCov">          0 :       case 40:  p =</span>
+<span class="lineNum">     442 </span>            :             _(&quot;Usage: gpg [options] [files] (-h for help)&quot;);
+<span class="lineNum">     443 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">     444 </span><span class="lineNoCov">          0 :       case 41:  p =</span>
+<span class="lineNum">     445 </span>            :             _(&quot;Syntax: gpg [options] [files]\n&quot;
+<span class="lineNum">     446 </span>            :               &quot;sign, check, encrypt or decrypt\n&quot;
+<span class="lineNum">     447 </span>            :               &quot;default operation depends on the input data\n&quot;);
+<span class="lineNum">     448 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">     449 </span>            : 
+<span class="lineNum">     450 </span><span class="lineNoCov">          0 :       case 31: p = &quot;\nHome: &quot;; break;</span>
+<span class="lineNum">     451 </span><span class="lineNoCov">          0 :       case 32: p = opt.homedir; break;</span>
+<span class="lineNum">     452 </span><span class="lineNoCov">          0 :       case 33: p = _(&quot;\nSupported algorithms:\n&quot;); break;</span>
+<span class="lineNum">     453 </span>            :       case 34:
+<span class="lineNum">     454 </span><span class="lineNoCov">          0 :         if( !ciphers )</span>
+<span class="lineNum">     455 </span><span class="lineNoCov">          0 :             ciphers = build_list(&quot;Cipher: &quot;, cipher_algo_to_string,</span>
+<span class="lineNum">     456 </span>            :                                                         check_cipher_algo );
+<span class="lineNum">     457 </span><span class="lineNoCov">          0 :         p = ciphers;</span>
+<span class="lineNum">     458 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">     459 </span>            :       case 35:
+<span class="lineNum">     460 </span><span class="lineNoCov">          0 :         if( !pubkeys )</span>
+<span class="lineNum">     461 </span><span class="lineNoCov">          0 :             pubkeys = build_list(&quot;Pubkey: &quot;, pubkey_algo_to_string,</span>
+<span class="lineNum">     462 </span>            :                                                         check_pubkey_algo );
+<span class="lineNum">     463 </span><span class="lineNoCov">          0 :         p = pubkeys;</span>
+<span class="lineNum">     464 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">     465 </span>            :       case 36:
+<span class="lineNum">     466 </span><span class="lineNoCov">          0 :         if( !digests )</span>
+<span class="lineNum">     467 </span><span class="lineNoCov">          0 :             digests = build_list(&quot;Hash: &quot;, digest_algo_to_string,</span>
+<span class="lineNum">     468 </span>            :                                                         check_digest_algo );
+<span class="lineNum">     469 </span><span class="lineNoCov">          0 :         p = digests;</span>
+<span class="lineNum">     470 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">     471 </span>            : 
+<span class="lineNum">     472 </span>            : 
+<span class="lineNum">     473 </span><span class="lineNoCov">          0 :       default:  p = default_strusage(level);</span>
+<span class="lineNum">     474 </span>            :     }
+<span class="lineNum">     475 </span><span class="lineNoCov">          0 :     return p;</span>
+<span class="lineNum">     476 </span>            : }
+<span class="lineNum">     477 </span>            : 
+<a name="478"><span class="lineNum">     478 </span>            : </a>
+<span class="lineNum">     479 </span>            : static char *
+<span class="lineNum">     480 </span><span class="lineNoCov">          0 : build_list( const char *text, const char * (*mapf)(int), int (*chkf)(int) )</span>
+<span class="lineNum">     481 </span>            : {
+<span class="lineNum">     482 </span>            :     int i;
+<span class="lineNum">     483 </span>            :     const char *s;
+<span class="lineNum">     484 </span><span class="lineNoCov">          0 :     size_t n=strlen(text)+2;</span>
+<span class="lineNum">     485 </span>            :     char *list, *p;
+<span class="lineNum">     486 </span>            : 
+<span class="lineNum">     487 </span><span class="lineNoCov">          0 :     if( maybe_setuid )</span>
+<span class="lineNum">     488 </span><span class="lineNoCov">          0 :         secmem_init( 0 );    /* drop setuid */</span>
+<span class="lineNum">     489 </span>            : 
+<span class="lineNum">     490 </span><span class="lineNoCov">          0 :     for(i=1; i &lt; 110; i++ )</span>
+<span class="lineNum">     491 </span><span class="lineNoCov">          0 :         if( !chkf(i) &amp;&amp; (s=mapf(i)) )</span>
+<span class="lineNum">     492 </span><span class="lineNoCov">          0 :             n += strlen(s) + 2;</span>
+<span class="lineNum">     493 </span><span class="lineNoCov">          0 :     list = m_alloc( 21 + n ); *list = 0;</span>
+<span class="lineNum">     494 </span><span class="lineNoCov">          0 :     for(p=NULL, i=1; i &lt; 110; i++ ) {</span>
+<span class="lineNum">     495 </span><span class="lineNoCov">          0 :         if( !chkf(i) &amp;&amp; (s=mapf(i)) ) {</span>
+<span class="lineNum">     496 </span><span class="lineNoCov">          0 :             if( !p )</span>
+<span class="lineNum">     497 </span><span class="lineNoCov">          0 :                 p = stpcpy( list, text );</span>
+<span class="lineNum">     498 </span>            :             else
+<span class="lineNum">     499 </span><span class="lineNoCov">          0 :                 p = stpcpy( p, &quot;, &quot;);</span>
+<span class="lineNum">     500 </span><span class="lineNoCov">          0 :             p = stpcpy(p, s );</span>
+<span class="lineNum">     501 </span>            :         }
+<span class="lineNum">     502 </span>            :     }
+<span class="lineNum">     503 </span><span class="lineNoCov">          0 :     if( p )</span>
+<span class="lineNum">     504 </span><span class="lineNoCov">          0 :         p = stpcpy(p, &quot;\n&quot; );</span>
+<span class="lineNum">     505 </span><span class="lineNoCov">          0 :     return list;</span>
+<span class="lineNum">     506 </span>            : }
+<span class="lineNum">     507 </span>            : 
+<a name="508"><span class="lineNum">     508 </span>            : </a>
+<span class="lineNum">     509 </span>            : static void
+<span class="lineNum">     510 </span><span class="lineCov">        381 : i18n_init(void)</span>
+<span class="lineNum">     511 </span>            : {
+<span class="lineNum">     512 </span>            :   #ifdef USE_SIMPLE_GETTEXT
+<span class="lineNum">     513 </span>            :     set_gettext_file( PACKAGE );
+<span class="lineNum">     514 </span>            :   #else
+<span class="lineNum">     515 </span>            :   #ifdef ENABLE_NLS
+<span class="lineNum">     516 </span>            :     #ifdef HAVE_LC_MESSAGES
+<span class="lineNum">     517 </span><span class="lineCov">        381 :        setlocale( LC_TIME, &quot;&quot; );</span>
+<span class="lineNum">     518 </span><span class="lineCov">        381 :        setlocale( LC_MESSAGES, &quot;&quot; );</span>
+<span class="lineNum">     519 </span>            :     #else
+<span class="lineNum">     520 </span>            :        setlocale( LC_ALL, &quot;&quot; );
+<span class="lineNum">     521 </span>            :     #endif
+<span class="lineNum">     522 </span><span class="lineCov">        381 :     bindtextdomain( PACKAGE, G10_LOCALEDIR );</span>
+<span class="lineNum">     523 </span><span class="lineCov">        381 :     textdomain( PACKAGE );</span>
+<span class="lineNum">     524 </span>            :   #endif
+<span class="lineNum">     525 </span>            :   #endif
+<span class="lineNum">     526 </span><span class="lineCov">        381 : }</span>
+<a name="527"><span class="lineNum">     527 </span>            : </a>
+<span class="lineNum">     528 </span>            : static void
+<span class="lineNum">     529 </span><span class="lineNoCov">          0 : wrong_args( const char *text)</span>
+<span class="lineNum">     530 </span>            : {
+<span class="lineNum">     531 </span><span class="lineNoCov">          0 :     fputs(_(&quot;usage: gpg [options] &quot;),stderr);</span>
+<span class="lineNum">     532 </span><span class="lineNoCov">          0 :     fputs(text,stderr);</span>
+<span class="lineNum">     533 </span><span class="lineNoCov">          0 :     putc('\n',stderr);</span>
+<span class="lineNum">     534 </span><span class="lineNoCov">          0 :     g10_exit(2);</span>
+<span class="lineNum">     535 </span>            : }
+<span class="lineNum">     536 </span>            : 
+<a name="537"><span class="lineNum">     537 </span>            : </a>
+<span class="lineNum">     538 </span>            : static char *
+<span class="lineNum">     539 </span><span class="lineNoCov">          0 : make_username( const char *string )</span>
+<span class="lineNum">     540 </span>            : {
+<span class="lineNum">     541 </span>            :     char *p;
+<span class="lineNum">     542 </span><span class="lineNoCov">          0 :     if( utf8_strings )</span>
+<span class="lineNum">     543 </span><span class="lineNoCov">          0 :         p = m_strdup(string);</span>
+<span class="lineNum">     544 </span>            :     else
+<span class="lineNum">     545 </span><span class="lineNoCov">          0 :         p = native_to_utf8( string );</span>
+<span class="lineNum">     546 </span><span class="lineNoCov">          0 :     return p;</span>
+<span class="lineNum">     547 </span>            : }
+<span class="lineNum">     548 </span>            : 
+<a name="549"><span class="lineNum">     549 </span>            : </a>
+<span class="lineNum">     550 </span>            : static void
+<span class="lineNum">     551 </span><span class="lineCov">        381 : set_debug(void)</span>
+<span class="lineNum">     552 </span>            : {
+<span class="lineNum">     553 </span><span class="lineCov">        381 :     if( opt.debug &amp; DBG_MEMORY_VALUE )</span>
+<span class="lineNum">     554 </span><span class="lineNoCov">          0 :         memory_debug_mode = 1;</span>
+<span class="lineNum">     555 </span><span class="lineCov">        381 :     if( opt.debug &amp; DBG_MEMSTAT_VALUE )</span>
+<span class="lineNum">     556 </span><span class="lineNoCov">          0 :         memory_stat_debug_mode = 1;</span>
+<span class="lineNum">     557 </span><span class="lineCov">        381 :     if( opt.debug &amp; DBG_MPI_VALUE )</span>
+<span class="lineNum">     558 </span><span class="lineNoCov">          0 :         mpi_debug_mode = 1;</span>
+<span class="lineNum">     559 </span><span class="lineCov">        381 :     if( opt.debug &amp; DBG_CIPHER_VALUE )</span>
+<span class="lineNum">     560 </span><span class="lineNoCov">          0 :         g10c_debug_mode = 1;</span>
+<span class="lineNum">     561 </span><span class="lineCov">        381 :     if( opt.debug &amp; DBG_IOBUF_VALUE )</span>
+<span class="lineNum">     562 </span><span class="lineNoCov">          0 :         iobuf_debug_mode = 1;</span>
+<span class="lineNum">     563 </span>            : 
+<span class="lineNum">     564 </span><span class="lineCov">        381 : }</span>
+<span class="lineNum">     565 </span>            : 
+<a name="566"><span class="lineNum">     566 </span>            : </a>
+<span class="lineNum">     567 </span>            : static void
+<span class="lineNum">     568 </span><span class="lineNoCov">          0 : set_cmd( enum cmd_and_opt_values *ret_cmd, enum cmd_and_opt_values new_cmd )</span>
+<span class="lineNum">     569 </span>            : {
+<span class="lineNum">     570 </span><span class="lineNoCov">          0 :     enum cmd_and_opt_values cmd = *ret_cmd;</span>
+<span class="lineNum">     571 </span>            : 
+<span class="lineNum">     572 </span><span class="lineNoCov">          0 :     if( !cmd || cmd == new_cmd )</span>
+<span class="lineNum">     573 </span><span class="lineNoCov">          0 :         cmd = new_cmd;</span>
+<span class="lineNum">     574 </span><span class="lineNoCov">          0 :     else if( cmd == aSign &amp;&amp; new_cmd == aEncr )</span>
+<span class="lineNum">     575 </span><span class="lineNoCov">          0 :         cmd = aSignEncr;</span>
+<span class="lineNum">     576 </span><span class="lineNoCov">          0 :     else if( cmd == aEncr &amp;&amp; new_cmd == aSign )</span>
+<span class="lineNum">     577 </span><span class="lineNoCov">          0 :         cmd = aSignEncr;</span>
+<span class="lineNum">     578 </span><span class="lineNoCov">          0 :     else if( cmd == aKMode &amp;&amp; new_cmd == aSym )</span>
+<span class="lineNum">     579 </span><span class="lineNoCov">          0 :         cmd = aKModeC;</span>
+<span class="lineNum">     580 </span><span class="lineNoCov">          0 :     else if(    ( cmd == aSign     &amp;&amp; new_cmd == aClearsign )</span>
+<span class="lineNum">     581 </span><span class="lineNoCov">          0 :              || ( cmd == aClearsign &amp;&amp; new_cmd == aSign )  )</span>
+<span class="lineNum">     582 </span><span class="lineNoCov">          0 :         cmd = aClearsign;</span>
+<span class="lineNum">     583 </span>            :     else {
+<span class="lineNum">     584 </span>            :         log_error(_(&quot;conflicting commands\n&quot;));
+<span class="lineNum">     585 </span><span class="lineNoCov">          0 :         g10_exit(2);</span>
+<span class="lineNum">     586 </span>            :     }
+<span class="lineNum">     587 </span>            : 
+<span class="lineNum">     588 </span><span class="lineNoCov">          0 :     *ret_cmd = cmd;</span>
+<span class="lineNum">     589 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     590 </span>            : 
+<span class="lineNum">     591 </span>            : 
+<a name="592"><span class="lineNum">     592 </span>            : </a>
+<span class="lineNum">     593 </span>            : int
+<span class="lineNum">     594 </span><span class="lineCov">        381 : main( int argc, char **argv )</span>
+<span class="lineNum">     595 </span>            : {
+<span class="lineNum">     596 </span>            :     ARGPARSE_ARGS pargs;
+<span class="lineNum">     597 </span>            :     IOBUF a;
+<span class="lineNum">     598 </span><span class="lineCov">        381 :     int rc=0;</span>
+<span class="lineNum">     599 </span>            :     int orig_argc;
+<span class="lineNum">     600 </span>            :     char **orig_argv;
+<span class="lineNum">     601 </span>            :     const char *fname;
+<span class="lineNum">     602 </span>            :     char *username;
+<span class="lineNum">     603 </span>            :     int may_coredump;
+<span class="lineNum">     604 </span><span class="lineCov">        381 :     STRLIST sl, remusr= NULL, locusr=NULL;</span>
+<span class="lineNum">     605 </span><span class="lineCov">        381 :     STRLIST nrings=NULL, sec_nrings=NULL;</span>
+<span class="lineNum">     606 </span>            :     armor_filter_context_t afx;
+<span class="lineNum">     607 </span><span class="lineCov">        381 :     int detached_sig = 0;</span>
+<span class="lineNum">     608 </span><span class="lineCov">        381 :     FILE *configfp = NULL;</span>
+<span class="lineNum">     609 </span><span class="lineCov">        381 :     char *configname = NULL;</span>
+<span class="lineNum">     610 </span>            :     unsigned configlineno;
+<span class="lineNum">     611 </span><span class="lineCov">        381 :     int parse_debug = 0;</span>
+<span class="lineNum">     612 </span><span class="lineCov">        381 :     int default_config = 1;</span>
+<span class="lineNum">     613 </span><span class="lineCov">        381 :     int default_keyring = 1;</span>
+<span class="lineNum">     614 </span><span class="lineCov">        381 :     int greeting = 0;</span>
+<span class="lineNum">     615 </span><span class="lineCov">        381 :     int nogreeting = 0;</span>
+<span class="lineNum">     616 </span><span class="lineCov">        381 :     int use_random_seed = 1;</span>
+<span class="lineNum">     617 </span><span class="lineCov">        381 :     enum cmd_and_opt_values cmd = 0;</span>
+<span class="lineNum">     618 </span><span class="lineCov">        381 :     const char *trustdb_name = NULL;</span>
+<span class="lineNum">     619 </span><span class="lineCov">        381 :     char *def_cipher_string = NULL;</span>
+<span class="lineNum">     620 </span><span class="lineCov">        381 :     char *def_digest_string = NULL;</span>
+<span class="lineNum">     621 </span><span class="lineCov">        381 :     char *s2k_cipher_string = NULL;</span>
+<span class="lineNum">     622 </span><span class="lineCov">        381 :     char *s2k_digest_string = NULL;</span>
+<span class="lineNum">     623 </span><span class="lineCov">        381 :     int pwfd = -1;</span>
+<span class="lineNum">     624 </span><span class="lineCov">        381 :     int with_fpr = 0; /* make an option out of --fingerprint */</span>
+<span class="lineNum">     625 </span>            :   #ifdef USE_SHM_COPROCESSING
+<span class="lineNum">     626 </span><span class="lineCov">        381 :     ulong requested_shm_size=0;</span>
+<span class="lineNum">     627 </span>            :   #endif
+<span class="lineNum">     628 </span>            : 
+<span class="lineNum">     629 </span><span class="lineCov">        381 :     trap_unaligned();</span>
+<span class="lineNum">     630 </span><span class="lineCov">        381 :     secmem_set_flags( secmem_get_flags() | 2 ); /* suspend warnings */</span>
+<span class="lineNum">     631 </span>            :     /* Please note that we may running SUID(ROOT), so be very CAREFUL
+<span class="lineNum">     632 </span>            :      * when adding any stuff between here and the call to
+<span class="lineNum">     633 </span>            :      * secmem_init()  somewhere after the option parsing
+<span class="lineNum">     634 </span>            :      */
+<span class="lineNum">     635 </span><span class="lineCov">        381 :     log_set_name(&quot;gpg&quot;);</span>
+<span class="lineNum">     636 </span><span class="lineCov">        381 :     secure_random_alloc(); /* put random number into secure memory */</span>
+<span class="lineNum">     637 </span><span class="lineCov">        381 :     may_coredump = 1;</span>
+<span class="lineNum">     638 </span>            : //    may_coredump = disable_core_dumps();
+<span class="lineNum">     639 </span>            : //    init_signals();
+<span class="lineNum">     640 </span><span class="lineCov">        381 :     create_dotlock(NULL); /* register locking cleanup */</span>
+<span class="lineNum">     641 </span><span class="lineCov">        381 :     i18n_init();</span>
+<span class="lineNum">     642 </span>            : 
+<span class="lineNum">     643 </span><span class="lineCov">        381 :     opt.command_fd = -1; /* no command fd */</span>
+<span class="lineNum">     644 </span><span class="lineCov">        381 :     opt.compress = -1; /* defaults to standard compress level */</span>
+<span class="lineNum">     645 </span>            :     /* note: if you change these lines, look at oOpenPGP */
+<span class="lineNum">     646 </span><span class="lineCov">        381 :     opt.def_cipher_algo = 0;</span>
+<span class="lineNum">     647 </span><span class="lineCov">        381 :     opt.def_digest_algo = 0;</span>
+<span class="lineNum">     648 </span><span class="lineCov">        381 :     opt.def_compress_algo = 2;</span>
+<span class="lineNum">     649 </span><span class="lineCov">        381 :     opt.s2k_mode = 3; /* iterated+salted */</span>
+<span class="lineNum">     650 </span><span class="lineCov">        381 :     opt.s2k_digest_algo = DIGEST_ALGO_SHA1;</span>
+<span class="lineNum">     651 </span><span class="lineCov">        381 :     opt.s2k_cipher_algo = CIPHER_ALGO_CAST5;</span>
+<span class="lineNum">     652 </span><span class="lineCov">        381 :     opt.completes_needed = 1;</span>
+<span class="lineNum">     653 </span><span class="lineCov">        381 :     opt.marginals_needed = 3;</span>
+<span class="lineNum">     654 </span><span class="lineCov">        381 :     opt.max_cert_depth = 5;</span>
+<span class="lineNum">     655 </span><span class="lineCov">        381 :     opt.pgp2_workarounds = 1;</span>
+<span class="lineNum">     656 </span><span class="lineCov">        381 :     opt.auto_key_retrieve = 1;</span>
+<span class="lineNum">     657 </span>            :   #ifdef __MINGW32__
+<span class="lineNum">     658 </span>            :     opt.homedir = read_w32_registry_string( NULL, &quot;Software\\GNU\\GnuPG&quot;, &quot;HomeDir&quot; );
+<span class="lineNum">     659 </span>            :   #else
+<span class="lineNum">     660 </span><span class="lineCov">        381 :     opt.homedir = getenv(&quot;GNUPGHOME&quot;);</span>
+<span class="lineNum">     661 </span>            :   #endif
+<span class="lineNum">     662 </span><span class="lineCov">        381 :     if( !opt.homedir || !*opt.homedir ) {</span>
+<span class="lineNum">     663 </span><span class="lineCov">        381 :         opt.homedir = GNUPG_HOMEDIR;</span>
+<span class="lineNum">     664 </span>            :     }
+<span class="lineNum">     665 </span>            : 
+<span class="lineNum">     666 </span>            :     /* check whether we have a config file on the commandline */
+<span class="lineNum">     667 </span><span class="lineCov">        381 :     orig_argc = argc;</span>
+<span class="lineNum">     668 </span><span class="lineCov">        381 :     orig_argv = argv;</span>
+<span class="lineNum">     669 </span><span class="lineCov">        381 :     pargs.argc = &amp;argc;</span>
+<span class="lineNum">     670 </span><span class="lineCov">        381 :     pargs.argv = &amp;argv;</span>
+<span class="lineNum">     671 </span><span class="lineCov">        381 :     pargs.flags= 1|(1&lt;&lt;6);  /* do not remove the args, ignore version */</span>
+<span class="lineNum">     672 </span><span class="lineCov">        762 :     while( arg_parse( &amp;pargs, opts) ) {</span>
+<span class="lineNum">     673 </span><span class="lineNoCov">          0 :         if( pargs.r_opt == oDebug || pargs.r_opt == oDebugAll )</span>
+<span class="lineNum">     674 </span><span class="lineNoCov">          0 :             parse_debug++;</span>
+<span class="lineNum">     675 </span><span class="lineNoCov">          0 :         else if( pargs.r_opt == oOptions ) {</span>
+<span class="lineNum">     676 </span>            :             /* yes there is one, so we do not try the default one, but
+<span class="lineNum">     677 </span>            :              * read the option file when it is encountered at the commandline
+<span class="lineNum">     678 </span>            :              */
+<span class="lineNum">     679 </span><span class="lineNoCov">          0 :             default_config = 0;</span>
+<span class="lineNum">     680 </span>            :         }
+<span class="lineNum">     681 </span><span class="lineNoCov">          0 :         else if( pargs.r_opt == oNoOptions )</span>
+<span class="lineNum">     682 </span><span class="lineNoCov">          0 :             default_config = 0; /* --no-options */</span>
+<span class="lineNum">     683 </span><span class="lineNoCov">          0 :         else if( pargs.r_opt == oHomedir )</span>
+<span class="lineNum">     684 </span><span class="lineNoCov">          0 :             opt.homedir = pargs.r.ret_str;</span>
+<span class="lineNum">     685 </span>            :       #ifdef USE_SHM_COPROCESSING
+<span class="lineNum">     686 </span><span class="lineNoCov">          0 :         else if( pargs.r_opt == oRunAsShmCP ) {</span>
+<span class="lineNum">     687 </span>            :             /* does not make sense in a options file, we do it here,
+<span class="lineNum">     688 </span>            :              * so that we are the able to drop setuid as soon as possible */
+<span class="lineNum">     689 </span><span class="lineNoCov">          0 :             opt.shm_coprocess = 1;</span>
+<span class="lineNum">     690 </span><span class="lineNoCov">          0 :             requested_shm_size = pargs.r.ret_ulong;</span>
+<span class="lineNum">     691 </span>            :         }
+<span class="lineNum">     692 </span><span class="lineNoCov">          0 :         else if ( pargs.r_opt == oStatusFD ) {</span>
+<span class="lineNum">     693 </span>            :             /* this is needed to ensure that the status-fd filedescriptor is
+<span class="lineNum">     694 </span>            :              * initialized when init_shm_coprocessing() is called */
+<span class="lineNum">     695 </span><span class="lineNoCov">          0 :             set_status_fd( iobuf_translate_file_handle (pargs.r.ret_int, 1) );</span>
+<span class="lineNum">     696 </span>            :         }
+<span class="lineNum">     697 </span>            :       #endif
+<span class="lineNum">     698 </span>            :     }
+<span class="lineNum">     699 </span>            : 
+<span class="lineNum">     700 </span>            :   #ifdef HAVE_DOSISH_SYSTEM
+<span class="lineNum">     701 </span>            :     if ( strchr (opt.homedir,'\\') ) {
+<span class="lineNum">     702 </span>            :         char *d, *buf = m_alloc (strlen (opt.homedir)+1);
+<span class="lineNum">     703 </span>            :         const char *s = opt.homedir;
+<span class="lineNum">     704 </span>            :         for (d=buf,s=opt.homedir; *s; s++)
+<span class="lineNum">     705 </span>            :             *d++ = *s == '\\'? '/': *s;
+<span class="lineNum">     706 </span>            :         *d = 0;
+<span class="lineNum">     707 </span>            :         opt.homedir = buf;
+<span class="lineNum">     708 </span>            :     }
+<span class="lineNum">     709 </span>            :   #endif
+<span class="lineNum">     710 </span>            : 
+<span class="lineNum">     711 </span>            :   #ifdef USE_SHM_COPROCESSING
+<span class="lineNum">     712 </span><span class="lineCov">        381 :     if( opt.shm_coprocess ) {</span>
+<span class="lineNum">     713 </span><span class="lineNoCov">          0 :         init_shm_coprocessing(requested_shm_size, 1 );</span>
+<span class="lineNum">     714 </span>            :     }
+<span class="lineNum">     715 </span>            :   #endif
+<span class="lineNum">     716 </span>            :     /* initialize the secure memory. */
+<span class="lineNum">     717 </span><span class="lineCov">        381 :     secmem_init( 16384 );</span>
+<span class="lineNum">     718 </span><span class="lineCov">        381 :     maybe_setuid = 0;</span>
+<span class="lineNum">     719 </span>            :     /* Okay, we are now working under our real uid */
+<span class="lineNum">     720 </span>            : 
+<span class="lineNum">     721 </span><span class="lineCov">        381 :     if( default_config )</span>
+<span class="lineNum">     722 </span><span class="lineCov">        381 :         configname = make_filename(opt.homedir, &quot;options&quot;, NULL );</span>
+<span class="lineNum">     723 </span>            : 
+<span class="lineNum">     724 </span><span class="lineCov">        381 :     argc = orig_argc;</span>
+<span class="lineNum">     725 </span><span class="lineCov">        381 :     argv = orig_argv;</span>
+<span class="lineNum">     726 </span><span class="lineCov">        381 :     pargs.argc = &amp;argc;</span>
+<span class="lineNum">     727 </span><span class="lineCov">        381 :     pargs.argv = &amp;argv;</span>
+<span class="lineNum">     728 </span><span class="lineCov">        381 :     pargs.flags=  1;  /* do not remove the args */</span>
+<span class="lineNum">     729 </span>            :   next_pass:
+<span class="lineNum">     730 </span><span class="lineCov">        381 :     if( configname ) {</span>
+<span class="lineNum">     731 </span><span class="lineCov">        381 :         configlineno = 0;</span>
+<span class="lineNum">     732 </span><span class="lineCov">        381 :         configfp = fopen( configname, &quot;r&quot; );</span>
+<span class="lineNum">     733 </span><span class="lineCov">        381 :         if( !configfp ) {</span>
+<span class="lineNum">     734 </span><span class="lineCov">        381 :             if( default_config ) {</span>
+<span class="lineNum">     735 </span>            :                 if( parse_debug )
+<span class="lineNum">     736 </span>            :                     log_info(_(&quot;NOTE: no default option file `%s'\n&quot;),
+<span class="lineNum">     737 </span>            :                                                             configname );
+<span class="lineNum">     738 </span>            :             }
+<span class="lineNum">     739 </span>            :             else {
+<span class="lineNum">     740 </span>            :                 log_error(_(&quot;option file `%s': %s\n&quot;),
+<span class="lineNum">     741 </span>            :                                     configname, strerror(errno) );
+<span class="lineNum">     742 </span><span class="lineNoCov">          0 :                 g10_exit(2);</span>
+<span class="lineNum">     743 </span>            :             }
+<span class="lineNum">     744 </span><span class="lineCov">        381 :             m_free(configname); configname = NULL;</span>
+<span class="lineNum">     745 </span>            :         }
+<span class="lineNum">     746 </span>            :         if( parse_debug &amp;&amp; configname )
+<span class="lineNum">     747 </span>            :             log_info(_(&quot;reading options from `%s'\n&quot;), configname );
+<span class="lineNum">     748 </span><span class="lineCov">        381 :         default_config = 0;</span>
+<span class="lineNum">     749 </span>            :     }
+<span class="lineNum">     750 </span>            : 
+<span class="lineNum">     751 </span><span class="lineCov">        762 :     while( optfile_parse( configfp, configname, &amp;configlineno,</span>
+<span class="lineNum">     752 </span>            :                                                 &amp;pargs, opts) ) {
+<span class="lineNum">     753 </span><span class="lineNoCov">          0 :         switch( pargs.r_opt ) {</span>
+<span class="lineNum">     754 </span><span class="lineNoCov">          0 :           case aCheckKeys: set_cmd( &amp;cmd, aCheckKeys); break;</span>
+<span class="lineNum">     755 </span><span class="lineNoCov">          0 :           case aListPackets: set_cmd( &amp;cmd, aListPackets); break;</span>
+<span class="lineNum">     756 </span><span class="lineNoCov">          0 :           case aImport: set_cmd( &amp;cmd, aImport); break;</span>
+<span class="lineNum">     757 </span><span class="lineNoCov">          0 :           case aFastImport: set_cmd( &amp;cmd, aFastImport); break;</span>
+<span class="lineNum">     758 </span><span class="lineNoCov">          0 :           case aSendKeys: set_cmd( &amp;cmd, aSendKeys); break;</span>
+<span class="lineNum">     759 </span><span class="lineNoCov">          0 :           case aRecvKeys: set_cmd( &amp;cmd, aRecvKeys); break;</span>
+<span class="lineNum">     760 </span><span class="lineNoCov">          0 :           case aExport: set_cmd( &amp;cmd, aExport); break;</span>
+<span class="lineNum">     761 </span><span class="lineNoCov">          0 :           case aExportAll: set_cmd( &amp;cmd, aExportAll); break;</span>
+<span class="lineNum">     762 </span><span class="lineNoCov">          0 :           case aListKeys: set_cmd( &amp;cmd, aListKeys); break;</span>
+<span class="lineNum">     763 </span><span class="lineNoCov">          0 :           case aListSigs: set_cmd( &amp;cmd, aListSigs); break;</span>
+<span class="lineNum">     764 </span><span class="lineNoCov">          0 :           case aExportSecret: set_cmd( &amp;cmd, aExportSecret); break;</span>
+<span class="lineNum">     765 </span><span class="lineNoCov">          0 :           case aExportSecretSub: set_cmd( &amp;cmd, aExportSecretSub); break;</span>
+<span class="lineNum">     766 </span><span class="lineNoCov">          0 :           case aDeleteSecretKey: set_cmd( &amp;cmd, aDeleteSecretKey);</span>
+<span class="lineNum">     767 </span><span class="lineNoCov">          0 :                                                         greeting=1; break;</span>
+<span class="lineNum">     768 </span>            :           case aDeleteSecretAndPublicKey:
+<span class="lineNum">     769 </span><span class="lineNoCov">          0 :             set_cmd( &amp;cmd, aDeleteSecretAndPublicKey);</span>
+<span class="lineNum">     770 </span><span class="lineNoCov">          0 :             greeting=1; </span>
+<span class="lineNum">     771 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     772 </span><span class="lineNoCov">          0 :           case aDeleteKey: set_cmd( &amp;cmd, aDeleteKey); greeting=1; break;</span>
+<span class="lineNum">     773 </span>            : 
+<span class="lineNum">     774 </span><span class="lineNoCov">          0 :           case aDetachedSign: detached_sig = 1; set_cmd( &amp;cmd, aSign ); break;</span>
+<span class="lineNum">     775 </span><span class="lineNoCov">          0 :           case aSym: set_cmd( &amp;cmd, aSym); break;</span>
+<span class="lineNum">     776 </span>            : 
+<span class="lineNum">     777 </span><span class="lineNoCov">          0 :           case aDecrypt: set_cmd( &amp;cmd, aDecrypt); break;</span>
+<span class="lineNum">     778 </span>            : 
+<span class="lineNum">     779 </span><span class="lineNoCov">          0 :           case aEncr: set_cmd( &amp;cmd, aEncr); break;</span>
+<span class="lineNum">     780 </span><span class="lineNoCov">          0 :           case aSign: set_cmd( &amp;cmd, aSign );  break;</span>
+<span class="lineNum">     781 </span><span class="lineNoCov">          0 :           case aKeygen: set_cmd( &amp;cmd, aKeygen); greeting=1; break;</span>
+<span class="lineNum">     782 </span><span class="lineNoCov">          0 :           case aSignKey: set_cmd( &amp;cmd, aSignKey); break;</span>
+<span class="lineNum">     783 </span><span class="lineNoCov">          0 :           case aLSignKey: set_cmd( &amp;cmd, aLSignKey); break;</span>
+<span class="lineNum">     784 </span><span class="lineNoCov">          0 :           case aStore: set_cmd( &amp;cmd, aStore); break;</span>
+<span class="lineNum">     785 </span><span class="lineNoCov">          0 :           case aEditKey: set_cmd( &amp;cmd, aEditKey); greeting=1; break;</span>
+<span class="lineNum">     786 </span><span class="lineNoCov">          0 :           case aClearsign: set_cmd( &amp;cmd, aClearsign); break;</span>
+<span class="lineNum">     787 </span><span class="lineNoCov">          0 :           case aGenRevoke: set_cmd( &amp;cmd, aGenRevoke); break;</span>
+<span class="lineNum">     788 </span><span class="lineNoCov">          0 :           case aVerify: set_cmd( &amp;cmd, aVerify); break;</span>
+<span class="lineNum">     789 </span><span class="lineNoCov">          0 :           case aVerifyFiles: set_cmd( &amp;cmd, aVerifyFiles); break;</span>
+<span class="lineNum">     790 </span><span class="lineNoCov">          0 :           case aPrimegen: set_cmd( &amp;cmd, aPrimegen); break;</span>
+<span class="lineNum">     791 </span><span class="lineNoCov">          0 :           case aGenRandom: set_cmd( &amp;cmd, aGenRandom); break;</span>
+<span class="lineNum">     792 </span><span class="lineNoCov">          0 :           case aPrintMD: set_cmd( &amp;cmd, aPrintMD); break;</span>
+<span class="lineNum">     793 </span><span class="lineNoCov">          0 :           case aPrintMDs: set_cmd( &amp;cmd, aPrintMDs); break;</span>
+<span class="lineNum">     794 </span><span class="lineNoCov">          0 :           case aListTrustDB: set_cmd( &amp;cmd, aListTrustDB); break;</span>
+<span class="lineNum">     795 </span><span class="lineNoCov">          0 :           case aCheckTrustDB: set_cmd( &amp;cmd, aCheckTrustDB); break;</span>
+<span class="lineNum">     796 </span><span class="lineNoCov">          0 :           case aUpdateTrustDB: set_cmd( &amp;cmd, aUpdateTrustDB); break;</span>
+<span class="lineNum">     797 </span><span class="lineNoCov">          0 :           case aFixTrustDB: set_cmd( &amp;cmd, aFixTrustDB); break;</span>
+<span class="lineNum">     798 </span><span class="lineNoCov">          0 :           case aListTrustPath: set_cmd( &amp;cmd, aListTrustPath); break;</span>
+<span class="lineNum">     799 </span><span class="lineNoCov">          0 :           case aDeArmor: set_cmd( &amp;cmd, aDeArmor); break;</span>
+<span class="lineNum">     800 </span><span class="lineNoCov">          0 :           case aEnArmor: set_cmd( &amp;cmd, aEnArmor); break;</span>
+<span class="lineNum">     801 </span><span class="lineNoCov">          0 :           case aExportOwnerTrust: set_cmd( &amp;cmd, aExportOwnerTrust); break;</span>
+<span class="lineNum">     802 </span><span class="lineNoCov">          0 :           case aImportOwnerTrust: set_cmd( &amp;cmd, aImportOwnerTrust); break;</span>
+<span class="lineNum">     803 </span><span class="lineNoCov">          0 :           case aPipeMode: set_cmd( &amp;cmd, aPipeMode); break;</span>
+<span class="lineNum">     804 </span>            : 
+<span class="lineNum">     805 </span><span class="lineNoCov">          0 :           case oArmor: opt.armor = 1; opt.no_armor=0; break;</span>
+<span class="lineNum">     806 </span><span class="lineNoCov">          0 :           case oOutput: opt.outfile = pargs.r.ret_str; break;</span>
+<span class="lineNum">     807 </span><span class="lineNoCov">          0 :           case oQuiet: opt.quiet = 1; break;</span>
+<span class="lineNum">     808 </span><span class="lineNoCov">          0 :           case oNoTTY: tty_no_terminal(1); break;</span>
+<span class="lineNum">     809 </span><span class="lineNoCov">          0 :           case oDryRun: opt.dry_run = 1; break;</span>
+<span class="lineNum">     810 </span><span class="lineNoCov">          0 :           case oInteractive: opt.interactive = 1; break;</span>
+<span class="lineNum">     811 </span><span class="lineNoCov">          0 :           case oVerbose: g10_opt_verbose++;</span>
+<span class="lineNum">     812 </span><span class="lineNoCov">          0 :                     opt.verbose++; opt.list_sigs=1; break;</span>
+<span class="lineNum">     813 </span><span class="lineNoCov">          0 :           case oKOption: set_cmd( &amp;cmd, aKMode ); break;</span>
+<span class="lineNum">     814 </span>            : 
+<span class="lineNum">     815 </span><span class="lineNoCov">          0 :           case oBatch: opt.batch = 1; nogreeting = 1; break;</span>
+<span class="lineNum">     816 </span><span class="lineNoCov">          0 :           case oUseAgent: opt.use_agent = 1; break;</span>
+<span class="lineNum">     817 </span><span class="lineNoCov">          0 :           case oAnswerYes: opt.answer_yes = 1; break;</span>
+<span class="lineNum">     818 </span><span class="lineNoCov">          0 :           case oAnswerNo: opt.answer_no = 1; break;</span>
+<span class="lineNum">     819 </span><span class="lineNoCov">          0 :           case oKeyring: append_to_strlist( &amp;nrings, pargs.r.ret_str); break;</span>
+<span class="lineNum">     820 </span><span class="lineNoCov">          0 :           case oDebug: opt.debug |= pargs.r.ret_ulong; break;</span>
+<span class="lineNum">     821 </span><span class="lineNoCov">          0 :           case oDebugAll: opt.debug = ~0; break;</span>
+<span class="lineNum">     822 </span>            :           case oStatusFD:
+<span class="lineNum">     823 </span><span class="lineNoCov">          0 :             set_status_fd( iobuf_translate_file_handle (pargs.r.ret_int, 1) );</span>
+<span class="lineNum">     824 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     825 </span>            :           case oLoggerFD:
+<span class="lineNum">     826 </span><span class="lineNoCov">          0 :             log_set_logfile( NULL,</span>
+<span class="lineNum">     827 </span>            :                              iobuf_translate_file_handle (pargs.r.ret_int, 1) );
+<span class="lineNum">     828 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     829 </span>            :           case oWithFingerprint:
+<span class="lineNum">     830 </span><span class="lineNoCov">          0 :                 with_fpr=1; /*fall thru*/</span>
+<span class="lineNum">     831 </span><span class="lineNoCov">          0 :           case oFingerprint: opt.fingerprint++; break;</span>
+<span class="lineNum">     832 </span><span class="lineNoCov">          0 :           case oSecretKeyring: append_to_strlist( &amp;sec_nrings, pargs.r.ret_str); break;</span>
+<span class="lineNum">     833 </span>            :           case oOptions:
+<span class="lineNum">     834 </span>            :             /* config files may not be nested (silently ignore them) */
+<span class="lineNum">     835 </span><span class="lineNoCov">          0 :             if( !configfp ) {</span>
+<span class="lineNum">     836 </span><span class="lineNoCov">          0 :                 m_free(configname);</span>
+<span class="lineNum">     837 </span><span class="lineNoCov">          0 :                 configname = m_strdup(pargs.r.ret_str);</span>
+<span class="lineNum">     838 </span><span class="lineNoCov">          0 :                 goto next_pass;</span>
+<span class="lineNum">     839 </span>            :             }
+<span class="lineNum">     840 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     841 </span><span class="lineNoCov">          0 :           case oNoArmor: opt.no_armor=1; opt.armor=0; break;</span>
+<span class="lineNum">     842 </span><span class="lineNoCov">          0 :           case oNoDefKeyring: default_keyring = 0; break;</span>
+<span class="lineNum">     843 </span><span class="lineNoCov">          0 :           case oNoGreeting: nogreeting = 1; break;</span>
+<span class="lineNum">     844 </span><span class="lineNoCov">          0 :           case oNoVerbose: g10_opt_verbose = 0;</span>
+<span class="lineNum">     845 </span><span class="lineNoCov">          0 :                            opt.verbose = 0; opt.list_sigs=0; break;</span>
+<span class="lineNum">     846 </span><span class="lineNoCov">          0 :           case oQuickRandom: quick_random_gen(1); break;</span>
+<span class="lineNum">     847 </span><span class="lineNoCov">          0 :           case oNoComment: opt.no_comment=1; break;</span>
+<span class="lineNum">     848 </span><span class="lineNoCov">          0 :           case oNoVersion: opt.no_version=1; break;</span>
+<span class="lineNum">     849 </span><span class="lineNoCov">          0 :           case oEmitVersion: opt.no_version=0; break;</span>
+<span class="lineNum">     850 </span><span class="lineNoCov">          0 :           case oCompletesNeeded: opt.completes_needed = pargs.r.ret_int; break;</span>
+<span class="lineNum">     851 </span><span class="lineNoCov">          0 :           case oMarginalsNeeded: opt.marginals_needed = pargs.r.ret_int; break;</span>
+<span class="lineNum">     852 </span><span class="lineNoCov">          0 :           case oMaxCertDepth: opt.max_cert_depth = pargs.r.ret_int; break;</span>
+<span class="lineNum">     853 </span><span class="lineNoCov">          0 :           case oTrustDBName: trustdb_name = pargs.r.ret_str; break;</span>
+<span class="lineNum">     854 </span><span class="lineNoCov">          0 :           case oDefaultKey: opt.def_secret_key = pargs.r.ret_str; break;</span>
+<span class="lineNum">     855 </span>            :           case oDefRecipient:
+<span class="lineNum">     856 </span><span class="lineNoCov">          0 :                     if( *pargs.r.ret_str )</span>
+<span class="lineNum">     857 </span><span class="lineNoCov">          0 :                         opt.def_recipient = make_username(pargs.r.ret_str);</span>
+<span class="lineNum">     858 </span><span class="lineNoCov">          0 :                     break;</span>
+<span class="lineNum">     859 </span>            :           case oDefRecipientSelf:
+<span class="lineNum">     860 </span><span class="lineNoCov">          0 :                     m_free(opt.def_recipient); opt.def_recipient = NULL;</span>
+<span class="lineNum">     861 </span><span class="lineNoCov">          0 :                     opt.def_recipient_self = 1;</span>
+<span class="lineNum">     862 </span><span class="lineNoCov">          0 :                     break;</span>
+<span class="lineNum">     863 </span>            :           case oNoDefRecipient:
+<span class="lineNum">     864 </span><span class="lineNoCov">          0 :                     m_free(opt.def_recipient); opt.def_recipient = NULL;</span>
+<span class="lineNum">     865 </span><span class="lineNoCov">          0 :                     opt.def_recipient_self = 0;</span>
+<span class="lineNum">     866 </span><span class="lineNoCov">          0 :                     break;</span>
+<span class="lineNum">     867 </span><span class="lineNoCov">          0 :           case oNoOptions: break; /* no-options */</span>
+<span class="lineNum">     868 </span><span class="lineNoCov">          0 :           case oHomedir: break;</span>
+<span class="lineNum">     869 </span><span class="lineNoCov">          0 :           case oNoBatch: opt.batch = 0; break;</span>
+<span class="lineNum">     870 </span><span class="lineNoCov">          0 :           case oWithKeyData: opt.with_key_data=1; /* fall thru */</span>
+<span class="lineNum">     871 </span><span class="lineNoCov">          0 :           case oWithColons: opt.with_colons=':'; break;</span>
+<span class="lineNum">     872 </span>            : 
+<span class="lineNum">     873 </span><span class="lineNoCov">          0 :           case oSkipVerify: opt.skip_verify=1; break;</span>
+<span class="lineNum">     874 </span><span class="lineNoCov">          0 :           case oCompressAlgo: opt.def_compress_algo = pargs.r.ret_int; break;</span>
+<span class="lineNum">     875 </span><span class="lineNoCov">          0 :           case oCompressKeys: opt.compress_keys = 1; break;</span>
+<span class="lineNum">     876 </span><span class="lineNoCov">          0 :           case aListSecretKeys: set_cmd( &amp;cmd, aListSecretKeys); break;</span>
+<span class="lineNum">     877 </span><span class="lineNoCov">          0 :           case oAlwaysTrust: opt.always_trust = 1; break;</span>
+<span class="lineNum">     878 </span>            :           case oLoadExtension:
+<span class="lineNum">     879 </span><span class="lineNoCov">          0 :             register_cipher_extension(orig_argc? *orig_argv:NULL,</span>
+<span class="lineNum">     880 </span><span class="lineNoCov">          0 :                                       pargs.r.ret_str);</span>
+<span class="lineNum">     881 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     882 </span>            :           case oRFC1991:
+<span class="lineNum">     883 </span><span class="lineNoCov">          0 :             opt.rfc1991 = 1;</span>
+<span class="lineNum">     884 </span><span class="lineNoCov">          0 :             opt.rfc2440 = 0;</span>
+<span class="lineNum">     885 </span><span class="lineNoCov">          0 :             opt.no_comment = 1;</span>
+<span class="lineNum">     886 </span><span class="lineNoCov">          0 :             opt.escape_from = 1;</span>
+<span class="lineNum">     887 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     888 </span>            :           case oOpenPGP:
+<span class="lineNum">     889 </span><span class="lineNoCov">          0 :             opt.rfc1991 = 0;</span>
+<span class="lineNum">     890 </span><span class="lineNoCov">          0 :             opt.rfc2440 = 1;</span>
+<span class="lineNum">     891 </span><span class="lineNoCov">          0 :             opt.pgp2_workarounds = 0;</span>
+<span class="lineNum">     892 </span><span class="lineNoCov">          0 :             opt.escape_from = 0;</span>
+<span class="lineNum">     893 </span><span class="lineNoCov">          0 :             opt.force_v3_sigs = 0;</span>
+<span class="lineNum">     894 </span><span class="lineNoCov">          0 :             opt.compress_keys = 0;          /* not mandated  but we do it */</span>
+<span class="lineNum">     895 </span><span class="lineNoCov">          0 :             opt.compress_sigs = 0;          /* ditto. */</span>
+<span class="lineNum">     896 </span><span class="lineNoCov">          0 :             opt.not_dash_escaped = 0;</span>
+<span class="lineNum">     897 </span><span class="lineNoCov">          0 :             opt.def_cipher_algo = 0;</span>
+<span class="lineNum">     898 </span><span class="lineNoCov">          0 :             opt.def_digest_algo = 0;</span>
+<span class="lineNum">     899 </span><span class="lineNoCov">          0 :             opt.def_compress_algo = 1;</span>
+<span class="lineNum">     900 </span><span class="lineNoCov">          0 :             opt.s2k_mode = 3; /* iterated+salted */</span>
+<span class="lineNum">     901 </span><span class="lineNoCov">          0 :             opt.s2k_digest_algo = DIGEST_ALGO_SHA1;</span>
+<span class="lineNum">     902 </span><span class="lineNoCov">          0 :             opt.s2k_cipher_algo = CIPHER_ALGO_CAST5;</span>
+<span class="lineNum">     903 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     904 </span><span class="lineNoCov">          0 :           case oEmuChecksumBug: opt.emulate_bugs |= EMUBUG_GPGCHKSUM; break;</span>
+<span class="lineNum">     905 </span><span class="lineNoCov">          0 :           case oEmu3DESS2KBug:  opt.emulate_bugs |= EMUBUG_3DESS2K; break;</span>
+<span class="lineNum">     906 </span><span class="lineNoCov">          0 :           case oEmuMDEncodeBug: opt.emulate_bugs |= EMUBUG_MDENCODE; break;</span>
+<span class="lineNum">     907 </span><span class="lineNoCov">          0 :           case oCompressSigs: opt.compress_sigs = 1; break;</span>
+<span class="lineNum">     908 </span>            :           case oRunAsShmCP:
+<span class="lineNum">     909 </span>            :           #ifndef USE_SHM_COPROCESSING
+<span class="lineNum">     910 </span>            :             /* not possible in the option file,
+<span class="lineNum">     911 </span>            :              * but we print the warning here anyway */
+<span class="lineNum">     912 </span>            :             log_error(&quot;shared memory coprocessing is not available\n&quot;);
+<span class="lineNum">     913 </span>            :           #endif
+<span class="lineNum">     914 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     915 </span><span class="lineNoCov">          0 :           case oSetFilename: opt.set_filename = pargs.r.ret_str; break;</span>
+<span class="lineNum">     916 </span><span class="lineNoCov">          0 :           case oSetPolicyURL: opt.set_policy_url = pargs.r.ret_str; break;</span>
+<span class="lineNum">     917 </span><span class="lineNoCov">          0 :           case oUseEmbeddedFilename: opt.use_embedded_filename = 1; break;</span>
+<span class="lineNum">     918 </span><span class="lineNoCov">          0 :           case oComment: opt.comment_string = pargs.r.ret_str; break;</span>
+<span class="lineNum">     919 </span><span class="lineNoCov">          0 :           case oDefaultComment: opt.comment_string = NULL; break;</span>
+<span class="lineNum">     920 </span><span class="lineNoCov">          0 :           case oThrowKeyid: opt.throw_keyid = 1; break;</span>
+<span class="lineNum">     921 </span><span class="lineNoCov">          0 :           case oForceV3Sigs: opt.force_v3_sigs = 1; break;</span>
+<span class="lineNum">     922 </span><span class="lineNoCov">          0 :           case oForceMDC: opt.force_mdc = 1; break;</span>
+<span class="lineNum">     923 </span><span class="lineNoCov">          0 :           case oS2KMode:   opt.s2k_mode = pargs.r.ret_int; break;</span>
+<span class="lineNum">     924 </span><span class="lineNoCov">          0 :           case oS2KDigest: s2k_digest_string = m_strdup(pargs.r.ret_str); break;</span>
+<span class="lineNum">     925 </span><span class="lineNoCov">          0 :           case oS2KCipher: s2k_cipher_string = m_strdup(pargs.r.ret_str); break;</span>
+<span class="lineNum">     926 </span>            : 
+<span class="lineNum">     927 </span><span class="lineNoCov">          0 :           case oNoEncryptTo: opt.no_encrypt_to = 1; break;</span>
+<span class="lineNum">     928 </span>            :           case oEncryptTo: /* store the recipient in the second list */
+<span class="lineNum">     929 </span><span class="lineNoCov">          0 :             sl = add_to_strlist2( &amp;remusr, pargs.r.ret_str, utf8_strings );</span>
+<span class="lineNum">     930 </span><span class="lineNoCov">          0 :             sl-&gt;flags = 1;</span>
+<span class="lineNum">     931 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     932 </span>            :           case oRecipient: /* store the recipient */
+<span class="lineNum">     933 </span><span class="lineNoCov">          0 :             add_to_strlist2( &amp;remusr, pargs.r.ret_str, utf8_strings );</span>
+<span class="lineNum">     934 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     935 </span><span class="lineNoCov">          0 :           case oTextmodeShort: opt.textmode = 2; break;</span>
+<span class="lineNum">     936 </span><span class="lineNoCov">          0 :           case oTextmode: opt.textmode=1;  break;</span>
+<span class="lineNum">     937 </span>            :           case oUser: /* store the local users */
+<span class="lineNum">     938 </span><span class="lineNoCov">          0 :             add_to_strlist2( &amp;locusr, pargs.r.ret_str, utf8_strings );</span>
+<span class="lineNum">     939 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     940 </span><span class="lineNoCov">          0 :           case oCompress: opt.compress = pargs.r.ret_int; break;</span>
+<span class="lineNum">     941 </span>            :           case oPasswdFD:
+<span class="lineNum">     942 </span><span class="lineNoCov">          0 :             pwfd = iobuf_translate_file_handle (pargs.r.ret_int, 0);</span>
+<span class="lineNum">     943 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     944 </span>            :           case oCommandFD:
+<span class="lineNum">     945 </span><span class="lineNoCov">          0 :             opt.command_fd = iobuf_translate_file_handle (pargs.r.ret_int, 0);</span>
+<span class="lineNum">     946 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     947 </span><span class="lineNoCov">          0 :           case oCipherAlgo: def_cipher_string = m_strdup(pargs.r.ret_str); break;</span>
+<span class="lineNum">     948 </span><span class="lineNoCov">          0 :           case oDigestAlgo: def_digest_string = m_strdup(pargs.r.ret_str); break;</span>
+<span class="lineNum">     949 </span><span class="lineNoCov">          0 :           case oNoSecmemWarn: secmem_set_flags( secmem_get_flags() | 1 ); break;</span>
+<span class="lineNum">     950 </span>            :           case oCharset:
+<span class="lineNum">     951 </span><span class="lineNoCov">          0 :             if( set_native_charset( pargs.r.ret_str ) )</span>
+<span class="lineNum">     952 </span>            :                 log_error(_(&quot;%s is not a valid character set\n&quot;),
+<span class="lineNum">     953 </span>            :                                                     pargs.r.ret_str);
+<span class="lineNum">     954 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     955 </span><span class="lineNoCov">          0 :           case oNotDashEscaped: opt.not_dash_escaped = 1; break;</span>
+<span class="lineNum">     956 </span><span class="lineNoCov">          0 :           case oEscapeFrom: opt.escape_from = 1; break;</span>
+<span class="lineNum">     957 </span><span class="lineNoCov">          0 :           case oLockOnce: opt.lock_once = 1; break;</span>
+<span class="lineNum">     958 </span><span class="lineNoCov">          0 :           case oLockNever: disable_dotlock(); break;</span>
+<span class="lineNum">     959 </span><span class="lineNoCov">          0 :           case oLockMultiple: opt.lock_once = 0; break;</span>
+<span class="lineNum">     960 </span><span class="lineNoCov">          0 :           case oKeyServer: opt.keyserver_name = pargs.r.ret_str; break;</span>
+<span class="lineNum">     961 </span><span class="lineNoCov">          0 :           case oNotation: add_notation_data( pargs.r.ret_str ); break;</span>
+<span class="lineNum">     962 </span><span class="lineNoCov">          0 :           case oUtf8Strings: utf8_strings = 1; break;</span>
+<span class="lineNum">     963 </span><span class="lineNoCov">          0 :           case oNoUtf8Strings: utf8_strings = 0; break;</span>
+<span class="lineNum">     964 </span>            :           case oDisableCipherAlgo:
+<span class="lineNum">     965 </span><span class="lineNoCov">          0 :                 disable_cipher_algo( string_to_cipher_algo(pargs.r.ret_str) );</span>
+<span class="lineNum">     966 </span><span class="lineNoCov">          0 :                 break;</span>
+<span class="lineNum">     967 </span>            :           case oDisablePubkeyAlgo:
+<span class="lineNum">     968 </span><span class="lineNoCov">          0 :                 disable_pubkey_algo( string_to_pubkey_algo(pargs.r.ret_str) );</span>
+<span class="lineNum">     969 </span><span class="lineNoCov">          0 :                 break;</span>
+<span class="lineNum">     970 </span><span class="lineNoCov">          0 :           case oNoSigCache: opt.no_sig_cache = 1; break;</span>
+<span class="lineNum">     971 </span><span class="lineNoCov">          0 :           case oNoSigCreateCheck: opt.no_sig_create_check = 1; break;</span>
+<span class="lineNum">     972 </span><span class="lineNoCov">          0 :           case oAllowNonSelfsignedUID: opt.allow_non_selfsigned_uid = 1; break;</span>
+<span class="lineNum">     973 </span><span class="lineNoCov">          0 :           case oAllowFreeformUID: opt.allow_freeform_uid = 1; break;</span>
+<span class="lineNum">     974 </span><span class="lineNoCov">          0 :           case oNoLiteral: opt.no_literal = 1; break;</span>
+<span class="lineNum">     975 </span><span class="lineNoCov">          0 :           case oSetFilesize: opt.set_filesize = pargs.r.ret_ulong; break;</span>
+<span class="lineNum">     976 </span><span class="lineNoCov">          0 :           case oHonorHttpProxy: opt.honor_http_proxy = 1; break;</span>
+<span class="lineNum">     977 </span><span class="lineNoCov">          0 :           case oFastListMode: opt.fast_list_mode = 1; break;</span>
+<span class="lineNum">     978 </span><span class="lineNoCov">          0 :           case oFixedListMode: opt.fixed_list_mode = 1; break;</span>
+<span class="lineNum">     979 </span><span class="lineNoCov">          0 :           case oListOnly: opt.list_only=1; break;</span>
+<span class="lineNum">     980 </span><span class="lineNoCov">          0 :           case oIgnoreTimeConflict: opt.ignore_time_conflict = 1; break;</span>
+<span class="lineNum">     981 </span><span class="lineNoCov">          0 :           case oIgnoreCrcError: opt.ignore_crc_error = 1; break;</span>
+<span class="lineNum">     982 </span><span class="lineNoCov">          0 :           case oNoRandomSeedFile: use_random_seed = 0; break;</span>
+<span class="lineNum">     983 </span><span class="lineNoCov">          0 :           case oNoAutoKeyRetrieve: opt.auto_key_retrieve = 0; break;</span>
+<span class="lineNum">     984 </span><span class="lineNoCov">          0 :           case oShowSessionKey: opt.show_session_key = 1; break;</span>
+<span class="lineNum">     985 </span>            :           case oOverrideSessionKey:
+<span class="lineNum">     986 </span><span class="lineNoCov">          0 :                 opt.override_session_key = pargs.r.ret_str;</span>
+<span class="lineNum">     987 </span><span class="lineNoCov">          0 :                 break;</span>
+<span class="lineNum">     988 </span><span class="lineNoCov">          0 :           case oMergeOnly: opt.merge_only = 1; break;</span>
+<span class="lineNum">     989 </span><span class="lineNoCov">          0 :           case oAllowSecretKeyImport: opt.allow_secret_key_import = 1; break;</span>
+<span class="lineNum">     990 </span><span class="lineNoCov">          0 :           case oTryAllSecrets: opt.try_all_secrets = 1; break;</span>
+<span class="lineNum">     991 </span><span class="lineNoCov">          0 :           case oTrustedKey: register_trusted_key( pargs.r.ret_str ); break;</span>
+<span class="lineNum">     992 </span>            :           case oEnableSpecialFilenames:
+<span class="lineNum">     993 </span><span class="lineNoCov">          0 :             iobuf_enable_special_filenames (1);</span>
+<span class="lineNum">     994 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     995 </span><span class="lineNoCov">          0 :           case oNoExpensiveTrustChecks: opt.no_expensive_trust_checks=1; break;</span>
+<span class="lineNum">     996 </span>            : 
+<span class="lineNum">     997 </span><span class="lineNoCov">          0 :           default : pargs.err = configfp? 1:2; break;</span>
+<span class="lineNum">     998 </span>            :         }
+<span class="lineNum">     999 </span>            :     }
+<span class="lineNum">    1000 </span><span class="lineCov">        381 :     if( configfp ) {</span>
+<span class="lineNum">    1001 </span><span class="lineNoCov">          0 :         fclose( configfp );</span>
+<span class="lineNum">    1002 </span><span class="lineNoCov">          0 :         configfp = NULL;</span>
+<span class="lineNum">    1003 </span><span class="lineNoCov">          0 :         m_free(configname); configname = NULL;</span>
+<span class="lineNum">    1004 </span><span class="lineNoCov">          0 :         goto next_pass;</span>
+<span class="lineNum">    1005 </span>            :     }
+<span class="lineNum">    1006 </span><span class="lineCov">        381 :     m_free( configname ); configname = NULL;</span>
+<span class="lineNum">    1007 </span><span class="lineCov">        381 :     if( log_get_errorcount(0) )</span>
+<span class="lineNum">    1008 </span><span class="lineNoCov">          0 :         g10_exit(2);</span>
+<span class="lineNum">    1009 </span><span class="lineCov">        381 :     if( nogreeting )</span>
+<span class="lineNum">    1010 </span><span class="lineNoCov">          0 :         greeting = 0;</span>
+<span class="lineNum">    1011 </span>            : 
+<span class="lineNum">    1012 </span><span class="lineCov">        381 :     if( greeting ) {</span>
+<span class="lineNum">    1013 </span><span class="lineNoCov">          0 :         fprintf(stderr, &quot;%s %s; %s\n&quot;,</span>
+<span class="lineNum">    1014 </span>            :                         strusage(11), strusage(13), strusage(14) );
+<span class="lineNum">    1015 </span><span class="lineNoCov">          0 :         fprintf(stderr, &quot;%s\n&quot;, strusage(15) );</span>
+<span class="lineNum">    1016 </span>            :     }
+<span class="lineNum">    1017 </span>            :   #ifdef IS_DEVELOPMENT_VERSION
+<span class="lineNum">    1018 </span>            :     if( !opt.batch ) {
+<span class="lineNum">    1019 </span>            :         log_info(&quot;NOTE: THIS IS A DEVELOPMENT VERSION!\n&quot;);
+<span class="lineNum">    1020 </span>            :         log_info(&quot;It is only intended for test purposes and should NOT be\n&quot;);
+<span class="lineNum">    1021 </span>            :         log_info(&quot;used in a production environment or with production keys!\n&quot;);
+<span class="lineNum">    1022 </span>            :     }
+<span class="lineNum">    1023 </span>            :   #endif
+<span class="lineNum">    1024 </span>            : 
+<span class="lineNum">    1025 </span><span class="lineCov">        381 :     if( may_coredump &amp;&amp; !opt.quiet )</span>
+<span class="lineNum">    1026 </span>            :         log_info(_(&quot;WARNING: program may create a core file!\n&quot;));
+<span class="lineNum">    1027 </span>            : 
+<span class="lineNum">    1028 </span>            : 
+<span class="lineNum">    1029 </span><span class="lineCov">        381 :     if (opt.no_literal) {</span>
+<span class="lineNum">    1030 </span>            :         log_info(_(&quot;NOTE: %s is not for normal use!\n&quot;), &quot;--no-literal&quot;);
+<span class="lineNum">    1031 </span><span class="lineNoCov">          0 :         if (opt.textmode)</span>
+<span class="lineNum">    1032 </span>            :             log_error(_(&quot;%s not allowed with %s!\n&quot;),
+<span class="lineNum">    1033 </span>            :                        &quot;--textmode&quot;, &quot;--no-literal&quot; );
+<span class="lineNum">    1034 </span><span class="lineNoCov">          0 :         if (opt.set_filename)</span>
+<span class="lineNum">    1035 </span>            :             log_error(_(&quot;%s makes no sense with %s!\n&quot;),
+<span class="lineNum">    1036 </span>            :                         &quot;--set-filename&quot;, &quot;--no-literal&quot; );
+<span class="lineNum">    1037 </span>            :     }
+<span class="lineNum">    1038 </span><span class="lineCov">        381 :     if (opt.set_filesize)</span>
+<span class="lineNum">    1039 </span>            :         log_info(_(&quot;NOTE: %s is not for normal use!\n&quot;), &quot;--set-filesize&quot;);
+<span class="lineNum">    1040 </span><span class="lineCov">        381 :     if( opt.batch )</span>
+<span class="lineNum">    1041 </span><span class="lineNoCov">          0 :         tty_batchmode( 1 );</span>
+<span class="lineNum">    1042 </span>            : 
+<span class="lineNum">    1043 </span><span class="lineCov">        381 :     secmem_set_flags( secmem_get_flags() &amp; ~2 ); /* resume warnings */</span>
+<span class="lineNum">    1044 </span>            : 
+<span class="lineNum">    1045 </span><span class="lineCov">        381 :     set_debug();</span>
+<span class="lineNum">    1046 </span><span class="lineCov">        381 :     g10_opt_homedir = opt.homedir;</span>
+<span class="lineNum">    1047 </span>            : 
+<span class="lineNum">    1048 </span>            : 
+<span class="lineNum">    1049 </span>            :     /* must do this after dropping setuid, because string_to...
+<span class="lineNum">    1050 </span>            :      * may try to load an module */
+<span class="lineNum">    1051 </span><span class="lineCov">        381 :     if( def_cipher_string ) {</span>
+<span class="lineNum">    1052 </span><span class="lineNoCov">          0 :         opt.def_cipher_algo = string_to_cipher_algo(def_cipher_string);</span>
+<span class="lineNum">    1053 </span><span class="lineNoCov">          0 :         m_free(def_cipher_string); def_cipher_string = NULL;</span>
+<span class="lineNum">    1054 </span><span class="lineNoCov">          0 :         if( check_cipher_algo(opt.def_cipher_algo) )</span>
+<span class="lineNum">    1055 </span>            :             log_error(_(&quot;selected cipher algorithm is invalid\n&quot;));
+<span class="lineNum">    1056 </span>            :     }
+<span class="lineNum">    1057 </span><span class="lineCov">        381 :     if( def_digest_string ) {</span>
+<span class="lineNum">    1058 </span><span class="lineNoCov">          0 :         opt.def_digest_algo = string_to_digest_algo(def_digest_string);</span>
+<span class="lineNum">    1059 </span><span class="lineNoCov">          0 :         m_free(def_digest_string); def_digest_string = NULL;</span>
+<span class="lineNum">    1060 </span><span class="lineNoCov">          0 :         if( check_digest_algo(opt.def_digest_algo) )</span>
+<span class="lineNum">    1061 </span>            :             log_error(_(&quot;selected digest algorithm is invalid\n&quot;));
+<span class="lineNum">    1062 </span>            :     }
+<span class="lineNum">    1063 </span><span class="lineCov">        381 :     if( s2k_cipher_string ) {</span>
+<span class="lineNum">    1064 </span><span class="lineNoCov">          0 :         opt.s2k_cipher_algo = string_to_cipher_algo(s2k_cipher_string);</span>
+<span class="lineNum">    1065 </span><span class="lineNoCov">          0 :         m_free(s2k_cipher_string); s2k_cipher_string = NULL;</span>
+<span class="lineNum">    1066 </span><span class="lineNoCov">          0 :         if( check_cipher_algo(opt.s2k_cipher_algo) )</span>
+<span class="lineNum">    1067 </span>            :             log_error(_(&quot;selected cipher algorithm is invalid\n&quot;));
+<span class="lineNum">    1068 </span>            :     }
+<span class="lineNum">    1069 </span><span class="lineCov">        381 :     if( s2k_digest_string ) {</span>
+<span class="lineNum">    1070 </span><span class="lineNoCov">          0 :         opt.s2k_digest_algo = string_to_digest_algo(s2k_digest_string);</span>
+<span class="lineNum">    1071 </span><span class="lineNoCov">          0 :         m_free(s2k_digest_string); s2k_digest_string = NULL;</span>
+<span class="lineNum">    1072 </span><span class="lineNoCov">          0 :         if( check_digest_algo(opt.s2k_digest_algo) )</span>
+<span class="lineNum">    1073 </span>            :             log_error(_(&quot;selected digest algorithm is invalid\n&quot;));
+<span class="lineNum">    1074 </span>            :     }
+<span class="lineNum">    1075 </span><span class="lineCov">        381 :     if( opt.set_policy_url ) {</span>
+<span class="lineNum">    1076 </span><span class="lineNoCov">          0 :         if( check_policy_url( opt.set_policy_url ) )</span>
+<span class="lineNum">    1077 </span>            :             log_error(_(&quot;the given policy URL is invalid\n&quot;));
+<span class="lineNum">    1078 </span>            :     }
+<span class="lineNum">    1079 </span><span class="lineCov">        381 :     if( opt.def_compress_algo &lt; 1 || opt.def_compress_algo &gt; 2 )</span>
+<span class="lineNum">    1080 </span>            :         log_error(_(&quot;compress algorithm must be in range %d..%d\n&quot;), 1, 2);
+<span class="lineNum">    1081 </span><span class="lineCov">        381 :     if( opt.completes_needed &lt; 1 )</span>
+<span class="lineNum">    1082 </span>            :         log_error(_(&quot;completes-needed must be greater than 0\n&quot;));
+<span class="lineNum">    1083 </span><span class="lineCov">        381 :     if( opt.marginals_needed &lt; 2 )</span>
+<span class="lineNum">    1084 </span>            :         log_error(_(&quot;marginals-needed must be greater than 1\n&quot;));
+<span class="lineNum">    1085 </span><span class="lineCov">        381 :     if( opt.max_cert_depth &lt; 1 || opt.max_cert_depth &gt; 255 )</span>
+<span class="lineNum">    1086 </span>            :         log_error(_(&quot;max-cert-depth must be in range 1 to 255\n&quot;));
+<span class="lineNum">    1087 </span><span class="lineCov">        381 :     switch( opt.s2k_mode ) {</span>
+<span class="lineNum">    1088 </span>            :       case 0:
+<span class="lineNum">    1089 </span>            :         log_info(_(&quot;NOTE: simple S2K mode (0) is strongly discouraged\n&quot;));
+<span class="lineNum">    1090 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1091 </span><span class="lineCov">        381 :       case 1: case 3: break;</span>
+<span class="lineNum">    1092 </span>            :       default:
+<span class="lineNum">    1093 </span>            :         log_error(_(&quot;invalid S2K mode; must be 0, 1 or 3\n&quot;));
+<span class="lineNum">    1094 </span>            :     }
+<span class="lineNum">    1095 </span>            : 
+<span class="lineNum">    1096 </span>            : 
+<span class="lineNum">    1097 </span><span class="lineCov">        381 :     if( log_get_errorcount(0) )</span>
+<span class="lineNum">    1098 </span><span class="lineNoCov">          0 :         g10_exit(2);</span>
+<span class="lineNum">    1099 </span>            : 
+<span class="lineNum">    1100 </span>            :     /* set the random seed file */
+<span class="lineNum">    1101 </span><span class="lineCov">        381 :     if( use_random_seed ) {</span>
+<span class="lineNum">    1102 </span><span class="lineCov">        381 :         char *p = make_filename(opt.homedir, &quot;random_seed&quot;, NULL );</span>
+<span class="lineNum">    1103 </span><span class="lineCov">        381 :         set_random_seed_file(p);</span>
+<span class="lineNum">    1104 </span><span class="lineCov">        381 :         m_free(p);</span>
+<span class="lineNum">    1105 </span>            :     }
+<span class="lineNum">    1106 </span>            : 
+<span class="lineNum">    1107 </span><span class="lineCov">        381 :     if( !cmd &amp;&amp; opt.fingerprint &amp;&amp; !with_fpr ) {</span>
+<span class="lineNum">    1108 </span><span class="lineNoCov">          0 :         set_cmd( &amp;cmd, aListKeys);</span>
+<span class="lineNum">    1109 </span>            :     }
+<span class="lineNum">    1110 </span>            : 
+<span class="lineNum">    1111 </span><span class="lineCov">        381 :     if( cmd == aKMode || cmd == aKModeC ) { /* kludge to be compatible to pgp */</span>
+<span class="lineNum">    1112 </span><span class="lineNoCov">          0 :         if( cmd == aKModeC ) {</span>
+<span class="lineNum">    1113 </span><span class="lineNoCov">          0 :             opt.fingerprint = 1;</span>
+<span class="lineNum">    1114 </span><span class="lineNoCov">          0 :             cmd = aKMode;</span>
+<span class="lineNum">    1115 </span>            :         }
+<span class="lineNum">    1116 </span><span class="lineNoCov">          0 :         opt.list_sigs = 0;</span>
+<span class="lineNum">    1117 </span><span class="lineNoCov">          0 :         if( opt.verbose &gt; 2 )</span>
+<span class="lineNum">    1118 </span><span class="lineNoCov">          0 :             opt.check_sigs++;</span>
+<span class="lineNum">    1119 </span><span class="lineNoCov">          0 :         if( opt.verbose &gt; 1 )</span>
+<span class="lineNum">    1120 </span><span class="lineNoCov">          0 :             opt.list_sigs++;</span>
+<span class="lineNum">    1121 </span>            : 
+<span class="lineNum">    1122 </span><span class="lineNoCov">          0 :         opt.verbose = opt.verbose &gt; 1;</span>
+<span class="lineNum">    1123 </span><span class="lineNoCov">          0 :         g10_opt_verbose = opt.verbose;</span>
+<span class="lineNum">    1124 </span>            :     }
+<span class="lineNum">    1125 </span>            : 
+<span class="lineNum">    1126 </span>            : 
+<span class="lineNum">    1127 </span>            :     /* kludge to let -sat generate a clear text signature */
+<span class="lineNum">    1128 </span><span class="lineCov">        381 :     if( opt.textmode == 2 &amp;&amp; !detached_sig &amp;&amp; opt.armor &amp;&amp; cmd == aSign )</span>
+<span class="lineNum">    1129 </span><span class="lineNoCov">          0 :         cmd = aClearsign;</span>
+<span class="lineNum">    1130 </span>            : 
+<span class="lineNum">    1131 </span><span class="lineCov">        381 :     if( opt.verbose &gt; 1 )</span>
+<span class="lineNum">    1132 </span><span class="lineNoCov">          0 :         set_packet_list_mode(1);</span>
+<span class="lineNum">    1133 </span>            : 
+<span class="lineNum">    1134 </span>            :     /* add the keyrings, but not for some special commands and
+<span class="lineNum">    1135 </span>            :      * not in case of &quot;-kvv userid keyring&quot; */
+<span class="lineNum">    1136 </span><span class="lineCov">        381 :     if( cmd != aDeArmor &amp;&amp; cmd != aEnArmor</span>
+<span class="lineNum">    1137 </span><span class="lineCov">        381 :         &amp;&amp; !(cmd == aKMode &amp;&amp; argc == 2 ) ) {</span>
+<span class="lineNum">    1138 </span>            : 
+<span class="lineNum">    1139 </span><span class="lineCov">        381 :         if( !sec_nrings || default_keyring )  /* add default secret rings */</span>
+<span class="lineNum">    1140 </span><span class="lineCov">        381 :             add_keyblock_resource(&quot;secring.gpg&quot;, 0, 1);</span>
+<span class="lineNum">    1141 </span><span class="lineCov">        381 :         for(sl = sec_nrings; sl; sl = sl-&gt;next )</span>
+<span class="lineNum">    1142 </span><span class="lineNoCov">          0 :             add_keyblock_resource( sl-&gt;d, 0, 1 );</span>
+<span class="lineNum">    1143 </span><span class="lineCov">        381 :         if( !nrings || default_keyring )  /* add default ring */</span>
+<span class="lineNum">    1144 </span><span class="lineCov">        381 :             add_keyblock_resource(&quot;pubring.gpg&quot;, 0, 0);</span>
+<span class="lineNum">    1145 </span><span class="lineCov">        381 :         for(sl = nrings; sl; sl = sl-&gt;next )</span>
+<span class="lineNum">    1146 </span><span class="lineNoCov">          0 :             add_keyblock_resource( sl-&gt;d, 0, 0 );</span>
+<span class="lineNum">    1147 </span>            :     }
+<span class="lineNum">    1148 </span><span class="lineCov">        381 :     FREE_STRLIST(nrings);</span>
+<span class="lineNum">    1149 </span><span class="lineCov">        381 :     FREE_STRLIST(sec_nrings);</span>
+<span class="lineNum">    1150 </span>            : 
+<span class="lineNum">    1151 </span>            : 
+<span class="lineNum">    1152 </span><span class="lineCov">        381 :     if( pwfd != -1 )  /* read the passphrase now. */</span>
+<span class="lineNum">    1153 </span><span class="lineNoCov">          0 :         read_passphrase_from_fd( pwfd );</span>
+<span class="lineNum">    1154 </span>            : 
+<span class="lineNum">    1155 </span><span class="lineCov">        381 :     fname = argc? *argv : NULL;</span>
+<span class="lineNum">    1156 </span>            : 
+<span class="lineNum">    1157 </span><span class="lineCov">        381 :     switch( cmd ) {</span>
+<span class="lineNum">    1158 </span>            :       case aPrimegen:
+<span class="lineNum">    1159 </span>            :       case aPrintMD:
+<span class="lineNum">    1160 </span>            :       case aPrintMDs:
+<span class="lineNum">    1161 </span>            :       case aGenRandom:
+<span class="lineNum">    1162 </span>            :       case aDeArmor:
+<span class="lineNum">    1163 </span>            :       case aEnArmor:
+<span class="lineNum">    1164 </span>            :       case aFixTrustDB:
+<span class="lineNum">    1165 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1166 </span>            :       case aKMode:
+<span class="lineNum">    1167 </span>            :       case aListKeys:
+<span class="lineNum">    1168 </span>            :       case aListSecretKeys:
+<span class="lineNum">    1169 </span>            :       case aCheckKeys:
+<span class="lineNum">    1170 </span><span class="lineNoCov">          0 :         if( opt.with_colons ) /* need this to list the trust */</span>
+<span class="lineNum">    1171 </span><span class="lineNoCov">          0 :             rc = setup_trustdb(1, trustdb_name );</span>
+<span class="lineNum">    1172 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1173 </span><span class="lineNoCov">          0 :       case aExportOwnerTrust: rc = setup_trustdb( 0, trustdb_name ); break;</span>
+<span class="lineNum">    1174 </span><span class="lineNoCov">          0 :       case aListTrustDB: rc = setup_trustdb( argc? 1:0, trustdb_name ); break;</span>
+<span class="lineNum">    1175 </span><span class="lineCov">        381 :       default: rc = setup_trustdb(1, trustdb_name ); break;</span>
+<span class="lineNum">    1176 </span>            :     }
+<span class="lineNum">    1177 </span>            :     if( rc )
+<span class="lineNum">    1178 </span>            :         log_error(_(&quot;failed to initialize the TrustDB: %s\n&quot;), g10_errstr(rc));
+<span class="lineNum">    1179 </span>            : 
+<span class="lineNum">    1180 </span>            : 
+<span class="lineNum">    1181 </span><span class="lineCov">        381 :     switch( cmd ) {</span>
+<span class="lineNum">    1182 </span>            :       case aStore: /* only store the file */
+<span class="lineNum">    1183 </span><span class="lineNoCov">          0 :         if( argc &gt; 1 )</span>
+<span class="lineNum">    1184 </span><span class="lineNoCov">          0 :             wrong_args(_(&quot;--store [filename]&quot;));</span>
+<span class="lineNum">    1185 </span><span class="lineNoCov">          0 :         if( (rc = encode_store(fname)) )</span>
+<span class="lineNum">    1186 </span><span class="lineNoCov">          0 :             log_error_f( print_fname_stdin(fname),</span>
+<span class="lineNum">    1187 </span>            :                         &quot;store failed: %s\n&quot;, g10_errstr(rc) );
+<span class="lineNum">    1188 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1189 </span>            :       case aSym: /* encrypt the given file only with the symmetric cipher */
+<span class="lineNum">    1190 </span><span class="lineNoCov">          0 :         if( argc &gt; 1 )</span>
+<span class="lineNum">    1191 </span><span class="lineNoCov">          0 :             wrong_args(_(&quot;--symmetric [filename]&quot;));</span>
+<span class="lineNum">    1192 </span><span class="lineNoCov">          0 :         if( (rc = encode_symmetric(fname)) )</span>
+<span class="lineNum">    1193 </span><span class="lineNoCov">          0 :             log_error_f(print_fname_stdin(fname),</span>
+<span class="lineNum">    1194 </span>            :                         &quot;symmetric encryption failed: %s\n&quot;,g10_errstr(rc) );
+<span class="lineNum">    1195 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1196 </span>            : 
+<span class="lineNum">    1197 </span>            :       case aEncr: /* encrypt the given file */
+<span class="lineNum">    1198 </span><span class="lineNoCov">          0 :         if( argc &gt; 1 )</span>
+<span class="lineNum">    1199 </span><span class="lineNoCov">          0 :             wrong_args(_(&quot;--encrypt [filename]&quot;));</span>
+<span class="lineNum">    1200 </span><span class="lineNoCov">          0 :         if( (rc = encode_crypt(fname,remusr)) )</span>
+<span class="lineNum">    1201 </span>            :             log_error(&quot;%s: encryption failed: %s\n&quot;, print_fname_stdin(fname), g10_errstr(rc) );
+<span class="lineNum">    1202 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1203 </span>            : 
+<span class="lineNum">    1204 </span>            :       case aSign: /* sign the given file */
+<span class="lineNum">    1205 </span><span class="lineNoCov">          0 :         sl = NULL;</span>
+<span class="lineNum">    1206 </span><span class="lineNoCov">          0 :         if( detached_sig ) { /* sign all files */</span>
+<span class="lineNum">    1207 </span><span class="lineNoCov">          0 :             for( ; argc; argc--, argv++ )</span>
+<span class="lineNum">    1208 </span><span class="lineNoCov">          0 :                 add_to_strlist( &amp;sl, *argv );</span>
+<span class="lineNum">    1209 </span>            :         }
+<span class="lineNum">    1210 </span>            :         else {
+<span class="lineNum">    1211 </span><span class="lineNoCov">          0 :             if( argc &gt; 1 )</span>
+<span class="lineNum">    1212 </span><span class="lineNoCov">          0 :                 wrong_args(_(&quot;--sign [filename]&quot;));</span>
+<span class="lineNum">    1213 </span><span class="lineNoCov">          0 :             if( argc ) {</span>
+<span class="lineNum">    1214 </span><span class="lineNoCov">          0 :                 sl = m_alloc_clear( sizeof *sl + strlen(fname));</span>
+<span class="lineNum">    1215 </span><span class="lineNoCov">          0 :                 strcpy(sl-&gt;d, fname);</span>
+<span class="lineNum">    1216 </span>            :             }
+<span class="lineNum">    1217 </span>            :         }
+<span class="lineNum">    1218 </span><span class="lineNoCov">          0 :         if( (rc = sign_file( sl, detached_sig, locusr, 0, NULL, NULL)) )</span>
+<span class="lineNum">    1219 </span>            :             log_error(&quot;signing failed: %s\n&quot;, g10_errstr(rc) );
+<span class="lineNum">    1220 </span><span class="lineNoCov">          0 :         free_strlist(sl);</span>
+<span class="lineNum">    1221 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1222 </span>            : 
+<span class="lineNum">    1223 </span>            :       case aSignEncr: /* sign and encrypt the given file */
+<span class="lineNum">    1224 </span><span class="lineNoCov">          0 :         if( argc &gt; 1 )</span>
+<span class="lineNum">    1225 </span><span class="lineNoCov">          0 :             wrong_args(_(&quot;--sign --encrypt [filename]&quot;));</span>
+<span class="lineNum">    1226 </span><span class="lineNoCov">          0 :         if( argc ) {</span>
+<span class="lineNum">    1227 </span><span class="lineNoCov">          0 :             sl = m_alloc_clear( sizeof *sl + strlen(fname));</span>
+<span class="lineNum">    1228 </span><span class="lineNoCov">          0 :             strcpy(sl-&gt;d, fname);</span>
+<span class="lineNum">    1229 </span>            :         }
+<span class="lineNum">    1230 </span>            :         else
+<span class="lineNum">    1231 </span><span class="lineNoCov">          0 :             sl = NULL;</span>
+<span class="lineNum">    1232 </span><span class="lineNoCov">          0 :         if( (rc = sign_file(sl, detached_sig, locusr, 1, remusr, NULL)) )</span>
+<span class="lineNum">    1233 </span>            :             log_error(&quot;%s: sign+encrypt failed: %s\n&quot;, print_fname_stdin(fname), g10_errstr(rc) );
+<span class="lineNum">    1234 </span><span class="lineNoCov">          0 :         free_strlist(sl);</span>
+<span class="lineNum">    1235 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1236 </span>            : 
+<span class="lineNum">    1237 </span>            :       case aClearsign: /* make a clearsig */
+<span class="lineNum">    1238 </span><span class="lineNoCov">          0 :         if( argc &gt; 1 )</span>
+<span class="lineNum">    1239 </span><span class="lineNoCov">          0 :             wrong_args(_(&quot;--clearsign [filename]&quot;));</span>
+<span class="lineNum">    1240 </span><span class="lineNoCov">          0 :         if( (rc = clearsign_file(fname, locusr, NULL)) )</span>
+<span class="lineNum">    1241 </span>            :             log_error(&quot;%s: clearsign failed: %s\n&quot;, print_fname_stdin(fname), g10_errstr(rc) );
+<span class="lineNum">    1242 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1243 </span>            : 
+<span class="lineNum">    1244 </span>            :       case aVerify:
+<span class="lineNum">    1245 </span><span class="lineNoCov">          0 :         if( (rc = verify_signatures( argc, argv ) ))</span>
+<span class="lineNum">    1246 </span>            :             log_error(&quot;verify signatures failed: %s\n&quot;, g10_errstr(rc) );
+<span class="lineNum">    1247 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1248 </span>            : 
+<span class="lineNum">    1249 </span>            :       case aVerifyFiles:
+<span class="lineNum">    1250 </span><span class="lineNoCov">          0 :         if( (rc = verify_files( argc, argv ) ))</span>
+<span class="lineNum">    1251 </span>            :             log_error(&quot;verify files failed: %s\n&quot;, g10_errstr(rc) );
+<span class="lineNum">    1252 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1253 </span>            : 
+<span class="lineNum">    1254 </span>            :       case aDecrypt:
+<span class="lineNum">    1255 </span><span class="lineNoCov">          0 :         if( argc &gt; 1 )</span>
+<span class="lineNum">    1256 </span><span class="lineNoCov">          0 :             wrong_args(_(&quot;--decrypt [filename]&quot;));</span>
+<span class="lineNum">    1257 </span><span class="lineNoCov">          0 :         if( (rc = decrypt_message( fname ) ))</span>
+<span class="lineNum">    1258 </span>            :             log_error(&quot;decrypt_message failed: %s\n&quot;, g10_errstr(rc) );
+<span class="lineNum">    1259 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1260 </span>            : 
+<span class="lineNum">    1261 </span>            : 
+<span class="lineNum">    1262 </span>            :       case aSignKey: /* sign the key given as argument */
+<span class="lineNum">    1263 </span><span class="lineNoCov">          0 :         if( argc != 1 )</span>
+<span class="lineNum">    1264 </span><span class="lineNoCov">          0 :             wrong_args(_(&quot;--sign-key user-id&quot;));</span>
+<span class="lineNum">    1265 </span><span class="lineNoCov">          0 :         username = make_username( fname );</span>
+<span class="lineNum">    1266 </span><span class="lineNoCov">          0 :         keyedit_menu(fname, locusr, NULL, 1 );</span>
+<span class="lineNum">    1267 </span><span class="lineNoCov">          0 :         m_free(username);</span>
+<span class="lineNum">    1268 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1269 </span>            : 
+<span class="lineNum">    1270 </span>            :       case aLSignKey:
+<span class="lineNum">    1271 </span><span class="lineNoCov">          0 :         if( argc != 1 )</span>
+<span class="lineNum">    1272 </span><span class="lineNoCov">          0 :             wrong_args(_(&quot;--lsign-key user-id&quot;));</span>
+<span class="lineNum">    1273 </span><span class="lineNoCov">          0 :         username = make_username( fname );</span>
+<span class="lineNum">    1274 </span><span class="lineNoCov">          0 :         keyedit_menu(fname, locusr, NULL, 2 );</span>
+<span class="lineNum">    1275 </span><span class="lineNoCov">          0 :         m_free(username);</span>
+<span class="lineNum">    1276 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1277 </span>            : 
+<span class="lineNum">    1278 </span>            :       case aEditKey: /* Edit a key signature */
+<span class="lineNum">    1279 </span><span class="lineNoCov">          0 :         if( !argc )</span>
+<span class="lineNum">    1280 </span><span class="lineNoCov">          0 :             wrong_args(_(&quot;--edit-key user-id [commands]&quot;));</span>
+<span class="lineNum">    1281 </span><span class="lineNoCov">          0 :         username = make_username( fname );</span>
+<span class="lineNum">    1282 </span><span class="lineNoCov">          0 :         if( argc &gt; 1 ) {</span>
+<span class="lineNum">    1283 </span><span class="lineNoCov">          0 :             sl = NULL;</span>
+<span class="lineNum">    1284 </span><span class="lineNoCov">          0 :             for( argc--, argv++ ; argc; argc--, argv++ )</span>
+<span class="lineNum">    1285 </span><span class="lineNoCov">          0 :                 append_to_strlist( &amp;sl, *argv );</span>
+<span class="lineNum">    1286 </span><span class="lineNoCov">          0 :             keyedit_menu( username, locusr, sl, 0 );</span>
+<span class="lineNum">    1287 </span><span class="lineNoCov">          0 :             free_strlist(sl);</span>
+<span class="lineNum">    1288 </span>            :         }
+<span class="lineNum">    1289 </span>            :         else
+<span class="lineNum">    1290 </span><span class="lineNoCov">          0 :             keyedit_menu(username, locusr, NULL, 0 );</span>
+<span class="lineNum">    1291 </span><span class="lineNoCov">          0 :         m_free(username);</span>
+<span class="lineNum">    1292 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1293 </span>            : 
+<span class="lineNum">    1294 </span>            :       case aDeleteSecretKey:
+<span class="lineNum">    1295 </span><span class="lineNoCov">          0 :         if( argc != 1 )</span>
+<span class="lineNum">    1296 </span><span class="lineNoCov">          0 :             wrong_args(_(&quot;--delete-secret-key user-id&quot;));</span>
+<span class="lineNum">    1297 </span>            :       case aDeleteKey:
+<span class="lineNum">    1298 </span><span class="lineNoCov">          0 :         if( argc != 1 )</span>
+<span class="lineNum">    1299 </span><span class="lineNoCov">          0 :             wrong_args(_(&quot;--delete-key user-id&quot;));</span>
+<span class="lineNum">    1300 </span><span class="lineNoCov">          0 :         username = make_username( fname );</span>
+<span class="lineNum">    1301 </span><span class="lineNoCov">          0 :         if( (rc = delete_key(username, cmd==aDeleteSecretKey, 0)) )</span>
+<span class="lineNum">    1302 </span>            :             log_error(&quot;%s: delete key failed: %s\n&quot;, username, g10_errstr(rc) );
+<span class="lineNum">    1303 </span><span class="lineNoCov">          0 :         m_free(username);</span>
+<span class="lineNum">    1304 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1305 </span>            :       case aDeleteSecretAndPublicKey:
+<span class="lineNum">    1306 </span><span class="lineNoCov">          0 :         if( argc != 1 )</span>
+<span class="lineNum">    1307 </span><span class="lineNoCov">          0 :             wrong_args(_(&quot;--delete-secret-and-public-key user-id&quot;));</span>
+<span class="lineNum">    1308 </span><span class="lineNoCov">          0 :         username = make_username( fname );</span>
+<span class="lineNum">    1309 </span><span class="lineNoCov">          0 :         if( (rc = delete_key(username, 0, 1)) )</span>
+<span class="lineNum">    1310 </span>            :             log_error(&quot;%s: delete key failed: %s\n&quot;, username, g10_errstr(rc));
+<span class="lineNum">    1311 </span><span class="lineNoCov">          0 :         m_free(username);</span>
+<span class="lineNum">    1312 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1313 </span>            : 
+<span class="lineNum">    1314 </span>            : 
+<span class="lineNum">    1315 </span>            :       case aCheckKeys:
+<span class="lineNum">    1316 </span><span class="lineNoCov">          0 :         opt.check_sigs = 1;</span>
+<span class="lineNum">    1317 </span>            :       case aListSigs:
+<span class="lineNum">    1318 </span><span class="lineNoCov">          0 :         opt.list_sigs = 1;</span>
+<span class="lineNum">    1319 </span>            :       case aListKeys:
+<span class="lineNum">    1320 </span><span class="lineNoCov">          0 :         sl = NULL;</span>
+<span class="lineNum">    1321 </span><span class="lineNoCov">          0 :         for( ; argc; argc--, argv++ )</span>
+<span class="lineNum">    1322 </span><span class="lineNoCov">          0 :             add_to_strlist2( &amp;sl, *argv, utf8_strings );</span>
+<span class="lineNum">    1323 </span><span class="lineNoCov">          0 :         public_key_list( sl );</span>
+<span class="lineNum">    1324 </span><span class="lineNoCov">          0 :         free_strlist(sl);</span>
+<span class="lineNum">    1325 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1326 </span>            :       case aListSecretKeys:
+<span class="lineNum">    1327 </span><span class="lineNoCov">          0 :         sl = NULL;</span>
+<span class="lineNum">    1328 </span><span class="lineNoCov">          0 :         for( ; argc; argc--, argv++ )</span>
+<span class="lineNum">    1329 </span><span class="lineNoCov">          0 :             add_to_strlist2( &amp;sl, *argv, utf8_strings );</span>
+<span class="lineNum">    1330 </span><span class="lineNoCov">          0 :         secret_key_list( sl );</span>
+<span class="lineNum">    1331 </span><span class="lineNoCov">          0 :         free_strlist(sl);</span>
+<span class="lineNum">    1332 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1333 </span>            : 
+<span class="lineNum">    1334 </span>            :       case aKMode: /* list keyring -- NOTE: This will be removed soon */
+<span class="lineNum">    1335 </span><span class="lineNoCov">          0 :         if( argc &lt; 2 ) { /* -kv [userid] */</span>
+<span class="lineNum">    1336 </span><span class="lineNoCov">          0 :             sl = NULL;</span>
+<span class="lineNum">    1337 </span><span class="lineNoCov">          0 :             if (argc &amp;&amp; **argv)</span>
+<span class="lineNum">    1338 </span><span class="lineNoCov">          0 :                 add_to_strlist2( &amp;sl, *argv, utf8_strings );</span>
+<span class="lineNum">    1339 </span><span class="lineNoCov">          0 :             public_key_list( sl );</span>
+<span class="lineNum">    1340 </span><span class="lineNoCov">          0 :             free_strlist(sl);</span>
+<span class="lineNum">    1341 </span>            :         }
+<span class="lineNum">    1342 </span><span class="lineNoCov">          0 :         else if( argc == 2 ) { /* -kv userid keyring */</span>
+<span class="lineNum">    1343 </span><span class="lineNoCov">          0 :             if( access( argv[1], R_OK ) ) {</span>
+<span class="lineNum">    1344 </span>            :                 log_error(_(&quot;can't open %s: %s\n&quot;),
+<span class="lineNum">    1345 </span>            :                                print_fname_stdin(argv[1]), strerror(errno));
+<span class="lineNum">    1346 </span>            :             }
+<span class="lineNum">    1347 </span>            :             else {
+<span class="lineNum">    1348 </span>            :                 /* add keyring (default keyrings are not registered in this
+<span class="lineNum">    1349 </span>            :                  * special case */
+<span class="lineNum">    1350 </span><span class="lineNoCov">          0 :                 add_keyblock_resource( argv[1], 0, 0 );</span>
+<span class="lineNum">    1351 </span><span class="lineNoCov">          0 :                 sl = NULL;</span>
+<span class="lineNum">    1352 </span><span class="lineNoCov">          0 :                 if (**argv)</span>
+<span class="lineNum">    1353 </span><span class="lineNoCov">          0 :                     add_to_strlist2( &amp;sl, *argv, utf8_strings );</span>
+<span class="lineNum">    1354 </span><span class="lineNoCov">          0 :                 public_key_list( sl );</span>
+<span class="lineNum">    1355 </span><span class="lineNoCov">          0 :                 free_strlist(sl);</span>
+<span class="lineNum">    1356 </span>            :             }
+<span class="lineNum">    1357 </span>            :         }
+<span class="lineNum">    1358 </span>            :         else
+<span class="lineNum">    1359 </span><span class="lineNoCov">          0 :             wrong_args(_(&quot;-k[v][v][v][c] [user-id] [keyring]&quot;) );</span>
+<span class="lineNum">    1360 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1361 </span>            : 
+<span class="lineNum">    1362 </span>            :       case aKeygen: /* generate a key */
+<span class="lineNum">    1363 </span><span class="lineNoCov">          0 :         if( opt.batch ) {</span>
+<span class="lineNum">    1364 </span><span class="lineNoCov">          0 :             if( argc &gt; 1 )</span>
+<span class="lineNum">    1365 </span><span class="lineNoCov">          0 :                 wrong_args(&quot;--gen-key [parameterfile]&quot;);</span>
+<span class="lineNum">    1366 </span><span class="lineNoCov">          0 :             generate_keypair( argc? *argv : NULL );</span>
+<span class="lineNum">    1367 </span>            :         }
+<span class="lineNum">    1368 </span>            :         else {
+<span class="lineNum">    1369 </span><span class="lineNoCov">          0 :             if( argc )</span>
+<span class="lineNum">    1370 </span><span class="lineNoCov">          0 :                 wrong_args(&quot;--gen-key&quot;);</span>
+<span class="lineNum">    1371 </span><span class="lineNoCov">          0 :             generate_keypair(NULL);</span>
+<span class="lineNum">    1372 </span>            :         }
+<span class="lineNum">    1373 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1374 </span>            : 
+<span class="lineNum">    1375 </span>            :       case aFastImport:
+<span class="lineNum">    1376 </span>            :       case aImport:
+<span class="lineNum">    1377 </span><span class="lineNoCov">          0 :         import_keys( argc? argv:NULL, argc, (cmd == aFastImport) );</span>
+<span class="lineNum">    1378 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1379 </span>            : 
+<span class="lineNum">    1380 </span>            :       case aExport:
+<span class="lineNum">    1381 </span>            :       case aExportAll:
+<span class="lineNum">    1382 </span>            :       case aSendKeys:
+<span class="lineNum">    1383 </span>            :       case aRecvKeys:
+<span class="lineNum">    1384 </span><span class="lineNoCov">          0 :         sl = NULL;</span>
+<span class="lineNum">    1385 </span><span class="lineNoCov">          0 :         for( ; argc; argc--, argv++ )</span>
+<span class="lineNum">    1386 </span><span class="lineNoCov">          0 :             add_to_strlist2( &amp;sl, *argv, utf8_strings );</span>
+<span class="lineNum">    1387 </span><span class="lineNoCov">          0 :         if( cmd == aSendKeys )</span>
+<span class="lineNum">    1388 </span><span class="lineNoCov">          0 :             hkp_export( sl );</span>
+<span class="lineNum">    1389 </span><span class="lineNoCov">          0 :         else if( cmd == aRecvKeys )</span>
+<span class="lineNum">    1390 </span><span class="lineNoCov">          0 :             hkp_import( sl );</span>
+<span class="lineNum">    1391 </span>            :         else
+<span class="lineNum">    1392 </span><span class="lineNoCov">          0 :             export_pubkeys( sl, (cmd == aExport) );</span>
+<span class="lineNum">    1393 </span><span class="lineNoCov">          0 :         free_strlist(sl);</span>
+<span class="lineNum">    1394 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1395 </span>            : 
+<span class="lineNum">    1396 </span>            :       case aExportSecret:
+<span class="lineNum">    1397 </span><span class="lineNoCov">          0 :         sl = NULL;</span>
+<span class="lineNum">    1398 </span><span class="lineNoCov">          0 :         for( ; argc; argc--, argv++ )</span>
+<span class="lineNum">    1399 </span><span class="lineNoCov">          0 :             add_to_strlist2( &amp;sl, *argv, utf8_strings );</span>
+<span class="lineNum">    1400 </span><span class="lineNoCov">          0 :         export_seckeys( sl );</span>
+<span class="lineNum">    1401 </span><span class="lineNoCov">          0 :         free_strlist(sl);</span>
+<span class="lineNum">    1402 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1403 </span>            : 
+<span class="lineNum">    1404 </span>            :       case aExportSecretSub:
+<span class="lineNum">    1405 </span><span class="lineNoCov">          0 :         sl = NULL;</span>
+<span class="lineNum">    1406 </span><span class="lineNoCov">          0 :         for( ; argc; argc--, argv++ )</span>
+<span class="lineNum">    1407 </span><span class="lineNoCov">          0 :             add_to_strlist2( &amp;sl, *argv, utf8_strings );</span>
+<span class="lineNum">    1408 </span><span class="lineNoCov">          0 :         export_secsubkeys( sl );</span>
+<span class="lineNum">    1409 </span><span class="lineNoCov">          0 :         free_strlist(sl);</span>
+<span class="lineNum">    1410 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1411 </span>            : 
+<span class="lineNum">    1412 </span>            :       case aGenRevoke:
+<span class="lineNum">    1413 </span><span class="lineNoCov">          0 :         if( argc != 1 )</span>
+<span class="lineNum">    1414 </span><span class="lineNoCov">          0 :             wrong_args(&quot;--gen-revoke user-id&quot;);</span>
+<span class="lineNum">    1415 </span><span class="lineNoCov">          0 :         username =  make_username(*argv);</span>
+<span class="lineNum">    1416 </span><span class="lineNoCov">          0 :         gen_revoke( username );</span>
+<span class="lineNum">    1417 </span><span class="lineNoCov">          0 :         m_free( username );</span>
+<span class="lineNum">    1418 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1419 </span>            : 
+<span class="lineNum">    1420 </span>            :       case aDeArmor:
+<span class="lineNum">    1421 </span><span class="lineNoCov">          0 :         if( argc &gt; 1 )</span>
+<span class="lineNum">    1422 </span><span class="lineNoCov">          0 :             wrong_args(&quot;--dearmor [file]&quot;);</span>
+<span class="lineNum">    1423 </span><span class="lineNoCov">          0 :         rc = dearmor_file( argc? *argv: NULL );</span>
+<span class="lineNum">    1424 </span>            :         if( rc )
+<span class="lineNum">    1425 </span>            :             log_error(_(&quot;dearmoring failed: %s\n&quot;), g10_errstr(rc));
+<span class="lineNum">    1426 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1427 </span>            : 
+<span class="lineNum">    1428 </span>            :       case aEnArmor:
+<span class="lineNum">    1429 </span><span class="lineNoCov">          0 :         if( argc &gt; 1 )</span>
+<span class="lineNum">    1430 </span><span class="lineNoCov">          0 :             wrong_args(&quot;--enarmor [file]&quot;);</span>
+<span class="lineNum">    1431 </span><span class="lineNoCov">          0 :         rc = enarmor_file( argc? *argv: NULL );</span>
+<span class="lineNum">    1432 </span>            :         if( rc )
+<span class="lineNum">    1433 </span>            :             log_error(_(&quot;enarmoring failed: %s\n&quot;), g10_errstr(rc));
+<span class="lineNum">    1434 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1435 </span>            : 
+<span class="lineNum">    1436 </span>            : 
+<span class="lineNum">    1437 </span>            :       case aPrimegen:
+<span class="lineNum">    1438 </span><span class="lineNoCov">          0 :         {   int mode = argc &lt; 2 ? 0 : atoi(*argv);</span>
+<span class="lineNum">    1439 </span>            : 
+<span class="lineNum">    1440 </span><span class="lineNoCov">          0 :             if( mode == 1 &amp;&amp; argc == 2 ) {</span>
+<span class="lineNum">    1441 </span><span class="lineNoCov">          0 :                 mpi_print( stdout, generate_public_prime( atoi(argv[1]) ), 1);</span>
+<span class="lineNum">    1442 </span>            :             }
+<span class="lineNum">    1443 </span><span class="lineNoCov">          0 :             else if( mode == 2 &amp;&amp; argc == 3 ) {</span>
+<span class="lineNum">    1444 </span><span class="lineNoCov">          0 :                 mpi_print( stdout, generate_elg_prime(</span>
+<span class="lineNum">    1445 </span><span class="lineNoCov">          0 :                                              0, atoi(argv[1]),</span>
+<span class="lineNum">    1446 </span><span class="lineNoCov">          0 :                                              atoi(argv[2]), NULL,NULL ), 1);</span>
+<span class="lineNum">    1447 </span>            :             }
+<span class="lineNum">    1448 </span><span class="lineNoCov">          0 :             else if( mode == 3 &amp;&amp; argc == 3 ) {</span>
+<span class="lineNum">    1449 </span>            :                 MPI *factors;
+<span class="lineNum">    1450 </span><span class="lineNoCov">          0 :                 mpi_print( stdout, generate_elg_prime(</span>
+<span class="lineNum">    1451 </span><span class="lineNoCov">          0 :                                              1, atoi(argv[1]),</span>
+<span class="lineNum">    1452 </span><span class="lineNoCov">          0 :                                              atoi(argv[2]), NULL,&amp;factors ), 1);</span>
+<span class="lineNum">    1453 </span><span class="lineNoCov">          0 :                 putchar('\n');</span>
+<span class="lineNum">    1454 </span><span class="lineNoCov">          0 :                 mpi_print( stdout, factors[0], 1 ); /* print q */</span>
+<span class="lineNum">    1455 </span>            :             }
+<span class="lineNum">    1456 </span><span class="lineNoCov">          0 :             else if( mode == 4 &amp;&amp; argc == 3 ) {</span>
+<span class="lineNum">    1457 </span><span class="lineNoCov">          0 :                 MPI g = mpi_alloc(1);</span>
+<span class="lineNum">    1458 </span><span class="lineNoCov">          0 :                 mpi_print( stdout, generate_elg_prime(</span>
+<span class="lineNum">    1459 </span><span class="lineNoCov">          0 :                                                  0, atoi(argv[1]),</span>
+<span class="lineNum">    1460 </span><span class="lineNoCov">          0 :                                                  atoi(argv[2]), g, NULL ), 1);</span>
+<span class="lineNum">    1461 </span><span class="lineNoCov">          0 :                 putchar('\n');</span>
+<span class="lineNum">    1462 </span><span class="lineNoCov">          0 :                 mpi_print( stdout, g, 1 );</span>
+<span class="lineNum">    1463 </span><span class="lineNoCov">          0 :                 mpi_free(g);</span>
+<span class="lineNum">    1464 </span>            :             }
+<span class="lineNum">    1465 </span>            :             else
+<span class="lineNum">    1466 </span><span class="lineNoCov">          0 :                 wrong_args(&quot;--gen-prime mode bits [qbits] &quot;);</span>
+<span class="lineNum">    1467 </span><span class="lineNoCov">          0 :             putchar('\n');</span>
+<span class="lineNum">    1468 </span>            :         }
+<span class="lineNum">    1469 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1470 </span>            : 
+<span class="lineNum">    1471 </span>            :       case aGenRandom:
+<span class="lineNum">    1472 </span>            :         {
+<span class="lineNum">    1473 </span><span class="lineNoCov">          0 :             int level = argc ? atoi(*argv):0;</span>
+<span class="lineNum">    1474 </span><span class="lineNoCov">          0 :             int count = argc &gt; 1 ? atoi(argv[1]): 0;</span>
+<span class="lineNum">    1475 </span><span class="lineNoCov">          0 :             int endless = !count;</span>
+<span class="lineNum">    1476 </span>            : 
+<span class="lineNum">    1477 </span><span class="lineNoCov">          0 :             if( argc &lt; 1 || argc &gt; 2 || level &lt; 0 || level &gt; 2 || count &lt; 0 )</span>
+<span class="lineNum">    1478 </span><span class="lineNoCov">          0 :                 wrong_args(&quot;--gen-random 0|1|2 [count]&quot;);</span>
+<span class="lineNum">    1479 </span>            : 
+<span class="lineNum">    1480 </span><span class="lineNoCov">          0 :             while( endless || count ) {</span>
+<span class="lineNum">    1481 </span>            :                 byte *p;
+<span class="lineNum">    1482 </span><span class="lineNoCov">          0 :                 size_t n = !endless &amp;&amp; count &lt; 100? count : 100;</span>
+<span class="lineNum">    1483 </span>            : 
+<span class="lineNum">    1484 </span><span class="lineNoCov">          0 :                 p = get_random_bits( n*8, level, 0);</span>
+<span class="lineNum">    1485 </span>            :               #ifdef HAVE_DOSISH_SYSTEM
+<span class="lineNum">    1486 </span>            :                 setmode ( fileno(stdout), O_BINARY );
+<span class="lineNum">    1487 </span>            :               #endif
+<span class="lineNum">    1488 </span><span class="lineNoCov">          0 :                 fwrite( p, n, 1, stdout );</span>
+<span class="lineNum">    1489 </span><span class="lineNoCov">          0 :                 m_free(p);</span>
+<span class="lineNum">    1490 </span><span class="lineNoCov">          0 :                 if( !endless )</span>
+<span class="lineNum">    1491 </span><span class="lineNoCov">          0 :                     count -= n;</span>
+<span class="lineNum">    1492 </span>            :             }
+<span class="lineNum">    1493 </span>            :         }
+<span class="lineNum">    1494 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1495 </span>            : 
+<span class="lineNum">    1496 </span>            :       case aPrintMD:
+<span class="lineNum">    1497 </span><span class="lineNoCov">          0 :         if( argc &lt; 1)</span>
+<span class="lineNum">    1498 </span><span class="lineNoCov">          0 :             wrong_args(&quot;--print-md algo [files]&quot;);</span>
+<span class="lineNum">    1499 </span>            :         {
+<span class="lineNum">    1500 </span><span class="lineNoCov">          0 :             int all_algos = (**argv=='*' &amp;&amp; !(*argv)[1]);</span>
+<span class="lineNum">    1501 </span><span class="lineNoCov">          0 :             int algo = all_algos? 0 : string_to_digest_algo(*argv);</span>
+<span class="lineNum">    1502 </span>            : 
+<span class="lineNum">    1503 </span><span class="lineNoCov">          0 :             if( !algo &amp;&amp; !all_algos )</span>
+<span class="lineNum">    1504 </span>            :                 log_error(_(&quot;invalid hash algorithm `%s'\n&quot;), *argv );
+<span class="lineNum">    1505 </span>            :             else {
+<span class="lineNum">    1506 </span><span class="lineNoCov">          0 :                 argc--; argv++;</span>
+<span class="lineNum">    1507 </span><span class="lineNoCov">          0 :                 if( !argc )</span>
+<span class="lineNum">    1508 </span><span class="lineNoCov">          0 :                     print_mds(NULL, algo);</span>
+<span class="lineNum">    1509 </span>            :                 else {
+<span class="lineNum">    1510 </span><span class="lineNoCov">          0 :                     for(; argc; argc--, argv++ )</span>
+<span class="lineNum">    1511 </span><span class="lineNoCov">          0 :                         print_mds(*argv, algo);</span>
+<span class="lineNum">    1512 </span>            :                 }
+<span class="lineNum">    1513 </span>            :             }
+<span class="lineNum">    1514 </span>            :         }
+<span class="lineNum">    1515 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1516 </span>            : 
+<span class="lineNum">    1517 </span>            :       case aPrintMDs: /* old option */
+<span class="lineNum">    1518 </span><span class="lineNoCov">          0 :         if( !argc )</span>
+<span class="lineNum">    1519 </span><span class="lineNoCov">          0 :             print_mds(NULL,0);</span>
+<span class="lineNum">    1520 </span>            :         else {
+<span class="lineNum">    1521 </span><span class="lineNoCov">          0 :             for(; argc; argc--, argv++ )</span>
+<span class="lineNum">    1522 </span><span class="lineNoCov">          0 :                 print_mds(*argv,0);</span>
+<span class="lineNum">    1523 </span>            :         }
+<span class="lineNum">    1524 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1525 </span>            : 
+<span class="lineNum">    1526 </span>            :       case aListTrustDB:
+<span class="lineNum">    1527 </span><span class="lineNoCov">          0 :         if( !argc )</span>
+<span class="lineNum">    1528 </span><span class="lineNoCov">          0 :             list_trustdb(NULL);</span>
+<span class="lineNum">    1529 </span>            :         else {
+<span class="lineNum">    1530 </span><span class="lineNoCov">          0 :             for( ; argc; argc--, argv++ )</span>
+<span class="lineNum">    1531 </span><span class="lineNoCov">          0 :                 list_trustdb( *argv );</span>
+<span class="lineNum">    1532 </span>            :         }
+<span class="lineNum">    1533 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1534 </span>            : 
+<span class="lineNum">    1535 </span>            :       case aUpdateTrustDB:
+<span class="lineNum">    1536 </span><span class="lineNoCov">          0 :         if( argc )</span>
+<span class="lineNum">    1537 </span><span class="lineNoCov">          0 :             wrong_args(&quot;--update-trustdb&quot;);</span>
+<span class="lineNum">    1538 </span><span class="lineNoCov">          0 :         update_trustdb();</span>
+<span class="lineNum">    1539 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1540 </span>            : 
+<span class="lineNum">    1541 </span>            :       case aCheckTrustDB:
+<span class="lineNum">    1542 </span><span class="lineNoCov">          0 :         if( !argc )</span>
+<span class="lineNum">    1543 </span><span class="lineNoCov">          0 :             check_trustdb(NULL);</span>
+<span class="lineNum">    1544 </span>            :         else {
+<span class="lineNum">    1545 </span><span class="lineNoCov">          0 :             for( ; argc; argc--, argv++ ) {</span>
+<span class="lineNum">    1546 </span><span class="lineNoCov">          0 :                 username = make_username( *argv );</span>
+<span class="lineNum">    1547 </span><span class="lineNoCov">          0 :                 check_trustdb( username );</span>
+<span class="lineNum">    1548 </span><span class="lineNoCov">          0 :                 m_free(username);</span>
+<span class="lineNum">    1549 </span>            :             }
+<span class="lineNum">    1550 </span>            :         }
+<span class="lineNum">    1551 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1552 </span>            : 
+<span class="lineNum">    1553 </span>            :       case aFixTrustDB:
+<span class="lineNum">    1554 </span>            :         log_error(&quot;this command is not yet implemented.\n&quot;);
+<span class="lineNum">    1555 </span>            :         log_error(&quot;A workaround is to use \&quot;--export-ownertrust\&quot;, remove\n&quot;);
+<span class="lineNum">    1556 </span>            :         log_error(&quot;the trustdb file and do an \&quot;--import-ownertrust\&quot;.\n&quot; );
+<span class="lineNum">    1557 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1558 </span>            : 
+<span class="lineNum">    1559 </span>            :       case aListTrustPath:
+<span class="lineNum">    1560 </span><span class="lineNoCov">          0 :         if( !argc )</span>
+<span class="lineNum">    1561 </span><span class="lineNoCov">          0 :             wrong_args(&quot;--list-trust-path &lt;user-ids&gt;&quot;);</span>
+<span class="lineNum">    1562 </span><span class="lineNoCov">          0 :         for( ; argc; argc--, argv++ ) {</span>
+<span class="lineNum">    1563 </span><span class="lineNoCov">          0 :             username = make_username( *argv );</span>
+<span class="lineNum">    1564 </span><span class="lineNoCov">          0 :             list_trust_path( username );</span>
+<span class="lineNum">    1565 </span><span class="lineNoCov">          0 :             m_free(username);</span>
+<span class="lineNum">    1566 </span>            :         }
+<span class="lineNum">    1567 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1568 </span>            : 
+<span class="lineNum">    1569 </span>            :       case aExportOwnerTrust:
+<span class="lineNum">    1570 </span><span class="lineNoCov">          0 :         if( argc )</span>
+<span class="lineNum">    1571 </span><span class="lineNoCov">          0 :             wrong_args(&quot;--export-ownertrust&quot;);</span>
+<span class="lineNum">    1572 </span><span class="lineNoCov">          0 :         export_ownertrust();</span>
+<span class="lineNum">    1573 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1574 </span>            : 
+<span class="lineNum">    1575 </span>            :       case aImportOwnerTrust:
+<span class="lineNum">    1576 </span><span class="lineNoCov">          0 :         if( argc &gt; 1 )</span>
+<span class="lineNum">    1577 </span><span class="lineNoCov">          0 :             wrong_args(&quot;--import-ownertrust [file]&quot;);</span>
+<span class="lineNum">    1578 </span><span class="lineNoCov">          0 :         import_ownertrust( argc? *argv:NULL );</span>
+<span class="lineNum">    1579 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1580 </span>            :       
+<span class="lineNum">    1581 </span>            :       case aPipeMode:
+<span class="lineNum">    1582 </span><span class="lineNoCov">          0 :         if ( argc )</span>
+<span class="lineNum">    1583 </span><span class="lineNoCov">          0 :             wrong_args (&quot;--pipemode&quot;);</span>
+<span class="lineNum">    1584 </span><span class="lineNoCov">          0 :         run_in_pipemode ();</span>
+<span class="lineNum">    1585 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">    1586 </span>            : 
+<span class="lineNum">    1587 </span>            :       case aListPackets:
+<span class="lineNum">    1588 </span><span class="lineNoCov">          0 :         opt.list_packets=2;</span>
+<span class="lineNum">    1589 </span>            :       default:
+<span class="lineNum">    1590 </span><span class="lineCov">        381 :         if( argc &gt; 1 )</span>
+<span class="lineNum">    1591 </span><span class="lineNoCov">          0 :             wrong_args(_(&quot;[filename]&quot;));</span>
+<span class="lineNum">    1592 </span>            :         /* Issue some output for the unix newbie */
+<span class="lineNum">    1593 </span><span class="lineCov">        381 :         if( !fname &amp;&amp; !opt.outfile &amp;&amp; isatty( fileno(stdin) )</span>
+<span class="lineNum">    1594 </span><span class="lineNoCov">          0 :                 &amp;&amp; isatty( fileno(stdout) ) &amp;&amp; isatty( fileno(stderr) ) )</span>
+<span class="lineNum">    1595 </span>            :             log_info(_(&quot;Go ahead and type your message ...\n&quot;));
+<span class="lineNum">    1596 </span>            : 
+<span class="lineNum">    1597 </span><span class="lineCov">        381 :         if( !(a = iobuf_open(fname)) )</span>
+<span class="lineNum">    1598 </span>            :             log_error(_(&quot;can't open `%s'\n&quot;), print_fname_stdin(fname));
+<span class="lineNum">    1599 </span>            :         else {
+<span class="lineNum">    1600 </span>            : 
+<span class="lineNum">    1601 </span><span class="lineCov">        381 :             if( !opt.no_armor ) {</span>
+<span class="lineNum">    1602 </span><span class="lineCov">        381 :                 if( use_armor_filter( a ) ) {</span>
+<span class="lineNum">    1603 </span><span class="lineCov">          4 :                     memset( &amp;afx, 0, sizeof afx);</span>
+<span class="lineNum">    1604 </span><span class="lineCov">          4 :                     iobuf_push_filter( a, armor_filter, &amp;afx );</span>
+<span class="lineNum">    1605 </span>            :                 }
+<span class="lineNum">    1606 </span>            :             }
+<span class="lineNum">    1607 </span><span class="lineCov">        381 :             if( cmd == aListPackets ) {</span>
+<span class="lineNum">    1608 </span><span class="lineNoCov">          0 :                 set_packet_list_mode(1);</span>
+<span class="lineNum">    1609 </span><span class="lineNoCov">          0 :                 opt.list_packets=1;</span>
+<span class="lineNum">    1610 </span>            :             }
+<span class="lineNum">    1611 </span><span class="lineCov">        381 :             rc = proc_packets(NULL, a );</span>
+<span class="lineNum">    1612 </span>            :             if( rc )
+<span class="lineNum">    1613 </span>            :                 log_error(&quot;processing message failed: %s\n&quot;, g10_errstr(rc) );
+<span class="lineNum">    1614 </span><span class="lineCov">          6 :             iobuf_close(a);</span>
+<span class="lineNum">    1615 </span>            :         }
+<span class="lineNum">    1616 </span><span class="lineCov">          6 :         break;</span>
+<span class="lineNum">    1617 </span>            :     }
+<span class="lineNum">    1618 </span>            : 
+<span class="lineNum">    1619 </span>            :     /* cleanup */
+<span class="lineNum">    1620 </span><span class="lineCov">          6 :     FREE_STRLIST(remusr);</span>
+<span class="lineNum">    1621 </span><span class="lineCov">          6 :     FREE_STRLIST(locusr);</span>
+<span class="lineNum">    1622 </span><span class="lineCov">          6 :     g10_exit(0);</span>
+<span class="lineNum">    1623 </span>            :     return 8; /*NEVER REACHED*/
+<span class="lineNum">    1624 </span>            : }
+<span class="lineNum">    1625 </span>            : 
+<a name="1626"><span class="lineNum">    1626 </span>            : </a>
+<span class="lineNum">    1627 </span>            : void
+<span class="lineNum">    1628 </span><span class="lineCov">          6 : g10_exit( int rc )</span>
+<span class="lineNum">    1629 </span>            : {
+<span class="lineNum">    1630 </span><span class="lineCov">          6 :     update_random_seed_file();</span>
+<span class="lineNum">    1631 </span><span class="lineCov">          6 :     if( opt.debug &amp; DBG_MEMSTAT_VALUE ) {</span>
+<span class="lineNum">    1632 </span><span class="lineNoCov">          0 :         m_print_stats(&quot;on exit&quot;);</span>
+<span class="lineNum">    1633 </span><span class="lineNoCov">          0 :         random_dump_stats();</span>
+<span class="lineNum">    1634 </span>            :     }
+<span class="lineNum">    1635 </span><span class="lineCov">          6 :     if( opt.debug )</span>
+<span class="lineNum">    1636 </span><span class="lineNoCov">          0 :         secmem_dump_stats();</span>
+<span class="lineNum">    1637 </span><span class="lineCov">          6 :     secmem_term();</span>
+<span class="lineNum">    1638 </span><span class="lineCov">         12 :     rc = rc? rc : log_get_errorcount(0)? 2 :</span>
+<span class="lineNum">    1639 </span><span class="lineCov">          6 :                         g10_errors_seen? 1 : 0;</span>
+<span class="lineNum">    1640 </span><span class="lineCov">          6 :     exit(rc );</span>
+<span class="lineNum">    1641 </span>            : }
+<span class="lineNum">    1642 </span>            : 
+<span class="lineNum">    1643 </span>            : 
+<span class="lineNum">    1644 </span>            : 
+<a name="1645"><span class="lineNum">    1645 </span>            : </a>
+<span class="lineNum">    1646 </span>            : static void
+<span class="lineNum">    1647 </span><span class="lineNoCov">          0 : print_hex( byte *p, size_t n )</span>
+<span class="lineNum">    1648 </span>            : {
+<span class="lineNum">    1649 </span>            :     int i;
+<span class="lineNum">    1650 </span>            : 
+<span class="lineNum">    1651 </span><span class="lineNoCov">          0 :     if( n == 20 ) {</span>
+<span class="lineNum">    1652 </span><span class="lineNoCov">          0 :         for(i=0; i &lt; n ; i++, i++, p += 2 ) {</span>
+<span class="lineNum">    1653 </span><span class="lineNoCov">          0 :             if( i )</span>
+<span class="lineNum">    1654 </span><span class="lineNoCov">          0 :                 putchar(' ');</span>
+<span class="lineNum">    1655 </span><span class="lineNoCov">          0 :             if( i == 10 )</span>
+<span class="lineNum">    1656 </span><span class="lineNoCov">          0 :                 putchar(' ');</span>
+<span class="lineNum">    1657 </span><span class="lineNoCov">          0 :             printf(&quot;%02X%02X&quot;, *p, p[1] );</span>
+<span class="lineNum">    1658 </span>            :         }
+<span class="lineNum">    1659 </span>            :     }
+<span class="lineNum">    1660 </span><span class="lineNoCov">          0 :     else if( n == 24 ) {</span>
+<span class="lineNum">    1661 </span><span class="lineNoCov">          0 :         for(i=0; i &lt; n ; i += 4, p += 4 ) {</span>
+<span class="lineNum">    1662 </span><span class="lineNoCov">          0 :             if( i )</span>
+<span class="lineNum">    1663 </span><span class="lineNoCov">          0 :                 putchar(' ');</span>
+<span class="lineNum">    1664 </span><span class="lineNoCov">          0 :             if( i == 12 )</span>
+<span class="lineNum">    1665 </span><span class="lineNoCov">          0 :                 putchar(' ');</span>
+<span class="lineNum">    1666 </span><span class="lineNoCov">          0 :             printf(&quot;%02X%02X%02X%02X&quot;, *p, p[1], p[2], p[3] );</span>
+<span class="lineNum">    1667 </span>            :         }
+<span class="lineNum">    1668 </span>            :     }
+<span class="lineNum">    1669 </span>            :     else {
+<span class="lineNum">    1670 </span><span class="lineNoCov">          0 :         for(i=0; i &lt; n ; i++, p++ ) {</span>
+<span class="lineNum">    1671 </span><span class="lineNoCov">          0 :             if( i )</span>
+<span class="lineNum">    1672 </span><span class="lineNoCov">          0 :                 putchar(' ');</span>
+<span class="lineNum">    1673 </span><span class="lineNoCov">          0 :             if( i &amp;&amp; !(i%8) )</span>
+<span class="lineNum">    1674 </span><span class="lineNoCov">          0 :                 putchar(' ');</span>
+<span class="lineNum">    1675 </span><span class="lineNoCov">          0 :             printf(&quot;%02X&quot;, *p );</span>
+<span class="lineNum">    1676 </span>            :         }
+<span class="lineNum">    1677 </span>            :     }
+<span class="lineNum">    1678 </span><span class="lineNoCov">          0 : }</span>
+<a name="1679"><span class="lineNum">    1679 </span>            : </a>
+<span class="lineNum">    1680 </span>            : static void
+<span class="lineNum">    1681 </span><span class="lineNoCov">          0 : print_hashline( MD_HANDLE md, int algo, const char *fname )</span>
+<span class="lineNum">    1682 </span>            : {
+<span class="lineNum">    1683 </span>            :     int i, n;
+<span class="lineNum">    1684 </span>            :     const byte *p;
+<span class="lineNum">    1685 </span>            :     
+<span class="lineNum">    1686 </span><span class="lineNoCov">          0 :     if ( fname ) {</span>
+<span class="lineNum">    1687 </span><span class="lineNoCov">          0 :         for (p = fname; *p; p++ ) {</span>
+<span class="lineNum">    1688 </span><span class="lineNoCov">          0 :             if ( *p &lt;= 32 || *p &gt; 127 || *p == ':' || *p == '%' )</span>
+<span class="lineNum">    1689 </span><span class="lineNoCov">          0 :                 printf(&quot;%%%02X&quot;, *p );</span>
+<span class="lineNum">    1690 </span>            :             else 
+<span class="lineNum">    1691 </span><span class="lineNoCov">          0 :                 putchar( *p );</span>
+<span class="lineNum">    1692 </span>            :         }
+<span class="lineNum">    1693 </span>            :     }
+<span class="lineNum">    1694 </span><span class="lineNoCov">          0 :     putchar(':');</span>
+<span class="lineNum">    1695 </span><span class="lineNoCov">          0 :     printf(&quot;%d:&quot;, algo );</span>
+<span class="lineNum">    1696 </span><span class="lineNoCov">          0 :     p = md_read( md, algo );</span>
+<span class="lineNum">    1697 </span><span class="lineNoCov">          0 :     n = md_digest_length(algo);</span>
+<span class="lineNum">    1698 </span><span class="lineNoCov">          0 :     for(i=0; i &lt; n ; i++, p++ ) </span>
+<span class="lineNum">    1699 </span><span class="lineNoCov">          0 :         printf(&quot;%02X&quot;, *p );</span>
+<span class="lineNum">    1700 </span><span class="lineNoCov">          0 :     putchar(':');</span>
+<span class="lineNum">    1701 </span><span class="lineNoCov">          0 :     putchar('\n');</span>
+<span class="lineNum">    1702 </span><span class="lineNoCov">          0 : }</span>
+<a name="1703"><span class="lineNum">    1703 </span>            : </a>
+<span class="lineNum">    1704 </span>            : static void
+<span class="lineNum">    1705 </span><span class="lineNoCov">          0 : print_mds( const char *fname, int algo )</span>
+<span class="lineNum">    1706 </span>            : {
+<span class="lineNum">    1707 </span>            :     FILE *fp;
+<span class="lineNum">    1708 </span>            :     char buf[1024];
+<span class="lineNum">    1709 </span>            :     size_t n;
+<span class="lineNum">    1710 </span>            :     MD_HANDLE md;
+<span class="lineNum">    1711 </span>            :     char *pname;
+<span class="lineNum">    1712 </span>            : 
+<span class="lineNum">    1713 </span><span class="lineNoCov">          0 :     if( !fname ) {</span>
+<span class="lineNum">    1714 </span><span class="lineNoCov">          0 :         fp = stdin;</span>
+<span class="lineNum">    1715 </span>            :       #ifdef HAVE_DOSISH_SYSTEM
+<span class="lineNum">    1716 </span>            :         setmode ( fileno(fp) , O_BINARY );
+<span class="lineNum">    1717 </span>            :       #endif
+<span class="lineNum">    1718 </span><span class="lineNoCov">          0 :         pname = m_strdup(&quot;[stdin]: &quot;);</span>
+<span class="lineNum">    1719 </span>            :     }
+<span class="lineNum">    1720 </span>            :     else {
+<span class="lineNum">    1721 </span><span class="lineNoCov">          0 :         pname = m_alloc(strlen(fname)+3);</span>
+<span class="lineNum">    1722 </span><span class="lineNoCov">          0 :         strcpy(stpcpy(pname,fname),&quot;: &quot;);</span>
+<span class="lineNum">    1723 </span><span class="lineNoCov">          0 :         fp = fopen( fname, &quot;rb&quot; );</span>
+<span class="lineNum">    1724 </span>            :     }
+<span class="lineNum">    1725 </span><span class="lineNoCov">          0 :     if( !fp ) {</span>
+<span class="lineNum">    1726 </span>            :         log_error(&quot;%s%s\n&quot;, pname, strerror(errno) );
+<span class="lineNum">    1727 </span><span class="lineNoCov">          0 :         m_free(pname);</span>
+<span class="lineNum">    1728 </span><span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">    1729 </span>            :     }
+<span class="lineNum">    1730 </span>            : 
+<span class="lineNum">    1731 </span><span class="lineNoCov">          0 :     md = md_open( 0, 0 );</span>
+<span class="lineNum">    1732 </span><span class="lineNoCov">          0 :     if( algo )</span>
+<span class="lineNum">    1733 </span><span class="lineNoCov">          0 :         md_enable( md, algo );</span>
+<span class="lineNum">    1734 </span>            :     else {
+<span class="lineNum">    1735 </span><span class="lineNoCov">          0 :         md_enable( md, DIGEST_ALGO_MD5 );</span>
+<span class="lineNum">    1736 </span><span class="lineNoCov">          0 :         md_enable( md, DIGEST_ALGO_SHA1 );</span>
+<span class="lineNum">    1737 </span><span class="lineNoCov">          0 :         md_enable( md, DIGEST_ALGO_RMD160 );</span>
+<span class="lineNum">    1738 </span><span class="lineNoCov">          0 :         if( !check_digest_algo(DIGEST_ALGO_TIGER) )</span>
+<span class="lineNum">    1739 </span><span class="lineNoCov">          0 :             md_enable( md, DIGEST_ALGO_TIGER );</span>
+<span class="lineNum">    1740 </span>            :     }
+<span class="lineNum">    1741 </span>            : 
+<span class="lineNum">    1742 </span><span class="lineNoCov">          0 :     while( (n=fread( buf, 1, DIM(buf), fp )) )</span>
+<span class="lineNum">    1743 </span><span class="lineNoCov">          0 :         md_write( md, buf, n );</span>
+<span class="lineNum">    1744 </span><span class="lineNoCov">          0 :     if( ferror(fp) )</span>
+<span class="lineNum">    1745 </span>            :         log_error(&quot;%s%s\n&quot;, pname, strerror(errno) );
+<span class="lineNum">    1746 </span>            :     else {
+<span class="lineNum">    1747 </span><span class="lineNoCov">          0 :         md_final(md);</span>
+<span class="lineNum">    1748 </span><span class="lineNoCov">          0 :         if ( opt.with_colons ) {</span>
+<span class="lineNum">    1749 </span><span class="lineNoCov">          0 :             if ( algo ) </span>
+<span class="lineNum">    1750 </span><span class="lineNoCov">          0 :                 print_hashline( md, algo, fname );</span>
+<span class="lineNum">    1751 </span>            :             else {
+<span class="lineNum">    1752 </span><span class="lineNoCov">          0 :                 print_hashline( md, DIGEST_ALGO_MD5, fname );</span>
+<span class="lineNum">    1753 </span><span class="lineNoCov">          0 :                 print_hashline( md, DIGEST_ALGO_SHA1, fname );</span>
+<span class="lineNum">    1754 </span><span class="lineNoCov">          0 :                 print_hashline( md, DIGEST_ALGO_RMD160, fname );</span>
+<span class="lineNum">    1755 </span><span class="lineNoCov">          0 :                 if( !check_digest_algo(DIGEST_ALGO_TIGER) ) </span>
+<span class="lineNum">    1756 </span><span class="lineNoCov">          0 :                     print_hashline( md, DIGEST_ALGO_TIGER, fname );</span>
+<span class="lineNum">    1757 </span>            :             }
+<span class="lineNum">    1758 </span>            :         }
+<span class="lineNum">    1759 </span>            :         else {
+<span class="lineNum">    1760 </span><span class="lineNoCov">          0 :             if( algo ) {</span>
+<span class="lineNum">    1761 </span><span class="lineNoCov">          0 :                 if( fname )</span>
+<span class="lineNum">    1762 </span><span class="lineNoCov">          0 :                     fputs( pname, stdout );</span>
+<span class="lineNum">    1763 </span><span class="lineNoCov">          0 :                 print_hex(md_read(md, algo), md_digest_length(algo) );</span>
+<span class="lineNum">    1764 </span>            :             }
+<span class="lineNum">    1765 </span>            :             else {
+<span class="lineNum">    1766 </span><span class="lineNoCov">          0 :                 printf(  &quot;%s   MD5 = &quot;, fname?pname:&quot;&quot; );</span>
+<span class="lineNum">    1767 </span><span class="lineNoCov">          0 :                 print_hex(md_read(md, DIGEST_ALGO_MD5), 16 );</span>
+<span class="lineNum">    1768 </span><span class="lineNoCov">          0 :                 printf(&quot;\n%s  SHA1 = &quot;, fname?pname:&quot;&quot;  );</span>
+<span class="lineNum">    1769 </span><span class="lineNoCov">          0 :                 print_hex(md_read(md, DIGEST_ALGO_SHA1), 20 );</span>
+<span class="lineNum">    1770 </span><span class="lineNoCov">          0 :                 printf(&quot;\n%sRMD160 = &quot;, fname?pname:&quot;&quot;  );</span>
+<span class="lineNum">    1771 </span><span class="lineNoCov">          0 :                 print_hex(md_read(md, DIGEST_ALGO_RMD160), 20 );</span>
+<span class="lineNum">    1772 </span><span class="lineNoCov">          0 :                 if( !check_digest_algo(DIGEST_ALGO_TIGER) ) {</span>
+<span class="lineNum">    1773 </span><span class="lineNoCov">          0 :                     printf(&quot;\n%s TIGER = &quot;, fname?pname:&quot;&quot;  );</span>
+<span class="lineNum">    1774 </span><span class="lineNoCov">          0 :                     print_hex(md_read(md, DIGEST_ALGO_TIGER), 24 );</span>
+<span class="lineNum">    1775 </span>            :                 }
+<span class="lineNum">    1776 </span>            :             }
+<span class="lineNum">    1777 </span><span class="lineNoCov">          0 :             putchar('\n');</span>
+<span class="lineNum">    1778 </span>            :         }
+<span class="lineNum">    1779 </span>            :     }
+<span class="lineNum">    1780 </span><span class="lineNoCov">          0 :     md_close(md);</span>
+<span class="lineNum">    1781 </span>            : 
+<span class="lineNum">    1782 </span><span class="lineNoCov">          0 :     if( fp != stdin )</span>
+<span class="lineNum">    1783 </span><span class="lineNoCov">          0 :         fclose(fp);</span>
+<span class="lineNum">    1784 </span>            : }
+<span class="lineNum">    1785 </span>            : 
+<span class="lineNum">    1786 </span>            : 
+<span class="lineNum">    1787 </span>            : /****************
+<span class="lineNum">    1788 </span>            :  * Check the supplied name,value string and add it to the notation
+<span class="lineNum">    1789 </span>            :  * data to be used for signatures.
+<a name="1790"><span class="lineNum">    1790 </span>            :  */</a>
+<span class="lineNum">    1791 </span>            : static void
+<span class="lineNum">    1792 </span><span class="lineNoCov">          0 : add_notation_data( const char *string )</span>
+<span class="lineNum">    1793 </span>            : {
+<span class="lineNum">    1794 </span>            :     const char *s;
+<span class="lineNum">    1795 </span>            :     const char *s2;
+<span class="lineNum">    1796 </span>            :     STRLIST sl;
+<span class="lineNum">    1797 </span><span class="lineNoCov">          0 :     int critical=0;</span>
+<span class="lineNum">    1798 </span><span class="lineNoCov">          0 :     int highbit=0;</span>
+<span class="lineNum">    1799 </span>            : 
+<span class="lineNum">    1800 </span><span class="lineNoCov">          0 :     if( *string == '!' ) {</span>
+<span class="lineNum">    1801 </span><span class="lineNoCov">          0 :         critical = 1;</span>
+<span class="lineNum">    1802 </span><span class="lineNoCov">          0 :         string++;</span>
+<span class="lineNum">    1803 </span>            :     }
+<span class="lineNum">    1804 </span><span class="lineNoCov">          0 :     s = string;</span>
+<span class="lineNum">    1805 </span>            : 
+<span class="lineNum">    1806 </span><span class="lineNoCov">          0 :     if( !*s || (*s &amp; 0x80) || (!isalpha(*s) &amp;&amp; *s != '_') ) {</span>
+<span class="lineNum">    1807 </span>            :         log_error(_(&quot;the first character of a notation name &quot;
+<span class="lineNum">    1808 </span>            :                     &quot;must be a letter or an underscore\n&quot;) );
+<span class="lineNum">    1809 </span><span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">    1810 </span>            :     }
+<span class="lineNum">    1811 </span><span class="lineNoCov">          0 :     for(s++; *s != '='; s++ ) {</span>
+<span class="lineNum">    1812 </span><span class="lineNoCov">          0 :         if( !*s || (*s &amp; 0x80) || (!isalnum(*s) &amp;&amp; *s != '_' &amp;&amp; *s != '.' ) ) {</span>
+<span class="lineNum">    1813 </span>            :             log_error(_(&quot;a notation name must have only letters, &quot;
+<span class="lineNum">    1814 </span>            :                         &quot;digits, dots or underscores and end with an '='\n&quot;) );
+<span class="lineNum">    1815 </span><span class="lineNoCov">          0 :             return;</span>
+<span class="lineNum">    1816 </span>            :         }
+<span class="lineNum">    1817 </span>            :     }
+<span class="lineNum">    1818 </span><span class="lineNoCov">          0 :     if( s[-1] == '.' || ((s2=strstr(string, &quot;..&quot;)) &amp;&amp; s2 &lt; s ) ) {</span>
+<span class="lineNum">    1819 </span>            :         log_error(_(&quot;dots in a notation name must be surrounded &quot;
+<span class="lineNum">    1820 </span>            :                     &quot;by other characters\n&quot;) );
+<span class="lineNum">    1821 </span><span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">    1822 </span>            :     }
+<span class="lineNum">    1823 </span>            :     /* we do only support printabe text - therefore we enforce the use
+<span class="lineNum">    1824 </span>            :      * of only printable characters (an empty value is valid) */
+<span class="lineNum">    1825 </span><span class="lineNoCov">          0 :     for( s++; *s ; s++ ) {</span>
+<span class="lineNum">    1826 </span><span class="lineNoCov">          0 :         if( iscntrl(*s) ) {</span>
+<span class="lineNum">    1827 </span>            :             log_error(_(&quot;a notation value must not use &quot;
+<span class="lineNum">    1828 </span>            :                         &quot;any control characters\n&quot;) );
+<span class="lineNum">    1829 </span><span class="lineNoCov">          0 :             return;</span>
+<span class="lineNum">    1830 </span>            :         }
+<span class="lineNum">    1831 </span><span class="lineNoCov">          0 :         else if( *s &amp; 0x80 )</span>
+<span class="lineNum">    1832 </span><span class="lineNoCov">          0 :             highbit = 1;</span>
+<span class="lineNum">    1833 </span>            :     }
+<span class="lineNum">    1834 </span>            : 
+<span class="lineNum">    1835 </span><span class="lineNoCov">          0 :     if( highbit )   /* must use UTF8 encoding */</span>
+<span class="lineNum">    1836 </span><span class="lineNoCov">          0 :         sl = add_to_strlist2( &amp;opt.notation_data, string, utf8_strings );</span>
+<span class="lineNum">    1837 </span>            :     else
+<span class="lineNum">    1838 </span><span class="lineNoCov">          0 :         sl = add_to_strlist( &amp;opt.notation_data, string );</span>
+<span class="lineNum">    1839 </span>            : 
+<span class="lineNum">    1840 </span><span class="lineNoCov">          0 :     if( critical )</span>
+<span class="lineNum">    1841 </span><span class="lineNoCov">          0 :         sl-&gt;flags |= 1;</span>
+<span class="lineNum">    1842 </span>            : }
+<span class="lineNum">    1843 </span>            : 
+<a name="1844"><span class="lineNum">    1844 </span>            : </a>
+<span class="lineNum">    1845 </span>            : static int
+<span class="lineNum">    1846 </span><span class="lineNoCov">          0 : check_policy_url( const char *s )</span>
+<span class="lineNum">    1847 </span>            : {
+<span class="lineNum">    1848 </span><span class="lineNoCov">          0 :     if( *s == '!' )</span>
+<span class="lineNum">    1849 </span><span class="lineNoCov">          0 :         s++;</span>
+<span class="lineNum">    1850 </span><span class="lineNoCov">          0 :     if( !*s )</span>
+<span class="lineNum">    1851 </span><span class="lineNoCov">          0 :         return -1;</span>
+<span class="lineNum">    1852 </span><span class="lineNoCov">          0 :     for(; *s ; s++ ) {</span>
+<span class="lineNum">    1853 </span><span class="lineNoCov">          0 :         if( (*s &amp; 0x80) || iscntrl(*s) )</span>
+<span class="lineNum">    1854 </span><span class="lineNoCov">          0 :             return -1;</span>
+<span class="lineNum">    1855 </span>            :     }
+<span class="lineNum">    1856 </span><span class="lineNoCov">          0 :     return 0;</span>
+<span class="lineNum">    1857 </span>            : }
+<span class="lineNum">    1858 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

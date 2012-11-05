@@ -1,0 +1,332 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - g10/encr-data.c</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">g10</a> - encr-data.c<span style="font-size: 80%;"> (source / <a href="encr-data.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">118</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2012-11-04</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /* encr-data.c -  process an encrypted data packet</a>
+<span class="lineNum">       2 </span>            :  * Copyright (C) 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
+<span class="lineNum">       3 </span>            :  *
+<span class="lineNum">       4 </span>            :  * This file is part of GnuPG.
+<span class="lineNum">       5 </span>            :  *
+<span class="lineNum">       6 </span>            :  * GnuPG is free software; you can redistribute it and/or modify
+<span class="lineNum">       7 </span>            :  * it under the terms of the GNU General Public License as published by
+<span class="lineNum">       8 </span>            :  * the Free Software Foundation; either version 2 of the License, or
+<span class="lineNum">       9 </span>            :  * (at your option) any later version.
+<span class="lineNum">      10 </span>            :  *
+<span class="lineNum">      11 </span>            :  * GnuPG is distributed in the hope that it will be useful,
+<span class="lineNum">      12 </span>            :  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<span class="lineNum">      13 </span>            :  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<span class="lineNum">      14 </span>            :  * GNU General Public License for more details.
+<span class="lineNum">      15 </span>            :  *
+<span class="lineNum">      16 </span>            :  * You should have received a copy of the GNU General Public License
+<span class="lineNum">      17 </span>            :  * along with this program; if not, write to the Free Software
+<span class="lineNum">      18 </span>            :  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
+<span class="lineNum">      19 </span>            :  */
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : #include &lt;config.h&gt;
+<span class="lineNum">      22 </span>            : #include &lt;stdio.h&gt;
+<span class="lineNum">      23 </span>            : #include &lt;stdlib.h&gt;
+<span class="lineNum">      24 </span>            : #include &lt;string.h&gt;
+<span class="lineNum">      25 </span>            : #include &lt;assert.h&gt;
+<span class="lineNum">      26 </span>            : #include &quot;util.h&quot;
+<span class="lineNum">      27 </span>            : #include &quot;memory.h&quot;
+<span class="lineNum">      28 </span>            : #include &quot;packet.h&quot;
+<span class="lineNum">      29 </span>            : #include &quot;mpi.h&quot;
+<span class="lineNum">      30 </span>            : #include &quot;cipher.h&quot;
+<span class="lineNum">      31 </span>            : #include &quot;options.h&quot;
+<span class="lineNum">      32 </span>            : #include &quot;i18n.h&quot;
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span>            : 
+<span class="lineNum">      35 </span>            : static int mdc_decode_filter( void *opaque, int control, IOBUF a,
+<span class="lineNum">      36 </span>            :                                               byte *buf, size_t *ret_len);
+<span class="lineNum">      37 </span>            : static int decode_filter( void *opaque, int control, IOBUF a,
+<span class="lineNum">      38 </span>            :                                         byte *buf, size_t *ret_len);
+<span class="lineNum">      39 </span>            : 
+<span class="lineNum">      40 </span>            : typedef struct {
+<span class="lineNum">      41 </span>            :     CIPHER_HANDLE cipher_hd;
+<span class="lineNum">      42 </span>            :     MD_HANDLE mdc_hash;
+<span class="lineNum">      43 </span>            :     char defer[20];
+<span class="lineNum">      44 </span>            :     int  defer_filled;
+<span class="lineNum">      45 </span>            :     int  eof_seen;
+<span class="lineNum">      46 </span>            : } decode_filter_ctx_t;
+<span class="lineNum">      47 </span>            : 
+<span class="lineNum">      48 </span>            : 
+<span class="lineNum">      49 </span>            : /****************
+<span class="lineNum">      50 </span>            :  * Decrypt the data, specified by ED with the key DEK.
+<a name="51"><span class="lineNum">      51 </span>            :  */</a>
+<span class="lineNum">      52 </span>            : int
+<span class="lineNum">      53 </span><span class="lineNoCov">          0 : decrypt_data( void *procctx, PKT_encrypted *ed, DEK *dek )</span>
+<span class="lineNum">      54 </span>            : {
+<span class="lineNum">      55 </span>            :     decode_filter_ctx_t dfx;
+<span class="lineNum">      56 </span>            :     byte *p;
+<span class="lineNum">      57 </span><span class="lineNoCov">          0 :     int rc=0, c, i;</span>
+<span class="lineNum">      58 </span>            :     byte temp[32];
+<span class="lineNum">      59 </span>            :     unsigned blocksize;
+<span class="lineNum">      60 </span>            :     unsigned nprefix;
+<span class="lineNum">      61 </span>            : 
+<span class="lineNum">      62 </span><span class="lineNoCov">          0 :     memset( &amp;dfx, 0, sizeof dfx );</span>
+<span class="lineNum">      63 </span><span class="lineNoCov">          0 :     if( opt.verbose ) {</span>
+<span class="lineNum">      64 </span><span class="lineNoCov">          0 :         const char *s = cipher_algo_to_string( dek-&gt;algo );</span>
+<span class="lineNum">      65 </span>            :         if( s )
+<span class="lineNum">      66 </span>            :             log_info(_(&quot;%s encrypted data\n&quot;), s );
+<span class="lineNum">      67 </span>            :         else
+<span class="lineNum">      68 </span>            :             log_info(_(&quot;encrypted with unknown algorithm %d\n&quot;), dek-&gt;algo );
+<span class="lineNum">      69 </span>            :     }
+<span class="lineNum">      70 </span><span class="lineNoCov">          0 :     if( (rc=check_cipher_algo(dek-&gt;algo)) )</span>
+<span class="lineNum">      71 </span><span class="lineNoCov">          0 :         goto leave;</span>
+<span class="lineNum">      72 </span><span class="lineNoCov">          0 :     blocksize = cipher_get_blocksize(dek-&gt;algo);</span>
+<span class="lineNum">      73 </span><span class="lineNoCov">          0 :     if( !blocksize || blocksize &gt; 16 )</span>
+<span class="lineNum">      74 </span><span class="lineNoCov">          0 :         log_fatal(&quot;unsupported blocksize %u\n&quot;, blocksize );</span>
+<span class="lineNum">      75 </span><span class="lineNoCov">          0 :     nprefix = blocksize;</span>
+<span class="lineNum">      76 </span><span class="lineNoCov">          0 :     if( ed-&gt;len &amp;&amp; ed-&gt;len &lt; (nprefix+2) )</span>
+<span class="lineNum">      77 </span><span class="lineNoCov">          0 :         BUG();</span>
+<span class="lineNum">      78 </span>            : 
+<span class="lineNum">      79 </span><span class="lineNoCov">          0 :     if( ed-&gt;mdc_method ) {</span>
+<span class="lineNum">      80 </span><span class="lineNoCov">          0 :         dfx.mdc_hash = md_open( ed-&gt;mdc_method, 0 );</span>
+<span class="lineNum">      81 </span><span class="lineNoCov">          0 :         if ( DBG_HASHING )</span>
+<span class="lineNum">      82 </span><span class="lineNoCov">          0 :             md_start_debug(dfx.mdc_hash, &quot;checkmdc&quot;);</span>
+<span class="lineNum">      83 </span>            :     }
+<span class="lineNum">      84 </span><span class="lineNoCov">          0 :     dfx.cipher_hd = cipher_open( dek-&gt;algo,</span>
+<span class="lineNum">      85 </span><span class="lineNoCov">          0 :                                  ed-&gt;mdc_method? CIPHER_MODE_CFB</span>
+<span class="lineNum">      86 </span>            :                                                : CIPHER_MODE_AUTO_CFB, 1 );
+<span class="lineNum">      87 </span>            : /* log_hexdump( &quot;thekey&quot;, dek-&gt;key, dek-&gt;keylen );*/
+<span class="lineNum">      88 </span><span class="lineNoCov">          0 :     rc = cipher_setkey( dfx.cipher_hd, dek-&gt;key, dek-&gt;keylen );</span>
+<span class="lineNum">      89 </span><span class="lineNoCov">          0 :     if( rc == G10ERR_WEAK_KEY )</span>
+<span class="lineNum">      90 </span>            :         log_info(_(&quot;WARNING: message was encrypted with &quot;
+<span class="lineNum">      91 </span>            :                     &quot;a weak key in the symmetric cipher.\n&quot;));
+<span class="lineNum">      92 </span><span class="lineNoCov">          0 :     else if( rc ) {</span>
+<span class="lineNum">      93 </span>            :         log_error(&quot;key setup failed: %s\n&quot;, g10_errstr(rc) );
+<span class="lineNum">      94 </span><span class="lineNoCov">          0 :         goto leave;</span>
+<span class="lineNum">      95 </span>            :     }
+<span class="lineNum">      96 </span><span class="lineNoCov">          0 :     if (!ed-&gt;buf) {</span>
+<span class="lineNum">      97 </span>            :         log_error(_(&quot;problem handling encrypted packet\n&quot;));
+<span class="lineNum">      98 </span><span class="lineNoCov">          0 :         goto leave;</span>
+<span class="lineNum">      99 </span>            :     }
+<span class="lineNum">     100 </span>            : 
+<span class="lineNum">     101 </span><span class="lineNoCov">          0 :     cipher_setiv( dfx.cipher_hd, NULL, 0 );</span>
+<span class="lineNum">     102 </span>            : 
+<span class="lineNum">     103 </span><span class="lineNoCov">          0 :     if( ed-&gt;len ) {</span>
+<span class="lineNum">     104 </span><span class="lineNoCov">          0 :         for(i=0; i &lt; (nprefix+2) &amp;&amp; ed-&gt;len; i++, ed-&gt;len-- ) {</span>
+<span class="lineNum">     105 </span><span class="lineNoCov">          0 :             if( (c=iobuf_get(ed-&gt;buf)) == -1 )</span>
+<span class="lineNum">     106 </span><span class="lineNoCov">          0 :                 break;</span>
+<span class="lineNum">     107 </span>            :             else
+<span class="lineNum">     108 </span><span class="lineNoCov">          0 :                 temp[i] = c;</span>
+<span class="lineNum">     109 </span>            :         }
+<span class="lineNum">     110 </span>            :     }
+<span class="lineNum">     111 </span>            :     else {
+<span class="lineNum">     112 </span><span class="lineNoCov">          0 :         for(i=0; i &lt; (nprefix+2); i++ )</span>
+<span class="lineNum">     113 </span><span class="lineNoCov">          0 :             if( (c=iobuf_get(ed-&gt;buf)) == -1 )</span>
+<span class="lineNum">     114 </span><span class="lineNoCov">          0 :                 break;</span>
+<span class="lineNum">     115 </span>            :             else
+<span class="lineNum">     116 </span><span class="lineNoCov">          0 :                 temp[i] = c;</span>
+<span class="lineNum">     117 </span>            :     }
+<span class="lineNum">     118 </span><span class="lineNoCov">          0 :     cipher_decrypt( dfx.cipher_hd, temp, temp, nprefix+2);</span>
+<span class="lineNum">     119 </span><span class="lineNoCov">          0 :     cipher_sync( dfx.cipher_hd );</span>
+<span class="lineNum">     120 </span><span class="lineNoCov">          0 :     p = temp;</span>
+<span class="lineNum">     121 </span>            : /* log_hexdump( &quot;prefix&quot;, temp, nprefix+2 ); */
+<span class="lineNum">     122 </span><span class="lineNoCov">          0 :     if( p[nprefix-2] != p[nprefix] || p[nprefix-1] != p[nprefix+1] ) {</span>
+<span class="lineNum">     123 </span><span class="lineNoCov">          0 :         rc = G10ERR_BAD_KEY;</span>
+<span class="lineNum">     124 </span><span class="lineNoCov">          0 :         goto leave;</span>
+<span class="lineNum">     125 </span>            :     }
+<span class="lineNum">     126 </span>            : 
+<span class="lineNum">     127 </span><span class="lineNoCov">          0 :     if( dfx.mdc_hash )</span>
+<span class="lineNum">     128 </span><span class="lineNoCov">          0 :         md_write( dfx.mdc_hash, temp, nprefix+2 );</span>
+<span class="lineNum">     129 </span>            : 
+<span class="lineNum">     130 </span><span class="lineNoCov">          0 :     if( ed-&gt;mdc_method )</span>
+<span class="lineNum">     131 </span><span class="lineNoCov">          0 :         iobuf_push_filter( ed-&gt;buf, mdc_decode_filter, &amp;dfx );</span>
+<span class="lineNum">     132 </span>            :     else
+<span class="lineNum">     133 </span><span class="lineNoCov">          0 :         iobuf_push_filter( ed-&gt;buf, decode_filter, &amp;dfx );</span>
+<span class="lineNum">     134 </span>            : 
+<span class="lineNum">     135 </span><span class="lineNoCov">          0 :     proc_packets( procctx, ed-&gt;buf );</span>
+<span class="lineNum">     136 </span><span class="lineNoCov">          0 :     ed-&gt;buf = NULL;</span>
+<span class="lineNum">     137 </span><span class="lineNoCov">          0 :     if( ed-&gt;mdc_method &amp;&amp; dfx.eof_seen == 2 )</span>
+<span class="lineNum">     138 </span><span class="lineNoCov">          0 :         rc = G10ERR_INVALID_PACKET;</span>
+<span class="lineNum">     139 </span><span class="lineNoCov">          0 :     else if( ed-&gt;mdc_method ) { /* check the mdc */</span>
+<span class="lineNum">     140 </span><span class="lineNoCov">          0 :         int datalen = md_digest_length( ed-&gt;mdc_method );</span>
+<span class="lineNum">     141 </span>            : 
+<span class="lineNum">     142 </span><span class="lineNoCov">          0 :         cipher_decrypt( dfx.cipher_hd, dfx.defer, dfx.defer, 20);</span>
+<span class="lineNum">     143 </span><span class="lineNoCov">          0 :         md_final( dfx.mdc_hash );</span>
+<span class="lineNum">     144 </span><span class="lineNoCov">          0 :         if( datalen != 20</span>
+<span class="lineNum">     145 </span><span class="lineNoCov">          0 :             || memcmp(md_read( dfx.mdc_hash, 0 ), dfx.defer, datalen) )</span>
+<span class="lineNum">     146 </span><span class="lineNoCov">          0 :             rc = G10ERR_BAD_SIGN;</span>
+<span class="lineNum">     147 </span>            :         /*log_hexdump(&quot;MDC calculated:&quot;, md_read( dfx.mdc_hash, 0), datalen);*/
+<span class="lineNum">     148 </span>            :         /*log_hexdump(&quot;MDC message   :&quot;, dfx.defer, 20);*/
+<span class="lineNum">     149 </span>            :     }
+<span class="lineNum">     150 </span>            : 
+<span class="lineNum">     151 </span>            :   leave:
+<span class="lineNum">     152 </span><span class="lineNoCov">          0 :     cipher_close(dfx.cipher_hd);</span>
+<span class="lineNum">     153 </span><span class="lineNoCov">          0 :     md_close( dfx.mdc_hash );</span>
+<span class="lineNum">     154 </span><span class="lineNoCov">          0 :     return rc;</span>
+<span class="lineNum">     155 </span>            : }
+<span class="lineNum">     156 </span>            : 
+<span class="lineNum">     157 </span>            : 
+<span class="lineNum">     158 </span>            : 
+<a name="159"><span class="lineNum">     159 </span>            : /* I think we should merge this with cipher_filter */</a>
+<span class="lineNum">     160 </span>            : static int
+<span class="lineNum">     161 </span><span class="lineNoCov">          0 : mdc_decode_filter( void *opaque, int control, IOBUF a,</span>
+<span class="lineNum">     162 </span>            :                                               byte *buf, size_t *ret_len)
+<span class="lineNum">     163 </span>            : {
+<span class="lineNum">     164 </span><span class="lineNoCov">          0 :     decode_filter_ctx_t *dfx = opaque;</span>
+<span class="lineNum">     165 </span><span class="lineNoCov">          0 :     size_t n, size = *ret_len;</span>
+<span class="lineNum">     166 </span><span class="lineNoCov">          0 :     int rc = 0;</span>
+<span class="lineNum">     167 </span>            :     int c;
+<span class="lineNum">     168 </span>            : 
+<span class="lineNum">     169 </span><span class="lineNoCov">          0 :     if( control == IOBUFCTRL_UNDERFLOW &amp;&amp; dfx-&gt;eof_seen ) {</span>
+<span class="lineNum">     170 </span><span class="lineNoCov">          0 :         *ret_len = 0;</span>
+<span class="lineNum">     171 </span><span class="lineNoCov">          0 :         rc = -1;</span>
+<span class="lineNum">     172 </span>            :     }
+<span class="lineNum">     173 </span><span class="lineNoCov">          0 :     else if( control == IOBUFCTRL_UNDERFLOW ) {</span>
+<span class="lineNum">     174 </span><span class="lineNoCov">          0 :         assert(a);</span>
+<span class="lineNum">     175 </span><span class="lineNoCov">          0 :         assert( size &gt; 40 );</span>
+<span class="lineNum">     176 </span>            : 
+<span class="lineNum">     177 </span>            :         /* get at least 20 bytes and put it somewhere ahead in the buffer */
+<span class="lineNum">     178 </span><span class="lineNoCov">          0 :         for(n=20; n &lt; 40 ; n++ ) {</span>
+<span class="lineNum">     179 </span><span class="lineNoCov">          0 :             if( (c = iobuf_get(a)) == -1 )</span>
+<span class="lineNum">     180 </span><span class="lineNoCov">          0 :                 break;</span>
+<span class="lineNum">     181 </span><span class="lineNoCov">          0 :             buf[n] = c;</span>
+<span class="lineNum">     182 </span>            :         }
+<span class="lineNum">     183 </span><span class="lineNoCov">          0 :         if( n == 40 ) {</span>
+<span class="lineNum">     184 </span>            :             /* we have enough stuff - flush the deferred stuff */
+<span class="lineNum">     185 </span>            :             /* (we have asserted that the buffer is large enough) */
+<span class="lineNum">     186 </span><span class="lineNoCov">          0 :             if( !dfx-&gt;defer_filled ) { /* the first time */</span>
+<span class="lineNum">     187 </span><span class="lineNoCov">          0 :                 memcpy(buf, buf+20, 20 );</span>
+<span class="lineNum">     188 </span><span class="lineNoCov">          0 :                 n = 20;</span>
+<span class="lineNum">     189 </span>            :             }
+<span class="lineNum">     190 </span>            :             else {
+<span class="lineNum">     191 </span><span class="lineNoCov">          0 :                 memcpy(buf, dfx-&gt;defer, 20 );</span>
+<span class="lineNum">     192 </span>            :             }
+<span class="lineNum">     193 </span>            :             /* now fill up */
+<span class="lineNum">     194 </span><span class="lineNoCov">          0 :             for(; n &lt; size; n++ ) {</span>
+<span class="lineNum">     195 </span><span class="lineNoCov">          0 :                 if( (c = iobuf_get(a)) == -1 )</span>
+<span class="lineNum">     196 </span><span class="lineNoCov">          0 :                     break;</span>
+<span class="lineNum">     197 </span><span class="lineNoCov">          0 :                 buf[n] = c;</span>
+<span class="lineNum">     198 </span>            :             }
+<span class="lineNum">     199 </span>            :             /* move the last 20 bytes back to the defer buffer */
+<span class="lineNum">     200 </span>            :             /* (okay, we are wasting 20 bytes of supplied buffer) */
+<span class="lineNum">     201 </span><span class="lineNoCov">          0 :             n -= 20;</span>
+<span class="lineNum">     202 </span><span class="lineNoCov">          0 :             memcpy( dfx-&gt;defer, buf+n, 20 );</span>
+<span class="lineNum">     203 </span><span class="lineNoCov">          0 :             dfx-&gt;defer_filled = 1;</span>
+<span class="lineNum">     204 </span>            :         }
+<span class="lineNum">     205 </span><span class="lineNoCov">          0 :         else if( !dfx-&gt;defer_filled ) { /* eof seen buf empty defer */</span>
+<span class="lineNum">     206 </span>            :             /* this is bad because there is an incomplete hash */
+<span class="lineNum">     207 </span><span class="lineNoCov">          0 :             n -= 20;</span>
+<span class="lineNum">     208 </span><span class="lineNoCov">          0 :             memcpy(buf, buf+20, n );</span>
+<span class="lineNum">     209 </span><span class="lineNoCov">          0 :             dfx-&gt;eof_seen = 2; /* eof with incomplete hash */</span>
+<span class="lineNum">     210 </span>            :         }
+<span class="lineNum">     211 </span>            :         else { /* eof seen */
+<span class="lineNum">     212 </span><span class="lineNoCov">          0 :             memcpy(buf, dfx-&gt;defer, 20 );</span>
+<span class="lineNum">     213 </span><span class="lineNoCov">          0 :             n -= 20;</span>
+<span class="lineNum">     214 </span><span class="lineNoCov">          0 :             memcpy( dfx-&gt;defer, buf+n, 20 );</span>
+<span class="lineNum">     215 </span><span class="lineNoCov">          0 :             dfx-&gt;eof_seen = 1; /* normal eof */</span>
+<span class="lineNum">     216 </span>            :         }
+<span class="lineNum">     217 </span>            : 
+<span class="lineNum">     218 </span><span class="lineNoCov">          0 :         if( n ) {</span>
+<span class="lineNum">     219 </span><span class="lineNoCov">          0 :             cipher_decrypt( dfx-&gt;cipher_hd, buf, buf, n);</span>
+<span class="lineNum">     220 </span><span class="lineNoCov">          0 :             md_write( dfx-&gt;mdc_hash, buf, n );</span>
+<span class="lineNum">     221 </span>            :         }
+<span class="lineNum">     222 </span>            :         else {
+<span class="lineNum">     223 </span><span class="lineNoCov">          0 :             assert( dfx-&gt;eof_seen );</span>
+<span class="lineNum">     224 </span><span class="lineNoCov">          0 :             rc = -1; /* eof */</span>
+<span class="lineNum">     225 </span>            :         }
+<span class="lineNum">     226 </span><span class="lineNoCov">          0 :         *ret_len = n;</span>
+<span class="lineNum">     227 </span>            :     }
+<span class="lineNum">     228 </span><span class="lineNoCov">          0 :     else if( control == IOBUFCTRL_DESC ) {</span>
+<span class="lineNum">     229 </span><span class="lineNoCov">          0 :         *(char**)buf = &quot;mdc_decode_filter&quot;;</span>
+<span class="lineNum">     230 </span>            :     }
+<span class="lineNum">     231 </span><span class="lineNoCov">          0 :     return rc;</span>
+<span class="lineNum">     232 </span>            : }
+<a name="233"><span class="lineNum">     233 </span>            : </a>
+<span class="lineNum">     234 </span>            : static int
+<span class="lineNum">     235 </span><span class="lineNoCov">          0 : decode_filter( void *opaque, int control, IOBUF a, byte *buf, size_t *ret_len)</span>
+<span class="lineNum">     236 </span>            : {
+<span class="lineNum">     237 </span><span class="lineNoCov">          0 :     decode_filter_ctx_t *fc = opaque;</span>
+<span class="lineNum">     238 </span><span class="lineNoCov">          0 :     size_t n, size = *ret_len;</span>
+<span class="lineNum">     239 </span><span class="lineNoCov">          0 :     int rc = 0;</span>
+<span class="lineNum">     240 </span>            : 
+<span class="lineNum">     241 </span><span class="lineNoCov">          0 :     if( control == IOBUFCTRL_UNDERFLOW ) {</span>
+<span class="lineNum">     242 </span><span class="lineNoCov">          0 :         assert(a);</span>
+<span class="lineNum">     243 </span><span class="lineNoCov">          0 :         n = iobuf_read( a, buf, size );</span>
+<span class="lineNum">     244 </span><span class="lineNoCov">          0 :         if( n == -1 ) n = 0;</span>
+<span class="lineNum">     245 </span><span class="lineNoCov">          0 :         if( n )</span>
+<span class="lineNum">     246 </span><span class="lineNoCov">          0 :             cipher_decrypt( fc-&gt;cipher_hd, buf, buf, n);</span>
+<span class="lineNum">     247 </span>            :         else
+<span class="lineNum">     248 </span><span class="lineNoCov">          0 :             rc = -1; /* eof */</span>
+<span class="lineNum">     249 </span><span class="lineNoCov">          0 :         *ret_len = n;</span>
+<span class="lineNum">     250 </span>            :     }
+<span class="lineNum">     251 </span><span class="lineNoCov">          0 :     else if( control == IOBUFCTRL_DESC ) {</span>
+<span class="lineNum">     252 </span><span class="lineNoCov">          0 :         *(char**)buf = &quot;decode_filter&quot;;</span>
+<span class="lineNum">     253 </span>            :     }
+<span class="lineNum">     254 </span><span class="lineNoCov">          0 :     return rc;</span>
+<span class="lineNum">     255 </span>            : }
+<span class="lineNum">     256 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

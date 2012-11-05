@@ -1,0 +1,393 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - g10/pipemode.c</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">g10</a> - pipemode.c<span style="font-size: 80%;"> (source / <a href="pipemode.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">137</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2012-11-04</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /* pipemode.c - pipemode handler</a>
+<span class="lineNum">       2 </span>            :  * Copyright (C) 1998, 1990, 2000, 2001 Free Software Foundation, Inc.
+<span class="lineNum">       3 </span>            :  *
+<span class="lineNum">       4 </span>            :  * This file is part of GnuPG.
+<span class="lineNum">       5 </span>            :  *
+<span class="lineNum">       6 </span>            :  * GnuPG is free software; you can redistribute it and/or modify
+<span class="lineNum">       7 </span>            :  * it under the terms of the GNU General Public License as published by
+<span class="lineNum">       8 </span>            :  * the Free Software Foundation; either version 2 of the License, or
+<span class="lineNum">       9 </span>            :  * (at your option) any later version.
+<span class="lineNum">      10 </span>            :  *
+<span class="lineNum">      11 </span>            :  * GnuPG is distributed in the hope that it will be useful,
+<span class="lineNum">      12 </span>            :  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<span class="lineNum">      13 </span>            :  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<span class="lineNum">      14 </span>            :  * GNU General Public License for more details.
+<span class="lineNum">      15 </span>            :  *
+<span class="lineNum">      16 </span>            :  * You should have received a copy of the GNU General Public License
+<span class="lineNum">      17 </span>            :  * along with this program; if not, write to the Free Software
+<span class="lineNum">      18 </span>            :  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
+<span class="lineNum">      19 </span>            :  */
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : #include &lt;config.h&gt;
+<span class="lineNum">      22 </span>            : #include &lt;stdio.h&gt;
+<span class="lineNum">      23 </span>            : #include &lt;stdlib.h&gt;
+<span class="lineNum">      24 </span>            : #include &lt;string.h&gt;
+<span class="lineNum">      25 </span>            : #include &lt;errno.h&gt;
+<span class="lineNum">      26 </span>            : #include &lt;assert.h&gt;
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : #include &quot;options.h&quot;
+<span class="lineNum">      29 </span>            : #include &quot;packet.h&quot;
+<span class="lineNum">      30 </span>            : #include &quot;errors.h&quot;
+<span class="lineNum">      31 </span>            : #include &quot;iobuf.h&quot;
+<span class="lineNum">      32 </span>            : #include &quot;keydb.h&quot;
+<span class="lineNum">      33 </span>            : #include &quot;memory.h&quot;
+<span class="lineNum">      34 </span>            : #include &quot;util.h&quot;
+<span class="lineNum">      35 </span>            : #include &quot;main.h&quot;
+<span class="lineNum">      36 </span>            : #include &quot;status.h&quot;
+<span class="lineNum">      37 </span>            : #include &quot;filter.h&quot;
+<span class="lineNum">      38 </span>            : 
+<span class="lineNum">      39 </span>            : 
+<span class="lineNum">      40 </span>            : #define CONTROL_PACKET_SPACE 30 
+<span class="lineNum">      41 </span>            : #define FAKED_LITERAL_PACKET_SPACE (9+2+2)
+<span class="lineNum">      42 </span>            : 
+<span class="lineNum">      43 </span>            : 
+<span class="lineNum">      44 </span>            : enum pipemode_state_e {
+<span class="lineNum">      45 </span>            :     STX_init = 0,
+<span class="lineNum">      46 </span>            :     STX_wait_operation,
+<span class="lineNum">      47 </span>            :     STX_begin,
+<span class="lineNum">      48 </span>            :     STX_text,
+<span class="lineNum">      49 </span>            :     STX_detached_signature,
+<span class="lineNum">      50 </span>            :     STX_detached_signature_wait_text,
+<span class="lineNum">      51 </span>            :     STX_signed_data,
+<span class="lineNum">      52 </span>            :     STX_wait_init
+<span class="lineNum">      53 </span>            : };
+<span class="lineNum">      54 </span>            : 
+<span class="lineNum">      55 </span>            : struct pipemode_context_s {
+<span class="lineNum">      56 </span>            :     enum pipemode_state_e state;
+<span class="lineNum">      57 </span>            :     int operation;
+<span class="lineNum">      58 </span>            :     int stop;
+<span class="lineNum">      59 </span>            :     int block_mode;
+<span class="lineNum">      60 </span>            :     UnarmorPump unarmor_ctx;
+<span class="lineNum">      61 </span>            : };
+<span class="lineNum">      62 </span>            : 
+<a name="63"><span class="lineNum">      63 </span>            : </a>
+<span class="lineNum">      64 </span>            : static size_t
+<span class="lineNum">      65 </span><span class="lineNoCov">          0 : make_control ( byte *buf, int code, int operation )</span>
+<span class="lineNum">      66 </span>            : {
+<span class="lineNum">      67 </span>            :     const byte *sesmark;
+<span class="lineNum">      68 </span><span class="lineNoCov">          0 :     size_t sesmarklen, n=0;;</span>
+<span class="lineNum">      69 </span>            : 
+<span class="lineNum">      70 </span><span class="lineNoCov">          0 :     sesmark = get_session_marker( &amp;sesmarklen );</span>
+<span class="lineNum">      71 </span><span class="lineNoCov">          0 :     if ( sesmarklen &gt; 20 )</span>
+<span class="lineNum">      72 </span><span class="lineNoCov">          0 :         BUG();</span>
+<span class="lineNum">      73 </span>            : 
+<span class="lineNum">      74 </span><span class="lineNoCov">          0 :     buf[n++] = 0xff; /* new format, type 63, 1 length byte */</span>
+<span class="lineNum">      75 </span><span class="lineNoCov">          0 :     n++;   /* length will fixed below */</span>
+<span class="lineNum">      76 </span><span class="lineNoCov">          0 :     memcpy(buf+n, sesmark, sesmarklen ); n+= sesmarklen;</span>
+<span class="lineNum">      77 </span><span class="lineNoCov">          0 :     buf[n++] = CTRLPKT_PIPEMODE;    </span>
+<span class="lineNum">      78 </span><span class="lineNoCov">          0 :     buf[n++] = code;</span>
+<span class="lineNum">      79 </span><span class="lineNoCov">          0 :     buf[n++] = operation;</span>
+<span class="lineNum">      80 </span><span class="lineNoCov">          0 :     buf[1] = n-2;</span>
+<span class="lineNum">      81 </span><span class="lineNoCov">          0 :     return n;</span>
+<span class="lineNum">      82 </span>            : }
+<span class="lineNum">      83 </span>            : 
+<span class="lineNum">      84 </span>            : 
+<a name="85"><span class="lineNum">      85 </span>            : </a>
+<span class="lineNum">      86 </span>            : static int
+<span class="lineNum">      87 </span><span class="lineNoCov">          0 : pipemode_filter( void *opaque, int control,</span>
+<span class="lineNum">      88 </span>            :                  IOBUF a, byte *buf, size_t *ret_len)
+<span class="lineNum">      89 </span>            : { 
+<span class="lineNum">      90 </span><span class="lineNoCov">          0 :     size_t size = *ret_len;</span>
+<span class="lineNum">      91 </span><span class="lineNoCov">          0 :     struct pipemode_context_s *stx = opaque;</span>
+<span class="lineNum">      92 </span><span class="lineNoCov">          0 :     int rc=0;</span>
+<span class="lineNum">      93 </span><span class="lineNoCov">          0 :     size_t n = 0;</span>
+<span class="lineNum">      94 </span><span class="lineNoCov">          0 :     int esc = 0;</span>
+<span class="lineNum">      95 </span>            : 
+<span class="lineNum">      96 </span><span class="lineNoCov">          0 :     if( control == IOBUFCTRL_UNDERFLOW ) {</span>
+<span class="lineNum">      97 </span><span class="lineNoCov">          0 :         *ret_len = 0;</span>
+<span class="lineNum">      98 </span>            :         /* reserve some space for one control packet */
+<span class="lineNum">      99 </span><span class="lineNoCov">          0 :         if ( size &lt;= CONTROL_PACKET_SPACE+FAKED_LITERAL_PACKET_SPACE )</span>
+<span class="lineNum">     100 </span><span class="lineNoCov">          0 :             BUG();</span>
+<span class="lineNum">     101 </span><span class="lineNoCov">          0 :         size -= CONTROL_PACKET_SPACE+FAKED_LITERAL_PACKET_SPACE;</span>
+<span class="lineNum">     102 </span>            : 
+<span class="lineNum">     103 </span><span class="lineNoCov">          0 :         if ( stx-&gt;block_mode ) {</span>
+<span class="lineNum">     104 </span>            :             /* reserve 2 bytes for the block length */
+<span class="lineNum">     105 </span><span class="lineNoCov">          0 :             buf[n++] = 0;</span>
+<span class="lineNum">     106 </span><span class="lineNoCov">          0 :             buf[n++] = 0;</span>
+<span class="lineNum">     107 </span>            :         }
+<span class="lineNum">     108 </span>            :             
+<span class="lineNum">     109 </span>            : 
+<span class="lineNum">     110 </span><span class="lineNoCov">          0 :         while ( n &lt; size ) {</span>
+<span class="lineNum">     111 </span>            :             /* FIXME: we have to make sure that we have a large enough
+<span class="lineNum">     112 </span>            :              * buffer for a control packet even after we already read 
+<span class="lineNum">     113 </span>            :              * something. The easest way to do this is probably by ungetting
+<span class="lineNum">     114 </span>            :              * the control sequence and returning the buffer we have
+<span class="lineNum">     115 </span>            :              * already assembled */
+<span class="lineNum">     116 </span><span class="lineNoCov">          0 :             int c = iobuf_get (a);</span>
+<span class="lineNum">     117 </span><span class="lineNoCov">          0 :             if (c == -1) {</span>
+<span class="lineNum">     118 </span><span class="lineNoCov">          0 :                 if ( stx-&gt;state != STX_init ) {</span>
+<span class="lineNum">     119 </span>            :                     log_error (&quot;EOF encountered at wrong state\n&quot;);
+<span class="lineNum">     120 </span><span class="lineNoCov">          0 :                     stx-&gt;stop = 1;</span>
+<span class="lineNum">     121 </span><span class="lineNoCov">          0 :                     return -1;</span>
+<span class="lineNum">     122 </span>            :                 }
+<span class="lineNum">     123 </span><span class="lineNoCov">          0 :                 break;</span>
+<span class="lineNum">     124 </span>            :             }
+<span class="lineNum">     125 </span><span class="lineNoCov">          0 :             if ( esc ) {</span>
+<span class="lineNum">     126 </span><span class="lineNoCov">          0 :                 switch (c) {</span>
+<span class="lineNum">     127 </span>            :                   case '@':  
+<span class="lineNum">     128 </span><span class="lineNoCov">          0 :                     if ( stx-&gt;state == STX_text ) {</span>
+<span class="lineNum">     129 </span><span class="lineNoCov">          0 :                         buf[n++] = c;</span>
+<span class="lineNum">     130 </span><span class="lineNoCov">          0 :                         break;</span>
+<span class="lineNum">     131 </span>            :                     }
+<span class="lineNum">     132 </span><span class="lineNoCov">          0 :                     else if ( stx-&gt;state == STX_detached_signature ) {</span>
+<span class="lineNum">     133 </span><span class="lineNoCov">          0 :                         esc = 0;</span>
+<span class="lineNum">     134 </span><span class="lineNoCov">          0 :                         goto do_unarmor; /* not a very elegant solution */</span>
+<span class="lineNum">     135 </span>            :                     }
+<span class="lineNum">     136 </span><span class="lineNoCov">          0 :                     else if ( stx-&gt;state == STX_detached_signature_wait_text) {</span>
+<span class="lineNum">     137 </span><span class="lineNoCov">          0 :                         esc = 0;</span>
+<span class="lineNum">     138 </span><span class="lineNoCov">          0 :                         break; /* just ignore it in this state */</span>
+<span class="lineNum">     139 </span>            :                     }
+<span class="lineNum">     140 </span>            :                     log_error (&quot;@@ not allowed in current state\n&quot;);
+<span class="lineNum">     141 </span><span class="lineNoCov">          0 :                     return -1;</span>
+<span class="lineNum">     142 </span>            :                   case '&lt;': /* begin of stream part */
+<span class="lineNum">     143 </span><span class="lineNoCov">          0 :                     if ( stx-&gt;state != STX_init ) {</span>
+<span class="lineNum">     144 </span>            :                         log_error (&quot;nested begin of stream\n&quot;);
+<span class="lineNum">     145 </span><span class="lineNoCov">          0 :                         stx-&gt;stop = 1;</span>
+<span class="lineNum">     146 </span><span class="lineNoCov">          0 :                         return -1;</span>
+<span class="lineNum">     147 </span>            :                     }
+<span class="lineNum">     148 </span><span class="lineNoCov">          0 :                     stx-&gt;state = STX_wait_operation;</span>
+<span class="lineNum">     149 </span><span class="lineNoCov">          0 :                     stx-&gt;block_mode = 0;</span>
+<span class="lineNum">     150 </span><span class="lineNoCov">          0 :                     unarmor_pump_release (stx-&gt;unarmor_ctx);</span>
+<span class="lineNum">     151 </span><span class="lineNoCov">          0 :                     stx-&gt;unarmor_ctx = NULL;</span>
+<span class="lineNum">     152 </span><span class="lineNoCov">          0 :                     break;</span>
+<span class="lineNum">     153 </span>            :                    case '&gt;': /* end of stream part */
+<span class="lineNum">     154 </span><span class="lineNoCov">          0 :                      if ( stx-&gt;state != STX_wait_init ) {</span>
+<span class="lineNum">     155 </span>            :                         log_error (&quot;invalid state for @&gt;\n&quot;);
+<span class="lineNum">     156 </span><span class="lineNoCov">          0 :                         stx-&gt;stop = 1;</span>
+<span class="lineNum">     157 </span><span class="lineNoCov">          0 :                         return -1;</span>
+<span class="lineNum">     158 </span>            :                     }
+<span class="lineNum">     159 </span><span class="lineNoCov">          0 :                     stx-&gt;state = STX_init;</span>
+<span class="lineNum">     160 </span><span class="lineNoCov">          0 :                     break;</span>
+<span class="lineNum">     161 </span>            :                   case 'V': /* operation = verify */
+<span class="lineNum">     162 </span>            :                   case 'E': /* operation = encrypt */
+<span class="lineNum">     163 </span>            :                   case 'S': /* operation = sign */
+<span class="lineNum">     164 </span>            :                   case 'B': /* operation = detach sign */
+<span class="lineNum">     165 </span>            :                   case 'C': /* operation = clearsign */
+<span class="lineNum">     166 </span>            :                   case 'D': /* operation = decrypt */
+<span class="lineNum">     167 </span><span class="lineNoCov">          0 :                     if ( stx-&gt;state != STX_wait_operation ) {</span>
+<span class="lineNum">     168 </span>            :                         log_error (&quot;invalid state for operation code\n&quot;);
+<span class="lineNum">     169 </span><span class="lineNoCov">          0 :                         stx-&gt;stop = 1;</span>
+<span class="lineNum">     170 </span><span class="lineNoCov">          0 :                         return -1;</span>
+<span class="lineNum">     171 </span>            :                     }
+<span class="lineNum">     172 </span><span class="lineNoCov">          0 :                     stx-&gt;operation = c;</span>
+<span class="lineNum">     173 </span><span class="lineNoCov">          0 :                     if ( stx-&gt;operation == 'B') {</span>
+<span class="lineNum">     174 </span><span class="lineNoCov">          0 :                         stx-&gt;state = STX_detached_signature;</span>
+<span class="lineNum">     175 </span><span class="lineNoCov">          0 :                         if ( !opt.no_armor )</span>
+<span class="lineNum">     176 </span><span class="lineNoCov">          0 :                             stx-&gt;unarmor_ctx = unarmor_pump_new ();</span>
+<span class="lineNum">     177 </span>            :                     }
+<span class="lineNum">     178 </span>            :                     else
+<span class="lineNum">     179 </span><span class="lineNoCov">          0 :                         stx-&gt;state = STX_begin;</span>
+<span class="lineNum">     180 </span><span class="lineNoCov">          0 :                     n += make_control ( buf+n, 1, stx-&gt;operation );</span>
+<span class="lineNum">     181 </span>            :                     /* must leave after a control packet */
+<span class="lineNum">     182 </span><span class="lineNoCov">          0 :                     goto leave;</span>
+<span class="lineNum">     183 </span>            : 
+<span class="lineNum">     184 </span>            :                   case 't': /* plaintext text follows */
+<span class="lineNum">     185 </span><span class="lineNoCov">          0 :                     if ( stx-&gt;state == STX_detached_signature_wait_text ) </span>
+<span class="lineNum">     186 </span><span class="lineNoCov">          0 :                         stx-&gt;state = STX_detached_signature;</span>
+<span class="lineNum">     187 </span><span class="lineNoCov">          0 :                     if ( stx-&gt;state == STX_detached_signature ) {</span>
+<span class="lineNum">     188 </span><span class="lineNoCov">          0 :                         if ( stx-&gt;operation != 'B' ) {</span>
+<span class="lineNum">     189 </span>            :                             log_error (&quot;invalid operation for this state\n&quot;);
+<span class="lineNum">     190 </span><span class="lineNoCov">          0 :                             stx-&gt;stop = 1;</span>
+<span class="lineNum">     191 </span><span class="lineNoCov">          0 :                             return -1;</span>
+<span class="lineNum">     192 </span>            :                         }
+<span class="lineNum">     193 </span><span class="lineNoCov">          0 :                         stx-&gt;state = STX_signed_data;</span>
+<span class="lineNum">     194 </span><span class="lineNoCov">          0 :                         n += make_control ( buf+n, 2, 'B' );</span>
+<span class="lineNum">     195 </span>            :                         /* and now we fake a literal data packet much the same
+<span class="lineNum">     196 </span>            :                          * as in armor.c */
+<span class="lineNum">     197 </span><span class="lineNoCov">          0 :                         buf[n++] = 0xaf; /* old packet format, type 11,</span>
+<span class="lineNum">     198 </span>            :                                             var length */
+<span class="lineNum">     199 </span><span class="lineNoCov">          0 :                         buf[n++] = 0;    /* set the length header */</span>
+<span class="lineNum">     200 </span><span class="lineNoCov">          0 :                         buf[n++] = 6;</span>
+<span class="lineNum">     201 </span><span class="lineNoCov">          0 :                         buf[n++] = 'b';  /* we ignore it anyway */</span>
+<span class="lineNum">     202 </span><span class="lineNoCov">          0 :                         buf[n++] = 0;    /* namelength */</span>
+<span class="lineNum">     203 </span><span class="lineNoCov">          0 :                         memset(buf+n, 0, 4); /* timestamp */</span>
+<span class="lineNum">     204 </span><span class="lineNoCov">          0 :                         n += 4;</span>
+<span class="lineNum">     205 </span>            :                         /* and return now so that we are sure to have
+<span class="lineNum">     206 </span>            :                          * more space in the bufer for the next control
+<span class="lineNum">     207 </span>            :                          * packet */
+<span class="lineNum">     208 </span><span class="lineNoCov">          0 :                         stx-&gt;block_mode = 1;</span>
+<span class="lineNum">     209 </span><span class="lineNoCov">          0 :                         goto leave2;</span>
+<span class="lineNum">     210 </span>            :                     }
+<span class="lineNum">     211 </span>            :                     else {
+<span class="lineNum">     212 </span>            :                         log_error (&quot;invalid state for @t\n&quot;);
+<span class="lineNum">     213 </span><span class="lineNoCov">          0 :                         stx-&gt;stop = 1;</span>
+<span class="lineNum">     214 </span><span class="lineNoCov">          0 :                         return -1;</span>
+<span class="lineNum">     215 </span>            :                     }
+<span class="lineNum">     216 </span>            :                     break;
+<span class="lineNum">     217 </span>            : 
+<span class="lineNum">     218 </span>            :                   case '.': /* ready */
+<span class="lineNum">     219 </span><span class="lineNoCov">          0 :                     if ( stx-&gt;state == STX_signed_data ) { </span>
+<span class="lineNum">     220 </span><span class="lineNoCov">          0 :                         if (stx-&gt;block_mode) {</span>
+<span class="lineNum">     221 </span><span class="lineNoCov">          0 :                             buf[0] = (n-2) &gt;&gt; 8;</span>
+<span class="lineNum">     222 </span><span class="lineNoCov">          0 :                             buf[1] = (n-2);</span>
+<span class="lineNum">     223 </span><span class="lineNoCov">          0 :                             if ( buf[0] || buf[1] ) {</span>
+<span class="lineNum">     224 </span>            :                                 /* end of blocks marker */
+<span class="lineNum">     225 </span><span class="lineNoCov">          0 :                                 buf[n++] = 0;</span>
+<span class="lineNum">     226 </span><span class="lineNoCov">          0 :                                 buf[n++] = 0;</span>
+<span class="lineNum">     227 </span>            :                             }
+<span class="lineNum">     228 </span><span class="lineNoCov">          0 :                             stx-&gt;block_mode = 0;</span>
+<span class="lineNum">     229 </span>            :                         }
+<span class="lineNum">     230 </span><span class="lineNoCov">          0 :                         n += make_control ( buf+n, 3, 'B' );</span>
+<span class="lineNum">     231 </span>            :                     }
+<span class="lineNum">     232 </span>            :                     else {
+<span class="lineNum">     233 </span>            :                         log_error (&quot;invalid state for @.\n&quot;);
+<span class="lineNum">     234 </span><span class="lineNoCov">          0 :                         stx-&gt;stop = 1;</span>
+<span class="lineNum">     235 </span><span class="lineNoCov">          0 :                         return -1;</span>
+<span class="lineNum">     236 </span>            :                     }
+<span class="lineNum">     237 </span><span class="lineNoCov">          0 :                     stx-&gt;state = STX_wait_init;</span>
+<span class="lineNum">     238 </span><span class="lineNoCov">          0 :                     goto leave;</span>
+<span class="lineNum">     239 </span>            : 
+<span class="lineNum">     240 </span>            :                  default:      
+<span class="lineNum">     241 </span>            :                     log_error (&quot;invalid escape sequence 0x%02x in stream\n&quot;,
+<span class="lineNum">     242 </span>            :                                c);
+<span class="lineNum">     243 </span><span class="lineNoCov">          0 :                     stx-&gt;stop = 1;</span>
+<span class="lineNum">     244 </span><span class="lineNoCov">          0 :                     return -1;</span>
+<span class="lineNum">     245 </span>            :                 }
+<span class="lineNum">     246 </span><span class="lineNoCov">          0 :                 esc = 0;</span>
+<span class="lineNum">     247 </span>            :             }
+<span class="lineNum">     248 </span><span class="lineNoCov">          0 :             else if (c == '@') </span>
+<span class="lineNum">     249 </span><span class="lineNoCov">          0 :                 esc = 1;</span>
+<span class="lineNum">     250 </span><span class="lineNoCov">          0 :             else if (stx-&gt;unarmor_ctx) {</span>
+<span class="lineNum">     251 </span>            :           do_unarmor: /* used to handle a @@ */
+<span class="lineNum">     252 </span><span class="lineNoCov">          0 :                 c = unarmor_pump (stx-&gt;unarmor_ctx, c);</span>
+<span class="lineNum">     253 </span><span class="lineNoCov">          0 :                 if ( !(c &amp; ~255) )</span>
+<span class="lineNum">     254 </span><span class="lineNoCov">          0 :                     buf[n++] = c;</span>
+<span class="lineNum">     255 </span><span class="lineNoCov">          0 :                 else if ( c &lt; 0 ) {</span>
+<span class="lineNum">     256 </span>            :                     /* end of armor or error - we don't care becuase
+<span class="lineNum">     257 </span>            :                       the armor can be modified anyway.  The unarmored
+<span class="lineNum">     258 </span>            :                       stuff should stand for itself. */ 
+<span class="lineNum">     259 </span><span class="lineNoCov">          0 :                     unarmor_pump_release (stx-&gt;unarmor_ctx);</span>
+<span class="lineNum">     260 </span><span class="lineNoCov">          0 :                     stx-&gt;unarmor_ctx = NULL;</span>
+<span class="lineNum">     261 </span><span class="lineNoCov">          0 :                     stx-&gt;state = STX_detached_signature_wait_text;</span>
+<span class="lineNum">     262 </span>            :                 }
+<span class="lineNum">     263 </span>            :             }
+<span class="lineNum">     264 </span><span class="lineNoCov">          0 :             else if (stx-&gt;state == STX_detached_signature_wait_text)</span>
+<span class="lineNum">     265 </span>            :                 ; /* just wait */
+<span class="lineNum">     266 </span>            :             else
+<span class="lineNum">     267 </span><span class="lineNoCov">          0 :                 buf[n++] = c; </span>
+<span class="lineNum">     268 </span>            :         }
+<span class="lineNum">     269 </span>            : 
+<span class="lineNum">     270 </span>            :       leave:      
+<span class="lineNum">     271 </span><span class="lineNoCov">          0 :         if ( !n ) {</span>
+<span class="lineNum">     272 </span><span class="lineNoCov">          0 :             stx-&gt;stop = 1;</span>
+<span class="lineNum">     273 </span><span class="lineNoCov">          0 :             rc = -1; /* eof */</span>
+<span class="lineNum">     274 </span>            :         }
+<span class="lineNum">     275 </span><span class="lineNoCov">          0 :         if ( stx-&gt;block_mode ) {</span>
+<span class="lineNum">     276 </span>            :             /* fixup the block length */
+<span class="lineNum">     277 </span><span class="lineNoCov">          0 :             buf[0] = (n-2) &gt;&gt; 8;</span>
+<span class="lineNum">     278 </span><span class="lineNoCov">          0 :             buf[1] = (n-2);</span>
+<span class="lineNum">     279 </span>            :         }
+<span class="lineNum">     280 </span>            :       leave2:
+<span class="lineNum">     281 </span>            :         /*log_hexdump (&quot;pipemode:&quot;, buf, n );*/
+<span class="lineNum">     282 </span><span class="lineNoCov">          0 :         *ret_len = n;</span>
+<span class="lineNum">     283 </span>            :     }
+<span class="lineNum">     284 </span><span class="lineNoCov">          0 :     else if( control == IOBUFCTRL_DESC )</span>
+<span class="lineNum">     285 </span><span class="lineNoCov">          0 :         *(char**)buf = &quot;pipemode_filter&quot;;</span>
+<span class="lineNum">     286 </span><span class="lineNoCov">          0 :     return rc;</span>
+<span class="lineNum">     287 </span>            : }
+<span class="lineNum">     288 </span>            : 
+<span class="lineNum">     289 </span>            : 
+<a name="290"><span class="lineNum">     290 </span>            : </a>
+<span class="lineNum">     291 </span>            : void
+<span class="lineNum">     292 </span><span class="lineNoCov">          0 : run_in_pipemode(void)</span>
+<span class="lineNum">     293 </span>            : {
+<span class="lineNum">     294 </span>            :     IOBUF fp;
+<span class="lineNum">     295 </span>            :     armor_filter_context_t afx;
+<span class="lineNum">     296 </span>            :     struct pipemode_context_s stx;
+<span class="lineNum">     297 </span>            :     int rc;
+<span class="lineNum">     298 </span>            : 
+<span class="lineNum">     299 </span><span class="lineNoCov">          0 :     memset( &amp;afx, 0, sizeof afx);</span>
+<span class="lineNum">     300 </span><span class="lineNoCov">          0 :     memset( &amp;stx, 0, sizeof stx);</span>
+<span class="lineNum">     301 </span>            : 
+<span class="lineNum">     302 </span><span class="lineNoCov">          0 :     fp = iobuf_open(&quot;-&quot;);</span>
+<span class="lineNum">     303 </span><span class="lineNoCov">          0 :     iobuf_push_filter (fp, pipemode_filter, &amp;stx );</span>
+<span class="lineNum">     304 </span>            : 
+<span class="lineNum">     305 </span>            :     do {
+<span class="lineNum">     306 </span><span class="lineNoCov">          0 :         write_status (STATUS_BEGIN_STREAM);</span>
+<span class="lineNum">     307 </span><span class="lineNoCov">          0 :         rc = proc_packets( NULL, fp );</span>
+<span class="lineNum">     308 </span><span class="lineNoCov">          0 :         write_status (STATUS_END_STREAM);</span>
+<span class="lineNum">     309 </span><span class="lineNoCov">          0 :     } while ( !stx.stop );</span>
+<span class="lineNum">     310 </span>            :   
+<span class="lineNum">     311 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     312 </span>            : 
+<span class="lineNum">     313 </span>            : 
+<span class="lineNum">     314 </span>            : 
+<span class="lineNum">     315 </span>            : 
+<span class="lineNum">     316 </span>            : 
+<span class="lineNum">     317 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,287 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - g10/seskey.c</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">g10</a> - seskey.c<span style="font-size: 80%;"> (source / <a href="seskey.c.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">82</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2012-11-04</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /* seskey.c -  make sesssion keys etc.</a>
+<span class="lineNum">       2 </span>            :  * Copyright (C) 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
+<span class="lineNum">       3 </span>            :  *
+<span class="lineNum">       4 </span>            :  * This file is part of GnuPG.
+<span class="lineNum">       5 </span>            :  *
+<span class="lineNum">       6 </span>            :  * GnuPG is free software; you can redistribute it and/or modify
+<span class="lineNum">       7 </span>            :  * it under the terms of the GNU General Public License as published by
+<span class="lineNum">       8 </span>            :  * the Free Software Foundation; either version 2 of the License, or
+<span class="lineNum">       9 </span>            :  * (at your option) any later version.
+<span class="lineNum">      10 </span>            :  *
+<span class="lineNum">      11 </span>            :  * GnuPG is distributed in the hope that it will be useful,
+<span class="lineNum">      12 </span>            :  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<span class="lineNum">      13 </span>            :  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<span class="lineNum">      14 </span>            :  * GNU General Public License for more details.
+<span class="lineNum">      15 </span>            :  *
+<span class="lineNum">      16 </span>            :  * You should have received a copy of the GNU General Public License
+<span class="lineNum">      17 </span>            :  * along with this program; if not, write to the Free Software
+<span class="lineNum">      18 </span>            :  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
+<span class="lineNum">      19 </span>            :  */
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : #include &lt;config.h&gt;
+<span class="lineNum">      22 </span>            : #include &lt;stdio.h&gt;
+<span class="lineNum">      23 </span>            : #include &lt;stdlib.h&gt;
+<span class="lineNum">      24 </span>            : #include &lt;string.h&gt;
+<span class="lineNum">      25 </span>            : #include &lt;assert.h&gt;
+<span class="lineNum">      26 </span>            : #include &quot;util.h&quot;
+<span class="lineNum">      27 </span>            : #include &quot;cipher.h&quot;
+<span class="lineNum">      28 </span>            : #include &quot;mpi.h&quot;
+<span class="lineNum">      29 </span>            : #include &quot;main.h&quot;
+<span class="lineNum">      30 </span>            : #include &quot;i18n.h&quot;
+<span class="lineNum">      31 </span>            : 
+<span class="lineNum">      32 </span>            : 
+<span class="lineNum">      33 </span>            : /****************
+<span class="lineNum">      34 </span>            :  * Make a session key and put it into DEK
+<a name="35"><span class="lineNum">      35 </span>            :  */</a>
+<span class="lineNum">      36 </span>            : void
+<span class="lineNum">      37 </span><span class="lineNoCov">          0 : make_session_key( DEK *dek )</span>
+<span class="lineNum">      38 </span>            : {
+<span class="lineNum">      39 </span>            :     CIPHER_HANDLE chd;
+<span class="lineNum">      40 </span>            :     int i, rc;
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span><span class="lineNoCov">          0 :     dek-&gt;keylen = cipher_get_keylen( dek-&gt;algo ) / 8;</span>
+<span class="lineNum">      43 </span>            : 
+<span class="lineNum">      44 </span><span class="lineNoCov">          0 :     chd = cipher_open( dek-&gt;algo, CIPHER_MODE_AUTO_CFB, 1 );</span>
+<span class="lineNum">      45 </span><span class="lineNoCov">          0 :     randomize_buffer( dek-&gt;key, dek-&gt;keylen, 1 );</span>
+<span class="lineNum">      46 </span><span class="lineNoCov">          0 :     for(i=0; i &lt; 16; i++ ) {</span>
+<span class="lineNum">      47 </span><span class="lineNoCov">          0 :         rc = cipher_setkey( chd, dek-&gt;key, dek-&gt;keylen );</span>
+<span class="lineNum">      48 </span><span class="lineNoCov">          0 :         if( !rc ) {</span>
+<span class="lineNum">      49 </span><span class="lineNoCov">          0 :             cipher_close( chd );</span>
+<span class="lineNum">      50 </span>            :             return;
+<span class="lineNum">      51 </span>            :         }
+<span class="lineNum">      52 </span>            :         log_info(_(&quot;weak key created - retrying\n&quot;) );
+<span class="lineNum">      53 </span>            :         /* Renew the session key until we get a non-weak key. */
+<span class="lineNum">      54 </span><span class="lineNoCov">          0 :         randomize_buffer( dek-&gt;key, dek-&gt;keylen, 1 );</span>
+<span class="lineNum">      55 </span>            :     }
+<span class="lineNum">      56 </span><span class="lineNoCov">          0 :     log_fatal(_(</span>
+<span class="lineNum">      57 </span>            :             &quot;cannot avoid weak key for symmetric cipher; tried %d times!\n&quot;),
+<span class="lineNum">      58 </span>            :                   i);
+<span class="lineNum">      59 </span>            : }
+<span class="lineNum">      60 </span>            : 
+<span class="lineNum">      61 </span>            : 
+<span class="lineNum">      62 </span>            : /****************
+<span class="lineNum">      63 </span>            :  * Encode the session key. NBITS is the number of bits which should be used
+<span class="lineNum">      64 </span>            :  * for packing the session key.
+<span class="lineNum">      65 </span>            :  * returns: A mpi with the session key (caller must free)
+<a name="66"><span class="lineNum">      66 </span>            :  */</a>
+<span class="lineNum">      67 </span>            : MPI
+<span class="lineNum">      68 </span><span class="lineNoCov">          0 : encode_session_key( DEK *dek, unsigned nbits )</span>
+<span class="lineNum">      69 </span>            : {
+<span class="lineNum">      70 </span><span class="lineNoCov">          0 :     int nframe = (nbits+7) / 8;</span>
+<span class="lineNum">      71 </span>            :     byte *p;
+<span class="lineNum">      72 </span>            :     byte *frame;
+<span class="lineNum">      73 </span>            :     int i,n;
+<span class="lineNum">      74 </span>            :     u16 csum;
+<span class="lineNum">      75 </span>            :     MPI a;
+<span class="lineNum">      76 </span>            : 
+<span class="lineNum">      77 </span>            :     /* the current limitation is that we can only use a session key
+<span class="lineNum">      78 </span>            :      * whose length is a multiple of BITS_PER_MPI_LIMB
+<span class="lineNum">      79 </span>            :      * I think we can live with that.
+<span class="lineNum">      80 </span>            :      */
+<span class="lineNum">      81 </span><span class="lineNoCov">          0 :     if( dek-&gt;keylen + 7 &gt; nframe || !nframe )</span>
+<span class="lineNum">      82 </span><span class="lineNoCov">          0 :         log_bug(&quot;can't encode a %d bit key in a %d bits frame\n&quot;,</span>
+<span class="lineNum">      83 </span><span class="lineNoCov">          0 :                     dek-&gt;keylen*8, nbits );</span>
+<span class="lineNum">      84 </span>            : 
+<span class="lineNum">      85 </span>            :     /* We encode the session key in this way:
+<span class="lineNum">      86 </span>            :      *
+<span class="lineNum">      87 </span>            :      *     0  2  RND(n bytes)  0  A  DEK(k bytes)  CSUM(2 bytes)
+<span class="lineNum">      88 </span>            :      *
+<span class="lineNum">      89 </span>            :      * (But how can we store the leading 0 - the external representaion
+<span class="lineNum">      90 </span>            :      *  of MPIs doesn't allow leading zeroes =:-)
+<span class="lineNum">      91 </span>            :      *
+<span class="lineNum">      92 </span>            :      * RND are non-zero random bytes.
+<span class="lineNum">      93 </span>            :      * A   is the cipher algorithm
+<span class="lineNum">      94 </span>            :      * DEK is the encryption key (session key) length k depends on the
+<span class="lineNum">      95 </span>            :      *     cipher algorithm (20 is used with blowfish160).
+<span class="lineNum">      96 </span>            :      * CSUM is the 16 bit checksum over the DEK
+<span class="lineNum">      97 </span>            :      */
+<span class="lineNum">      98 </span><span class="lineNoCov">          0 :     csum = 0;</span>
+<span class="lineNum">      99 </span><span class="lineNoCov">          0 :     for( p = dek-&gt;key, i=0; i &lt; dek-&gt;keylen; i++ )</span>
+<span class="lineNum">     100 </span><span class="lineNoCov">          0 :         csum += *p++;</span>
+<span class="lineNum">     101 </span>            : 
+<span class="lineNum">     102 </span><span class="lineNoCov">          0 :     frame = m_alloc_secure( nframe );</span>
+<span class="lineNum">     103 </span><span class="lineNoCov">          0 :     n = 0;</span>
+<span class="lineNum">     104 </span><span class="lineNoCov">          0 :     frame[n++] = 0;</span>
+<span class="lineNum">     105 </span><span class="lineNoCov">          0 :     frame[n++] = 2;</span>
+<span class="lineNum">     106 </span><span class="lineNoCov">          0 :     i = nframe - 6 - dek-&gt;keylen;</span>
+<span class="lineNum">     107 </span><span class="lineNoCov">          0 :     assert( i &gt; 0 );</span>
+<span class="lineNum">     108 </span><span class="lineNoCov">          0 :     p = get_random_bits( i*8, 1, 1 );</span>
+<span class="lineNum">     109 </span>            :     /* replace zero bytes by new values */
+<span class="lineNum">     110 </span>            :     for(;;) {
+<span class="lineNum">     111 </span>            :         int j, k;
+<span class="lineNum">     112 </span>            :         byte *pp;
+<span class="lineNum">     113 </span>            : 
+<span class="lineNum">     114 </span>            :         /* count the zero bytes */
+<span class="lineNum">     115 </span><span class="lineNoCov">          0 :         for(j=k=0; j &lt; i; j++ )</span>
+<span class="lineNum">     116 </span><span class="lineNoCov">          0 :             if( !p[j] )</span>
+<span class="lineNum">     117 </span><span class="lineNoCov">          0 :                 k++;</span>
+<span class="lineNum">     118 </span><span class="lineNoCov">          0 :         if( !k )</span>
+<span class="lineNum">     119 </span>            :             break; /* okay: no zero bytes */
+<span class="lineNum">     120 </span><span class="lineNoCov">          0 :         k += k/128; /* better get some more */</span>
+<span class="lineNum">     121 </span><span class="lineNoCov">          0 :         pp = get_random_bits( k*8, 1, 1);</span>
+<span class="lineNum">     122 </span><span class="lineNoCov">          0 :         for(j=0; j &lt; i &amp;&amp; k ; j++ )</span>
+<span class="lineNum">     123 </span><span class="lineNoCov">          0 :             if( !p[j] )</span>
+<span class="lineNum">     124 </span><span class="lineNoCov">          0 :                 p[j] = pp[--k];</span>
+<span class="lineNum">     125 </span><span class="lineNoCov">          0 :         m_free(pp);</span>
+<span class="lineNum">     126 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     127 </span><span class="lineNoCov">          0 :     memcpy( frame+n, p, i );</span>
+<span class="lineNum">     128 </span><span class="lineNoCov">          0 :     m_free(p);</span>
+<span class="lineNum">     129 </span><span class="lineNoCov">          0 :     n += i;</span>
+<span class="lineNum">     130 </span><span class="lineNoCov">          0 :     frame[n++] = 0;</span>
+<span class="lineNum">     131 </span><span class="lineNoCov">          0 :     frame[n++] = dek-&gt;algo;</span>
+<span class="lineNum">     132 </span><span class="lineNoCov">          0 :     memcpy( frame+n, dek-&gt;key, dek-&gt;keylen ); n += dek-&gt;keylen;</span>
+<span class="lineNum">     133 </span><span class="lineNoCov">          0 :     frame[n++] = csum &gt;&gt;8;</span>
+<span class="lineNum">     134 </span><span class="lineNoCov">          0 :     frame[n++] = csum;</span>
+<span class="lineNum">     135 </span><span class="lineNoCov">          0 :     assert( n == nframe );</span>
+<span class="lineNum">     136 </span><span class="lineNoCov">          0 :     a = mpi_alloc_secure( (nframe+BYTES_PER_MPI_LIMB-1) / BYTES_PER_MPI_LIMB );</span>
+<span class="lineNum">     137 </span><span class="lineNoCov">          0 :     mpi_set_buffer( a, frame, nframe, 0 );</span>
+<span class="lineNum">     138 </span><span class="lineNoCov">          0 :     m_free(frame);</span>
+<span class="lineNum">     139 </span><span class="lineNoCov">          0 :     return a;</span>
+<span class="lineNum">     140 </span>            : }
+<span class="lineNum">     141 </span>            : 
+<a name="142"><span class="lineNum">     142 </span>            : </a>
+<span class="lineNum">     143 </span>            : static MPI
+<span class="lineNum">     144 </span><span class="lineNoCov">          0 : do_encode_md( MD_HANDLE md, int algo, size_t len, unsigned nbits,</span>
+<span class="lineNum">     145 </span>            :               const byte *asn, size_t asnlen, int v3compathack )
+<span class="lineNum">     146 </span>            : {
+<span class="lineNum">     147 </span><span class="lineNoCov">          0 :     int nframe = (nbits+7) / 8;</span>
+<span class="lineNum">     148 </span>            :     byte *frame;
+<span class="lineNum">     149 </span>            :     int i,n;
+<span class="lineNum">     150 </span>            :     MPI a;
+<span class="lineNum">     151 </span>            : 
+<span class="lineNum">     152 </span><span class="lineNoCov">          0 :     if( len + asnlen + 4  &gt; nframe )</span>
+<span class="lineNum">     153 </span><span class="lineNoCov">          0 :         log_bug(&quot;can't encode a %d bit MD into a %d bits frame\n&quot;,</span>
+<span class="lineNum">     154 </span>            :                     (int)(len*8), (int)nbits);
+<span class="lineNum">     155 </span>            : 
+<span class="lineNum">     156 </span>            :     /* We encode the MD in this way:
+<span class="lineNum">     157 </span>            :      *
+<span class="lineNum">     158 </span>            :      *     0  A PAD(n bytes)   0  ASN(asnlen bytes)  MD(len bytes)
+<span class="lineNum">     159 </span>            :      *
+<span class="lineNum">     160 </span>            :      * PAD consists of FF bytes.
+<span class="lineNum">     161 </span>            :      */
+<span class="lineNum">     162 </span><span class="lineNoCov">          0 :     frame = md_is_secure(md)? m_alloc_secure( nframe ) : m_alloc( nframe );</span>
+<span class="lineNum">     163 </span><span class="lineNoCov">          0 :     n = 0;</span>
+<span class="lineNum">     164 </span><span class="lineNoCov">          0 :     frame[n++] = 0;</span>
+<span class="lineNum">     165 </span><span class="lineNoCov">          0 :     frame[n++] = v3compathack? algo : 1; /* block type */</span>
+<span class="lineNum">     166 </span><span class="lineNoCov">          0 :     i = nframe - len - asnlen -3 ;</span>
+<span class="lineNum">     167 </span><span class="lineNoCov">          0 :     assert( i &gt; 1 );</span>
+<span class="lineNum">     168 </span><span class="lineNoCov">          0 :     memset( frame+n, 0xff, i ); n += i;</span>
+<span class="lineNum">     169 </span><span class="lineNoCov">          0 :     frame[n++] = 0;</span>
+<span class="lineNum">     170 </span><span class="lineNoCov">          0 :     memcpy( frame+n, asn, asnlen ); n += asnlen;</span>
+<span class="lineNum">     171 </span><span class="lineNoCov">          0 :     memcpy( frame+n, md_read(md, algo), len ); n += len;</span>
+<span class="lineNum">     172 </span><span class="lineNoCov">          0 :     assert( n == nframe );</span>
+<span class="lineNum">     173 </span><span class="lineNoCov">          0 :     a = md_is_secure(md)?</span>
+<span class="lineNum">     174 </span><span class="lineNoCov">          0 :          mpi_alloc_secure( (nframe+BYTES_PER_MPI_LIMB-1) / BYTES_PER_MPI_LIMB )</span>
+<span class="lineNum">     175 </span><span class="lineNoCov">          0 :          : mpi_alloc( (nframe+BYTES_PER_MPI_LIMB-1) / BYTES_PER_MPI_LIMB );</span>
+<span class="lineNum">     176 </span><span class="lineNoCov">          0 :     mpi_set_buffer( a, frame, nframe, 0 );</span>
+<span class="lineNum">     177 </span><span class="lineNoCov">          0 :     m_free(frame);</span>
+<span class="lineNum">     178 </span><span class="lineNoCov">          0 :     return a;</span>
+<span class="lineNum">     179 </span>            : }
+<span class="lineNum">     180 </span>            : 
+<span class="lineNum">     181 </span>            : 
+<span class="lineNum">     182 </span>            : /****************
+<span class="lineNum">     183 </span>            :  * Encode a message digest into an MPI.
+<span class="lineNum">     184 </span>            :  * v3compathack is used to work around a bug in old GnuPG versions
+<span class="lineNum">     185 </span>            :  * which did put the algo identifier inseatd of the block type 1 into
+<span class="lineNum">     186 </span>            :  * the encoded value.  setting this vare force the old behaviour.
+<a name="187"><span class="lineNum">     187 </span>            :  */</a>
+<span class="lineNum">     188 </span>            : MPI
+<span class="lineNum">     189 </span><span class="lineNoCov">          0 : encode_md_value( int pubkey_algo, MD_HANDLE md, int hash_algo,</span>
+<span class="lineNum">     190 </span>            :                  unsigned nbits, int v3compathack )
+<span class="lineNum">     191 </span>            : {
+<span class="lineNum">     192 </span><span class="lineNoCov">          0 :     int algo = hash_algo? hash_algo : md_get_algo(md);</span>
+<span class="lineNum">     193 </span>            :     const byte *asn;
+<span class="lineNum">     194 </span>            :     size_t asnlen, mdlen;
+<span class="lineNum">     195 </span>            :     MPI frame;
+<span class="lineNum">     196 </span>            : 
+<span class="lineNum">     197 </span><span class="lineNoCov">          0 :     if( pubkey_algo == PUBKEY_ALGO_DSA ) {</span>
+<span class="lineNum">     198 </span><span class="lineNoCov">          0 :         frame = md_is_secure(md)? mpi_alloc_secure((md_digest_length(hash_algo)</span>
+<span class="lineNum">     199 </span><span class="lineNoCov">          0 :                                  +BYTES_PER_MPI_LIMB-1) / BYTES_PER_MPI_LIMB )</span>
+<span class="lineNum">     200 </span><span class="lineNoCov">          0 :                                 : mpi_alloc((md_digest_length(hash_algo)</span>
+<span class="lineNum">     201 </span><span class="lineNoCov">          0 :                                  +BYTES_PER_MPI_LIMB-1) / BYTES_PER_MPI_LIMB );</span>
+<span class="lineNum">     202 </span><span class="lineNoCov">          0 :         mpi_set_buffer( frame, md_read(md, hash_algo),</span>
+<span class="lineNum">     203 </span><span class="lineNoCov">          0 :                                md_digest_length(hash_algo), 0 );</span>
+<span class="lineNum">     204 </span>            :     }
+<span class="lineNum">     205 </span>            :     else {
+<span class="lineNum">     206 </span><span class="lineNoCov">          0 :        asn = md_asn_oid( algo, &amp;asnlen, &amp;mdlen );</span>
+<span class="lineNum">     207 </span><span class="lineNoCov">          0 :        frame = do_encode_md( md, algo, mdlen, nbits, asn, asnlen, v3compathack);</span>
+<span class="lineNum">     208 </span>            :     }
+<span class="lineNum">     209 </span><span class="lineNoCov">          0 :     return frame;</span>
+<span class="lineNum">     210 </span>            : }
+<span class="lineNum">     211 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>
