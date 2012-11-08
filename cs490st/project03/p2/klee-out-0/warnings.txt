@@ -1,0 +1,4 @@
+KLEE: ERROR: /u/data/u93/mbmccorm/cs490st/project03/p2/test_red_black_tree.c:21: external call with symbolic argument: printf
+KLEE: NOTE: now ignoring this error at this location
+KLEE: ERROR: /u/data/u93/mbmccorm/cs490st/project03/p2/test_red_black_tree.c:124: abort failure
+KLEE: NOTE: now ignoring this error at this location

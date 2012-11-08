@@ -1,0 +1,18 @@
+/home/pgbovine/klee/Release+Asserts/bin/klee -libc=uclibc -posix-runtime test_rb.bc A -sym-files 1 5
+PID: 18115
+Started: 2012-11-07 18:10:07
+BEGIN searcher description
+DFSSearcher
+END searcher description
+Finished: 2012-11-07 18:10:31
+Elapsed: 00:00:24
+KLEE: done: explored paths = 250
+KLEE: done: avg. constructs per query = 473
+KLEE: done: total queries = 308
+KLEE: done: valid queries = 2
+KLEE: done: invalid queries = 306
+KLEE: done: query cex = 308
+
+KLEE: done: total instructions = 11106908
+KLEE: done: completed paths = 250
+KLEE: done: generated tests = 246

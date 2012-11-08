@@ -1,0 +1,7 @@
+Error: abort failure
+File: /u/data/u93/mbmccorm/cs490st/project03/p2/test_red_black_tree.c
+Line: 124
+Stack: 
+	#0 00001645 in __user_main (argc=5, argv=26079240) at /u/data/u93/mbmccorm/cs490st/project03/p2/test_red_black_tree.c:124
+	#1 00002433 in __uClibc_main (main=20352768, argc=5, argv=26079240, app_init=0, app_fini=0, rtld_fini=0, stack_end=0) at /home/pgbovine/klee-uclibc/libc/misc/internals/__uClibc_main.c:402
+	#2 00008124 in main (=5, =26079240)
