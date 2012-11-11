@@ -1,0 +1,5 @@
+Error: abort failure
+File: /u/data/u93/mbmccorm/cs490st/project03/p2/klee_stopper.c
+Line: 14
+Stack: 
+	#0 00000034 in main (argc=1, argv=18298896) at /u/data/u93/mbmccorm/cs490st/project03/p2/klee_stopper.c:14

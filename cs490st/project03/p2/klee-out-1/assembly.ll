@@ -19,7 +19,7 @@ entry:
   store i32 %argc, i32* %argc_addr
   store i8** %argv, i8*** %argv_addr
   store double 0.000000e+00, double* %a, align 8, !dbg !0
-  store double 0.000000e+00, double* %b, align 8, !dbg !0
+  store double -2.500000e-01, double* %b, align 8, !dbg !0
   %1 = call i32 (...)* @klee_make_symbolic(double* %a, i32 8, i8* getelementptr inbounds ([2 x i8]* @.str, i32 0, i32 0)) nounwind, !dbg !10 ; <i32> [#uses=0]
   %2 = call i32 (...)* @klee_make_symbolic(double* %b, i32 8, i8* getelementptr inbounds ([2 x i8]* @.str1, i32 0, i32 0)) nounwind, !dbg !11 ; <i32> [#uses=0]
   %3 = load double* %a, align 8, !dbg !12         ; <double> [#uses=1]
@@ -65,10 +65,10 @@ declare void @abort() noreturn nounwind
 !7 = metadata !{i32 458767, metadata !3, metadata !"", metadata !3, i32 0, i64 32, i64 32, i64 0, i32 0, metadata !8} ; [ DW_TAG_pointer_type ]
 !8 = metadata !{i32 458767, metadata !3, metadata !"", metadata !3, i32 0, i64 32, i64 32, i64 0, i32 0, metadata !9} ; [ DW_TAG_pointer_type ]
 !9 = metadata !{i32 458788, metadata !3, metadata !"char", metadata !3, i32 0, i64 8, i64 8, i64 0, i32 0, i32 6} ; [ DW_TAG_base_type ]
-!10 = metadata !{i32 9, i32 0, metadata !1, null}
-!11 = metadata !{i32 10, i32 0, metadata !1, null}
-!12 = metadata !{i32 12, i32 0, metadata !1, null}
-!13 = metadata !{i32 14, i32 0, metadata !1, null}
-!14 = metadata !{i32 15, i32 0, metadata !1, null}
-!15 = metadata !{i32 19, i32 0, metadata !1, null}
-!16 = metadata !{i32 22, i32 0, metadata !1, null}
+!10 = metadata !{i32 8, i32 0, metadata !1, null}
+!11 = metadata !{i32 9, i32 0, metadata !1, null}
+!12 = metadata !{i32 11, i32 0, metadata !1, null}
+!13 = metadata !{i32 13, i32 0, metadata !1, null}
+!14 = metadata !{i32 14, i32 0, metadata !1, null}
+!15 = metadata !{i32 18, i32 0, metadata !1, null}
+!16 = metadata !{i32 21, i32 0, metadata !1, null}

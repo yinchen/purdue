@@ -3,8 +3,7 @@
 
 int main(int argc, char** argv)
 {
-    double a = 0.0, b = 0.0;
-    // double a = 0.0, b = -0.25;
+    double a = 0.0, b = -0.25;
     
     klee_make_symbolic(&a, sizeof(a), "a");
     klee_make_symbolic(&b, sizeof(b), "b");
