@@ -1,0 +1,3 @@
+KLEE: WARNING: undefined reference to function: puts
+KLEE: WARNING: silently concretizing (reason: floating point) expression (ReadLSB w64 0 a) to value 0 (/u/data/u93/mbmccorm/cs490st/project03/p2/klee_stopper.c:12)
+KLEE: WARNING: calling external: puts(39622336)
