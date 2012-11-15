@@ -1,3 +1,5 @@
+package org.openqa.selenium.example;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -21,8 +23,7 @@ public class Selenium2Example  {
         WebElement element = driver.findElement(By.name("q"));
 
         // Enter something to search for
-        // element.sendKeys("Cheese!");
-        element.sendKeys(new CharSequence[] { "Cheese!" });
+        element.sendKeys("Cheese!");
 
         // Now submit the form. WebDriver will find the form for us from the element
         element.submit();
@@ -32,15 +33,10 @@ public class Selenium2Example  {
         
         // Google's search is rendered dynamically with JavaScript.
         // Wait for the page to load, timeout after 10 seconds
-        (new WebDriverWait(driver, 15)).until(new ExpectedCondition<boolean>() {
-            public boolean apply(WebDriver d) {
+        (new WebDriverWait(driver, 10)).until(new ExpectedCondition<Boolean>() {
+            public Boolean apply(WebDriver d) {
                 return d.getTitle().toLowerCase().startsWith("cheese!");
             }
-
-			public Object apply(Object arg0) {
-				// TODO Auto-generated method stub
-				return null;
-			}
         });
 
         // Should see: "cheese! - Google Search"
