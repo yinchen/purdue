@@ -1,0 +1,19 @@
+// R-1: Letters and numbers are allowed.
+P ["abc", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"]
+P ["123", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"]
+P ["abc123", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"]
+
+// R-2: Only numbers are allowed.
+P ["abc123", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"]
+
+// R-3: Only numbers are allowed.
+P ["abc123", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"]
+
+// R-4: Only numbers are allowed.
+P ["abc123", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"]
+
+// R-5: XSS injection is not allowed.
+F ["<script>alert("XSS was successful!");</script>", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"] : XSS injection succeeded
+F ["abc123", "Teacher 1", "Fall 2012", "<script>alert("XSS was successful!");</script>", "123", "123", "Substitute 1", "M"] : XSS injection succeeded
+F ["abc123", "Teacher 1", "Fall 2012", "123", "<script>alert("XSS was successful!");</script>", "123", "Substitute 1", "M"] : XSS injection succeeded
+F ["abc123", "Teacher 1", "Fall 2012", "123", "123", "<script>alert("XSS was successful!");</script>", "Substitute 1", "M"] : XSS injection succeeded
