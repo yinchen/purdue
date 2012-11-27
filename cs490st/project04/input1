@@ -3,14 +3,41 @@
 ["123", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"]
 ["abc123", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"]
 
+["!@#", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"]
+["abc!@#", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"]
+["123!@#", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"]
+["abc123!@#", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"]
+["", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"]
+
 // R-2: Only numbers are allowed.
 ["abc123", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"]
+
+["abc123", "Teacher 1", "Fall 2012", "abc", "123", "123", "Substitute 1", "M"]
+["abc123", "Teacher 1", "Fall 2012", "abc123", "123", "123", "Substitute 1", "M"]
+["abc123", "Teacher 1", "Fall 2012", "abc!@#", "123", "123", "Substitute 1", "M"]
+["abc123", "Teacher 1", "Fall 2012", "123!@#", "123", "123", "Substitute 1", "M"]
+["abc123", "Teacher 1", "Fall 2012", "abc123!@#", "123", "123", "Substitute 1", "M"]
+["abc123", "Teacher 1", "Fall 2012", "", "123", "123", "Substitute 1", "M"]
 
 // R-3: Only numbers are allowed.
 ["abc123", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"]
 
+["abc123", "Teacher 1", "Fall 2012", "123", "abc", "123", "Substitute 1", "M"]
+["abc123", "Teacher 1", "Fall 2012", "123", "abc123", "123", "Substitute 1", "M"]
+["abc123", "Teacher 1", "Fall 2012", "123", "abc!@#", "123", "Substitute 1", "M"]
+["abc123", "Teacher 1", "Fall 2012", "123", "123!@#", "123", "Substitute 1", "M"]
+["abc123", "Teacher 1", "Fall 2012", "123", "abc123!@#", "123", "Substitute 1", "M"]
+["abc123", "Teacher 1", "Fall 2012", "123", "", "123", "Substitute 1", "M"]
+
 // R-4: Only numbers are allowed.
 ["abc123", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"]
+
+["abc123", "Teacher 1", "Fall 2012", "123", "123", "abc", "Substitute 1", "M"]
+["abc123", "Teacher 1", "Fall 2012", "123", "123", "abc123", "Substitute 1", "M"]
+["abc123", "Teacher 1", "Fall 2012", "123", "123", "abc!@#", "Substitute 1", "M"]
+["abc123", "Teacher 1", "Fall 2012", "123", "123", "123!@#", "Substitute 1", "M"]
+["abc123", "Teacher 1", "Fall 2012", "123", "123", "abc123!@#", "Substitute 1", "M"]
+["abc123", "Teacher 1", "Fall 2012", "123", "123", "", "Substitute 1", "M"]
 
 // R-5: XSS injection is not allowed.
 ["<script>alert("XSS was successful!");</script>", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"]

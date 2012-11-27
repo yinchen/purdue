@@ -53,6 +53,8 @@ public class ScriptRunner
 	                
                 	line = line.trim().substring(1, line.length() - 2); // remove brackets
 	                
+                	boolean isValidated = false;
+	                
 	                try
 	                {
 	                	// find the add button, navigate to the add classes page
@@ -119,32 +121,95 @@ public class ScriptRunner
 		                WebElement submit = driver.findElement(By.xpath("//input[@value='Add Class']"));
 		                submit.click();
 		                
-		                if (driver.findElement(By.cssSelector("table.dynamiclist tr:last-child td:nth-child(2)")).getText().equals(expected[0]) &&
-		                	driver.findElement(By.cssSelector("table.dynamiclist tr:last-child td:nth-child(3)")).getText().equals(expected[1]) &&
-		                	driver.findElement(By.cssSelector("table.dynamiclist tr:last-child td:nth-child(4)")).getText().equals(expected[2]) &&
-		                	driver.findElement(By.cssSelector("table.dynamiclist tr:last-child td:nth-child(5)")).getText().equals(expected[3]) &&
-		                	driver.findElement(By.cssSelector("table.dynamiclist tr:last-child td:nth-child(6)")).getText().equals(expected[4]) &&
-		                	driver.findElement(By.cssSelector("table.dynamiclist tr:last-child td:nth-child(7)")).getText().equals(expected[5]) &&
-		                	driver.findElement(By.cssSelector("table.dynamiclist tr:last-child td:nth-child(8)")).getText().equals(expected[7]) &&
-		                	driver.findElement(By.cssSelector("table.dynamiclist tr:last-child td:nth-child(9)")).getText().equals(expected[6]))
+		                // check that record was created and values match
+		                if ((driver.findElement(By.cssSelector("table.dynamiclist tr:last-child td:nth-child(2)")).getText().equals(expected[0]) &&
+		                	 driver.findElement(By.cssSelector("table.dynamiclist tr:last-child td:nth-child(3)")).getText().equals(expected[1]) &&
+		                	 driver.findElement(By.cssSelector("table.dynamiclist tr:last-child td:nth-child(4)")).getText().equals(expected[2]) &&
+		                	 driver.findElement(By.cssSelector("table.dynamiclist tr:last-child td:nth-child(5)")).getText().equals(expected[3]) &&
+		                	 driver.findElement(By.cssSelector("table.dynamiclist tr:last-child td:nth-child(6)")).getText().equals(expected[4]) &&
+		                	 driver.findElement(By.cssSelector("table.dynamiclist tr:last-child td:nth-child(7)")).getText().equals(expected[5]) &&
+		                	 driver.findElement(By.cssSelector("table.dynamiclist tr:last-child td:nth-child(8)")).getText().equals(expected[7]) &&
+		                	 driver.findElement(By.cssSelector("table.dynamiclist tr:last-child td:nth-child(9)")).getText().equals(expected[6])) == false)
 		                {
-		                	sb.append("P " + original + "\n");
+		                	sb.append("F " + original + " : Values do not match.\n");
+		                	isValidated = true;
 		                }
-		                else
+		                
+		                // check for empty strings
+		                if (driver.findElement(By.cssSelector("table.dynamiclist tr:last-child td:nth-child(2)")).getText().length() == 0 ||
+		                	driver.findElement(By.cssSelector("table.dynamiclist tr:last-child td:nth-child(5)")).getText().length() == 0 ||
+		                	driver.findElement(By.cssSelector("table.dynamiclist tr:last-child td:nth-child(6)")).getText().length() == 0 ||
+		                	driver.findElement(By.cssSelector("table.dynamiclist tr:last-child td:nth-child(7)")).getText().length() == 0)
 		                {
-		                	sb.append("F " + original + " : Record was not created or values do not match.\n");
+		                	sb.append("F " + original + " : Value cannot be empty.\n");
+		                	isValidated = true;
+		                }
+		                
+		                // validate R-1
+		                if (driver.findElement(By.cssSelector("table.dynamiclist tr:last-child td:nth-child(2)")).getText().matches("^([a-z]|[A-Z]|[0-9]| )*$") == false)
+		                {
+		                	sb.append("F " + original + " : Only letters and numbers are allowed.\n");
+		                	isValidated = true;
+		                }
+		                
+		                // validate R-2
+		                if (driver.findElement(By.cssSelector("table.dynamiclist tr:last-child td:nth-child(5)")).getText().matches("^[0-9]*$") == false)
+		                {
+		                	sb.append("F " + original + " : Only numbers are allowed.\n");
+		                	isValidated = true;
+		                }
+		                
+		                // validate R-3
+		                if (driver.findElement(By.cssSelector("table.dynamiclist tr:last-child td:nth-child(6)")).getText().matches("^[0-9]*$") == false)
+		                {
+		                	sb.append("F " + original + " : Only numbers are allowed.\n");
+		                	isValidated = true;
+		                }
+		                
+		                // validate R-4
+		                if (driver.findElement(By.cssSelector("table.dynamiclist tr:last-child td:nth-child(7)")).getText().matches("^[0-9]*$") == false)
+		                {
+		                	sb.append("F " + original + " : Only numbers are allowed.\n");
+		                	isValidated = true;
 		                }
 	                }
 	                catch (Exception ex)
 	                {
 	                	if (ex.getMessage().startsWith("Modal dialog present") == true)
 	                	{
-	                		sb.append("F " + original + " : XSS injection succeeded\n");
+	                		sb.append("F " + original + " : XSS injection is not allowed.\n");
+		                	isValidated = true;
+	                	}
+	                	else if (ex.getMessage().startsWith("Unable to locate element") == true)
+	                	{
+	                		sb.append("F " + original + " : Record was not created.\n");
+		                	isValidated = true;
 	                	}
 	                	else
 	                	{
 	                		sb.append("F " + original + " : " + ex.getMessage() + "\n");
+		                	isValidated = true;
 	                	}
+	                }
+	                
+	                if (isValidated == false)
+	                	sb.append("P " + original + "\n");
+	                
+	                try
+	                {
+		                // mark this record for deletion
+		                WebElement checkbox = driver.findElement(By.cssSelector("table.dynamiclist tr:last-child td:nth-child(1) input"));
+		                checkbox.click();
+		                
+		                // delete this record
+		                WebElement delete = driver.findElement(By.xpath("//input[@value='Delete']"));
+		                delete.click();
+		                
+		                driver.switchTo().alert().accept();
+	                }
+	                catch (Exception ex)
+	                {
+	                	// do nothing	                	
 	                }
 	            }
 	            else

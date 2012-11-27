@@ -1,19 +1,46 @@
 // R-1: Letters and numbers are allowed.
 P ["abc", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"]
-P ["123", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"]
+F ["123", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"] : Record was not created.
 P ["abc123", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"]
+
+F ["!@#", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"] : Only letters and numbers are allowed.
+F ["abc!@#", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"] : Only letters and numbers are allowed.
+F ["123!@#", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"] : Only letters and numbers are allowed.
+F ["abc123!@#", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"] : Only letters and numbers are allowed.
+F ["", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"] : Record was not created.
 
 // R-2: Only numbers are allowed.
 P ["abc123", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"]
 
+F ["abc123", "Teacher 1", "Fall 2012", "abc", "123", "123", "Substitute 1", "M"] : Only numbers are allowed.
+F ["abc123", "Teacher 1", "Fall 2012", "abc123", "123", "123", "Substitute 1", "M"] : Record was not created.
+F ["abc123", "Teacher 1", "Fall 2012", "abc!@#", "123", "123", "Substitute 1", "M"] : Only numbers are allowed.
+F ["abc123", "Teacher 1", "Fall 2012", "123!@#", "123", "123", "Substitute 1", "M"] : Only numbers are allowed.
+F ["abc123", "Teacher 1", "Fall 2012", "abc123!@#", "123", "123", "Substitute 1", "M"] : Only numbers are allowed.
+F ["abc123", "Teacher 1", "Fall 2012", "", "123", "123", "Substitute 1", "M"] : Value cannot be empty.
+
 // R-3: Only numbers are allowed.
 P ["abc123", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"]
+
+F ["abc123", "Teacher 1", "Fall 2012", "123", "abc", "123", "Substitute 1", "M"] : Only numbers are allowed.
+F ["abc123", "Teacher 1", "Fall 2012", "123", "abc123", "123", "Substitute 1", "M"] : Record was not created.
+F ["abc123", "Teacher 1", "Fall 2012", "123", "abc!@#", "123", "Substitute 1", "M"] : Only numbers are allowed.
+F ["abc123", "Teacher 1", "Fall 2012", "123", "123!@#", "123", "Substitute 1", "M"] : Record was not created.
+F ["abc123", "Teacher 1", "Fall 2012", "123", "abc123!@#", "123", "Substitute 1", "M"] : Only numbers are allowed.
+F ["abc123", "Teacher 1", "Fall 2012", "123", "", "123", "Substitute 1", "M"] : Record was not created.
 
 // R-4: Only numbers are allowed.
 P ["abc123", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"]
 
+F ["abc123", "Teacher 1", "Fall 2012", "123", "123", "abc", "Substitute 1", "M"] : Record was not created.
+F ["abc123", "Teacher 1", "Fall 2012", "123", "123", "abc123", "Substitute 1", "M"] : Only numbers are allowed.
+F ["abc123", "Teacher 1", "Fall 2012", "123", "123", "abc!@#", "Substitute 1", "M"] : Only numbers are allowed.
+F ["abc123", "Teacher 1", "Fall 2012", "123", "123", "123!@#", "Substitute 1", "M"] : Only numbers are allowed.
+F ["abc123", "Teacher 1", "Fall 2012", "123", "123", "abc123!@#", "Substitute 1", "M"] : Only numbers are allowed.
+F ["abc123", "Teacher 1", "Fall 2012", "123", "123", "", "Substitute 1", "M"] : Record was not created.
+
 // R-5: XSS injection is not allowed.
-F ["<script>alert("XSS was successful!");</script>", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"] : XSS injection succeeded
-F ["abc123", "Teacher 1", "Fall 2012", "<script>alert("XSS was successful!");</script>", "123", "123", "Substitute 1", "M"] : XSS injection succeeded
-F ["abc123", "Teacher 1", "Fall 2012", "123", "<script>alert("XSS was successful!");</script>", "123", "Substitute 1", "M"] : XSS injection succeeded
-F ["abc123", "Teacher 1", "Fall 2012", "123", "123", "<script>alert("XSS was successful!");</script>", "Substitute 1", "M"] : XSS injection succeeded
+F ["<script>alert("XSS was successful!");</script>", "Teacher 1", "Fall 2012", "123", "123", "123", "Substitute 1", "M"] : XSS injection is not allowed.
+F ["abc123", "Teacher 1", "Fall 2012", "<script>alert("XSS was successful!");</script>", "123", "123", "Substitute 1", "M"] : XSS injection is not allowed.
+F ["abc123", "Teacher 1", "Fall 2012", "123", "<script>alert("XSS was successful!");</script>", "123", "Substitute 1", "M"] : XSS injection is not allowed.
+F ["abc123", "Teacher 1", "Fall 2012", "123", "123", "<script>alert("XSS was successful!");</script>", "Substitute 1", "M"] : XSS injection is not allowed.
