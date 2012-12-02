@@ -37,7 +37,7 @@ public class ScriptRunner
         try
         {
         	// initialize the input file
-        	FileInputStream fis = new FileInputStream("input1");
+        	FileInputStream fis = new FileInputStream("input2");
         	DataInputStream dis = new DataInputStream(fis);
         	BufferedReader br = new BufferedReader(new InputStreamReader(dis));
         
@@ -230,7 +230,7 @@ public class ScriptRunner
         try
         {
         	// create the output file
-        	File output = new File("output1");
+        	File output = new File("output2");
         	if (output.exists() == true)
         	{
         		output.delete();

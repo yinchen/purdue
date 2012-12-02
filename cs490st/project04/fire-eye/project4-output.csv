@@ -1,0 +1,115 @@
+# ACTS Test Suite Generation: Sun Dec 02 16:39:42 EST 2012
+#  * represents don't care value 
+Parameters:
+"Title:[abc, 123, abc123, !@#, abc!@#, 123!@#, abc123!@#, , <script>alert(\"XSS was successful!\");</script>]"
+"Teacher:[Teacher 1, Teacher 2, Teacher 3, Teacher 4, Teacher 5]"
+"Semester:[Fall 2012, Spring 2013]"
+"SectionNum:[123, abc, abc123, abc!@#, 123!@#, abc123!@#, , <script>alert(\"XSS was successful!\");</script>]"
+"RoomNum:[123, abc, abc123, abc!@#, 123!@#, abc123!@#, , <script>alert(\"XSS was successful!\");</script>]"
+"PeriodNum:[123, abc, abc123, abc!@#, 123!@#, abc123!@#, , <script>alert(\"XSS was successful!\");</script>]"
+"Substitute:[Substitute 1, Substitute 2, Substitute 3]"
+"Group1:[M, T, W, H, F]"
+
+
+Relations :
+"[2,(Title, Teacher, Semester, SectionNum, RoomNum, PeriodNum, Substitute, Group1)]"
+
+
+Tests
+Title,Teacher,Semester,SectionNum,RoomNum,PeriodNum,Substitute,Group1
+"abc","Teacher 1","Fall 2012","123","123","123","Substitute 1","M"
+"abc","Teacher 2","Spring 2013","abc","abc","abc","Substitute 2","T"
+"abc","Teacher 3","Fall 2012","abc123","abc123","abc123","Substitute 3","W"
+"abc","Teacher 4","Spring 2013","abc!@#","abc!@#","abc!@#","Substitute 1","H"
+"abc","Teacher 5","Fall 2012","123!@#","123!@#","123!@#","Substitute 2","F"
+"abc","Teacher 1","Spring 2013","abc123!@#","abc123!@#","abc123!@#","Substitute 3","T"
+"abc","Teacher 2","Fall 2012","","","","Substitute 3","M"
+"abc","Teacher 3","Spring 2013","<script>alert(\"XSS was successful!\");</script>","<script>alert(\"XSS was successful!\");</script>","<script>alert(\"XSS was successful!\");</script>","Substitute 2","H"
+"123","Teacher 4","Spring 2013","123","abc","abc123","Substitute 3","F"
+"123","Teacher 5","Fall 2012","abc","123","abc!@#","Substitute 1","W"
+"123","Teacher 2","Fall 2012","abc123","abc!@#","123","Substitute 2","T"
+"123","Teacher 1","Spring 2013","abc!@#","abc123","abc","Substitute 2","M"
+"123","Teacher 3","Fall 2012","123!@#","abc123!@#","","Substitute 1","H"
+"123","Teacher 4","Fall 2012","abc123!@#","123!@#","<script>alert(\"XSS was successful!\");</script>","Substitute 1","W"
+"123","Teacher 1","Spring 2013","","<script>alert(\"XSS was successful!\");</script>","123!@#","Substitute 1","W"
+"123","Teacher 5","Spring 2013","<script>alert(\"XSS was successful!\");</script>","","abc123!@#","Substitute 1","F"
+"abc123","Teacher 2","Fall 2012","123","abc123","abc!@#","Substitute 1","T"
+"abc123","Teacher 1","Spring 2013","abc","abc!@#","abc123","Substitute 3","M"
+"abc123","Teacher 4","Spring 2013","abc123","123","abc","Substitute 2","H"
+"abc123","Teacher 3","Fall 2012","abc!@#","abc","123","Substitute 3","F"
+"abc123","Teacher 1","Spring 2013","123!@#","","<script>alert(\"XSS was successful!\");</script>","Substitute 3","T"
+"abc123","Teacher 5","Fall 2012","abc123!@#","<script>alert(\"XSS was successful!\");</script>","","Substitute 2","M"
+"abc123","Teacher 3","Fall 2012","","123!@#","abc123!@#","Substitute 2","H"
+"abc123","Teacher 2","Fall 2012","<script>alert(\"XSS was successful!\");</script>","abc123!@#","123!@#","Substitute 3","W"
+"!@#","Teacher 5","Fall 2012","123","abc!@#","abc","Substitute 2","W"
+"!@#","Teacher 4","Spring 2013","abc","abc123","123","Substitute 3","H"
+"!@#","Teacher 1",*,"abc123","abc","abc!@#","Substitute 1","F"
+"!@#","Teacher 2",*,"abc!@#","123","abc123","Substitute 1","T"
+"!@#","Teacher 4",*,"123!@#","<script>alert(\"XSS was successful!\");</script>","abc123!@#","Substitute 3","M"
+"!@#","Teacher 3",*,"abc123!@#","","123!@#","Substitute 2","H"
+"!@#","Teacher 5",*,"","abc123!@#","<script>alert(\"XSS was successful!\");</script>","Substitute 2","F"
+"!@#","Teacher 1","Spring 2013","<script>alert(\"XSS was successful!\");</script>","123!@#","","Substitute 3","T"
+"abc!@#","Teacher 2","Spring 2013","123","123!@#","123","Substitute 1","H"
+"abc!@#","Teacher 3","Fall 2012","abc","abc123!@#","abc","Substitute 3","M"
+"abc!@#","Teacher 5",*,"abc123","","abc123","Substitute 2","W"
+"abc!@#","Teacher 4",*,"abc!@#","<script>alert(\"XSS was successful!\");</script>","abc!@#","Substitute 2","T"
+"abc!@#","Teacher 2",*,"123!@#","123","123!@#","Substitute 3","F"
+"abc!@#","Teacher 2",*,"abc123!@#","abc","abc123!@#",*,"W"
+"abc!@#","Teacher 4",*,"","abc123","",*,"F"
+"abc!@#","Teacher 3",*,"<script>alert(\"XSS was successful!\");</script>","abc!@#","<script>alert(\"XSS was successful!\");</script>",*,"M"
+"123!@#","Teacher 5","Spring 2013","123","abc123!@#","123","Substitute 3","T"
+"123!@#","Teacher 1","Fall 2012","abc","123!@#","abc","Substitute 1","F"
+"123!@#","Teacher 2",*,"abc123","<script>alert(\"XSS was successful!\");</script>","abc123","Substitute 2","M"
+"123!@#","Teacher 3",*,"abc!@#","","abc!@#","Substitute 3","W"
+"123!@#","Teacher 4",*,"123!@#","abc","123!@#",*,"H"
+"123!@#","Teacher 3",*,"abc123!@#","123","abc123!@#",*,"T"
+"123!@#",*,*,"","abc!@#","",*,"W"
+"123!@#","Teacher 5",*,"<script>alert(\"XSS was successful!\");</script>","abc123","<script>alert(\"XSS was successful!\");</script>",*,"H"
+"abc123!@#","Teacher 4","Spring 2013","123","","123","Substitute 1","W"
+"abc123!@#","Teacher 1","Fall 2012","abc","<script>alert(\"XSS was successful!\");</script>","abc","Substitute 2","F"
+"abc123!@#","Teacher 5",*,"abc123","123!@#","abc123","Substitute 3","M"
+"abc123!@#","Teacher 2",*,"abc!@#","abc123!@#","abc!@#",*,"M"
+"abc123!@#","Teacher 3",*,"123!@#","abc123","123!@#",*,"T"
+"abc123!@#","Teacher 1",*,"abc123!@#","abc!@#","abc123!@#",*,"H"
+"abc123!@#",*,*,"","123","",*,"T"
+"abc123!@#","Teacher 4",*,"<script>alert(\"XSS was successful!\");</script>","abc","<script>alert(\"XSS was successful!\");</script>",*,"M"
+"","Teacher 3","Spring 2013","123","<script>alert(\"XSS was successful!\");</script>","123","Substitute 1","F"
+"","Teacher 1","Fall 2012","abc","","abc","Substitute 2","W"
+"","Teacher 4",*,"abc123","abc123!@#","abc123","Substitute 3","H"
+"","Teacher 5",*,"abc!@#","123!@#","abc!@#",*,"M"
+"","Teacher 2",*,"123!@#","abc!@#","123!@#",*,"F"
+"",*,*,"abc123!@#","abc123","abc123!@#",*,"T"
+"","Teacher 5",*,"","abc","",*,*
+"","Teacher 2",*,"<script>alert(\"XSS was successful!\");</script>","123","<script>alert(\"XSS was successful!\");</script>",*,*
+"<script>alert(\"XSS was successful!\");</script>","Teacher 1","Spring 2013","123","123","123!@#","Substitute 1","M"
+"<script>alert(\"XSS was successful!\");</script>","Teacher 3","Fall 2012","abc","abc","abc123!@#","Substitute 2","W"
+"<script>alert(\"XSS was successful!\");</script>","Teacher 4",*,"abc123","abc123","","Substitute 3","H"
+"<script>alert(\"XSS was successful!\");</script>","Teacher 5",*,"abc!@#","abc!@#","<script>alert(\"XSS was successful!\");</script>",*,"F"
+"<script>alert(\"XSS was successful!\");</script>","Teacher 2",*,"123!@#","123!@#","123",*,"T"
+"<script>alert(\"XSS was successful!\");</script>",*,*,"abc123!@#","abc123!@#","abc",*,"F"
+"<script>alert(\"XSS was successful!\");</script>",*,*,"","","abc123",*,*
+"<script>alert(\"XSS was successful!\");</script>",*,*,"<script>alert(\"XSS was successful!\");</script>","<script>alert(\"XSS was successful!\");</script>","abc!@#",*,*
+"abc!@#","Teacher 1",*,"abc123!@#",*,"123",*,*
+*,*,*,"",*,"123",*,*
+*,*,*,"<script>alert(\"XSS was successful!\");</script>",*,"123",*,*
+*,*,*,"123!@#",*,"abc",*,"W"
+*,*,*,"",*,"abc",*,*
+*,*,*,"<script>alert(\"XSS was successful!\");</script>",*,"abc",*,*
+*,*,*,"123!@#",*,"abc123",*,*
+*,*,*,"abc123!@#",*,"abc123",*,*
+*,*,*,"<script>alert(\"XSS was successful!\");</script>",*,"abc123",*,*
+*,*,*,"123!@#",*,"abc!@#",*,*
+*,*,*,"abc123!@#",*,"abc!@#",*,*
+*,*,*,"",*,"abc!@#",*,*
+*,*,*,"abc",*,"123!@#",*,*
+*,*,*,"abc123",*,"123!@#",*,*
+*,*,*,"abc!@#",*,"123!@#",*,*
+*,*,*,"123",*,"abc123!@#",*,*
+*,*,*,"abc123",*,"abc123!@#",*,*
+*,*,*,"abc!@#",*,"abc123!@#",*,*
+*,*,*,"123",*,"",*,*
+*,*,*,"abc",*,"",*,*
+*,*,*,"abc!@#",*,"",*,*
+*,*,*,"123",*,"<script>alert(\"XSS was successful!\");</script>",*,*
+*,*,*,"abc",*,"<script>alert(\"XSS was successful!\");</script>",*,*
+*,*,*,"abc123",*,"<script>alert(\"XSS was successful!\");</script>",*,*
