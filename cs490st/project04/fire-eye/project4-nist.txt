@@ -1,0 +1,1271 @@
+
+ Default degree of interaction coverage: 2
+Number of parameters: 8
+Number of configurations: 96
+
+Parameters:
+Title:[abc, 123, abc123, !@#, abc!@#, 123!@#, abc123!@#, , <script>alert("XSS was successful!");</script>]
+SectionNum:[123, abc, abc123, abc!@#, 123!@#, abc123!@#, , <script>alert("XSS was successful!");</script>]
+RoomNum:[123, abc, abc123, abc!@#, 123!@#, abc123!@#, , <script>alert("XSS was successful!");</script>]
+PeriodNum:[123, abc, abc123, abc!@#, 123!@#, abc123!@#, , <script>alert("XSS was successful!");</script>]
+Teacher:[Teacher 1, Teacher 2, Teacher 3, Teacher 4, Teacher 5]
+Group1:[M, T, W, H, F]
+Substitute:[Substitute 1, Substitute 2, Substitute 3]
+Semester:[Fall 2012, Spring 2013]
+
+Output parameters: 
+
+Relations :
+[2,(Title, Teacher, Semester, SectionNum, RoomNum, PeriodNum, Substitute, Group1)]
+
+
+------------Test Cases--------------
+
+Configuration #1:
+
+1 = Title=abc
+2 = Teacher=Teacher 1
+3 = Semester=Fall 2012
+4 = SectionNum=123
+5 = RoomNum=123
+6 = PeriodNum=123
+7 = Substitute=Substitute 1
+8 = Group1=M
+
+-------------------------------------
+
+Configuration #2:
+
+1 = Title=abc
+2 = Teacher=Teacher 2
+3 = Semester=Spring 2013
+4 = SectionNum=abc
+5 = RoomNum=abc
+6 = PeriodNum=abc
+7 = Substitute=Substitute 2
+8 = Group1=T
+
+-------------------------------------
+
+Configuration #3:
+
+1 = Title=abc
+2 = Teacher=Teacher 3
+3 = Semester=Fall 2012
+4 = SectionNum=abc123
+5 = RoomNum=abc123
+6 = PeriodNum=abc123
+7 = Substitute=Substitute 3
+8 = Group1=W
+
+-------------------------------------
+
+Configuration #4:
+
+1 = Title=abc
+2 = Teacher=Teacher 4
+3 = Semester=Spring 2013
+4 = SectionNum=abc!@#
+5 = RoomNum=abc!@#
+6 = PeriodNum=abc!@#
+7 = Substitute=Substitute 1
+8 = Group1=H
+
+-------------------------------------
+
+Configuration #5:
+
+1 = Title=abc
+2 = Teacher=Teacher 5
+3 = Semester=Fall 2012
+4 = SectionNum=123!@#
+5 = RoomNum=123!@#
+6 = PeriodNum=123!@#
+7 = Substitute=Substitute 2
+8 = Group1=F
+
+-------------------------------------
+
+Configuration #6:
+
+1 = Title=abc
+2 = Teacher=Teacher 1
+3 = Semester=Spring 2013
+4 = SectionNum=abc123!@#
+5 = RoomNum=abc123!@#
+6 = PeriodNum=abc123!@#
+7 = Substitute=Substitute 3
+8 = Group1=T
+
+-------------------------------------
+
+Configuration #7:
+
+1 = Title=abc
+2 = Teacher=Teacher 2
+3 = Semester=Fall 2012
+4 = SectionNum=
+5 = RoomNum=
+6 = PeriodNum=
+7 = Substitute=Substitute 3
+8 = Group1=M
+
+-------------------------------------
+
+Configuration #8:
+
+1 = Title=abc
+2 = Teacher=Teacher 3
+3 = Semester=Spring 2013
+4 = SectionNum=<script>alert("XSS was successful!");</script>
+5 = RoomNum=<script>alert("XSS was successful!");</script>
+6 = PeriodNum=<script>alert("XSS was successful!");</script>
+7 = Substitute=Substitute 2
+8 = Group1=H
+
+-------------------------------------
+
+Configuration #9:
+
+1 = Title=123
+2 = Teacher=Teacher 4
+3 = Semester=Spring 2013
+4 = SectionNum=123
+5 = RoomNum=abc
+6 = PeriodNum=abc123
+7 = Substitute=Substitute 3
+8 = Group1=F
+
+-------------------------------------
+
+Configuration #10:
+
+1 = Title=123
+2 = Teacher=Teacher 5
+3 = Semester=Fall 2012
+4 = SectionNum=abc
+5 = RoomNum=123
+6 = PeriodNum=abc!@#
+7 = Substitute=Substitute 1
+8 = Group1=W
+
+-------------------------------------
+
+Configuration #11:
+
+1 = Title=123
+2 = Teacher=Teacher 2
+3 = Semester=Fall 2012
+4 = SectionNum=abc123
+5 = RoomNum=abc!@#
+6 = PeriodNum=123
+7 = Substitute=Substitute 2
+8 = Group1=T
+
+-------------------------------------
+
+Configuration #12:
+
+1 = Title=123
+2 = Teacher=Teacher 1
+3 = Semester=Spring 2013
+4 = SectionNum=abc!@#
+5 = RoomNum=abc123
+6 = PeriodNum=abc
+7 = Substitute=Substitute 2
+8 = Group1=M
+
+-------------------------------------
+
+Configuration #13:
+
+1 = Title=123
+2 = Teacher=Teacher 3
+3 = Semester=Fall 2012
+4 = SectionNum=123!@#
+5 = RoomNum=abc123!@#
+6 = PeriodNum=
+7 = Substitute=Substitute 1
+8 = Group1=H
+
+-------------------------------------
+
+Configuration #14:
+
+1 = Title=123
+2 = Teacher=Teacher 4
+3 = Semester=Fall 2012
+4 = SectionNum=abc123!@#
+5 = RoomNum=123!@#
+6 = PeriodNum=<script>alert("XSS was successful!");</script>
+7 = Substitute=Substitute 1
+8 = Group1=W
+
+-------------------------------------
+
+Configuration #15:
+
+1 = Title=123
+2 = Teacher=Teacher 1
+3 = Semester=Spring 2013
+4 = SectionNum=
+5 = RoomNum=<script>alert("XSS was successful!");</script>
+6 = PeriodNum=123!@#
+7 = Substitute=Substitute 1
+8 = Group1=W
+
+-------------------------------------
+
+Configuration #16:
+
+1 = Title=123
+2 = Teacher=Teacher 5
+3 = Semester=Spring 2013
+4 = SectionNum=<script>alert("XSS was successful!");</script>
+5 = RoomNum=
+6 = PeriodNum=abc123!@#
+7 = Substitute=Substitute 1
+8 = Group1=F
+
+-------------------------------------
+
+Configuration #17:
+
+1 = Title=abc123
+2 = Teacher=Teacher 2
+3 = Semester=Fall 2012
+4 = SectionNum=123
+5 = RoomNum=abc123
+6 = PeriodNum=abc!@#
+7 = Substitute=Substitute 1
+8 = Group1=T
+
+-------------------------------------
+
+Configuration #18:
+
+1 = Title=abc123
+2 = Teacher=Teacher 1
+3 = Semester=Spring 2013
+4 = SectionNum=abc
+5 = RoomNum=abc!@#
+6 = PeriodNum=abc123
+7 = Substitute=Substitute 3
+8 = Group1=M
+
+-------------------------------------
+
+Configuration #19:
+
+1 = Title=abc123
+2 = Teacher=Teacher 4
+3 = Semester=Spring 2013
+4 = SectionNum=abc123
+5 = RoomNum=123
+6 = PeriodNum=abc
+7 = Substitute=Substitute 2
+8 = Group1=H
+
+-------------------------------------
+
+Configuration #20:
+
+1 = Title=abc123
+2 = Teacher=Teacher 3
+3 = Semester=Fall 2012
+4 = SectionNum=abc!@#
+5 = RoomNum=abc
+6 = PeriodNum=123
+7 = Substitute=Substitute 3
+8 = Group1=F
+
+-------------------------------------
+
+Configuration #21:
+
+1 = Title=abc123
+2 = Teacher=Teacher 1
+3 = Semester=Spring 2013
+4 = SectionNum=123!@#
+5 = RoomNum=
+6 = PeriodNum=<script>alert("XSS was successful!");</script>
+7 = Substitute=Substitute 3
+8 = Group1=T
+
+-------------------------------------
+
+Configuration #22:
+
+1 = Title=abc123
+2 = Teacher=Teacher 5
+3 = Semester=Fall 2012
+4 = SectionNum=abc123!@#
+5 = RoomNum=<script>alert("XSS was successful!");</script>
+6 = PeriodNum=
+7 = Substitute=Substitute 2
+8 = Group1=M
+
+-------------------------------------
+
+Configuration #23:
+
+1 = Title=abc123
+2 = Teacher=Teacher 3
+3 = Semester=Fall 2012
+4 = SectionNum=
+5 = RoomNum=123!@#
+6 = PeriodNum=abc123!@#
+7 = Substitute=Substitute 2
+8 = Group1=H
+
+-------------------------------------
+
+Configuration #24:
+
+1 = Title=abc123
+2 = Teacher=Teacher 2
+3 = Semester=Fall 2012
+4 = SectionNum=<script>alert("XSS was successful!");</script>
+5 = RoomNum=abc123!@#
+6 = PeriodNum=123!@#
+7 = Substitute=Substitute 3
+8 = Group1=W
+
+-------------------------------------
+
+Configuration #25:
+
+1 = Title=!@#
+2 = Teacher=Teacher 5
+3 = Semester=Fall 2012
+4 = SectionNum=123
+5 = RoomNum=abc!@#
+6 = PeriodNum=abc
+7 = Substitute=Substitute 2
+8 = Group1=W
+
+-------------------------------------
+
+Configuration #26:
+
+1 = Title=!@#
+2 = Teacher=Teacher 4
+3 = Semester=Spring 2013
+4 = SectionNum=abc
+5 = RoomNum=abc123
+6 = PeriodNum=123
+7 = Substitute=Substitute 3
+8 = Group1=H
+
+-------------------------------------
+
+Configuration #27:
+
+1 = Title=!@#
+2 = Teacher=Teacher 1
+3 = (don't care)
+4 = SectionNum=abc123
+5 = RoomNum=abc
+6 = PeriodNum=abc!@#
+7 = Substitute=Substitute 1
+8 = Group1=F
+
+-------------------------------------
+
+Configuration #28:
+
+1 = Title=!@#
+2 = Teacher=Teacher 2
+3 = (don't care)
+4 = SectionNum=abc!@#
+5 = RoomNum=123
+6 = PeriodNum=abc123
+7 = Substitute=Substitute 1
+8 = Group1=T
+
+-------------------------------------
+
+Configuration #29:
+
+1 = Title=!@#
+2 = Teacher=Teacher 4
+3 = (don't care)
+4 = SectionNum=123!@#
+5 = RoomNum=<script>alert("XSS was successful!");</script>
+6 = PeriodNum=abc123!@#
+7 = Substitute=Substitute 3
+8 = Group1=M
+
+-------------------------------------
+
+Configuration #30:
+
+1 = Title=!@#
+2 = Teacher=Teacher 3
+3 = (don't care)
+4 = SectionNum=abc123!@#
+5 = RoomNum=
+6 = PeriodNum=123!@#
+7 = Substitute=Substitute 2
+8 = Group1=H
+
+-------------------------------------
+
+Configuration #31:
+
+1 = Title=!@#
+2 = Teacher=Teacher 5
+3 = (don't care)
+4 = SectionNum=
+5 = RoomNum=abc123!@#
+6 = PeriodNum=<script>alert("XSS was successful!");</script>
+7 = Substitute=Substitute 2
+8 = Group1=F
+
+-------------------------------------
+
+Configuration #32:
+
+1 = Title=!@#
+2 = Teacher=Teacher 1
+3 = Semester=Spring 2013
+4 = SectionNum=<script>alert("XSS was successful!");</script>
+5 = RoomNum=123!@#
+6 = PeriodNum=
+7 = Substitute=Substitute 3
+8 = Group1=T
+
+-------------------------------------
+
+Configuration #33:
+
+1 = Title=abc!@#
+2 = Teacher=Teacher 2
+3 = Semester=Spring 2013
+4 = SectionNum=123
+5 = RoomNum=123!@#
+6 = PeriodNum=123
+7 = Substitute=Substitute 1
+8 = Group1=H
+
+-------------------------------------
+
+Configuration #34:
+
+1 = Title=abc!@#
+2 = Teacher=Teacher 3
+3 = Semester=Fall 2012
+4 = SectionNum=abc
+5 = RoomNum=abc123!@#
+6 = PeriodNum=abc
+7 = Substitute=Substitute 3
+8 = Group1=M
+
+-------------------------------------
+
+Configuration #35:
+
+1 = Title=abc!@#
+2 = Teacher=Teacher 5
+3 = (don't care)
+4 = SectionNum=abc123
+5 = RoomNum=
+6 = PeriodNum=abc123
+7 = Substitute=Substitute 2
+8 = Group1=W
+
+-------------------------------------
+
+Configuration #36:
+
+1 = Title=abc!@#
+2 = Teacher=Teacher 4
+3 = (don't care)
+4 = SectionNum=abc!@#
+5 = RoomNum=<script>alert("XSS was successful!");</script>
+6 = PeriodNum=abc!@#
+7 = Substitute=Substitute 2
+8 = Group1=T
+
+-------------------------------------
+
+Configuration #37:
+
+1 = Title=abc!@#
+2 = Teacher=Teacher 2
+3 = (don't care)
+4 = SectionNum=123!@#
+5 = RoomNum=123
+6 = PeriodNum=123!@#
+7 = Substitute=Substitute 3
+8 = Group1=F
+
+-------------------------------------
+
+Configuration #38:
+
+1 = Title=abc!@#
+2 = Teacher=Teacher 2
+3 = (don't care)
+4 = SectionNum=abc123!@#
+5 = RoomNum=abc
+6 = PeriodNum=abc123!@#
+7 = (don't care)
+8 = Group1=W
+
+-------------------------------------
+
+Configuration #39:
+
+1 = Title=abc!@#
+2 = Teacher=Teacher 4
+3 = (don't care)
+4 = SectionNum=
+5 = RoomNum=abc123
+6 = PeriodNum=
+7 = (don't care)
+8 = Group1=F
+
+-------------------------------------
+
+Configuration #40:
+
+1 = Title=abc!@#
+2 = Teacher=Teacher 3
+3 = (don't care)
+4 = SectionNum=<script>alert("XSS was successful!");</script>
+5 = RoomNum=abc!@#
+6 = PeriodNum=<script>alert("XSS was successful!");</script>
+7 = (don't care)
+8 = Group1=M
+
+-------------------------------------
+
+Configuration #41:
+
+1 = Title=123!@#
+2 = Teacher=Teacher 5
+3 = Semester=Spring 2013
+4 = SectionNum=123
+5 = RoomNum=abc123!@#
+6 = PeriodNum=123
+7 = Substitute=Substitute 3
+8 = Group1=T
+
+-------------------------------------
+
+Configuration #42:
+
+1 = Title=123!@#
+2 = Teacher=Teacher 1
+3 = Semester=Fall 2012
+4 = SectionNum=abc
+5 = RoomNum=123!@#
+6 = PeriodNum=abc
+7 = Substitute=Substitute 1
+8 = Group1=F
+
+-------------------------------------
+
+Configuration #43:
+
+1 = Title=123!@#
+2 = Teacher=Teacher 2
+3 = (don't care)
+4 = SectionNum=abc123
+5 = RoomNum=<script>alert("XSS was successful!");</script>
+6 = PeriodNum=abc123
+7 = Substitute=Substitute 2
+8 = Group1=M
+
+-------------------------------------
+
+Configuration #44:
+
+1 = Title=123!@#
+2 = Teacher=Teacher 3
+3 = (don't care)
+4 = SectionNum=abc!@#
+5 = RoomNum=
+6 = PeriodNum=abc!@#
+7 = Substitute=Substitute 3
+8 = Group1=W
+
+-------------------------------------
+
+Configuration #45:
+
+1 = Title=123!@#
+2 = Teacher=Teacher 4
+3 = (don't care)
+4 = SectionNum=123!@#
+5 = RoomNum=abc
+6 = PeriodNum=123!@#
+7 = (don't care)
+8 = Group1=H
+
+-------------------------------------
+
+Configuration #46:
+
+1 = Title=123!@#
+2 = Teacher=Teacher 3
+3 = (don't care)
+4 = SectionNum=abc123!@#
+5 = RoomNum=123
+6 = PeriodNum=abc123!@#
+7 = (don't care)
+8 = Group1=T
+
+-------------------------------------
+
+Configuration #47:
+
+1 = Title=123!@#
+2 = (don't care)
+3 = (don't care)
+4 = SectionNum=
+5 = RoomNum=abc!@#
+6 = PeriodNum=
+7 = (don't care)
+8 = Group1=W
+
+-------------------------------------
+
+Configuration #48:
+
+1 = Title=123!@#
+2 = Teacher=Teacher 5
+3 = (don't care)
+4 = SectionNum=<script>alert("XSS was successful!");</script>
+5 = RoomNum=abc123
+6 = PeriodNum=<script>alert("XSS was successful!");</script>
+7 = (don't care)
+8 = Group1=H
+
+-------------------------------------
+
+Configuration #49:
+
+1 = Title=abc123!@#
+2 = Teacher=Teacher 4
+3 = Semester=Spring 2013
+4 = SectionNum=123
+5 = RoomNum=
+6 = PeriodNum=123
+7 = Substitute=Substitute 1
+8 = Group1=W
+
+-------------------------------------
+
+Configuration #50:
+
+1 = Title=abc123!@#
+2 = Teacher=Teacher 1
+3 = Semester=Fall 2012
+4 = SectionNum=abc
+5 = RoomNum=<script>alert("XSS was successful!");</script>
+6 = PeriodNum=abc
+7 = Substitute=Substitute 2
+8 = Group1=F
+
+-------------------------------------
+
+Configuration #51:
+
+1 = Title=abc123!@#
+2 = Teacher=Teacher 5
+3 = (don't care)
+4 = SectionNum=abc123
+5 = RoomNum=123!@#
+6 = PeriodNum=abc123
+7 = Substitute=Substitute 3
+8 = Group1=M
+
+-------------------------------------
+
+Configuration #52:
+
+1 = Title=abc123!@#
+2 = Teacher=Teacher 2
+3 = (don't care)
+4 = SectionNum=abc!@#
+5 = RoomNum=abc123!@#
+6 = PeriodNum=abc!@#
+7 = (don't care)
+8 = Group1=M
+
+-------------------------------------
+
+Configuration #53:
+
+1 = Title=abc123!@#
+2 = Teacher=Teacher 3
+3 = (don't care)
+4 = SectionNum=123!@#
+5 = RoomNum=abc123
+6 = PeriodNum=123!@#
+7 = (don't care)
+8 = Group1=T
+
+-------------------------------------
+
+Configuration #54:
+
+1 = Title=abc123!@#
+2 = Teacher=Teacher 1
+3 = (don't care)
+4 = SectionNum=abc123!@#
+5 = RoomNum=abc!@#
+6 = PeriodNum=abc123!@#
+7 = (don't care)
+8 = Group1=H
+
+-------------------------------------
+
+Configuration #55:
+
+1 = Title=abc123!@#
+2 = (don't care)
+3 = (don't care)
+4 = SectionNum=
+5 = RoomNum=123
+6 = PeriodNum=
+7 = (don't care)
+8 = Group1=T
+
+-------------------------------------
+
+Configuration #56:
+
+1 = Title=abc123!@#
+2 = Teacher=Teacher 4
+3 = (don't care)
+4 = SectionNum=<script>alert("XSS was successful!");</script>
+5 = RoomNum=abc
+6 = PeriodNum=<script>alert("XSS was successful!");</script>
+7 = (don't care)
+8 = Group1=M
+
+-------------------------------------
+
+Configuration #57:
+
+1 = Title=
+2 = Teacher=Teacher 3
+3 = Semester=Spring 2013
+4 = SectionNum=123
+5 = RoomNum=<script>alert("XSS was successful!");</script>
+6 = PeriodNum=123
+7 = Substitute=Substitute 1
+8 = Group1=F
+
+-------------------------------------
+
+Configuration #58:
+
+1 = Title=
+2 = Teacher=Teacher 1
+3 = Semester=Fall 2012
+4 = SectionNum=abc
+5 = RoomNum=
+6 = PeriodNum=abc
+7 = Substitute=Substitute 2
+8 = Group1=W
+
+-------------------------------------
+
+Configuration #59:
+
+1 = Title=
+2 = Teacher=Teacher 4
+3 = (don't care)
+4 = SectionNum=abc123
+5 = RoomNum=abc123!@#
+6 = PeriodNum=abc123
+7 = Substitute=Substitute 3
+8 = Group1=H
+
+-------------------------------------
+
+Configuration #60:
+
+1 = Title=
+2 = Teacher=Teacher 5
+3 = (don't care)
+4 = SectionNum=abc!@#
+5 = RoomNum=123!@#
+6 = PeriodNum=abc!@#
+7 = (don't care)
+8 = Group1=M
+
+-------------------------------------
+
+Configuration #61:
+
+1 = Title=
+2 = Teacher=Teacher 2
+3 = (don't care)
+4 = SectionNum=123!@#
+5 = RoomNum=abc!@#
+6 = PeriodNum=123!@#
+7 = (don't care)
+8 = Group1=F
+
+-------------------------------------
+
+Configuration #62:
+
+1 = Title=
+2 = (don't care)
+3 = (don't care)
+4 = SectionNum=abc123!@#
+5 = RoomNum=abc123
+6 = PeriodNum=abc123!@#
+7 = (don't care)
+8 = Group1=T
+
+-------------------------------------
+
+Configuration #63:
+
+1 = Title=
+2 = Teacher=Teacher 5
+3 = (don't care)
+4 = SectionNum=
+5 = RoomNum=abc
+6 = PeriodNum=
+7 = (don't care)
+8 = (don't care)
+
+-------------------------------------
+
+Configuration #64:
+
+1 = Title=
+2 = Teacher=Teacher 2
+3 = (don't care)
+4 = SectionNum=<script>alert("XSS was successful!");</script>
+5 = RoomNum=123
+6 = PeriodNum=<script>alert("XSS was successful!");</script>
+7 = (don't care)
+8 = (don't care)
+
+-------------------------------------
+
+Configuration #65:
+
+1 = Title=<script>alert("XSS was successful!");</script>
+2 = Teacher=Teacher 1
+3 = Semester=Spring 2013
+4 = SectionNum=123
+5 = RoomNum=123
+6 = PeriodNum=123!@#
+7 = Substitute=Substitute 1
+8 = Group1=M
+
+-------------------------------------
+
+Configuration #66:
+
+1 = Title=<script>alert("XSS was successful!");</script>
+2 = Teacher=Teacher 3
+3 = Semester=Fall 2012
+4 = SectionNum=abc
+5 = RoomNum=abc
+6 = PeriodNum=abc123!@#
+7 = Substitute=Substitute 2
+8 = Group1=W
+
+-------------------------------------
+
+Configuration #67:
+
+1 = Title=<script>alert("XSS was successful!");</script>
+2 = Teacher=Teacher 4
+3 = (don't care)
+4 = SectionNum=abc123
+5 = RoomNum=abc123
+6 = PeriodNum=
+7 = Substitute=Substitute 3
+8 = Group1=H
+
+-------------------------------------
+
+Configuration #68:
+
+1 = Title=<script>alert("XSS was successful!");</script>
+2 = Teacher=Teacher 5
+3 = (don't care)
+4 = SectionNum=abc!@#
+5 = RoomNum=abc!@#
+6 = PeriodNum=<script>alert("XSS was successful!");</script>
+7 = (don't care)
+8 = Group1=F
+
+-------------------------------------
+
+Configuration #69:
+
+1 = Title=<script>alert("XSS was successful!");</script>
+2 = Teacher=Teacher 2
+3 = (don't care)
+4 = SectionNum=123!@#
+5 = RoomNum=123!@#
+6 = PeriodNum=123
+7 = (don't care)
+8 = Group1=T
+
+-------------------------------------
+
+Configuration #70:
+
+1 = Title=<script>alert("XSS was successful!");</script>
+2 = (don't care)
+3 = (don't care)
+4 = SectionNum=abc123!@#
+5 = RoomNum=abc123!@#
+6 = PeriodNum=abc
+7 = (don't care)
+8 = Group1=F
+
+-------------------------------------
+
+Configuration #71:
+
+1 = Title=<script>alert("XSS was successful!");</script>
+2 = (don't care)
+3 = (don't care)
+4 = SectionNum=
+5 = RoomNum=
+6 = PeriodNum=abc123
+7 = (don't care)
+8 = (don't care)
+
+-------------------------------------
+
+Configuration #72:
+
+1 = Title=<script>alert("XSS was successful!");</script>
+2 = (don't care)
+3 = (don't care)
+4 = SectionNum=<script>alert("XSS was successful!");</script>
+5 = RoomNum=<script>alert("XSS was successful!");</script>
+6 = PeriodNum=abc!@#
+7 = (don't care)
+8 = (don't care)
+
+-------------------------------------
+
+Configuration #73:
+
+1 = Title=abc!@#
+2 = Teacher=Teacher 1
+3 = (don't care)
+4 = SectionNum=abc123!@#
+5 = (don't care)
+6 = PeriodNum=123
+7 = (don't care)
+8 = (don't care)
+
+-------------------------------------
+
+Configuration #74:
+
+1 = (don't care)
+2 = (don't care)
+3 = (don't care)
+4 = SectionNum=
+5 = (don't care)
+6 = PeriodNum=123
+7 = (don't care)
+8 = (don't care)
+
+-------------------------------------
+
+Configuration #75:
+
+1 = (don't care)
+2 = (don't care)
+3 = (don't care)
+4 = SectionNum=<script>alert("XSS was successful!");</script>
+5 = (don't care)
+6 = PeriodNum=123
+7 = (don't care)
+8 = (don't care)
+
+-------------------------------------
+
+Configuration #76:
+
+1 = (don't care)
+2 = (don't care)
+3 = (don't care)
+4 = SectionNum=123!@#
+5 = (don't care)
+6 = PeriodNum=abc
+7 = (don't care)
+8 = Group1=W
+
+-------------------------------------
+
+Configuration #77:
+
+1 = (don't care)
+2 = (don't care)
+3 = (don't care)
+4 = SectionNum=
+5 = (don't care)
+6 = PeriodNum=abc
+7 = (don't care)
+8 = (don't care)
+
+-------------------------------------
+
+Configuration #78:
+
+1 = (don't care)
+2 = (don't care)
+3 = (don't care)
+4 = SectionNum=<script>alert("XSS was successful!");</script>
+5 = (don't care)
+6 = PeriodNum=abc
+7 = (don't care)
+8 = (don't care)
+
+-------------------------------------
+
+Configuration #79:
+
+1 = (don't care)
+2 = (don't care)
+3 = (don't care)
+4 = SectionNum=123!@#
+5 = (don't care)
+6 = PeriodNum=abc123
+7 = (don't care)
+8 = (don't care)
+
+-------------------------------------
+
+Configuration #80:
+
+1 = (don't care)
+2 = (don't care)
+3 = (don't care)
+4 = SectionNum=abc123!@#
+5 = (don't care)
+6 = PeriodNum=abc123
+7 = (don't care)
+8 = (don't care)
+
+-------------------------------------
+
+Configuration #81:
+
+1 = (don't care)
+2 = (don't care)
+3 = (don't care)
+4 = SectionNum=<script>alert("XSS was successful!");</script>
+5 = (don't care)
+6 = PeriodNum=abc123
+7 = (don't care)
+8 = (don't care)
+
+-------------------------------------
+
+Configuration #82:
+
+1 = (don't care)
+2 = (don't care)
+3 = (don't care)
+4 = SectionNum=123!@#
+5 = (don't care)
+6 = PeriodNum=abc!@#
+7 = (don't care)
+8 = (don't care)
+
+-------------------------------------
+
+Configuration #83:
+
+1 = (don't care)
+2 = (don't care)
+3 = (don't care)
+4 = SectionNum=abc123!@#
+5 = (don't care)
+6 = PeriodNum=abc!@#
+7 = (don't care)
+8 = (don't care)
+
+-------------------------------------
+
+Configuration #84:
+
+1 = (don't care)
+2 = (don't care)
+3 = (don't care)
+4 = SectionNum=
+5 = (don't care)
+6 = PeriodNum=abc!@#
+7 = (don't care)
+8 = (don't care)
+
+-------------------------------------
+
+Configuration #85:
+
+1 = (don't care)
+2 = (don't care)
+3 = (don't care)
+4 = SectionNum=abc
+5 = (don't care)
+6 = PeriodNum=123!@#
+7 = (don't care)
+8 = (don't care)
+
+-------------------------------------
+
+Configuration #86:
+
+1 = (don't care)
+2 = (don't care)
+3 = (don't care)
+4 = SectionNum=abc123
+5 = (don't care)
+6 = PeriodNum=123!@#
+7 = (don't care)
+8 = (don't care)
+
+-------------------------------------
+
+Configuration #87:
+
+1 = (don't care)
+2 = (don't care)
+3 = (don't care)
+4 = SectionNum=abc!@#
+5 = (don't care)
+6 = PeriodNum=123!@#
+7 = (don't care)
+8 = (don't care)
+
+-------------------------------------
+
+Configuration #88:
+
+1 = (don't care)
+2 = (don't care)
+3 = (don't care)
+4 = SectionNum=123
+5 = (don't care)
+6 = PeriodNum=abc123!@#
+7 = (don't care)
+8 = (don't care)
+
+-------------------------------------
+
+Configuration #89:
+
+1 = (don't care)
+2 = (don't care)
+3 = (don't care)
+4 = SectionNum=abc123
+5 = (don't care)
+6 = PeriodNum=abc123!@#
+7 = (don't care)
+8 = (don't care)
+
+-------------------------------------
+
+Configuration #90:
+
+1 = (don't care)
+2 = (don't care)
+3 = (don't care)
+4 = SectionNum=abc!@#
+5 = (don't care)
+6 = PeriodNum=abc123!@#
+7 = (don't care)
+8 = (don't care)
+
+-------------------------------------
+
+Configuration #91:
+
+1 = (don't care)
+2 = (don't care)
+3 = (don't care)
+4 = SectionNum=123
+5 = (don't care)
+6 = PeriodNum=
+7 = (don't care)
+8 = (don't care)
+
+-------------------------------------
+
+Configuration #92:
+
+1 = (don't care)
+2 = (don't care)
+3 = (don't care)
+4 = SectionNum=abc
+5 = (don't care)
+6 = PeriodNum=
+7 = (don't care)
+8 = (don't care)
+
+-------------------------------------
+
+Configuration #93:
+
+1 = (don't care)
+2 = (don't care)
+3 = (don't care)
+4 = SectionNum=abc!@#
+5 = (don't care)
+6 = PeriodNum=
+7 = (don't care)
+8 = (don't care)
+
+-------------------------------------
+
+Configuration #94:
+
+1 = (don't care)
+2 = (don't care)
+3 = (don't care)
+4 = SectionNum=123
+5 = (don't care)
+6 = PeriodNum=<script>alert("XSS was successful!");</script>
+7 = (don't care)
+8 = (don't care)
+
+-------------------------------------
+
+Configuration #95:
+
+1 = (don't care)
+2 = (don't care)
+3 = (don't care)
+4 = SectionNum=abc
+5 = (don't care)
+6 = PeriodNum=<script>alert("XSS was successful!");</script>
+7 = (don't care)
+8 = (don't care)
+
+-------------------------------------
+
+Configuration #96:
+
+1 = (don't care)
+2 = (don't care)
+3 = (don't care)
+4 = SectionNum=abc123
+5 = (don't care)
+6 = PeriodNum=<script>alert("XSS was successful!");</script>
+7 = (don't care)
+8 = (don't care)
+
+-------------------------------------
+
