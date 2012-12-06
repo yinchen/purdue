@@ -4,3 +4,14 @@
 [submodule "cs307/project01"]
 	path = cs307/project01
 	url = git@github.com:purdue-cs-groups/cs307-project01.git
+[submodule "cs490sd/project01"]
+	
+path = cs490sd/project01
+
+	url = git@github.com:purdue-cs-groups/cs490-007-project01
+
+[submodule "cs490wir/project03"]
+
+	path = cs490wir/project03
+
+	url = git@github.com:purdue-cs-groups/cs490-WIR-project01.git
