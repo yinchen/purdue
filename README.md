@@ -1,13 +1,11 @@
-# Purdue University - Undergraduate CS Coursework
-
-## Introduction
+# Purdue University - Computer Science
 
 This repository contains the complete collection of my undergraduate Compuer Science coursework at Purdue University. I officially enrolled in the CS program in Fall 2010 and I graduated in Fall 2012, completing the required coursework in two years.
 
 
 ## Courses
 
-The courses I have chosen to take follow the Computer Science department's Software Engineering plan of study. Here is the list of courses that are included in this repository:
+The courses that I took followed the Computer Science department's [undergraduate core curriculum][1] as well as the [Software Engineering track][2]'s curriculum. Here is the list of courses that are included in this repository:
 
 *   CS 180 - Problem Solving and Object-Oriented Programming
 *   CS 240 - Programming in C
@@ -20,3 +18,9 @@ The courses I have chosen to take follow the Computer Science department's Softw
 *   CS 490-007 - Senior Project
 *   CS 490-ST0 - Software Testing
 *   CS 490-WIR - Web Information Retrieval
+
+
+## Disclaimer
+
+[1]: http://www.cs.purdue.edu/academic_programs/undergraduate/curriculum/bachelor/index.sxhtml
+[2]: http://www.cs.purdue.edu/academic_programs/undergraduate/curriculum/bachelor/track_softengr.sxhtml
