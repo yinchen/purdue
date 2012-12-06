@@ -22,7 +22,7 @@ You may be able to find information about each course through the Computer Scien
 
 ## Statistics
 
-![Statistics from GitExtensions](/tmp/stats.png)
+![Statistics from GitExtensions](https://raw.github.com/mbmccormick/purdue/master/tmp/stats.png?login=mbmccormick&token=f14fc26b2efa80e88e31e2228c292ecd)
 
 ## Disclaimer
 
