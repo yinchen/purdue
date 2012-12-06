@@ -2,7 +2,6 @@
 
 This repository contains the complete collection of my undergraduate [Computer Science][1] coursework at [Purdue University][2]. I officially enrolled in the CS program in Fall 2010 and I graduated in Fall 2012, completing the required coursework in two years.
 
-
 ## Courses
 
 The courses that I took followed the Computer Science department's [undergraduate core curriculum][3] as well as the [Software Engineering track][4]'s curriculum. Here is the list of courses that are included in this repository:
@@ -19,8 +18,12 @@ The courses that I took followed the Computer Science department's [undergraduat
 *   CS 490-ST0 - Software Testing
 *   CS 490-WIR - Web Information Retrieval
 
+You may be able to find information about each course through the Computer Science department's web page or through the myPurdue Course Catalog. Unfortunately, I did not keep a cached copy of the course web pages or assignment descriptions.
 
 ## Disclaimer
+
+The software code and additional works are my property and representative of the work that I completed during my undergraduate studies at Purdue University. Use of this repository by Purdue students is an academic dishonesty violation and is subject to Purdue's disciplinary policies. This repository is for historical and educational purposes only.
+
 
 [1]: http://www.cs.purdue.edu/
 [2]: http://www.purdue.edu/
