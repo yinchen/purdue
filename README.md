@@ -20,6 +20,10 @@ The courses that I took followed the Computer Science department's [undergraduat
 
 You may be able to find information about each course through the Computer Science department's web page or through the myPurdue Course Catalog. Unfortunately, I did not keep a cached copy of the course web pages or assignment descriptions.
 
+## Statistics
+
+![Statistics from GitExtensions](/tmp/stats.png)
+
 ## Disclaimer
 
 This software code and other works are my property and are a representation of the work that I completed during my undergraduate studies at Purdue University. Use of this repository by Purdue students is an academic dishonesty violation and is subject to Purdue's disciplinary policies. This repository is for historical and educational purposes only.
