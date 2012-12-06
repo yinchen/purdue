@@ -22,7 +22,7 @@ You may be able to find information about each course through the Computer Scien
 
 ## Disclaimer
 
-This software code and other works are my property and representative of the work that I completed during my undergraduate studies at Purdue University. Use of this repository by Purdue students is an academic dishonesty violation and is subject to Purdue's disciplinary policies. This repository is for historical and educational purposes only.
+This software code and other works are my property and are a representation of the work that I completed during my undergraduate studies at Purdue University. Use of this repository by Purdue students is an academic dishonesty violation and is subject to Purdue's disciplinary policies. This repository is for historical and educational purposes only.
 
 
 [1]: http://www.cs.purdue.edu/
