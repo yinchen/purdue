@@ -22,6 +22,8 @@ You may be able to find information about each course through the Computer Scien
 
 ## Statistics
 
+Some interesting statistics about this repository can be found using GitHub's built-in [Graphs page][5]. Below is a screenshot from GitExtensions with a breakdown of the codebase by language:
+
 ![Statistics from GitExtensions](https://raw.github.com/mbmccormick/purdue/master/tmp/stats.png?login=mbmccormick&token=f14fc26b2efa80e88e31e2228c292ecd)
 
 ## Disclaimer
@@ -33,3 +35,4 @@ This software code and other works are my property and are a representation of t
 [2]: http://www.purdue.edu/
 [3]: http://www.cs.purdue.edu/academic_programs/undergraduate/curriculum/bachelor/index.sxhtml
 [4]: http://www.cs.purdue.edu/academic_programs/undergraduate/curriculum/bachelor/track_softengr.sxhtml
+[5]: https://github.com/mbmccormick/purdue/graphs
