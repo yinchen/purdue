@@ -1,6 +1,6 @@
 # Purdue University - Computer Science
 
-This repository contains the complete collection of my undergraduate [Computer Science][1] coursework at [Purdue University][2]. I officially enrolled in the CS program in Fall 2010 and I graduated in Fall 2012, completing the required coursework in two years.
+This repository contains the complete collection of my undergraduate [Computer Science][1] coursework at [Purdue University][2]. I officially enrolled in the CS program in Fall 2010 and I graduated in Fall 2012.
 
 ## Courses
 
