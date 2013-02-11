@@ -24,7 +24,7 @@ You may be able to find information about each course through the Computer Scien
 
 Some interesting statistics about this repository can be found using GitHub's built-in [Graphs page][5]. Below is a screenshot from GitExtensions with a breakdown of the codebase by language:
 
-![Statistics from GitExtensions](https://raw.github.com/mbmccormick/purdue/master/tmp/stats.png?login=mbmccormick&token=f14fc26b2efa80e88e31e2228c292ecd)
+![Statistics from GitExtensions](https://raw.github.com/mbmccormick/purdue/master/tmp/stats.png)
 
 ## Disclaimer
 
