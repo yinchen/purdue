@@ -20,12 +20,6 @@ The courses that I took followed the Computer Science department's [undergraduat
 
 You may be able to find information about each course through the Computer Science department's web page or through the myPurdue Course Catalog. Unfortunately, I did not keep a cached copy of the course web pages or assignment descriptions.
 
-## Statistics
-
-Some interesting statistics about this repository can be found using GitHub's built-in [Graphs page][5]. Below is a screenshot from GitExtensions with a breakdown of the codebase by language:
-
-![Statistics from GitExtensions](https://raw.github.com/mbmccormick/purdue/master/tmp/stats.png)
-
 ## Disclaimer
 
 This software code and other works are my property and are a representation of the coursework that I completed during my undergraduate studies at Purdue University. This repository is for historical and educational purposes only. This software, and its dependencies, are distributed free of charge and licensed under the GNU General Public License v3. For more information about this license and the terms of use of this software, please review the LICENSE.txt file.
